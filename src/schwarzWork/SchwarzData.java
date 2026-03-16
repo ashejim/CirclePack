@@ -3,14 +3,14 @@ package schwarzWork;
 import complex.Complex;
 
 /**
- * Temporary holder for data related to Schwarzian 
- * related data for a given edge <v,w>. Associated 
- * packing(s) depend on context. 
+ * Temporary holder for Schwarzian related data 
+ * for a given edge <v,w>. Associated packing(s) 
+ * depend on context. 
  * @author kensm
  *
  */
 public class SchwarzData {
-	// oriente edge (v,w)
+	// oriented edge (v,w)
 	public int v;
 	public int w;
 	public int flag; // non-zero to indicate error or problem

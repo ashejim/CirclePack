@@ -385,7 +385,7 @@ public class PointLink extends LinkedList<Complex> {
 	}
 
 	/**
-	 * Pick first complex off string
+	 * Pick first complex number off given string
 	 * @param str String
 	 * @return Complex, null on failure
 	 */

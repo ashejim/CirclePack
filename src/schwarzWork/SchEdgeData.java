@@ -14,7 +14,7 @@ import util.ColorUtil;
  * previous edge schwarzians, so we want that to
  * be easy to compute.
  * 
- * These objects are instantiate when 'SchwarzPack'
+ * These objects are instantiated when 'SchwarzPack'
  * is initiated and put in an array, indexed starting
  * at 1. See 'theEdges' for array index. 
  * 

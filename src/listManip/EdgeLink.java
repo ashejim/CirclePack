@@ -994,7 +994,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 					}
 				}
 			
-				try { // should default to current 'ClosedPath', if it exists
+				try { // default to current 'ClosedPath', if it exists
 					PathLink pLink=new PathLink(packData.hes,items);
 					PathInterpolator pInt=new PathInterpolator(packData.hes);
 					pInt.pathInit(pLink);

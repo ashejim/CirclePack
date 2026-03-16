@@ -19,10 +19,11 @@ import packing.PackCreation;
  * schwarzian. Uzians u should be restricted
  * to be positive.
  * 
- * CAUTION: In my paper on schwarzians, indexing
- * is from zero, e.g. uzians are {u_0,u_1,...u_{n-1}}
- * and in normalization, c_0 is the half plane
- * y<=-2i. However, in the code indexing is from 1,
+ * CAUTION: In "A discrete Schwarzian derivative
+ * via circle packing", indexing for flowers is 
+ * from zero, e.g. uzians are {u_0,u_1,...u_{n-1}}
+ * and in normalization, c_0 is the half plane y<=-2i. 
+ * However, in this java code indexing is from 1,
  * so c_0 is c_n. However, in both the paper and
  * the code, the n-3 parameters are u_1,...,u_{n-3}.
  * 

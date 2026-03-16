@@ -17,8 +17,8 @@ import exceptions.ParserException;
 /**
  * Linked list of complex values representing an open or closed
  * polygonal path in the plane or on the sphere. Closure is
- * determined first from the data, but can be toggled independently;
- * closure does NOT result in repeat entry.
+ * determined first from the data, but can be toggled 
+ * independently; closure does NOT result in repeat entry.
  * @author kens
  *
  */

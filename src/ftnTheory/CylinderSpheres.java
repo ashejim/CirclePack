@@ -15,6 +15,7 @@ import complex.Complex;
 import input.CPFileManager;
 import komplex.EdgeSimple;
 import listManip.EdgeLink;
+import listManip.FaceLink;
 import listManip.HalfLink;
 import math.Point3D;
 import packing.PackCreation;
@@ -82,6 +83,7 @@ public class CylinderSpheres extends PackExtender {
 	Point3D[] barycenters; // face barycenters, carbon locations
 	EdgeLink edgeLink; // indices: edges between tangent spheres
 	EdgeLink hexLink; // carbon bond edges, using faceIndx
+	int[][] faceLink; // faceCount x 3 indices
 	ArrayList<HalfLink> necklasses;
 	
 	// keep track of status:
@@ -124,7 +126,7 @@ public class CylinderSpheres extends PackExtender {
 					p=q;
 					q=hold;
 				}
-				if (q<0 || p<3) {
+				if (q<0 || p<2) {
 					CirclePack.cpb.errMsg("must have q>0 and p<3");
 					return 0;
 				}
@@ -417,8 +419,9 @@ public class CylinderSpheres extends PackExtender {
 			StringBuilder strbuf=new StringBuilder();
 			boolean append_flag=false;
 			boolean script_flag=false;
-			File file=new File("hexCyl_"+P+"_"+Q+"_"+levelCount+".m");
-			// there may be a filename given
+			File file=new File("CSP_"+P+"_"+Q+"_"+levelCount+".m");
+			// update name; used to be 'hexCyl**'
+			// Note there may be a filename given
 			int code=CPFileManager.trailingFile(flagSegs, strbuf);
 			if (code!=0) {
 				file=new File(strbuf.toString());
@@ -429,14 +432,30 @@ public class CylinderSpheres extends PackExtender {
 				file.getName(),script_flag);
 			try {
 				fp.write("% Output from CirclePack extender 'CylinderSpheres'\n\n");
-				fp.write("r="+cylR+"; z="+cylz1+";\n");
+				double realr=cylR-0.5;
+				fp.write("% Parameters: m="+P+"; n="+Q+"; r="+realr+"; z="+cylz1+";\n\n");
+				fp.write("r="+realr+"; z="+cylz1+";\n");
 				fp.write("HC=HexCylinder(r,z);\n\n");
 				fp.write("% Specified parameters:\n");
 				fp.write("HC.p="+P+";\n"+"HC.q="+Q+";\nHC.nodeCount="+nodeCount+
 						";\nHC.levelCount="+levelCount+";\nHC.baseLevel="+baseLevel+";\n\n");
 				fp.write("% Computed values:\n");
-				fp.write("HC.R="+cylR+";\nHC.t1="+cylt1+";\nHC.z1="+cylz1+
-						";\nHC.t2="+cylt2+";\nHC.z2="+cylz2+";\n\n");
+				fp.write("HC.R="+cylR+";\nHC.theta1="+cylt1/cylR+";\nHC.z1="+cylz1+
+						";\nHC.theta2="+cylt2/cylR+";\nHC.z2="+cylz2+";\n\n");
+				
+				// Goldnecklass 3D centers (Goldilock's necklass)
+				HalfLink gold=necklasses.get(baseLevel);
+				fp.write("HC.Goldnecklass=[\n");
+				Iterator<HalfEdge> gls=gold.iterator();
+				while (gls.hasNext()) {
+					int v=gls.next().origin.vutil;
+					Complex z=cents2D[v];
+					Point3D pt3D=set3D(cylR,z);
+					fp.write(pt3D.x+"  "+pt3D.y+"  "+pt3D.z+"\n");
+				}
+				fp.write("];\n\n");
+
+				// 2D centers
 				if (cents2D!=null) {
 					fp.write("HC.cents2D = [\n");
 					for (int j=1;j<=nodeCount;j++) {
@@ -483,6 +502,33 @@ public class CylinderSpheres extends PackExtender {
 					}
 					fp.write("];\n\n");
 				}
+				
+				fp.write("HC.faces = [;\n");
+				FaceLink flink=new FaceLink(extenderPD,"a");
+				Iterator<Integer> fst=flink.iterator();
+				while (fst.hasNext()) {
+					DcelFace face=extenderPD.packDCEL.faces[fst.next()];
+					int[] verts=face.getVerts();
+					int v1=extenderPD.packDCEL.vertices[verts[0]].vutil;
+					int v2=extenderPD.packDCEL.vertices[verts[1]].vutil;
+					int v3=extenderPD.packDCEL.vertices[verts[2]].vutil;
+				    fp.write(v1+", "+v2+", "+v3+";\n");
+				}
+				fp.write("];\n\n");
+				
+				double angle_increment=(cylt2-cylt1)/cylR;
+				double cai=Math.cos(angle_increment);
+				double sai=Math.sin(angle_increment);
+				fp.write("HC.rotation_3D=[\n");
+				fp.write(cai+"  "+sai+"  0.0\n");
+				fp.write((-1.0)*sai+"  "+cai+"  0.0\n");
+				fp.write("0.0  0.0  1.0\n");
+				fp.write("];\n\n");
+				
+				double height_increment=1.0;
+				if (Q>0)
+					height_increment=(-1.0)*(P+Q)*cylz1/((double)Q);
+				fp.write("HC.translation_3D=[0.0 0.0 "+height_increment+"];\n\n");
 				
 				// have matlab compute cents3D
 				fp.write("HC.HCcomp3D();\n");
@@ -561,8 +607,8 @@ public class CylinderSpheres extends PackExtender {
 		
 		// set R between min/max possible, but not less than 0.5
 		R=(p+q)/(3*Math.PI); 
-		if (R<0.5)
-			R=0.5;
+		if (R<0.52) // .52 seems to be the minimum possible
+			R=0.52;
 		if (p<q) {
 			int hold=p;
 			p=q;
@@ -586,15 +632,24 @@ public class CylinderSpheres extends PackExtender {
 			ans[3]=0;
 			return ans;
 		}
+		// hard coded in case (2,1)
+		if (p==2 && q==1) {
+		    double[] ans=new double[4];
+			ans[0]=0.51962904186661;
+			ans[1]=-0.316198073677424;
+			ans[2]=0;
+			ans[3]=0;
+			return ans;
+		}
 		
 		z1=what_is_z1(R,p,q,-1.0); // get started
 		double t1=what_is_t(R,z1);
 		Complex s1=computeS2(R,z1);
 		double t_error=Math.abs(p*t1+q*s1.x-R*CPBase.pi2);
 		double z_error=Math.abs(p*z1+q*s1.y);
-		int safety=1000;
-		while ((t_error+z_error)>.000001 && safety>0) {
-		    safety=safety-1;
+		int tz_safety=1000;
+		while ((t_error+z_error)>.000001 && tz_safety>0) {
+		    tz_safety--;
 		    R=newtees(R,z1,p,q);
 		    z1=what_is_z1(R,p,q,z1);
 		    t1=what_is_t(R,z1);
@@ -602,8 +657,13 @@ public class CylinderSpheres extends PackExtender {
 		    t_error=Math.abs(p*t1+q*s2.x-R*CPBase.pi2);
 		    z_error=Math.abs(p*z1+q*s2.y);
 		}
+		
+//debugging			
+		System.out.println("      tz_safety="+tz_safety);
+		
+
 		double[] ans=new double[4];
-		if (safety==0)
+		if (tz_safety==0)
 		    CirclePack.cpb.errMsg("safetied out in 'computeRz'");
 		ans[0]=R;
 		ans[1]=z1;
@@ -629,19 +689,23 @@ public class CylinderSpheres extends PackExtender {
 		double min_z=0;
 		double max_z=ZR;
 		double z2=min_z;
-		double best=S2_distance(R,z1,z2);
-		int safety=1000;
+		double best=s2_sqr_dist(R,z1,z2);
+		int s2_safety=1000;
 		// TODO: improve using Newton method
-		while (Math.abs(best-1.0)>0.0000000000001 && safety>0) {
-			safety=safety--;
+		while (Math.abs(best-1.0)>0.00001 && s2_safety>0) {
+			s2_safety--;
 	    	z2=(min_z+max_z)/2.0;
-	    	best=S2_distance(R,z1,z2);
+	    	best=s2_sqr_dist(R,z1,z2);
 	    	if (best<1)
 	    		min_z=z2;
 	    	else if (best>1)
 	    		max_z=z2;
 		}
-		if (safety==0) {
+		
+//debugging			
+		System.out.println("s2_safety="+s2_safety);
+		
+		if (s2_safety==0) {
 			if (Math.abs(best-1.0)>.001) {
 	        	CirclePack.cpb.errMsg("safety error in computeS2");
 	        	return null; 
@@ -666,7 +730,7 @@ public class CylinderSpheres extends PackExtender {
 		Complex s2=computeS2(R,z1);
 		double value=p*t1+q*s2.x-2.0*Math.PI*R; // want this to be zero.
 		int safety=1000;
-		while (Math.abs(value)>.000000001 && safety>0) {
+		while (Math.abs(value)>.00001 && safety>0) {
 		    safety--;
 		    double dt1=der_tz(R,z1);
 		    double dt2=der_tz(R,s2.y);
@@ -703,22 +767,21 @@ public class CylinderSpheres extends PackExtender {
 	}
 
 	/**
-	 *  d = S2_distance(R,z1,x) distance, S2 to S1 as function of x
-	 *  Find the distance of the center of S2 as a function
-	 *  of its height x >= 0. We use intermediate quantities 
-	 *  c=cos(t/R) and s=sin(t/R).
+	 *  Compute square of distance of S2 to S1 as 
+	 *  function of height x of S2. We use intermediate 
+	 *  quantities c=cos(t/R) and s=sin(t/R).
 	 *  For spheres tangent to S_0, c and z are related by
-	 *      c=1+(z^2-1)/(2R^2)
+	 *      c=1-(1-z^2)/(2R^2)
 	 */
-	public double S2_distance(double R,double z1,double x) {
+	public double s2_sqr_dist(double R,double z1,double x) {
 		// (a) Find c1:
-		double c1=1.0+(z1*z1-1.0)/(2.0*R*R);
+		double c1=1.0-(1.0-z1*z1)/(2.0*R*R);
 		double s1=Math.sqrt(1.0-c1*c1);
 		// (b) Find c2 as a function of x
-		double c2=1.0+(x*x-1)/(2*R*R);
+		double c2=1.0-(1.0-x*x)/(2.0*R*R);
 		double s2=Math.sqrt(1.0-c2*c2);
-		double d=(x-z1)*(x-z1)-(2*R*R)*(c1*c2+s1*s2-1.0);
-		return Math.sqrt(d);
+		double d=(x-z1)*(x-z1)-(2.0*R*R)*(c1*c2+s1*s2-1.0);
+		return d;
 	}
 
 	/**
@@ -753,9 +816,9 @@ public class CylinderSpheres extends PackExtender {
 		double z_out=z1;
 		Complex s2=computeS2(R,z1);
 		double p1q2=p*z_out+q*s2.y;
-		int safety=1000;
-		while (Math.abs(p1q2)>.00000001) {
-			safety--;
+		int z1_safety=1000;
+		while (Math.abs(p1q2)>.0001) {
+			z1_safety--;
 			if (p1q2>0) {
 				max_z1=z_out;
 				z_out=(z_out+min_z1)/2;
@@ -767,7 +830,11 @@ public class CylinderSpheres extends PackExtender {
 			s2=computeS2(R,z_out);
 			p1q2=p*z_out+q*s2.y;
 		}
-		if (safety==0) {
+		
+//debugging			
+		System.out.println("   z1_safety="+z1_safety);
+		
+		if (z1_safety==0) {
 			CirclePack.cpb.errMsg("safety'ed out in computeRz");
 		}
 		return z_out;

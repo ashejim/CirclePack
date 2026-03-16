@@ -3536,7 +3536,7 @@ public class CommandStrParser {
 			  throw new ParserException("Random triangulation failed 12 times; try more vertices.");
 		  }
 		  
-		  // =========== ring (OBE: see ======
+		  // =========== ring (OBE: see frackMe ======
 		  else if (cmd.startsWith("ring")) {
 			  CirclePack.cpb.errMsg("The 'ring' command has been replaced by 'frackMe'");
 			  return 0;
