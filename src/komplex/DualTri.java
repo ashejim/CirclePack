@@ -10,6 +10,8 @@ import geometry.SphericalMath;
 import math.Mobius;
 
 /**
+ * @brief A 'dual triangle' in a tangency packing is that formed by
+ *
  * A 'dual triangle' in a tangency packing is that formed by
  * the three points of intersection of the three circles forming
  * a face. This class computes and stores data on dual triangles.
@@ -271,7 +273,7 @@ public class DualTri {
 	}		
 		
 	/**
-	 * Get the tangency point between centers {v(j),v((j+1)%3)}.
+	 * @brief Get the tangency point between centers {v(j),v((j+1)%3)}.
 	 * @return new Complex, null if not set
 	 */
 	public Complex getTP(int j) {

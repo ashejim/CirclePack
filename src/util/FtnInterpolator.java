@@ -4,6 +4,8 @@ import complex.Complex;
 import exceptions.DataException;
 
 /**
+ * @brief Routines for interpolating a real or complex function
+ *
  * Routines for interpolating a real or complex function 
  * defined on the unit circle, [0,2pi]. We are given
  * a vector of values of s (closed up) and an associated 
@@ -24,7 +26,7 @@ public class FtnInterpolator {
 	}
 	
 	/**
-	 * must initiate with persistent data arrays
+	 * @brief must initiate with persistent data arrays
 	 * @param spts
 	 * @param fvalues
 	 */
@@ -55,7 +57,7 @@ public class FtnInterpolator {
 	}
 		
 	/**
-	 * Return index i so s is between ith and (i+1)st entry
+	 * @brief Return index i so s is between ith and (i+1)st entry
 	 * of parameter vector.
 	 * @param s double
 	 * @return int
@@ -77,7 +79,7 @@ public class FtnInterpolator {
 	}
 	
 	/**
-	 * distance from s1 to s2 modulo 2pi
+	 * @brief distance from s1 to s2 modulo 2pi
 	 * @param s1
 	 * @param s2
 	 * @return double

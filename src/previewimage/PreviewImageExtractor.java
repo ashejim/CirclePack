@@ -18,6 +18,8 @@ import org.xml.sax.SAXException;
 
 
 /**
+ * @brief This class can extract an image from a valid and compatible XML resource.
+ *
  * This class can extract an image from a valid and compatible XML resource.
  * Valid but incompatible XML resources may be passed without error. In this
  * implementation, compatibility means that the XML resource contains an
@@ -36,7 +38,7 @@ public class PreviewImageExtractor {
 	protected URL xmlResource; // The target XML resource.
 
 	/**
-	 * Create a new PreviewImageExtractor for a specified XML resource. The
+	 * @brief Create a new PreviewImageExtractor for a specified XML resource. The
 	 * caller is responsible for verifying that both the URL and the XML
 	 * resource it specifies are valid. The XML resource is permitted to not
 	 * contain a preview image.
@@ -46,7 +48,7 @@ public class PreviewImageExtractor {
 	public PreviewImageExtractor(URL xmlResource) {this.xmlResource = xmlResource;}
 
 	/**
-	 * Retrieve the preview image from this instance's specified XML resource.
+	 * @brief Retrieve the preview image from this instance's specified XML resource.
 	 * This call may take a long time, especially for large or remote files.
 	 * 
 	 * @return the image found in the XML resource; <code>null</code> on failure

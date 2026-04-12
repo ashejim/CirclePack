@@ -15,6 +15,8 @@ import exceptions.DataException;
 import exceptions.ParserException;
 
 /**
+ * @brief SliderControlPanel contains 'SliderPanel's used to manipulate
+ *
  * SliderControlPanel contains 'SliderPanel's used to manipulate 
  * CirclePack variables via sliders and an area for adding new
  * sliders.
@@ -68,7 +70,7 @@ public class SliderControlPanel extends JPanel {
 	}
 
 	/**
-	 * Returns the value of the specified CirclePack slider variable 
+	 * @brief Returns the value of the specified CirclePack slider variable 
 	 * 
 	 * @param key the name of the CirclePack variable
 	 * @return a <code>String</code> representation of the value or <code>null</code> if not found
@@ -84,7 +86,7 @@ public class SliderControlPanel extends JPanel {
 	}
 		
 	/**
-	 * Adds a variable slider to 'sliderVariables'. It should already have
+	 * @brief Adds a variable slider to 'sliderVariables'. It should already have
 	 * created a 'variables' entry. This should only be called if 'value'
 	 * starts with "[SLIDER..] ". If value it is not a double, then exception.
 	 * 
@@ -114,7 +116,7 @@ public class SliderControlPanel extends JPanel {
 	}
 		
 	/**
-	 * Revert a slider to a regular variable with latest value (can
+	 * @brief Revert a slider to a regular variable with latest value (can
 	 * be removed in separate operation).
 	 * 
 	 * TODO: not yet implemented
@@ -134,7 +136,7 @@ public class SliderControlPanel extends JPanel {
 	}
 	
 	/**
-	 * Go through 'sliderVariables' and put their panels in the sliderStack panel.
+	 * @brief Go through 'sliderVariables' and put their panels in the sliderStack panel.
 	 * @return count
 	 */
 	public int resetStack() {

@@ -20,6 +20,8 @@ import util.FlipBot;
 import util.StringUtil;
 
 /**
+ * @brief Developing edge flip strategies in various settings.
+ *
  * Developing edge flip strategies in various settings.
  * 
  * (e.g., algorithm to flip edges of triangulation of
@@ -498,7 +500,7 @@ public class FlipStrategy extends PackExtender {
 	}
 	
 	/**
-	 * Search for named 'FlipBot'
+	 * @brief Search for named 'FlipBot'
 	 * @param botName
 	 * @return FlipBot, null if not found
 	 */

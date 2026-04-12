@@ -30,6 +30,12 @@ public class BoundaryValueProblems extends PackExtender
 		}
 	}
 	
+	/**
+	 * @brief TODO: Document cmdParser.
+	 * @param cmd
+	 * @param flagSegs
+	 * @return int
+	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs)
 	{
 		//String str;
@@ -55,6 +61,9 @@ public class BoundaryValueProblems extends PackExtender
 		return super.cmdParser(cmd, flagSegs);
 	}
 	
+	/**
+	 * @brief TODO: Document initCmdStruct.
+	 */
 	public void initCmdStruct() 
 	{
 		// description of the commands in the help window
@@ -63,6 +72,9 @@ public class BoundaryValueProblems extends PackExtender
 				"Starts a graphical user interface where a discrete boundary value problem can be defined and solved."));
 	}
 		
+	/**
+	 * @brief TODO: Document StartUpMsg.
+	 */
 	public void StartUpMsg() 
 	{
 		// display in the message box if the user types help

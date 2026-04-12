@@ -17,6 +17,8 @@ import listManip.HalfLink;
 import util.UtilPacket;
 
 /**
+ * @brief Various measures of packing quality to help identify layout errors,
+ *
  * Various measures of packing quality to help identify layout errors,
  * misplaced circles, poorly packed faces, etc. Started 4/2002.
  * 
@@ -26,7 +28,7 @@ import util.UtilPacket;
 public class QualMeasures {
 
 	/**
-	 * "visual error" of an edge is diff/smallest, where 
+	 * @brief "visual error" of an edge is diff/smallest, where 
 	 * diff is the absolute difference between desired distance 
 	 * (based on radii and inv dist) and actual distance 
 	 * between endpoints, and smallest is the lesser of the 
@@ -111,7 +113,7 @@ public class QualMeasures {
 	}
 	  
 	/**
-	 * Return intended length of edge based on radii and inversive
+	 * @brief Return intended length of edge based on radii and inversive
 	 * distances. Return -1 on error or infinite hyp length 
 	 * @param p PackData 
 	 * @param v int;
@@ -128,7 +130,7 @@ public class QualMeasures {
 	} 
 
 	/**
-	 * Return distance between centers
+	 * @brief Return distance between centers
 	 * @param v int
 	 * @param w int, vertices
 	 * @return double: distance, or -1 on error, or negative eucl radius 
@@ -149,7 +151,7 @@ public class QualMeasures {
 	}
 	
 	/**
-	 * Compare e = edgelength of faces (based on circle computed 
+	 * @brief Compare e = edgelength of faces (based on circle computed 
 	 * centers) to d = desired edgelength (based on radii and 
 	 * overlaps). Those in facelist with 1/crit < (e/d) < crit 
 	 * have plot_flag set to 0. 
@@ -189,7 +191,7 @@ public class QualMeasures {
 	}
 	
 	/**
-	 * call EdgeSimple version.
+	 * @brief call EdgeSimple version.
 	 * @param p PackData
 	 * @param hlist HalfLink
 	 * @param uP UtilPacket
@@ -202,7 +204,7 @@ public class QualMeasures {
 	}
 	
 	/**
-	 * Report the edge (v,w) from given EdgeLink having worst relative error, 
+	 * @brief Report the edge (v,w) from given EdgeLink having worst relative error, 
 	 * meaning "err/smaller" where smaller is the smaller of the two radii
 	 * and err is the difference between the "correct" length (i.e., based on 
 	 * radii and overlap) and the actual length based on centers. (7/2014 and 6/2015) 
@@ -239,7 +241,7 @@ public class QualMeasures {
 	}
 	
 	/**
-	 * Check the orientation of the given faces (based on locations of their
+	 * @brief Check the orientation of the given faces (based on locations of their
 	 * vertices), defaulting to 'all'. Return the index of the first that 
 	 * fails to be positively oriented, 0 in case all are okay, -1 for error 
 	 * such as NaN center, etc.
@@ -289,7 +291,7 @@ public class QualMeasures {
 	}
 		
 	/** 
-	 * For given vertex 'v', find worst visual error for edges 
+	 * @brief For given vertex 'v', find worst visual error for edges 
 	 * from v. 
 	 * @param p PackData
 	 * @param v int
@@ -310,7 +312,7 @@ public class QualMeasures {
 	}
 	
 	/**
-	 * Given euclidean data, find diff/smallest, where diff is the
+	 * @brief Given euclidean data, find diff/smallest, where diff is the
 	 * difference bwtween the eucludean distance between endpoint centers
 	 * and intended distance (based on radii and overlap) and smallest
 	 * is the smaller of the two eucl radius. Numerical problems an
@@ -332,7 +334,7 @@ public class QualMeasures {
 	}
 	
 	/** 
-	 * get visual error of this edge
+	 * @brief get visual error of this edge
 	 * @param p PackData
 	 * @param edge HalfEdge
 	 * @return double
@@ -365,7 +367,7 @@ public class QualMeasures {
 	}
 	
 	/**
-	 * Return relative visual error, meaning ratio vis_err/min_rad. For hyp,
+	 * @brief Return relative visual error, meaning ratio vis_err/min_rad. For hyp,
 	 * this uses euclidean data.
 	 * @param p PackData
 	 * @param edge HalfEdge

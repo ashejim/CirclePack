@@ -25,6 +25,8 @@ import util.ColorUtil;
 import util.DispFlags;
 	
 /**
+ * @brief This contains methods for adding circle/faces/edges/etc to postscript
+ *
  * This contains methods for adding circle/faces/edges/etc to postscript
  * files; it is created by/dies with 'PostManager'.
  * 
@@ -49,7 +51,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * post open circle, normal color, thickness
+	 * @brief post open circle, normal color, thickness
 	 * @param hes
 	 * @param z
 	 * @param rad
@@ -59,7 +61,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * post open circle with thickness
+	 * @brief post open circle with thickness
 	 * @param hes
 	 * @param z
 	 * @param rad
@@ -70,7 +72,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * post filled circle, normal thickness
+	 * @brief post filled circle, normal thickness
 	 * @param hes
 	 * @param z
 	 * @param rad
@@ -81,7 +83,7 @@ public class PostFactory {
 	}
 
 	/**
-	 * post filled circle with thickness
+	 * @brief post filled circle with thickness
 	 * @param hes int
 	 * @param z Complex
 	 * @param rad double
@@ -93,7 +95,7 @@ public class PostFactory {
 	}
 
 	/**
-	 * post open circle, with bdry color, normal thickness
+	 * @brief post open circle, with bdry color, normal thickness
 	 * @param hes int
 	 * @param z Complex
 	 * @param rad double
@@ -104,7 +106,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * post open circle, with bdry color, thickness
+	 * @brief post open circle, with bdry color, thickness
 	 * @param hes int
 	 * @param z Complex
 	 * @param rad double
@@ -116,7 +118,7 @@ public class PostFactory {
 	}
 
 	/**
-	 * post filled circle, color, normal thickness
+	 * @brief post filled circle, color, normal thickness
 	 * @param hes int
 	 * @param z Complex
 	 * @param rad double
@@ -128,7 +130,7 @@ public class PostFactory {
 	}
 
 	/**
-	 * post filled circle, color, given thickness
+	 * @brief post filled circle, color, given thickness
 	 * @param hes
 	 * @param z
 	 * @param rad
@@ -141,7 +143,7 @@ public class PostFactory {
 	}
 
 	/** 
-	 * Draw a circle in postscript given z, rad and geometry. 
+	 * @brief Draw a circle in postscript given z, rad and geometry. 
 	 * Possible color arguments (col,bcol): col!=null is fill color; 
 	 * bcol!=null is bdry color.
 	 * @param hes int, geometry
@@ -192,7 +194,7 @@ public class PostFactory {
 	}
 
 	/**
-	 * post the unit circle, default line thickness.
+	 * @brief post the unit circle, default line thickness.
 	 * @param hes
 	 * @param z, center needed in sph case as apparent center
 	 * @return
@@ -208,7 +210,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * Draw a circular eucl "pie" sector, possibly with color
+	 * @brief Draw a circular eucl "pie" sector, possibly with color
 	 * @param z, center
 	 * @param rad, radius
 	 * @param arg1, start argument
@@ -230,7 +232,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * post edge, normal color, thickness
+	 * @brief post edge, normal color, thickness
 	 * @param hes
 	 * @param p1
 	 * @param p2
@@ -241,7 +243,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * post edge, normal color, given thickness
+	 * @brief post edge, normal color, given thickness
 	 * @param hes
 	 * @param p1
 	 * @param p2
@@ -253,7 +255,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * post edge with color, thickness options
+	 * @brief post edge with color, thickness options
 	 * @param hes
 	 * @param p1
 	 * @param p2
@@ -296,7 +298,7 @@ public class PostFactory {
 	// TODO: rationalize face/poly posting routines (parallel to drawing)
 	
 	/**
-	 * Post polygon with all options
+	 * @brief Post polygon with all options
 	 * @param hes, int
 	 * @param Z Complex[]
 	 * @param fcol Color; null if fill=false
@@ -362,7 +364,7 @@ public class PostFactory {
 
 	
 	/**
-	 * post open polygon, normal thickness
+	 * @brief post open polygon, normal thickness
 	 * @param hes int,geometry
 	 * @param N int, number of vertices
 	 * @param Z Complex[]
@@ -373,7 +375,7 @@ public class PostFactory {
 	}
 
 	/**
-	 * post open polygon, given thickness
+	 * @brief post open polygon, given thickness
 	 * @param hes int, geometry
 	 * @param N int, number of corners
 	 * @param Z Complex[]
@@ -385,7 +387,7 @@ public class PostFactory {
 	}
 
 	/**
-	 * post open polygon, normal thickness
+	 * @brief post open polygon, normal thickness
 	 * @param hes
 	 * @param N
 	 * @param Z
@@ -397,7 +399,7 @@ public class PostFactory {
 	}
 
 	/**
-	 * post open polygon, given thickness
+	 * @brief post open polygon, given thickness
 	 * @param hes
 	 * @param N
 	 * @param Z
@@ -410,7 +412,7 @@ public class PostFactory {
 	}
 
 	/**
-	 * post filled polygon, normal thickness
+	 * @brief post filled polygon, normal thickness
 	 * @param hes
 	 * @param N
 	 * @param Z
@@ -423,7 +425,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * post filled polygon, given thickness
+	 * @brief post filled polygon, given thickness
 	 * @param hes
 	 * @param N
 	 * @param Z
@@ -459,7 +461,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * Returns visible segments of sph polygon as array of
+	 * @brief Returns visible segments of sph polygon as array of
 	 * Path2D.Double, for use, eg, when drawing polygon bdry.
 	 * (Compare to 'sphClosedPath' which adds segments of 
 	 * horizon and also puts results in 'gpath'.)
@@ -593,7 +595,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * Add Path2D.Double into postscript file as a eucl 
+	 * @brief Add Path2D.Double into postscript file as a eucl 
 	 * polygonal path. 
 	 * @param zpath, Vector<Vector<Complex>>
 	 * @param col, 
@@ -631,7 +633,7 @@ public class PostFactory {
 	}
 
 	/**
-	 * Add one or more paths to the postscript file using display 
+	 * @brief Add one or more paths to the postscript file using display 
 	 * options. Path segments are prepared in calling routine: 
 	 * In general there is just one segment for draw and/or fill, 
 	 * but spherical case requires separate calls for 'fill', 
@@ -703,7 +705,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * Place a "mark" comand in the file, background color; assume trinket shape
+	 * @brief Place a "mark" comand in the file, background color; assume trinket shape
 	 * already defined (see 'post_shape'), also assume z is in visual plane 
 	 * (e.g., in sph case). 'diam' is for scaling (shapes are roughly 2) 
 	 * @param z, Complex in visual plane
@@ -723,7 +725,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * Place a "mark" comand in the file with color; assume trinket shape
+	 * @brief Place a "mark" comand in the file with color; assume trinket shape
 	 * already defined (see 'post_shape'), also assume z is in visual plane 
 	 * (e.g., in sph case). 'diam' is for scaling (shapes are roughly 2) 
 	 * @param z, Complex in visual plane
@@ -803,7 +805,7 @@ public class PostFactory {
 	public void postGRestore()  {try { fp.write(" gr ");}catch(Exception ex){}}
 
 	/**
-	 * If a postscript file is open, reset its linewidth to n*PS_UNIT_LINEWIDTH.
+	 * @brief If a postscript file is open, reset its linewidth to n*PS_UNIT_LINEWIDTH.
 	 * @param n
 	 */
 	public void postLineThickness(int n) {
@@ -815,7 +817,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * Prepare string giving rgb colors for postscript line; for faces, have to add 'srgb'.
+	 * @brief Prepare string giving rgb colors for postscript line; for faces, have to add 'srgb'.
 	 * @param col int index from 0 to 255
 	 * @return String that goes in postscript file, just has <r> <g> <b> values between 0 and 1.
 	 */
@@ -826,7 +828,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * Prepare string of rgb colors, and include 'srgb' postscript command
+	 * @brief Prepare string of rgb colors, and include 'srgb' postscript command
 	 * @param col int index from 0 to 255
 	 * @return String for postscript file, just has <r> <g> <b> values between 0 and 1.
 	 */
@@ -835,7 +837,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * Create a string for use in postscript which describes a 
+	 * @brief Create a string for use in postscript which describes a 
 	 * polygonal path in the appropriate geometry. Calling routine
 	 * must start/close the postscript description: e.g., "n ", " cp s\n", etc. 
 	 * @param hes int, geometry
@@ -890,7 +892,7 @@ public class PostFactory {
 	}
 	
 	/** 
-	 * Sting for postscript giving hyp geodesic. (Note: usual coord
+	 * @brief Sting for postscript giving hyp geodesic. (Note: usual coord
 	 * orientation in postscript, whereas canvasses flip the y-coord.)
 	 * @param hg, Geodesic for hyp case
 	 * @return string to append to postscript
@@ -906,7 +908,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * Accumulate text for bottom of the file in 'textBuffer'. No fancy editing:
+	 * @brief Accumulate text for bottom of the file in 'textBuffer'. No fancy editing:
 	 * break into lines of length ??? separated by line breaks. End with line 
 	 * break so next call will start new line. 
 	 * @param text
@@ -943,7 +945,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * Create a PostScript string which defines a new current path;
+	 * @brief Create a PostScript string which defines a new current path;
 	 * 'gs', 'gr', 'stroke', and 'fill' are NOT included.
 	 * @param z
 	 * @param r
@@ -1059,7 +1061,7 @@ public class PostFactory {
 	}
 	
 	/**
-	 * Create a PostScript string which defines an edge as a new 
+	 * @brief Create a PostScript string which defines an edge as a new 
 	 * current path; NOTE: no 'n' at start and 'rotation' and 'scale' 
 	 * are undone so this can be used in building polygons; no 'gs', 
 	 * 'gr', or 'stroke' are included.
@@ -1127,7 +1129,7 @@ public class PostFactory {
 	}
 		
 	/** 
-	 * Create PostScript string(s) of the visual boundary of a
+	 * @brief Create PostScript string(s) of the visual boundary of a
 	 * spherical polygon; 'rotation' and 'scale' are undone, no 'gs', 
 	 * 'gr', 'fill', or 'stroke' are included. For a closed path
 	 * (which would include horizon arcs), use 'sph_closed_Poly'
@@ -1246,7 +1248,7 @@ public class PostFactory {
 		return paths;
 	}
 	/** 
-	 * Create a PostScript string which defines a polygon as a
+	 * @brief Create a PostScript string which defines a polygon as a
 	 * new current path closed; the 'rotation' and 'scale' used
 	 * are undone. Unit circle arcs are included. Result should
 	 * be suitable for 'fill', but no 'gs', 'gr', 'fill', or 's' 
@@ -1392,7 +1394,7 @@ public class PostFactory {
 
 	
 	/**
-	 * recursively post eucl tile shapes for subdivision rule to given depth; 
+	 * @brief recursively post eucl tile shapes for subdivision rule to given depth; 
 	 *   tile rules must have optional position data from *.r rules file.
 	 * 
 	 * @param sRules SubdivisionRules, (with optional position data)

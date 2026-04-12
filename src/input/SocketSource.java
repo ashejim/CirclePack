@@ -11,6 +11,8 @@ import allMains.CirclePack;
 import cpTalk.sockets.CPSocketProtocol;
 
 /**
+ * @brief Create a socket source when some client attaches to the
+ *
  * Create a socket source when some client attaches to the
  * CirclePack socket server.
  * @author kens

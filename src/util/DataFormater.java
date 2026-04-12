@@ -1,6 +1,8 @@
 package util;
 
 /**
+ * @brief This stores strings (for a particular packing) describing data
+ *
  * This stores strings (for a particular packing) describing data 
  * formating for items on the 'Output' tab so they can be set when
  * the active pack is changed. See Help regarding 'output' command.

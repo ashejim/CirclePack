@@ -76,6 +76,9 @@ import packing.PackData;
 import util.FileUtil;
 import util.StringUtil;
 
+/**
+ * @brief Script Manager.
+ */
 public class ScriptManager implements ActionListener {
 
 	public int WIDTH=535; // reset on script startup.
@@ -196,7 +199,7 @@ public class ScriptManager implements ActionListener {
 
 
 	/**
-	 * Debug: print out the dimensions of the stackboxes
+	 * @brief Debug: print out the dimensions of the stackboxes
 	 * @param treeNode
 	 */
 	public void debugLayoutRecurse(CPTreeNode treeNode) {
@@ -226,7 +229,7 @@ public class ScriptManager implements ActionListener {
 	}
 
 	/**
-	 * Recursion to put cmd icons in the scriptBar
+	 * @brief Recursion to put cmd icons in the scriptBar
 	 * @param treeNode
 	 */
 	public void barRecurse(CPTreeNode treeNode) {
@@ -243,7 +246,7 @@ public class ScriptManager implements ActionListener {
 	}
 
 	/**
-	 * Use: Creates a new CPTreeNode wrapping 
+	 * @brief Use: Creates a new CPTreeNode wrapping 
 	 * the given domNode. Note: this is only used 
 	 * when creating a new script from a file.
 	 * Caution: may return null.
@@ -531,7 +534,7 @@ public class ScriptManager implements ActionListener {
 	}
 
 	/**
-	 * Create command CPTreeNode and its MyTool; 
+	 * @brief Create command CPTreeNode and its MyTool; 
 	 * only called when reading new script.
 	 * MyTools created from scripts are executed 
 	 * first based on 'name', if given, forcing 
@@ -575,7 +578,7 @@ public class ScriptManager implements ActionListener {
 	}
 
 	/**
-	 * Create mode CPTreeNode and its MyCanvasMode; 
+	 * @brief Create mode CPTreeNode and its MyCanvasMode; 
 	 * only called when reading new script.
 	 * @return, CPTreeNode
 	 */	public CPTreeNode initModeTN(String modename,CPIcon cpIcon,
@@ -617,7 +620,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Create section CPTreeNode, possibly with title
+	  * @brief Create section CPTreeNode, possibly with title
 	  * @param title
 	  * @return CPTreeNode
 	  */
@@ -628,7 +631,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Create text CPTreeNode; text is trimmed, 
+	  * @brief Create text CPTreeNode; text is trimmed, 
 	  * stripped of \n. If text was all whitespace, 
 	  * then return null. This is called only when 
 	  * loading a new script.
@@ -643,7 +646,7 @@ public class ScriptManager implements ActionListener {
 
 
 	 /**
-	  * Create "OTHER" catchall CPTreeNode.
+	  * @brief Create "OTHER" catchall CPTreeNode.
 	  * @param contentStr String
 	  * @return CPTreeNode
 	  */
@@ -652,7 +655,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Called when creating new command node; 
+	  * @brief Called when creating new command node; 
 	  * it opens in edit mode.
 	  * @return CPTreeNode
 	  */
@@ -663,7 +666,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Called when creating new file CPTreeNode and 
+	  * @brief Called when creating new file CPTreeNode and 
 	  * its MyTool; caution, may return null if 
 	  * filename is null or empty.
 	  * @param filename
@@ -675,7 +678,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Create a new CPTreeNode of given type above 
+	  * @brief Create a new CPTreeNode of given type above 
 	  * (abbel=0) or below (abbel=1) the refNode in 
 	  * its parent's list. Redisplay handled elsewhere.
 	  * @param refNode, CPTreeNode reference node
@@ -785,7 +788,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Searches for and deletes reference to an 
+	  * @brief Searches for and deletes reference to an 
 	  * included file; the given name is that held 
 	  * by the file's CPTreeNode.
 	  * @param orig_name String
@@ -812,7 +815,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Finds the next icon (based on 'cmdCount') 
+	  * @brief Finds the next icon (based on 'cmdCount') 
 	  * in 'theCPIcons' list.
 	  * @return CPIcon
 	  */
@@ -825,7 +828,7 @@ public class ScriptManager implements ActionListener {
 
 
 	 /**
-	  * Creates the default "starter" script file 
+	  * @brief Creates the default "starter" script file 
 	  * and returns a string giving its path.
 	  * @return String
 	  */
@@ -857,7 +860,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Creates depthfirst enumeration, finds cpTN, 
+	  * @brief Creates depthfirst enumeration, finds cpTN, 
 	  * then sets 'nextCmdNode' to next inline 
 	  * command (strictly) downstream. (Note: probably 
 	  * easiest to redo enumeration each time.) If 
@@ -959,7 +962,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Compute the height of a node in stack area 
+	  * @brief Compute the height of a node in stack area 
 	  * for stackScroll display. Use 'preorder' (reverse 
 	  * of depth first) enumeration, which is the 
 	  * display order.
@@ -994,7 +997,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Returns the string for the current command 
+	  * @brief Returns the string for the current command 
 	  * node if it is active. (I think it's active 
 	  * unless it's the last one and has already 
 	  * been executed.)
@@ -1007,7 +1010,7 @@ public class ScriptManager implements ActionListener {
 	 }
 	 
 	 /**
-	  * Return index into 'includedFiles' if 
+	  * @brief Return index into 'includedFiles' if 
 	  * 'filename' is found.
 	  * @param filename String, assume trimmed
 	  * @return int, index (first encountered) or -1 on not found
@@ -1020,7 +1023,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Get 'tmpFile' for an included 'filename'.
+	  * @brief Get 'tmpFile' for an included 'filename'.
 	  * @param filename String, base name
 	  * @return File with 'tmpFile' name, null if not found
 	  */
@@ -1049,7 +1052,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Sets up the URL for script based on 'namE'. 
+	  * @brief Sets up the URL for script based on 'namE'. 
 	  * If it starts with 'htt' then it's assumed 
 	  * to be web address, else look for file in file 
 	  * system, first by 'namE' alone, then in 
@@ -1111,7 +1114,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Use: Loads script 'name' from file or from 
+	  * @brief Use: Loads script 'name' from file or from 
 	  * the web; if 'keepName' true, adds name to 
 	  * the 'script_URLs' file. Attempt to set 
 	  * stackScroll bar in the right spot.
@@ -1186,7 +1189,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Given script filename (or name from pop up dialog, 
+	  * @brief Given script filename (or name from pop up dialog, 
 	  * or file chosen in browser), read in script and search 
 	  * for/execute 'EOL' command (execute on load).
 	  * Note: filename may be temp file (e.g. if file is downloaded from the web),
@@ -1241,7 +1244,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Takes a file already created in java.io.tmpdir and adds it to the
+	  * @brief Takes a file already created in java.io.tmpdir and adds it to the
 	  * script; a new random 'id' prefix is automatically appended and the
 	  * file is added to 'includedFiles', with data 'type' determined by
 	  * filename extension.  
@@ -1286,7 +1289,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * return true if this name is already in use.
+	  * @brief return true if this name is already in use.
 	  * @param name
 	  * @return
 	  */
@@ -1332,7 +1335,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Find and execute script command when key is pressed in 'ActiveWrapper';
+	  * @brief Find and execute script command when key is pressed in 'ActiveWrapper';
 	  * commands apply to the associated packing.
 	  * @param e, KeyEvent
 	  * @param key, String
@@ -1381,7 +1384,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Return the 'nameString' of nextCmdNode.tTool
+	  * @brief Return the 'nameString' of nextCmdNode.tTool
 	  * @return String
 	  */
 	 public String getNextCmdName() {
@@ -1413,7 +1416,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Find the tree path to given CPTreeNode.
+	  * @brief Find the tree path to given CPTreeNode.
 	  * @param node
 	  * @return
 	  */
@@ -1476,7 +1479,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Use: gives options for saving a script when changes have been made.
+	  * @brief Use: gives options for saving a script when changes have been made.
 	  * If the answer is yes, a save dialog is displayed otherwise the
 	  * changes are lost. 
 	  * @return int, only -1 (=cancel/close dialog) has effect in calling routine.
@@ -1580,7 +1583,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Get and scale the image associated with the script (and appearing
+	  * @brief Get and scale the image associated with the script (and appearing
 	  * in the "About" frame). Also, set 'scriptTagname'. If 'scriptTagname' 
 	  * is empty, then look first for 'AboutImage', then for default; 
 	  * leave 'scriptTagname' blank in these cases. 
@@ -1723,7 +1726,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Check for 'About' image in the includedFiles and 
+	  * @brief Check for 'About' image in the includedFiles and 
 	  * return the temporary File where it's stored.
 	  * @return File or null on error
 	  */

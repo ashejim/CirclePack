@@ -1,6 +1,8 @@
 package circlePack;
 
 /**
+ * @brief Abstract class for indicating progress during computations.
+ *
  * Abstract class for indicating progress during computations.
  * E.g. use differs between standalone and GUI runs.
  * @author kens

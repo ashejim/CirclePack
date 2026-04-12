@@ -37,6 +37,8 @@ import allMains.CirclePack;
 import circlePack.PackControl;
 
 /**
+ * @brief Our script display will be a ScrollBox containing a stack of StackBox's;
+ *
  * Our script display will be a ScrollBox containing a stack of StackBox's; 
  * certain StackBox can contain more StackBox's. StackBox's are panels, with
  * layout depending on type and edit/display status. 
@@ -214,7 +216,7 @@ MouseListener {
 	public abstract void deleteChildNodes(); // if there are children
 	
 	/** 
-	 * Removes a StackBox child from the JPanel of this StackBox
+	 * @brief Removes a StackBox child from the JPanel of this StackBox
 	 * @param SB
 	 */
 	public void removeChild(StackBox SB) {
@@ -292,7 +294,7 @@ MouseListener {
 	}
 	
 	/**
-	 * In drag/drop operation, an action command is sent here to
+	 * @brief In drag/drop operation, an action command is sent here to
 	 * be forwarded to actionPerformed.
 	 * @param actionCmd
 	 */
@@ -404,7 +406,7 @@ MouseListener {
 	}
 
 	/**
-	 * Calculate the position of the upper left corner of
+	 * @brief Calculate the position of the upper left corner of
 	 * the stackBox; have to compute where it is up the ancestor
 	 * tree of parents.
 	 * @return
@@ -422,7 +424,7 @@ MouseListener {
 	}
 	
 	/**
-	 * Have to ask user whether to delete grouping only or all elements too.
+	 * @brief Have to ask user whether to delete grouping only or all elements too.
 	 * @return
 	 */
 	public int queryDeletion() {
@@ -557,7 +559,7 @@ MouseListener {
 	}
 	
 	/**
-	 * Set Min=Max=Pref Sizes all to same value. Normally used for component
+	 * @brief Set Min=Max=Pref Sizes all to same value. Normally used for component
 	 * that shouldn't vary.
 	 * @param jc
 	 * @param wide

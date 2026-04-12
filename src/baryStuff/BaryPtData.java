@@ -3,6 +3,8 @@ package baryStuff;
 import math.Point3D;
 
 /**
+ * @brief Doing more with barycentric coords in connection with 3D printing work,
+ *
  * Doing more with barycentric coords in connection with 3D printing work,
  * so I've created this package (2/2020). Plan to migrate some other things
  * here, maybe make a superclass. For now, I need something to hold face,
@@ -47,7 +49,7 @@ public class BaryPtData {
 	}
 	
 	/**
-	 * Find actual geometric point relative to given ordered list of
+	 * @brief Find actual geometric point relative to given ordered list of
 	 * euclidean vertex locations.
 	 * @param a Point3D
 	 * @param b Point3D

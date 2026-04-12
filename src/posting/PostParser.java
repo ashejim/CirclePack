@@ -34,6 +34,8 @@ import util.SphView;
 import util.StringUtil;
 
 /**
+ * @brief This static code parses PostScript writing actions
+ *
  * This static code parses PostScript writing actions
  * and carries them out. Preliminary file opening and
  * closing actions are handled in the calling routine.

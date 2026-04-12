@@ -26,6 +26,8 @@ import circlePack.PackControl;
 import exceptions.InOutException;
 
 /**
+ * @brief This code was edited or generated using CloudGarden's Jigloo
+ *
 * This code was edited or generated using CloudGarden's Jigloo
 * SWT/Swing GUI Builder, which is free for non-commercial
 * use. If Jigloo is being used commercially (ie, by a corporation,
@@ -144,7 +146,7 @@ public class WritePackPanel extends javax.swing.JPanel {
 	}
 	
 	/**
-	 * panel of write options: write/append/script
+	 * @brief panel of write options: write/append/script
 	 * @return
 	 */
 	private JPanel getJPanel2() {
@@ -277,7 +279,7 @@ public class WritePackPanel extends javax.swing.JPanel {
 	}
 
 	/**
-	 * panel of checkboxes
+	 * @brief panel of checkboxes
 	 * @return
 	 */
 	private JPanel getJPanel3() {

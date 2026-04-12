@@ -15,6 +15,8 @@ import util.Base64InOut;
 import util.FileUtil;
 
 /**
+ * @brief This can be standalone or called from Circlepack.
+ *
  * This can be standalone or called from Circlepack.
  * It generates 'html' files that accumulate CirclePack 
  * *.cps (or deprecated *.xmd and *.cmd) script files
@@ -148,7 +150,7 @@ public class ScriptLister {
 	}
 	
 	/**
-	 * This simply finds the title, description,
+	 * @brief This simply finds the title, description,
 	 * and aboutImage. If all three exist, then 
 	 * they are added to their individual ArrayList's.
 	 * @param file
@@ -289,7 +291,7 @@ public class ScriptLister {
 	}
 
 	/**
-	 * Create new html file, form depending on 'mode'.
+	 * @brief Create new html file, form depending on 'mode'.
 	 * If directory is on the web, must save resulting
 	 * 'outfile' to "java.io.tmpdir"
 	 * @return file, null on error

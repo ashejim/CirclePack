@@ -91,6 +91,10 @@ public class DispPanel extends javax.swing.JPanel implements ActionListener {
 		add(altPanel);
 	}
 	
+	/**
+	 * @brief TODO: Document actionPerformed.
+	 * @param e
+	 */
 	public void actionPerformed(ActionEvent e){
 	 	String command = e.getActionCommand();
 	  	if (command.equals("reset")) {
@@ -229,13 +233,17 @@ public class DispPanel extends javax.swing.JPanel implements ActionListener {
 		FlagBox.setSelected(flip);
 	}
 	
+	/**
+	 * @brief TODO: Document useText.
+	 * @return boolean
+	 */
 	public boolean useText() {
 		if (FlagBox.isSelected()) return true;
 		return false;
 	}
 	
 	/**
-	 * Get display options from the new active packing's 'dispOptions'
+	 * @brief Get display options from the new active packing's 'dispOptions'
 	 * (after saving the options of the previous packing). 
 	 * @param old_num
 	 * @param new_num

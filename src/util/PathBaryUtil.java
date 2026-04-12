@@ -19,6 +19,8 @@ import listManip.FaceLink;
 import packing.PackData;
 
 /**
+ * @brief Static methods to aid in working with euclidean paths,
+ *
  * Static methods to aid in working with euclidean paths,
  * especially via barycentric coordinates.
  * 
@@ -31,7 +33,7 @@ import packing.PackData;
 public class PathBaryUtil {
 	
 	/**
-	 * Does euclidean segment {p1,p2} intersect triangle?
+	 * @brief Does euclidean segment {p1,p2} intersect triangle?
 	 * @param p1, p2
 	 * @param z1, z2, z3
 	 * @return 
@@ -64,7 +66,7 @@ public class PathBaryUtil {
 	}
 
 	/**
-	 * Given line seg, triangle (both oriented) that are KNOWN to
+	 * @brief Given line seg, triangle (both oriented) that are KNOWN to
 	 * intersect, return BaryPoint's of first and last points on
 	 * segment inside triangle.
 	 * @param p1,p2, Complex segment ends
@@ -109,7 +111,7 @@ public class PathBaryUtil {
 	}
 		
 	/**
-	 * Build 'BaryLink' vector for pack p from given path: note path
+	 * @brief Build 'BaryLink' vector for pack p from given path: note path
 	 * may enter and leave carrier, so this returns a vector of non-
 	 * trivial segments.
 	 * @param p, PackData. 
@@ -153,7 +155,7 @@ public class PathBaryUtil {
 	}
 	
 	/** 
-	 * Given path, find the next continuous segment actually
+	 * @brief Given path, find the next continuous segment actually
 	 * entering the packing carrier. 
 	 * @param p
 	 * @param healthy, return health: false if error encountered
@@ -417,7 +419,7 @@ public class PathBaryUtil {
     }
 	
 	/**
-	 * Return index of face in flower of 'v' which the line from 
+	 * @brief Return index of face in flower of 'v' which the line from 
 	 * its center to p2 enters. If none, return -1 (e.g., out of carrier)
 	 * @param p
 	 * @param v
@@ -443,7 +445,7 @@ public class PathBaryUtil {
 	}
 	
 	/**
-	 * For the given packing, convert BaryLink to Path2D.Double.
+	 * @brief For the given packing, convert BaryLink to Path2D.Double.
 	 * Note: I think this handles only paths with single component.
 	 * @param p
 	 * @param blk, BaryLink

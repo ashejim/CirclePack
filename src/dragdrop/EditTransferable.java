@@ -7,6 +7,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import mytools.MyTool;
 
 /**
+ * @brief For MyTool drag/drop operation.
+ *
  * For MyTool drag/drop operation. This sets up the transferable
  * data for edit tools for the script. This typically the command 
  * string of the MyTool; here, also want to drop "NEXT" designation.

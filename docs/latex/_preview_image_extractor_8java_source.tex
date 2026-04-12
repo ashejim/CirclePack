@@ -1,0 +1,123 @@
+\doxysection{Preview\+Image\+Extractor.\+java}
+\hypertarget{_preview_image_extractor_8java_source}{}\label{_preview_image_extractor_8java_source}\index{src/previewimage/PreviewImageExtractor.java@{src/previewimage/PreviewImageExtractor.java}}
+\doxymbox{\hyperlink{_preview_image_extractor_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00001}00001\ \textcolor{keyword}{package\ }previewimage;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00003}00003\ \textcolor{keyword}{import}\ java.awt.Image;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00004}00004\ \textcolor{keyword}{import}\ java.io.ByteArrayInputStream;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00005}00005\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00006}00006\ \textcolor{keyword}{import}\ java.io.InputStream;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00007}00007\ \textcolor{keyword}{import}\ java.net.SocketTimeoutException;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00008}00008\ \textcolor{keyword}{import}\ java.net.URL;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00009}00009\ \textcolor{keyword}{import}\ java.net.URLConnection;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00011}00011\ \textcolor{keyword}{import}\ javax.imageio.ImageIO;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00012}00012\ \textcolor{keyword}{import}\ javax.xml.parsers.ParserConfigurationException;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00013}00013\ \textcolor{keyword}{import}\ javax.xml.parsers.SAXParser;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00014}00014\ \textcolor{keyword}{import}\ javax.xml.parsers.SAXParserFactory;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00016}00016\ \textcolor{keyword}{import}\ org.apache.commons.codec.binary.Base64;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00017}00017\ \textcolor{keyword}{import}\ org.xml.sax.SAXException;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00034}\doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor}{00034}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_a3379d8cab3b97c65a141033850caa4af}{PreviewImageExtractor}}\ \{}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00035}00035\ \ \ \ \ \textcolor{comment}{//\ How\ long\ to\ allow\ unsuccessful\ connection\ or\ read\ attempts\ to\ continue}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00036}00036\ \ \ \ \ \textcolor{comment}{//\ before\ giving\ up,\ in\ milliseconds.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00037}\doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_af02c5e1464d55272ae892667653861b0}{00037}}\ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_af02c5e1464d55272ae892667653861b0}{TIMEOUT}}\ =\ 3000;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00038}\doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_a79c6720dabe24712ca2acb9c0e187d7c}{00038}}\ \ \ \ \ \textcolor{keyword}{protected}\ URL\ \doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_a79c6720dabe24712ca2acb9c0e187d7c}{xmlResource}};\ \textcolor{comment}{//\ The\ target\ XML\ resource.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00039}00039\ }
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00048}\doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_a3379d8cab3b97c65a141033850caa4af}{00048}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_a3379d8cab3b97c65a141033850caa4af}{PreviewImageExtractor}}(URL\ \doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_a79c6720dabe24712ca2acb9c0e187d7c}{xmlResource}})\ \{this.xmlResource\ =\ \doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_a79c6720dabe24712ca2acb9c0e187d7c}{xmlResource}};\}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00057}\doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_ab6c630c4dbc3ba7fd21452a4587d54e4}{00057}}\ \ \ \ \ \textcolor{keyword}{public}\ Image\ \doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_ab6c630c4dbc3ba7fd21452a4587d54e4}{getImage}}()\ throws\ IOException\ \{}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00059}00059\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ Due\ to\ difficulties\ with\ the\ network\ coding\ involved\ with\ extracting\ preview}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00060}00060\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ images\ from\ remote\ resources,\ specifically\ in\ regards\ to\ connection\ failure}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00061}00061\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ and\ time\ delays,\ we'll\ only\ support\ local\ file\ resources\ for\ now.\ If\ the\ URL}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00062}00062\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ does\ not\ point\ to\ a\ local\ resource,\ return\ a\ null\ image.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00063}00063\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ }}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00064}00064\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ TODO:\ Add\ support\ for\ remote\ network\ resources.\ This\ will\ likely\ require}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00065}00065\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ custom\ code\ to\ connect\ to\ the\ remote\ host\ and\ iteratively\ download\ partial}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00066}00066\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ chunks\ of\ the\ resource,\ as\ well\ as\ a\ custom\ XMD\ parser\ to\ find\ the\ preview}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00067}00067\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ image\ tag.\ Local\ caching\ of\ remote\ resources\ would\ help\ tremendously.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00068}00068\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ Consider\ checking\ the\ modification\ date\ of\ remote\ XMD\ scripts\ (most\ servers}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00069}00069\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ will\ provide\ this\ on\ request)\ to\ determine\ if\ a\ resource\ needs\ to\ be}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00070}00070\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ redownloaded\ and\ recached.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00071}00071\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_a79c6720dabe24712ca2acb9c0e187d7c}{xmlResource}}.getProtocol().equals(\textcolor{stringliteral}{"{}file"{}}))\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00073}00073\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00074}00074\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Get\ a\ SAX\ parser\ to\ interpret\ our\ XML\ resource.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00075}00075\ \ \ \ \ \ \ \ \ SAXParser\ sp;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ sp\ =\ SAXParserFactory.newInstance().newSAXParser();}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00078}00078\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (ParserConfigurationException\ e)\ \{}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ I'm\ not\ certain,\ but\ this\ exception\ should\ never\ occur.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Print\ a\ stack\ trace\ for\ debugging,\ and\ return\ a\ null\ image.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ e.printStackTrace();}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00083}00083\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (SAXException\ e)\ \{}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Same\ as\ above.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ e.printStackTrace();}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00087}00087\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00088}00088\ }
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00090}00090\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ \ Get\ a\ stream\ to\ the\ XML\ resource.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00091}00091\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ \ }}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00092}00092\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ \ Set\ connection\ and\ read\ timeouts\ on\ the\ stream.\ By\ default\ no}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00093}00093\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ \ timeouts\ are\ set,\ allowing\ network\ sockets\ that\ have\ silently}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00094}00094\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ \ failed\ to\ block\ access\ to\ the\ resource\ indefinitely.\ This}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00095}00095\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ \ potentially\ floods\ the\ thread\ pool\ and\ causes\ deadlock.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00096}00096\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00097}00097\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ InputStream\ is;}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ URLConnection\ connection\ =\ \doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_a79c6720dabe24712ca2acb9c0e187d7c}{xmlResource}}.openConnection();}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ connection.setConnectTimeout(\doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_af02c5e1464d55272ae892667653861b0}{TIMEOUT}});}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ connection.setReadTimeout(\doxymbox{\hyperlink{classpreviewimage_1_1_preview_image_extractor_af02c5e1464d55272ae892667653861b0}{TIMEOUT}});}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ is\ =\ connection.getInputStream();}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00103}00103\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (SocketTimeoutException\ e)\ \{}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Connection\ timed\ out.\ Return\ a\ null\ image.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00106}00106\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00107}00107\ }
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00108}00108\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00109}00109\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ Parse\ the\ XML\ resource\ to\ search\ for\ the\ preview\ image.\ If\ a\ preview\ image\ is}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00110}00110\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ found,\ catch\ the\ PreviewImageFoundException\ and\ get\ the\ preview\ image\ from\ it.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00111}00111\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00112}00112\ \ \ \ \ \ \ \ \ String\ base64Image\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Start\ parsing.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ sp.parse(is,\ \textcolor{keyword}{new}\ PreviewImageSearchHandler());}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00116}00116\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (PreviewImageFoundException\ e)\ \{}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ base\ 64\ string\ encoded\ image\ has\ been\ found.\ Grab\ it.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ base64Image\ =\ e.getBase64Image();}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00119}00119\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (SAXException\ e)\ \{}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00121}00121\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ *\ This\ is\ likely\ caused\ by\ an\ invalid\ XML\ resource.\ This\ could\ mean\ anything}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00122}00122\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ *\ from\ minor\ XML\ formatting\ errors\ to\ the\ resource\ not\ being\ XML\ at\ all.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00123}00123\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ *\ This\ shouldn't\ happen\ given\ that\ the\ caller\ is\ responsible\ for\ the\ validity}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00124}00124\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ *\ of\ the\ XML\ resource,\ so\ print\ the\ stack\ trace\ for\ debugging\ and\ return\ a}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00125}00125\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ *\ null\ image.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00126}00126\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ e.printStackTrace();}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00129}00129\ \ \ \ \ \ \ \ \ \}\ \ \textcolor{keywordflow}{catch}\ (SocketTimeoutException\ e)\ \{}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Connection\ timed\ out.\ Return\ a\ null\ image.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00132}00132\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{finally}\ \{}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Whatever\ happens,\ close\ the\ stream.\ This\ shouldn't\ fail.\ If\ it\ does,\ print}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ a\ stack\ trace\ for\ debugging\ and\ continue.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{is.close();\}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (IOException\ e)\ \{e.printStackTrace();\}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00137}00137\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00138}00138\ }
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00139}00139\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ we\ haven't\ found\ an\ image,\ return\ null.\ Otherwise,\ decode\ and\ construct\ the}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00140}00140\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ image\ and\ return\ the\ result.}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00141}00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (base64Image\ ==\ \textcolor{keyword}{null})\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00142}00142\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ used\ to\ be\ 'decodeBase64'\ instead\ of\ 'decode',\ but\ it\ seems\ to\ be}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00143}00143\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ absent;\ maybe\ I\ have\ the\ wrong\ "{}codec"{}??}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00144}00144\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return}\ ImageIO.read(\textcolor{keyword}{new}\ ByteArrayInputStream(Base64.decodeBase64(base64Image)));}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00145}00145\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_preview_image_extractor_8java_source_l00146}00146\ \}}
+
+\end{DoxyCode}

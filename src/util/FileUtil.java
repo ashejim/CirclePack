@@ -18,6 +18,8 @@ import java.util.Date;
 import exceptions.InOutException;
 
 /**
+ * @brief Static utility routines associated with files, URLs,
+ *
  * Static utility routines associated with files, URLs,
  * directories, etc.
  */
@@ -25,7 +27,7 @@ public class FileUtil {
 
 	/** 
 	 * TODO: this is clutzy, not sure it will work
-	 * on other operating system.
+	 * @brief on other operating system.
 	 * 
 	 * Always stick with separator '/'
 	 * 
@@ -54,7 +56,7 @@ public class FileUtil {
 	}
 	
 	/**
-	 * Code from gemini: Determine if 'urlString' is
+	 * @brief Code from gemini: Determine if 'urlString' is
 	 * a local or remote file.
 	 * @param urlString String
 	 * @return boolean
@@ -81,7 +83,7 @@ public class FileUtil {
 	}
 	
 	/**
-	 * See if given string converts to valid URL
+	 * @brief See if given string converts to valid URL
 	 * (via a URI). Return a valid, confirmed URL 
 	 * (may not point to a valid, reachable, readable 
 	 * resource), or null on failure.
@@ -103,7 +105,7 @@ public class FileUtil {
 	}
 	
 	/**
-	 * Attempt to create a valid URL from 
+	 * @brief Attempt to create a valid URL from 
 	 * 'urlString'. We first check for direct
 	 * creation. If that fails, we attempt to 
 	 * provide the correct protocol if one is 
@@ -213,7 +215,7 @@ public class FileUtil {
 	}
 
 	/**
-	 * Clean up directory names by removing trailing
+	 * @brief Clean up directory names by removing trailing
 	 * '/..' and '/'
 	 * @param str
 	 * @return
@@ -235,7 +237,7 @@ public class FileUtil {
 	}
 	
 	/**
-	 * Return the path to a local file when given
+	 * @brief Return the path to a local file when given
 	 * a url starting with 'file'.
 	 * @param url String
 	 * @return String name for file
@@ -254,7 +256,7 @@ public class FileUtil {
 	}
 	
 	/**
-	 * Often need to strip 'file:\\' or 'http:\\' or
+	 * @brief Often need to strip 'file:\\' or 'http:\\' or
 	 * 'https:\\' in directory name before it can
 	 * be used
 	 * @param directory File
@@ -292,7 +294,7 @@ public class FileUtil {
 	
 	
 	/**
-	 * Find characters before and after the last '.' 
+	 * @brief Find characters before and after the last '.' 
 	 * in 'filename'. Main name and, E.g., 'html', 'jpg', etc.
 	 * @param filename String
 	 * @return String[2]: {main string, ext (possibly null)}
@@ -324,7 +326,7 @@ public class FileUtil {
 	/**
 	 * 
 	 * TODO: this doesn't seem to work well, easily
-	 * timing out.
+	 * @brief timing out.
 	 * 
 	 * Check if a url is contactable, ResponseCode==200
 	 * @param url URL
@@ -348,7 +350,7 @@ public class FileUtil {
 	}
 	
 	/**
-	 * Convert a file size to a nicely formatted string. 
+	 * @brief Convert a file size to a nicely formatted string. 
 	 * The string will be formatted similar to the file 
 	 * sizes in the Apache web server directory view.
 	 * 
@@ -366,7 +368,7 @@ public class FileUtil {
 	}
 
 	/**
-	 * Convert a Unix time stamp to a nicely formatted string. 
+	 * @brief Convert a Unix time stamp to a nicely formatted string. 
 	 * The formating is similar to the time stamps in the Apache 
 	 * web server directory view.
 	 * 

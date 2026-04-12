@@ -8,6 +8,8 @@ import mytools.MyPopupMenu;
 import mytools.MyToolHandler;
 
 /**
+ * @brief Will be for the Script tool bar
+ *
  * Will be for the Script tool bar
  * See MyToolListener for more details.
  */

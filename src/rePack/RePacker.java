@@ -16,16 +16,23 @@ import util.TriData;
 import util.UtilPacket;
 
 /**
- * An abstract class to manage repacking in hyperbolic, euclidean, and
- * (eventually) spherical situations. Depending on performance issues, 
- * goal is to clone initial data for computations: 
- *  (1) allows the machine to run in a separate thread 
- *  (2) allows original centers/radii to be retained in case of failure. 
- *  (3) allows interruption and restarting of computations. 
- * 
- * Typically, 'RePack' objects are released after the computation. 
- * However, may be able to keep it as long as we check that combinatorics
- * don't change. 
+ * @brief Abstract base for circle-packing repacking algorithms
+ *        (hyperbolic, Euclidean, spherical).
+ *
+ * A "repack" iteratively adjusts circle radii until the angle sum at
+ * every interior vertex matches its target aim.  This is the core
+ * numerical engine of CirclePack.  Subclasses implement geometry-specific
+ * angle-sum and radius-adjustment formulas:
+ *   - {@link EuclPacker} — Euclidean geometry.
+ *   - {@link HypPacker} — Poincaré disc (hyperbolic) geometry.
+ *   - {@link GOpacker} — linearized Euclidean packer (Collins–Orick–Stephenson).
+ *   - {@link SphPacker} — spherical geometry (stub).
+ *
+ * By design, initial data may be cloned so that the computation can run
+ * in a separate thread, be interrupted and restarted, and original
+ * data can be retained in case of failure.
+ *
+ * @author Ken Stephenson 
  * 
  * NOTE: as of 3/2022, I've pulled the attempts to use calls to C
  * programs. In particular, we as yet have no way to call Orick's 
@@ -134,7 +141,7 @@ public abstract class RePacker {
 	public abstract int load(); // load initial data into local storage
 	
 	/**
-     * Start a repacking if status is LOADED; uses super-steps, uniform neighbor model.
+     * @brief Start a repacking if status is LOADED; uses super-steps, uniform neighbor model.
      * This gets things set up, status to RIFFLE, followed by 'continurRiffle'.
      * CRC - modified 8/5/02 from h_riffle:
      * anglesum calculations are in-line. 
@@ -145,7 +152,7 @@ public abstract class RePacker {
 	public abstract int startRiffle() throws PackingException; // initiate packing comp
 	
 	/**
-	 * I think this means to start over with default initial radii.
+	 * @brief I think this means to start over with default initial radii.
 	 * @param passNum
 	 * @return 1
 	 * @throws PackingException
@@ -153,7 +160,7 @@ public abstract class RePacker {
 	public abstract int reStartRiffle(int passNum) throws PackingException;  // continue, but with restart
 	
     /**
-     * Continue repacking riffle if status is RIFFLE; uses super-step, 
+     * @brief Continue repacking riffle if status is RIFFLE; uses super-step, 
      * uniform neighbor model. Reset the local passLimit (but we don't change 
      * 'totalPasses'.)
      * NOTE: global 'totalPasses' is reset from within this routine
@@ -164,7 +171,7 @@ public abstract class RePacker {
 	public abstract int continueRiffle(int passNum) throws PackingException;
 	
 	/** 
-	 * measure accuracy, compare to crit
+	 * @brief measure accuracy, compare to crit
 	 * @param crit, double
 	 * @return double
 	 */
@@ -176,7 +183,7 @@ public abstract class RePacker {
 	public abstract void reapResults();
 	
 	/**
-	 * Generic 'repack' call is for the (now) classical "riffle" 
+	 * @brief Generic 'repack' call is for the (now) classical "riffle" 
 	 * methods, typically with supersteps, etc. Originally in C,
 	 * now implemented in Java. 
 	 * 
@@ -243,7 +250,7 @@ public abstract class RePacker {
 	}
 
 	/**
-	 * This is called in 'load()' to fill 'triData',
+	 * @brief This is called in 'load()' to fill 'triData',
 	 * 'vNum', 'findices', and 'vindices'. Return true
 	 * if there are non-trivial inversive distances involved.
 	 * @return boolean
@@ -285,7 +292,7 @@ public abstract class RePacker {
 	}
 	
 	/**
-	 * Convenience: hold various lists during repacking, 
+	 * @brief Convenience: hold various lists during repacking, 
 	 * see 'restoreLists' 
 	 * @param pd, PackData
 	 */
@@ -306,7 +313,7 @@ public abstract class RePacker {
 	}	
 	
 	/**
-	 * Convenience; see also 'holdLists'
+	 * @brief Convenience; see also 'holdLists'
 	 * @param pd, PackData
 	 */
 	public void restoreLists(PackData pd) {
@@ -339,7 +346,7 @@ public abstract class RePacker {
 	// ========= routines used with 'TriData' structure ============
 
 	/**
-     * Compute the angle sum at 'v' using radius 'rad' at v.
+     * @brief Compute the angle sum at 'v' using radius 'rad' at v.
      * @param v int
      * @param rad double
      * @return double
@@ -355,7 +362,7 @@ public abstract class RePacker {
     }
     
     /**
-     * Get radius from first 'triData' containing 'v'
+     * @brief Get radius from first 'triData' containing 'v'
      * @param v
      * @return double
      */
@@ -365,7 +372,7 @@ public abstract class RePacker {
     }
     
     /**
-     * Given 'p' and 'triData', compute the angle sum at 'v' 
+     * @brief Given 'p' and 'triData', compute the angle sum at 'v' 
      * face-by-face, in each face using factor*rad(v) as the 
      * radius at v, where rad(v) is the current radius recorded 
      * for 'v' in that face.
@@ -383,7 +390,7 @@ public abstract class RePacker {
     }
     
     /**
-     * Put radius 'rad' into 'triData' spots for vertex v.
+     * @brief Put radius 'rad' into 'triData' spots for vertex v.
      * @param v int
      * @param rad double
      */

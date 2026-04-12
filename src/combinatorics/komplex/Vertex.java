@@ -11,33 +11,48 @@ import geometry.CircleSimple;
 import listManip.HalfLink;
 import util.ColorUtil;
 
-/** 
- * DCEL Vertex contains combinatorial, geometric, and other
- * miscellaneous data. Center information may be overridden
- * by data in 'RedEdge's. If this is a boundary vertex, 
- * its halfedge should be the downstream (cclw) boundary edge. 
- * 'redFlag' indicates vertex is in the red chain; 'spokes' is 
- * only used during red chain processing.
- * @author kstephe2, starting in 2016
+/**
+ * @brief DCEL vertex holding combinatorial, geometric, and packing data.
  *
+ * Each vertex in the DCEL stores a pointer to one outgoing half-edge
+ * ({@link #halfedge}), from which the full star (flower) can be
+ * traversed.  For boundary vertices, {@code halfedge} points to the
+ * downstream (counter-clockwise) boundary edge.
+ *
+ * Geometric data includes the circle's center, radius, desired angle
+ * sum (aim), and current angle sum (curvature).
+ *
+ * @note In hyperbolic geometry, radii are stored in "x-radius" form:
+ *       x = 1 − e^{−2h} for finite hyperbolic radius h.  For
+ *       horocycles (h = ∞), the negative of the Euclidean radius
+ *       is stored for plotting convenience.
+ *
+ * @see HalfEdge  The directed edges emanating from this vertex.
+ * @see RedEdge   May override center data for multiply-connected surfaces.
+ * @author Ken Stephenson (starting 2016)
  */
 public class Vertex {
 	
-	// combinatoric
-	public HalfEdge halfedge;	// a halfedge pointing away from this vert
-	public int vertIndx;		// index from associated 'PackData'
-	public int bdryFlag;		// 0 for interior, 1 for boundary
-	public boolean redFlag;		// is this a vertex along the red chain?
+	/** A half-edge pointing away from this vertex (boundary: downstream edge). */
+	public HalfEdge halfedge;
+	/** Index of this vertex in the associated PackData (1-based). */
+	public int vertIndx;
+	/** 0 for interior vertex, 1 for boundary vertex. */
+	public int bdryFlag;
+	/** True if this vertex lies along the red chain. */
+	public boolean redFlag;
 	
-	// geometric
-	public Complex center;	// center as complex number 
-	public double rad;		// radius of circle (note: x-radius form in hyp case
-							//    namely, x=1-exp(-2h) for hyp radius h finite; 
-							//    for h infinite (horocycle) stores negative of 
-							//    eucl radius (if computed) for plotting convenience.
-							//    (x_radius, x_radii, x_rad, x-radius, x-radii, x-rad)
-	public double aim;		// desired angle sum at this vertex (actual angle, not divided by Pi)
-	public double curv;	    // angle sum at this vertex. 
+	/** Center of the circle associated with this vertex. */
+	public Complex center;
+	/**
+	 * Radius of the circle. In hyperbolic geometry, stored in "x-radius"
+	 * form: x = 1 − exp(−2h). For horocycles, stores negative of eucl radius.
+	 */
+	public double rad;
+	/** Desired angle sum at this vertex (in radians, not multiples of π). */
+	public double aim;
+	/** Current computed angle sum (curvature) at this vertex. */
+	public double curv; 
 
 	// other
 	public Color color;
@@ -60,7 +75,7 @@ public class Vertex {
 	}
 
 	/**
-	 * Get usual number of faces (not counting ideal).
+	 * @brief Get usual number of faces (not counting ideal).
 	 * This = degree for interior, and = (degree-1)
 	 * for bdry.
 	 * @return int
@@ -76,7 +91,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * If 'spoke.origin' v is interior, has an even number
+	 * @brief If 'spoke.origin' v is interior, has an even number
 	 * of spokes, this returns the opposite spoke. If v bdry,
 	 * this returns the "most-opposite" bdry spoke, bias
 	 * to downstream bdry edge in case of a tie. 
@@ -138,7 +153,7 @@ public class Vertex {
 	}
 
 	/**
-	 * A 'Vertex' is considered a boundary vertex if one of its
+	 * @brief A 'Vertex' is considered a boundary vertex if one of its
 	 * edges is a boundary edge (it or its twin has an ideal face).
 	 * @return boolean
 	 */
@@ -154,7 +169,7 @@ public class Vertex {
 	}
 
 	/**
-	 * Return traditional cclw flower of petals, closed if
+	 * @brief Return traditional cclw flower of petals, closed if
 	 * interior. 
 	 * @return int[]
 	 */
@@ -163,7 +178,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * Return normal cclw flower of nghb indices.
+	 * @brief Return normal cclw flower of nghb indices.
 	 * Get it by chasing spokes, which will close up 
 	 * whether bdry or interior, so have to use 'bdryFlag'.
 	 * If this is a 'RedVertex', call 'getRedFlower'; 
@@ -200,7 +215,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * Return the ordered list of cclw outer edges of the flower
+	 * @brief Return the ordered list of cclw outer edges of the flower
 	 * of v ('this' vertex) containing 'hedge'. If v is not
 	 * red, then this is the full cclw list of outer edges. If v
 	 * is red, this is the cclw segment of outer edges containing
@@ -236,7 +251,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * Get cclw 'HalfEdge's, "spokes", out of this vertex
+	 * @brief Get cclw 'HalfEdge's, "spokes", out of this vertex
 	 * starting with 'start' ('halfedge' by default).
 	 * @param start HalfEdge (could be null)
 	 * @return HalfLink
@@ -257,7 +272,7 @@ public class Vertex {
 	}
 		
 	/**
-	 * Get cclw ordered vector of "spokes", 'HalfEdge's with this
+	 * @brief Get cclw ordered vector of "spokes", 'HalfEdge's with this
 	 * vertex as origin, starting with 'halfedge'. Do not close up.
 	 * Expect that if vertex is bdry, first in list will have 
 	 * ideal 'twin.face' and last will have ideal 'face'.
@@ -270,7 +285,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * Get cclw ordered vector of spokes, that is, 'HalfEdge's 
+	 * @brief Get cclw ordered vector of spokes, that is, 'HalfEdge's 
 	 * with this as origin. Include 'start' and go counterclockwise
 	 * to 'stop', but 'stop' is not included. (E.g. not closed list.)
 	 * @param start HalfEdge, if null, start at 'halfedge'
@@ -301,7 +316,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * Get cclw list of 'HalfEdge's surrounding the union of
+	 * @brief Get cclw list of 'HalfEdge's surrounding the union of
 	 * faces incident to this 'Vertex', including edges 
 	 * surrounding any incident ideal face. List is open.
 	 * @return ArrayList<HalfEdge>, null if start==stop
@@ -328,7 +343,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * Get cclw ordered open vector of neighboring faces; this
+	 * @brief Get cclw ordered open vector of neighboring faces; this
 	 * will include an ideal face if bdry vertex. Normally
 	 * if vertex is bdry, last (and only last) face in list 
 	 * might be an ideal face, but only calling routine will
@@ -353,7 +368,7 @@ public class Vertex {
 	}
 
 	/**
-	 * set clone of 'col'
+	 * @brief set clone of 'col'
 	 * @param col Color
 	 */
 	public void setColor(Color col) {
@@ -364,7 +379,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * get clone of color
+	 * @brief get clone of color
 	 * @return new Color
 	 */
 	public Color getColor() {
@@ -372,7 +387,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * Get circle data
+	 * @brief Get circle data
 	 * @return CircleSimple
 	 */
 	public CircleSimple getCircleSimple() {
@@ -380,7 +395,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * Set center and radius
+	 * @brief Set center and radius
 	 * @param cS CircleSimple
 	 */
 	public void setCircleSimple(CircleSimple cS) {
@@ -393,7 +408,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * Clone: caution, 'halfedge' and 'redFlag' may be outdated.
+	 * @brief Clone: caution, 'halfedge' and 'redFlag' may be outdated.
 	 * @return new Vertex
 	 */
 	public Vertex clone() {
@@ -413,7 +428,7 @@ public class Vertex {
 	}
 	
 	/**
-	 * Copy data to 'this' from 'sourceV'
+	 * @brief Copy data to 'this' from 'sourceV'
 	 * @param sourceV Vertex
 	 */
 	public void cloneData(Vertex sourceV) {

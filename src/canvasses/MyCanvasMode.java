@@ -21,6 +21,8 @@ import circlePack.PackControl;
 import exceptions.ParserException;
 
 /**
+ * @brief MyCanvasMode is used to associate modes/cursors/icons to
+ *
  * MyCanvasMode is used to associate modes/cursors/icons to
  * 'ActiveWrapper's. It holds the icon, 'modeType' of creation,
  * (e.g., from 'MyTool'), and catches mouse events.
@@ -105,7 +107,7 @@ public class MyCanvasMode extends MyTool {
 
 	
 	/**
-	 * Create the cursor Icon and set its "hot" point (the relative x,y
+	 * @brief Create the cursor Icon and set its "hot" point (the relative x,y
 	 * location where a mouse click applies).
 	 * @param tmpHotPt
 	 */
@@ -157,7 +159,7 @@ public class MyCanvasMode extends MyTool {
 	}
 	
 	/**
-	 * ShortTip is what occurs in active mode popup menu.
+	 * @brief ShortTip is what occurs in active mode popup menu.
 	 * When created in script, generally use 'nameString'.
 	 * @param shorttip
 	 */
@@ -173,7 +175,7 @@ public class MyCanvasMode extends MyTool {
 	}
 	
 	/**
-	 * This calls for execution of 'cmd' string associated with
+	 * @brief This calls for execution of 'cmd' string associated with
 	 * this canvas mode.
 	 * @param cmd, command string
 	 * @param aW, ActiveWrapper
@@ -244,7 +246,7 @@ public class MyCanvasMode extends MyTool {
 	}
 
 	/**
-	 * Execute and (on success) repaint
+	 * @brief Execute and (on success) repaint
 	 * @param cmd, command string
 	 * @param aW
 	 * @param point
@@ -355,7 +357,7 @@ public class MyCanvasMode extends MyTool {
 	public void release3(ActiveWrapper aW,MouseEvent e) {}
 
 	/**
-	 * Call for repainting all the canvasses for this packing.
+	 * @brief Call for repainting all the canvasses for this packing.
 	 * @param aW
 	 */
 	public void rePaint(ActiveWrapper aW) {

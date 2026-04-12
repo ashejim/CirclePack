@@ -141,6 +141,8 @@ import widgets.SliderFrame;
 import workshops.LayoutShop;
 
 /**
+ * @brief This class handles parsing of individual commands for CirclePack.
+ *
  * This class handles parsing of individual commands for CirclePack.
  * These are generally sent from 'TrafficCenter'. 
  * (That's where preprocessing takes place: splitting 
@@ -160,7 +162,7 @@ public class CommandStrParser {
   public static final double LAYOUT_THRESHOLD=.00001; // layouts quality
 
   /**
-   * Send on to 'jexecute' using active packing.
+   * @brief Send on to 'jexecute' using active packing.
    * @param s, command string (see limitations)
    * @return 0 on error or no action
    */
@@ -169,7 +171,7 @@ public class CommandStrParser {
   }
   
   /**
-	 * This is where individual commands are analyzed 
+	 * @brief This is where individual commands are analyzed 
 	 * and sent to appropriate Java routines. 
 	 * 
 	 * Commands arriving are individual commands: 
@@ -5107,7 +5109,7 @@ public class CommandStrParser {
   
   
   /**
-   * internally called to handle packings with 'status' 
+   * @brief internally called to handle packings with 'status' 
    * true.
    * @param packData PackData
    * @param cmd String
@@ -11001,7 +11003,7 @@ public class CommandStrParser {
   } // end of 'packExecute'
   
 /**
- * Execute commands that return a value of some type. 
+ * @brief Execute commands that return a value of some type. 
  * This handles just a single call (one command with 
  * accompanying flags) and is called when 'jexecute' 
  * encounters a command in braces, '{cmd..}' (e.g., 
@@ -11054,7 +11056,7 @@ public static CallPacket valueExecute(PackData packData,String cmdstr) {
 }
 
 /**
- * Should be called from 'valueExecute' or from 'jexecute', 
+ * @brief Should be called from 'valueExecute' or from 'jexecute', 
  * and in both cases, any -p flag should have been 
  * processed and removed.
  * @param packData PackData
@@ -11511,14 +11513,18 @@ public static CallPacket valueExecute(PackData packData,
 
 
 /** =================== local utility classes ========================
-/** for use with 'adjoin' */
+/**
+ * @brief /** for use with 'adjoin' */
+ * for use with 'adjoin' */
 class Overlap {
   int v,w;
   double angle;
   Overlap next;
 }
 
-/** for use with 'set_overlap': parse the <a> {(v,u)..} strings */
+/**
+ * @brief /** for use with 'set_overlap': parse the <a> {(v,u).
+ * for use with 'set_overlap': parse the <a> {(v,u)..} strings */
 class LapList {
 	boolean invDist_flag=false; // indication: inv_dist or overlap 
 	double angle;

@@ -27,6 +27,19 @@ import util.PopupBuilder;
 import util.UtilPacket;
 
 /**
+ * @brief Abstract base for optional "extender" modules that add
+ *        specialized commands and data to a circle packing.
+ *
+ * A PackExtender is a plug-in mechanism that attaches to a PackData and
+ * provides additional commands, data storage, and GUI elements for a
+ * specific mathematical experiment or application (e.g. Schwarzian
+ * derivatives, conformal tiling, Beltrami flows).  Extenders are
+ * loaded dynamically and register their commands with the packing's
+ * command parser.
+ *
+ * @see packing.PackData#packExtensions  List of active extenders.
+ * @author Ken Stephenson
+ *
  * An abstract class for optional structures/methods extending
  * 'CirclePack'. Examples are (or will be): Brooks packings,
  * dessin d'enfants, complex analysis, curvature flow, etc.
@@ -69,7 +82,7 @@ public abstract class PackExtender {
 	}
 	
 	/**
-	 * Called from 'CommandStrParser'; calls first go to derived classes, then here
+	 * @brief Called from 'CommandStrParser'; calls first go to derived classes, then here
 	 * @param cmd String
 	 * @param flagSegs Vector<Vector<String>>
 	 * @return UtilPacket
@@ -102,7 +115,7 @@ public abstract class PackExtender {
 	}
 	
 	/** This is called from 'CommandStrParser.valueExecute' only; calls go
-	 * first to the derived class, then here
+	 * @brief first to the derived class, then here
 	 * @param cmd String
 	 * @param flagSegs Vector<Vector<String>>
 	 * @return UtilPacket
@@ -113,7 +126,7 @@ public abstract class PackExtender {
 	}
 	
 	/**
-	 * Replace 'this.packData' and 'this.pdc' with data from 'newPD', 
+	 * @brief Replace 'this.packData' and 'this.pdc' with data from 'newPD', 
 	 * (including possibly a copy of 'tileData'). Maintain 'this' as 
 	 * PackExtension, but discard others. 
 	 * Note: particular PackExtenders may need additional cleanup clean
@@ -278,7 +291,7 @@ public abstract class PackExtender {
 	}
 	
 	/**
-	 * transparent way to send a single command to CirclePack for 'packData';
+	 * @brief transparent way to send a single command to CirclePack for 'packData';
 	 * handle catching of exceptions.
 	 * @param cmdstr
 	 * @return int count
@@ -294,7 +307,7 @@ public abstract class PackExtender {
 	}
 	
 	/**
-	 * transparent way to send a string of commands to CirclePack for specified
+	 * @brief transparent way to send a string of commands to CirclePack for specified
 	 * packing; handle catching of exceptions.
 	 * @param p PackData
 	 * @param cmdstr String 
@@ -311,7 +324,7 @@ public abstract class PackExtender {
 	}
 	
 	/**
-	 * Kicks out an exception:
+	 * @brief Kicks out an exception:
 	 * @param exmsg
 	 */
 	public void Oops(String exmsg) {

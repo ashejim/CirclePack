@@ -1,5 +1,8 @@
 package circlePack;
 
+/**
+ * @brief Version.
+ */
 public class Version 
 {
 	

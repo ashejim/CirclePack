@@ -9,67 +9,34 @@ import geometry.HyperbolicMath;
 import geometry.SphericalMath;
 
 /**
- * CirMatrix holds the representation of a circle as a 2x2
- * Hermitian complex matrix. This extends 'Mobius' because circles in
- * this form can be manipulated via compositions with Mobius
- * transformations. See, e.g., 'mobius_of_circle'.
- * 
- * Note: or purposes of drawing, all straight lines are 
- * stored in 'CircleSimple' objects as very large circles,
- * but with 'lineflag' true: the center is FAUX_RAD times 
- * the unit normal pointing to the interior, radius is 
- * adjusted to give proper distance from the origin. 
- * 
- * -------------------------------
- * Math of 'CirMatrix':
- * 
- * * Straight line a*x+b*y+c=0 can be rewritten using B=(a-i*b)/2 as  
- *         B*z+conj(B)*conj(z)+c=0
- *   We can normalize by replacing (a,b) by (a,b)/sqrt(a^2+b^2)
- *   and c by c/sqrt(a^2+b^2), so |B|=1/2. 
- * 
- * * Circle with center z0, radius r is (z-z0)*conj(z-z0)=r^2.
- *   This can be written using B=-conj(z0) and g=z0*conj(z0)-r^2 as
- *         z*conj(z)+B*z+conj(B)*conj(z)+g=0.
- * 
- * * Both together: A*z*conj(z)+B*z+conj(B)*conj(z)+g=0 where A=+-1 
- *   for circle, a=0 for line.
- * 
- * So we represent all circles/lines by matrix M=[a,b;c,d], with
- * entry a is +-1 or 0.
- * 
- * When a=+-1:
- *  +1 ==> normal circle (interior inside circle)
- * 		entry b: -conj(z0)
- * 		entry c: -z0 = conj(b)  (hence hermitian)
- * 		entry d: always real = |z0|^2 - r^2 (real); 
- * 				 0 ==> circle goes through origin
- *	Conventions on inside/outside: 
- *      a=1,  inside of normal circle, note det = -r*r
- *	    a=-1, outside (normal circle but with entries 
- *    	      multiplied by -1)
- *    
- * When a=0:
- *   This means circle is a line through infinity.
- *   
- *   Normalization first: multiply all entries by 1/|b| so
- *      that cross diagonal entries have magnitude 1.
- *      Thus, get into form [0 B; conj(B) d] with |B|=1.
- *   
- *   Now:
- *   	n = conj(B) is a unit normal to the line.
- *   
- *   Conventions on inside/outside:
- *      n points towards "interior" of the circle
- *      -d*n/2 is a point on the line, thus 
- *           d=0: line goes through the origin
- *           d>0: origin is on the interior
- *           d<0: origin is exterior
- * (These are not automatic, code has to keep track case-by-case and
- * adjust the matrix.)   
- * 
- * @author kens
+ * @brief Hermitian 2 × 2 matrix representation of a circle or line in the
+ *        extended complex plane.
  *
+ * A circle or line can be written as
+ *     A|z|² + Bz + B̄z̄ + g = 0,
+ * where A = ±1 for a circle and A = 0 for a straight line.  This equation
+ * is encoded as a 2 × 2 Hermitian matrix [A, B; B̄, g].  This class extends
+ * {@link Mobius} because the image of a circle under a Möbius transformation
+ * M can be computed via matrix conjugation: C' = Gᵀ C G̅, where G = M⁻¹·det(M).
+ *
+ * @par Circle case (A = ±1)
+ * For a circle with center z₀ and radius r:
+ *   - B = −z̄₀
+ *   - g = |z₀|² − r²
+ *   - A = +1 means the interior is the disc; A = −1 means the exterior.
+ *
+ * @par Line case (A = 0)
+ * After normalizing so |B| = 1:
+ *   - n = B̄ is the unit normal pointing toward the "interior."
+ *   - −g·n/2 is a point on the line.
+ *   - g > 0 means the origin is interior; g < 0 means exterior.
+ *
+ * @note For drawing purposes, straight lines are stored in
+ *       {@link CircleSimple} objects as very large circles (radius
+ *       near {@link allMains.CPBase#FAUX_RAD}) with {@code lineFlag = true}.
+ *
+ * @see Mobius#mobius_of_circle  Applies a Möbius to a circle via CirMatrix.
+ * @author Ken Stephenson
  */
 public class CirMatrix extends Mobius {
 	
@@ -112,7 +79,7 @@ public class CirMatrix extends Mobius {
 	}
 	
 	/** 
-	 * For C a 2x2 'CirMatrix', this returns its image under M 
+	 * @brief For C a 2x2 'CirMatrix', this returns its image under M 
 	 * (oriented true) or M^{-1} (oriented false). Returns a 2x2
 	 * 'CirMatrix' with the normalization conventions.
 	 * 
@@ -212,7 +179,7 @@ public class CirMatrix extends Mobius {
 	}
 
 	/**
-	 * Create 2x2 matrix representation of circle given sph 
+	 * @brief Create 2x2 matrix representation of circle given sph 
 	 * radius/center; normalize for inside/outside conventions.
 	 * 
 	 * @param center Complex, (theta,phi) form
@@ -270,7 +237,7 @@ public class CirMatrix extends Mobius {
 	}
  
 	/**
-	 * Determine if pt is inside, on, or outside of C.
+	 * @brief Determine if pt is inside, on, or outside of C.
 	 * if |pt|>10^{8}, consider it to be infinity.
 	 * @param C CirMatrix, in normalized form
 	 * @param pt Complex 
@@ -315,7 +282,7 @@ public class CirMatrix extends Mobius {
 	}
 
 	/**
-	 * Convert 'CirMatrix' to 'CircleSimple' in requested geometry.
+	 * @brief Convert 'CirMatrix' to 'CircleSimple' in requested geometry.
 	 * If a straight line in eucl case: set lineflag, multiply 
 	 * conj(b) by FAUX_RAD for 'center', and set 'rad' to 
 	 * FAUX_RAD+d/2. 
@@ -405,7 +372,7 @@ public class CirMatrix extends Mobius {
 	}
 	
 	/**
-	 * If a.x==0, this is a straight line and we use large
+	 * @brief If a.x==0, this is a straight line and we use large
 	 * circle using FAUX_RAD. Also, recall, a.x=-1 ==> all 
 	 * entries were multiplied by -1.
 	 * @return double
@@ -422,7 +389,7 @@ public class CirMatrix extends Mobius {
 	}
 	
 	/**
-	 * If a.x==0, this is a straight line and we use a fake
+	 * @brief If a.x==0, this is a straight line and we use a fake
 	 * center FAUX_RAD distance out. Also, recall, a.x=-1 ==> all 
 	 * entries were multiplied by -1.  
 	 * @return

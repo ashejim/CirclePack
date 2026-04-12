@@ -31,12 +31,20 @@ public class NavFocusListener implements FocusListener {
 		attachToThis.setCursor(new Cursor(Cursor.TEXT_CURSOR));
 	}
 
+	/**
+	 * @brief TODO: Document focusGained.
+	 * @param fe
+	 */
 	public void focusGained(FocusEvent fe) {
 		//when text component gains focus
 		//show the caret
 		textCaret.setVisible(true);
 	}
 
+	/**
+	 * @brief TODO: Document focusLost.
+	 * @param fe
+	 */
 	public void focusLost(FocusEvent fe) {
 		//when text component loses focus
 		//hide the caret

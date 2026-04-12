@@ -13,6 +13,8 @@ import math.group.ComplexTransformation;
 import math.group.Schottky;
 
 /**
+ * @brief TODO: this is not operational as of May 2014: I don't recall when it
+ *
  * TODO: this is not operational as of May 2014: I don't recall when it
  * was started.
  * The difference between this one and MobiusFrame is this one

@@ -1,6 +1,8 @@
 package tiling;
 
 /**
+ * @brief A parent tile edge is broken into some number of
+ *
  * A parent tile edge is broken into some number of 
  * sub-edges. These are listed cclw. For example if 
  * the edge is broken into 3 subedges we have data such as

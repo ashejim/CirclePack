@@ -1,6 +1,8 @@
 package util;
 
 /**
+ * @brief Utility class to hold two integers for 'ConformalTiling' use.
+ *
  * Utility class to hold two integers for 'ConformalTiling' use.
  * @author kens
  *

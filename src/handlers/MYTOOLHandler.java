@@ -5,6 +5,9 @@ import java.io.File;
 import listeners.USERTOOLListener;
 import mytools.MyToolHandler;
 
+/**
+ * @brief M Y T O O L Handler.
+ */
 public class MYTOOLHandler extends MyToolHandler {
 
 	// Constructor 

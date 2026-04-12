@@ -8,6 +8,8 @@ import frames.MessageHover;
 import util.ResultPacket;
 
 /**
+ * @brief This class manages the static command history buffer, 'runHistory'
+ *
  * This class manages the static command history buffer, 'runHistory'
  * I am trying to run the CirclePack GUT via a unix style 'shell'. 
  * Successive user commands and resulting messages and error messages 
@@ -42,7 +44,7 @@ public abstract class ShellModel {
 	}
 	
 	/**
-	 * This was one timing bottleneck; messages and results of commands,
+	 * @brief This was one timing bottleneck; messages and results of commands,
 	 * errors, etc, are sent to and handled by separate thread.
 	 * Command execution passes info in 'ResultPacket'. 
      * @param rP ResultPacket
@@ -74,7 +76,7 @@ public abstract class ShellModel {
 	}
 	
 	/**
-	 * Add command string and possibly return "count" from command
+	 * @brief Add command string and possibly return "count" from command
 	 * execution.
 	 * @param cmd
 	 * @param count, gives (+-) success count as a string
@@ -94,7 +96,7 @@ public abstract class ShellModel {
 	}
 	
 	/**
-	 * Add msg in blue
+	 * @brief Add msg in blue
 	 * @param msg
 	 */
 	public void recordMsg(String msg) {
@@ -103,7 +105,7 @@ public abstract class ShellModel {
 	}
 	
 	/**
-	 * Add error msg in red
+	 * @brief Add error msg in red
 	 * @param errmsg String
 	 */
 	public void recordError(String errmsg) {
@@ -112,7 +114,7 @@ public abstract class ShellModel {
 	}
 	
 	/**
-	 * Add debug msg in green
+	 * @brief Add debug msg in green
 	 * @param errmsg String
 	 */
 	public void recordDebug(String bugmsg) {

@@ -24,6 +24,8 @@ import util.Base64InOut;
 import util.FileUtil;
 
 /**
+ * @brief Methods for loading CirclePack XML "scripts"
+ *
  * Methods for loading CirclePack XML "scripts"
  * 
  * This class creates manager.workingFile, an XML working copy of 
@@ -41,7 +43,7 @@ public class ScriptLoader {
 	}
 
 	/**
-	 * This loads from a file (generally 
+	 * @brief This loads from a file (generally 
 	 * 'manager.scriptFile'). This is only called after 
 	 * user has chance to save the current script 
 	 * (if it has changed).
@@ -128,7 +130,7 @@ public class ScriptLoader {
 	}
 	
 	/**
-	 * Use: Copy the original script file or web data into a working file 
+	 * @brief Use: Copy the original script file or web data into a working file 
 	 * in XML format. The original is unaltered until a save action takes place. 
 	 * This method calls processIncludedFiles() when the data section has been
 	 * reached so that the included files can be exported for later reinclusion.
@@ -176,7 +178,7 @@ public class ScriptLoader {
 	}
 	
 	/**
-	 * Use: This method is responsible for processing the 'CPdata' section of a
+	 * @brief Use: This method is responsible for processing the 'CPdata' section of a
 	 * script and creating the vector of 'includedFiles'.
 	 * 
 	 * When it finds a file, it creates an 'IncludedFile' object, which keeps
@@ -314,7 +316,7 @@ public class ScriptLoader {
 	} 
 
 	/**
-	 * After included files have been processed, this writes their filenames 
+	 * @brief After included files have been processed, this writes their filenames 
 	 * into the CPdata section of workingFile.
 	 * @param writer
 	 * @throws IOException
@@ -328,7 +330,7 @@ public class ScriptLoader {
 	}
 
 	/**
-	 * Use: This method is called after the working file version of an XML 
+	 * @brief Use: This method is called after the working file version of an XML 
 	 * document has been DOM parsed. It creates all the CPTreeNode's under
 	 * cpScriptNode and cpDataNode, sets 'PackControl.MapCanvasMode' and
 	 * 'PackControl.AdvancedMode' if non-default. Included files have already
@@ -461,7 +463,7 @@ public class ScriptLoader {
 	}
 
 	/**
-	 * Uses recursion to populate the child list CPTreeNode's 
+	 * @brief Uses recursion to populate the child list CPTreeNode's 
 	 * under cpScriptNode or cpDataNode in parallel with the 
 	 * children in the document tree.
 	 * @param Node domNode

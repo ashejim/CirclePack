@@ -5,17 +5,19 @@ import packing.PackData;
 import exceptions.DataException;
 
 /**
- * For eventual conversion of some operations (e.g., rotations) to
- * quaternion representations. Here we consider quaterions as a
- * (noncommutative) group under multiplication. We can, of course,
- * also add them.
- * 
- * A rotation in 3-space can be specified by a non-zero "rotation" vector
- * v, where v gives the direction of the axis, and norm(v)= theta is the
- * angle of rotation about the axis (counterclockwise when looking backward
- * along the axis. See "SO(3)" in Wikipedia, for example. 
- * @author kstephe2
+ * @brief Hamilton quaternion q = q₁ + q₂i + q₃j + q₄k, usable as a
+ *        group element for representing rotations in 3-space.
  *
+ * Quaternions form a non-commutative group under multiplication and can
+ * also be added.  A unit quaternion q encodes a rotation in 3-space via
+ * the map v ↦ q v q⁻¹ (where v is a "pure" quaternion with q₁ = 0).
+ * A rotation by angle θ about a unit axis (a, b, c) corresponds to
+ * q = (cos θ/2, a sin θ/2, b sin θ/2, c sin θ/2).
+ *
+ * @note Currently used sparingly in CirclePack; most rotations use
+ *       {@link Mobius} or {@link Matrix3D} instead.
+ *
+ * @author Ken Stephenson
  */
 public class Quaternion  implements GroupElement {
 	
@@ -67,7 +69,7 @@ public class Quaternion  implements GroupElement {
 	}
 	
 	/**
-	 * The 'vector' part is also called the imaginary part,
+	 * @brief The 'vector' part is also called the imaginary part,
 	 * namely q2*i + q3*j + q4*k.
 	 * @return new Point3D
 	 */
@@ -76,7 +78,7 @@ public class Quaternion  implements GroupElement {
 	}
 	
 	/**
-	 * For "conjugate", change sign of vector part
+	 * @brief For "conjugate", change sign of vector part
 	 * @return new Quaternion
 	 */
 	public Quaternion conj() {
@@ -88,7 +90,7 @@ public class Quaternion  implements GroupElement {
 	}
 
 	/**
-	 * return 'this' minus qtn
+	 * @brief return 'this' minus qtn
 	 * @param qtn Quaternion
 	 * @return new Quaternion
 	 */
@@ -125,7 +127,7 @@ public class Quaternion  implements GroupElement {
 	@Override
 	
 	/**
-	 * return inverse
+	 * @brief return inverse
 	 * @return new Quaternion
 	 */
 	public GroupElement inverse() {
@@ -147,7 +149,7 @@ public class Quaternion  implements GroupElement {
 
 	@Override
 	/**
-	 * Currently 'level' has no meaning for quaternions
+	 * @brief Currently 'level' has no meaning for quaternions
 	 * @return 1
 	 */
 	public int getLevel() {

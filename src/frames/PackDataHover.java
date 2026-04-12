@@ -33,6 +33,8 @@ import util.xNumField;
 import util.zNumField;
 
 /**
+ * @brief TODO: I think this is overtaken by "TabbedPackDataHover"
+ *
  * TODO: I think this is overtaken by "TabbedPackDataHover"
  * Hover panel for pack data frame.
  * @author kens
@@ -355,7 +357,7 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 	// =========================== update actions ===========================
 
 	/**
-	 * Update the "Pack Data" info panels for given
+	 * @brief Update the "Pack Data" info panels for given
 	 * packing (normally, the active pack).
 	 * @param p. PackData.
 	 */
@@ -443,7 +445,7 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 	}
 
 	/**
-	 * Update the 'edgelength' data in the Info panel.
+	 * @brief Update the 'edgelength' data in the Info panel.
 	 * @param p
 	 */
 	public void update_edge(PackData p) {

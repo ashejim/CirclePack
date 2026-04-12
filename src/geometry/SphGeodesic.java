@@ -4,6 +4,8 @@ import complex.Complex;
 import math.Matrix3D;
 import math.Point3D;
 /**
+ * @brief Spherical geodesic data for visual rendering on the apparent sphere.
+ *
  * Spherical geodesic for use in plotting. Set up data for the visual
  * portion of the geodesic only. CAUTION: positions are relevant to the
  * 'apparent' sphere (depends on 'spherical view'). 
@@ -142,7 +144,7 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * Visible if one of ends is ON_FRONT or if it follows the
+	 * @brief Visible if one of ends is ON_FRONT or if it follows the
 	 * horizon counterclockwise.
 	 * @return true if visible
 	 */
@@ -153,7 +155,7 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * Return true if geodesic is visible and hits horizon
+	 * @brief Return true if geodesic is visible and hits horizon
 	 * @return
 	 */
 	public boolean hitHorizon() {
@@ -163,7 +165,7 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * Return true if geodesic is visible and crosses front to back
+	 * @brief Return true if geodesic is visible and crosses front to back
 	 * @return boolean
 	 */
 	public boolean cross2Back() {
@@ -173,7 +175,7 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * Return true if geodesic is visible and crosses back to front
+	 * @brief Return true if geodesic is visible and crosses back to front
 	 * @return boolean
 	 */
 	public boolean cross2Front() {
@@ -183,7 +185,7 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * Check if geodesic follows horizon; return value gives direction. 
+	 * @brief Check if geodesic follows horizon; return value gives direction. 
 	 * NOTE: if this is edge-on great circle, the 'lineFlag' should 
 	 * be set and 0 is returned.
 	 * @return 0 if not; +-1 if counterclockwise/clockwise

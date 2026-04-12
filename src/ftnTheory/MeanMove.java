@@ -18,6 +18,8 @@ import util.ColorUtil;
 import util.StringUtil;
 
 /**
+ * @brief Motion by Mean Curvature is a classical topic in
+ *
  * Motion by Mean Curvature is a classical topic in
  * differential geometry. Grayson's Theorem is a well
  * known result in 2D motion of curves: if a simple 
@@ -109,7 +111,7 @@ public class MeanMove extends PackExtender {
 	/* ====================================================================*/
 	
 	/**
-	 * Load the lists 'bdryVerts', 'bdryRads', 'bdryAngSums' with
+	 * @brief Load the lists 'bdryVerts', 'bdryRads', 'bdryAngSums' with
 	 * current information on boundary vertices.
 	 * @return
 	 */
@@ -236,7 +238,7 @@ public class MeanMove extends PackExtender {
 	}
 
 	/**
-	 * Get curvatures and derivatives depending on mode
+	 * @brief Get curvatures and derivatives depending on mode
 	 * @param p PackData
 	 * @param v int
 	 * @param r double
@@ -257,7 +259,7 @@ public class MeanMove extends PackExtender {
 	}
 
 	/**
-	 * For bdry vert v in eucl packing, flat curvature is
+	 * @brief For bdry vert v in eucl packing, flat curvature is
 	 * C = pi - theta, theta = angle sum, and dC/dr is
 	 * just -dtheta/dr.
 	 * @param p PackData
@@ -290,7 +292,7 @@ public class MeanMove extends PackExtender {
 	}
 	
 	/**
-	 * For a boundary vertex v in eucl packing, the kissing circle 
+	 * @brief For a boundary vertex v in eucl packing, the kissing circle 
 	 * (orthogonal to circle for v and going through the points where
 	 * v intersects the neighboring boundary circles) has radius R
 	 * given by R = tan(theta/2)*r, where theta is anglesum at v.
@@ -344,7 +346,7 @@ public class MeanMove extends PackExtender {
 	}
 	
 	/**
-	 * Normalize the packing using optional mode.
+	 * @brief Normalize the packing using optional mode.
 	 * @param normmode int
 	 */
 	public void normalize(int normmode) {
@@ -371,7 +373,7 @@ public class MeanMove extends PackExtender {
 	}
 	
 	/**
-	 * Color code bdry circles according to current mode
+	 * @brief Color code bdry circles according to current mode
 	 * of curvature.
 	 * @return
 	 */

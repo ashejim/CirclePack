@@ -4,6 +4,8 @@ import complex.Complex;
 import geometry.CircleSimple;
 
 /**
+ * @brief Red-chain edge: tracks boundary and side-pairing structure in the DCEL.
+ *
  * After processing a dcel (see 'CombDCEL.redcookie'), 
  * there is (except in the case of a topological sphere) 
  * a 'redChain', a closed linked list of 'RedEdge's
@@ -19,18 +21,28 @@ import geometry.CircleSimple;
  *
  */
 public class RedEdge {
-	public HalfEdge myEdge;  // hold original info on edge
+	/** The underlying DCEL half-edge this red edge is associated with. */
+	public HalfEdge myEdge;
+	/** Next red edge in the red chain (circular linked list). */
 	public RedEdge nextRed;
+	/** Previous red edge in the red chain. */
 	public RedEdge prevRed;
-	public RedEdge twinRed; // across a red edge
-	public int mobIndx;      // index into sidepair Mobius maps
+	/** Twin red edge across a side-pairing (null if no pairing). */
+	public RedEdge twinRed;
+	/** Index into the array of side-pairing Möbius transformations. */
+	public int mobIndx;
 	
-	// The 'origin' for this red edge may have several other 
-	//   red edges with different cent/rad's
+	/**
+	 * Center for the origin vertex of this red edge.  A vertex may
+	 * appear in multiple red edges with different center/radius values
+	 * (e.g. across side-pairings in multiply-connected surfaces).
+	 */
 	Complex center;
+	/** Radius for the origin vertex of this red edge. */
 	double rad;
 	
-	public int redutil; // for temporary use only
+	/** Temporary utility integer for algorithms. */
+	public int redutil;
 
 	// Constructor: note, does not set 'he.myRedEdge', see
 	//   'createRedEdge' below
@@ -57,7 +69,7 @@ public class RedEdge {
 	}
 	
 	/**
-	 * Create a new RedEdge with 'myEdge' so 'myEdge.myRedEdge'
+	 * @brief Create a new RedEdge with 'myEdge' so 'myEdge.myRedEdge'
 	 * is set as well.
 	 * @param edge HalfEdge
 	 * @return RedEdge
@@ -69,7 +81,7 @@ public class RedEdge {
 	}
 
 	/**
-	 * Get center/radius. Center may be null.
+	 * @brief Get center/radius. Center may be null.
 	 * @return CircleSimple
 	 */
 	public CircleSimple getData() {
@@ -77,7 +89,7 @@ public class RedEdge {
 	}
 	
 	/**
-	 * Get center; return null if it's null
+	 * @brief Get center; return null if it's null
 	 * @return new Complex
 	 */
 	public Complex getCenter() {
@@ -87,7 +99,7 @@ public class RedEdge {
 	}
 	
 	/**
-	 * Doesn't set center in 'PackData' or in 'origin' 
+	 * @brief Doesn't set center in 'PackData' or in 'origin' 
 	 * @param z Complex
 	 */
 	public void setCenter(Complex z) {
@@ -99,7 +111,7 @@ public class RedEdge {
 	}
 	
 	/**
-	 * This does not set rad or in 'origin'
+	 * @brief This does not set rad or in 'origin'
 	 * @param r double
 	 */
 	public void setRadius(double r) {
@@ -107,7 +119,7 @@ public class RedEdge {
 	}
 
 	/**
-	 * Return center/rad data specific to the red edge.
+	 * @brief Return center/rad data specific to the red edge.
 	 * Note: see 'PackData.getCircleSimple' for data from
 	 * 'Vertex'. 
 	 * @return CircleSimple
@@ -117,7 +129,7 @@ public class RedEdge {
 	}
 	
 	/**
-	 * Set center and radius
+	 * @brief Set center and radius
 	 * @param cS CircleSimple
 	 */
 	public void setCircleSimple(CircleSimple cS) {
@@ -126,7 +138,7 @@ public class RedEdge {
 	}
 	
 	/**
-	 * clone: CAUTION: pointers may be in conflict or outdated.
+	 * @brief clone: CAUTION: pointers may be in conflict or outdated.
 	 * @return new RedEdge
 	 */
 	public RedEdge clone() {

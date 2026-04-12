@@ -1,0 +1,141 @@
+\doxysection{DOMSerializer.\+java}
+\hypertarget{_d_o_m_serializer_8java_source}{}\label{_d_o_m_serializer_8java_source}\index{src/script/DOMSerializer.java@{src/script/DOMSerializer.java}}
+\doxymbox{\hyperlink{_d_o_m_serializer_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00001}00001\ \textcolor{keyword}{package\ }script;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00002}00002\ \textcolor{comment}{/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00003}00003\ \textcolor{comment}{\ \ Benjamin\ A.\ Pack\ III;\ Fedor\ Andreev}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00004}00004\ \textcolor{comment}{\ \ DOMSerializer.java}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00005}00005\ \textcolor{comment}{\ \ Overview:\ \ This\ class\ is\ used\ to\ serialize\ a\ DOM\ tree.\ I.e.\ it\ outputs\ }}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00006}00006\ \textcolor{comment}{\ \ the\ dom\ tree\ to\ a\ file\ or\ to\ an\ output\ stream.}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00007}00007\ \textcolor{comment}{\ \ Used\ by\ the\ script\ handler\ when\ saving\ a\ script\ file.\ \ Also\ useful\ }}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00008}00008\ \textcolor{comment}{\ \ for\ debugging\ purposes.}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00009}00009\ \textcolor{comment}{\ *-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*/}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00010}00010\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00011}00011\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00012}00012\ \textcolor{keyword}{import}\ java.io.FileWriter;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00013}00013\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00014}00014\ \textcolor{keyword}{import}\ java.io.OutputStream;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00015}00015\ \textcolor{keyword}{import}\ java.io.OutputStreamWriter;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00016}00016\ \textcolor{keyword}{import}\ java.io.Writer;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00017}00017\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00018}00018\ \textcolor{keyword}{import}\ org.w3c.dom.Document;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00019}00019\ \textcolor{keyword}{import}\ org.w3c.dom.DocumentType;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00020}00020\ \textcolor{keyword}{import}\ org.w3c.dom.NamedNodeMap;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00021}00021\ \textcolor{keyword}{import}\ org.w3c.dom.Node;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00022}00022\ \textcolor{keyword}{import}\ org.w3c.dom.NodeList;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00023}00023\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00024}\doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer}{00024}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_a45cd2090979e9bab24010a38444af90d}{DOMSerializer}}\ \{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00025}00025\ \ \ \textcolor{keyword}{private}\ String\ indent;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00026}00026\ \ \ \textcolor{keyword}{private}\ String\ lineSeparator;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00027}00027\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00028}00028\ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00029}00029\ \ \ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00030}\doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_a45cd2090979e9bab24010a38444af90d}{00030}}\ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_a45cd2090979e9bab24010a38444af90d}{DOMSerializer}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00031}00031\ \ \ \ \ indent\ =\ \textcolor{stringliteral}{"{}\ \ "{}};}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00032}00032\ \ \ \ \ lineSeparator\ =\ \textcolor{stringliteral}{"{}\(\backslash\)n"{}};}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00033}00033\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00034}00034\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00040}\doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_afa4105ae1d71fd7dbaaf6f177b4d1f57}{00040}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_afa4105ae1d71fd7dbaaf6f177b4d1f57}{serialize}}(Document\ doc,\ OutputStream\ out)\ \textcolor{keywordflow}{throws}\ IOException\ \{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00041}00041\ \ \ \ \ Writer\ writer\ =\ \textcolor{keyword}{new}\ OutputStreamWriter(out);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00042}00042\ \ \ \ \ \doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_afa4105ae1d71fd7dbaaf6f177b4d1f57}{serialize}}(doc,\ writer);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00043}00043\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00044}00044\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00050}\doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_a0f06f2cc5498b7c25148693cf9e5349c}{00050}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_a0f06f2cc5498b7c25148693cf9e5349c}{serialize}}(Document\ doc,\ File\ file)\ \textcolor{keywordflow}{throws}\ IOException\ \{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00051}00051\ \ \ \ \ Writer\ writer\ =\ \textcolor{keyword}{new}\ FileWriter(file);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00052}00052\ \ \ \ \ \doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_afa4105ae1d71fd7dbaaf6f177b4d1f57}{serialize}}(doc,\ writer);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00053}00053\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00054}00054\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00060}\doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_aaba991573e85ee81306d73e42b4995e6}{00060}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_aaba991573e85ee81306d73e42b4995e6}{serialize}}(Document\ doc,\ Writer\ writer)\ \textcolor{keywordflow}{throws}\ IOException\ \{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00061}00061\ \ \ \ \ \textcolor{comment}{//\ Start\ serialization\ recursion\ with\ no\ indenting}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00062}00062\ \ \ \ \ \doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_a4ce84dcdabfd7c1dfa16568def2e635e}{serializeNode}}(doc,\ writer,\ \textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00063}00063\ \ \ \ \ writer.flush();}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00064}00064\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00070}\doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_a4ce84dcdabfd7c1dfa16568def2e635e}{00070}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_a4ce84dcdabfd7c1dfa16568def2e635e}{serializeNode}}(Node\ node,\ Writer\ writer,\ String\ indentLevel)\ \textcolor{keywordflow}{throws}\ IOException\ \{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00071}00071\ \ \ \ \ \textcolor{comment}{//\ Determine\ action\ based\ on\ node\ type}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00072}00072\ \ \ \ \ \textcolor{keywordflow}{switch}(node.getNodeType())\{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00073}00073\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Node.DOCUMENT\_NODE:}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00074}00074\ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<?xml\ version=\(\backslash\)"{}1.0\(\backslash\)"{}?>"{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00075}00075\ \ \ \ \ \ \ \ \ writer.write(lineSeparator);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00076}00076\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ recurse\ on\ each\ child}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00078}00078\ \ \ \ \ \ \ \ \ NodeList\ nodes\ =\ node.getChildNodes();}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(nodes\ !=\ \textcolor{keyword}{null})\{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ i=0;\ i<nodes.getLength();\ i++)\{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_a4ce84dcdabfd7c1dfa16568def2e635e}{serializeNode}}(nodes.item(i),\ writer,\ \textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00083}00083\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00084}00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00085}00085\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00086}00086\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Node.ELEMENT\_NODE:}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00087}00087\ \ \ \ \ \ \ \ \ String\ name\ =\ node.getNodeName();}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00088}00088\ \ \ \ \ \ \ \ \ writer.write(lineSeparator);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00089}00089\ \ \ \ \ \ \ \ \ writer.write(indentLevel\ +\ \textcolor{stringliteral}{"{}<"{}}\ +\ name);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00090}00090\ \ \ \ \ \ \ \ \ NamedNodeMap\ attributes\ =\ node.getAttributes();}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00091}00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ i=0;\ i<attributes.getLength();\ i++)\{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ Node\ current\ =\ attributes.item(i);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\ "{}}\ +\ current.getNodeName()\ +\ \textcolor{stringliteral}{"{}=\(\backslash\)"{}"{}}\ +\ current.getNodeValue()\ +\ \textcolor{stringliteral}{"{}\(\backslash\)"{}"{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00094}00094\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00095}00095\ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}>"{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00096}00096\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00097}00097\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ recurse\ on\ each\ child}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ NodeList\ children\ =\ node.getChildNodes();}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(children\ !=\ \textcolor{keyword}{null})\{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}((children.item(0)\ !=\ \textcolor{keyword}{null})\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ (children.item(0).getNodeType()\ ==\ Node.ELEMENT\_NODE))\{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(lineSeparator);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ i=0;\ i<children.getLength();\ i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classscript_1_1_d_o_m_serializer_a4ce84dcdabfd7c1dfa16568def2e635e}{serializeNode}}(children.item(i),\ writer,\ indentLevel\ +\ indent);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}((children.item(0)\ !=\ \textcolor{keyword}{null})\ \&\&}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (children.item(children.getLength()-\/1).getNodeType()\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ==\ Node.ELEMENT\_NODE))\ \{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(indentLevel);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00112}00112\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00113}00113\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00114}00114\ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}</"{}}\ +\ name\ +\ \textcolor{stringliteral}{"{}>\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00115}00115\ \ \ \ \ \ \ \ \ writer.write(lineSeparator);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00116}00116\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00117}00117\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00118}00118\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Node.TEXT\_NODE:}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00119}00119\ \ \ \ \ \ \ \ \ writer.write(node.getNodeValue());}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00120}00120\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00121}00121\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00122}00122\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Node.CDATA\_SECTION\_NODE:}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00123}00123\ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<![CDATA["{}}\ +\ node.getNodeValue()\ +\ \textcolor{stringliteral}{"{}]]>"{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00124}00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00125}00125\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00126}00126\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Node.COMMENT\_NODE:}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00127}00127\ \ \ \ \ \ \ \ \ writer.write(indentLevel\ +\ \textcolor{stringliteral}{"{}<!-\/-\/\ "{}}\ +\ node.getNodeValue()\ +\ \textcolor{stringliteral}{"{}\ -\/-\/>"{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00128}00128\ \ \ \ \ \ \ \ \ writer.write(lineSeparator);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00129}00129\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00130}00130\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00131}00131\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Node.PROCESSING\_INSTRUCTION\_NODE:}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00132}00132\ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<?"{}}\ +\ node.getNodeName()\ +\ \textcolor{stringliteral}{"{}\ "{}}\ +\ node.getNodeValue()\ +\ \textcolor{stringliteral}{"{}?>"{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00133}00133\ \ \ \ \ \ \ \ \ writer.write(lineSeparator);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00134}00134\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00135}00135\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00136}00136\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Node.ENTITY\_REFERENCE\_NODE:}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00137}00137\ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\&"{}}\ +\ node.getNodeName()\ +\ \textcolor{stringliteral}{"{};"{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00138}00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00139}00139\ }
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00140}00140\ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ Node.DOCUMENT\_TYPE\_NODE:}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00141}00141\ \ \ \ \ \ \ \ \ DocumentType\ docType\ =\ (DocumentType)node;}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00142}00142\ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<!DOCTYPE\ "{}}\ +\ docType.getName());}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00143}00143\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(docType.getPublicId()\ !=\ \textcolor{keyword}{null})\{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ System.out.print(\textcolor{stringliteral}{"{}\ PUBLIC\ \(\backslash\)"{}"{}}\ +\ docType.getPublicId()\ +\ \textcolor{stringliteral}{"{}\(\backslash\)"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00145}00145\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00146}00146\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\{}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\ SYSTEM\ "{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00148}00148\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00149}00149\ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\(\backslash\)"{}"{}}\ +\ docType.getSystemId()\ +\ \textcolor{stringliteral}{"{}\(\backslash\)"{}>"{}});}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00150}00150\ \ \ \ \ \ \ \ \ writer.write(lineSeparator);}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00151}00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00152}00152\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00153}00153\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_d_o_m_serializer_8java_source_l00154}00154\ \}}
+
+\end{DoxyCode}

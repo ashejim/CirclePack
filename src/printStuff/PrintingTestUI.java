@@ -20,6 +20,8 @@ import javax.swing.WindowConstants;
 
 
 /**
+ * @brief Standalone test program for print actions
+ *
  * Standalone test program for print actions
  * @author Alexander Fawkes
  *

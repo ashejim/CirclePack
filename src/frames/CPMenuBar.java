@@ -15,6 +15,8 @@ import circlePack.PackControl;
 import exceptions.InOutException;
 
 /**
+ * @brief For the general menu bar that appears on 'MainFrame'
+ *
  * For the general menu bar that appears on 'MainFrame' 
  * and 'PairedFrame' left and right.
  * @author kens

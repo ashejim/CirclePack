@@ -11,6 +11,8 @@ import complex.Complex;
 import complex.MathComplex;
 
 /**
+ * @brief This is a geometry utility class.
+ *
  * This is a geometry utility class. It uses a simple matix propogation
  * method to generate 2D points forming a circle or arc of circle. 
  * @author kens
@@ -29,7 +31,7 @@ public class CircleList {
 	static double ua22=ua11;
 	
 	/**
-	 * Compute vector of points forming an oriented arc of a circle
+	 * @brief Compute vector of points forming an oriented arc of a circle
 	 * with given radius, center, given start angle (radians) and
 	 * angle extend (positive or negative radians) and number of 
 	 * divisions (with possibly additional point for clean finish). 
@@ -86,7 +88,7 @@ public class CircleList {
 	}
 
 	/**
-	 * Given sph points on the horizon of sphere, get arclist for 
+	 * @brief Given sph points on the horizon of sphere, get arclist for 
 	 * counterclockwise horizon arc. 'N' is 128. 
 	 * @param z1 Complex
 	 * @param z2 Complex
@@ -103,7 +105,7 @@ public class CircleList {
 	}
 		
 	/** 
-	 * Same as 'getArcList' for arcs of the unit circle, 'N' is 128.
+	 * @brief Same as 'getArcList' for arcs of the unit circle, 'N' is 128.
 	 * Note: 'extent' should always be positive here.
 	 * @param startAng, double, radians
 	 * @param extent, positive double, radians
@@ -144,7 +146,7 @@ public class CircleList {
 	}
 		
 	/**
-	 * Using static variables, convert 2D list to 3D and then project
+	 * @brief Using static variables, convert 2D list to 3D and then project
 	 * and put in the static 'vec'. First spot in vec already occupied.
 	 * @param twoD
 	 */
@@ -158,7 +160,7 @@ public class CircleList {
 		}
 	}
 	/**
-	 * Start or continue circle list in gp (instantiated Path2D).
+	 * @brief Start or continue circle list in gp (instantiated Path2D).
 	 * Cent is Point3D center of spherical circle, {A,B,Cent} is 
 	 * right-hand orthonormal system of Point3D vectors, 'sphrad' is 
 	 * spherical radius. end1 and end2 are Point3D endpoints of the 
@@ -228,7 +230,7 @@ public class CircleList {
 	}
 	
 	/**
-	 * This routine appends a Point2D.Double vector to existing 'gp'
+	 * @brief This routine appends a Point2D.Double vector to existing 'gp'
 	 * Path2D.Double; 'start' true then reset and set first point;
 	 * else append to 'gp' (which must have current point set already).
 	 * @param gp, created in calling routine.
@@ -255,7 +257,7 @@ public class CircleList {
 	}
 	
 	/** 
-	 * Starts or extends a 'Path2D.Double' with points of visible
+	 * @brief Starts or extends a 'Path2D.Double' with points of visible
 	 * portion of spherical geodesic
 	 * @param sg spherical geodesic (should be 'visible')
 	 * @param gp Path2D.Double
@@ -304,7 +306,7 @@ public class CircleList {
 	}
 	
 	/**
-	 * The 'footprint' is size of the full circle from which an arc will be drawn
+	 * @brief The 'footprint' is size of the full circle from which an arc will be drawn
 	 * relative to the canvas size; typically footprint=rad*6/Xwidth. Note that in
 	 * various routines the number of steps actually used is in proportion to
 	 * the 'extent' of the arc itself.

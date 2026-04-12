@@ -3,6 +3,8 @@ package komplex;
 import packing.PackData;
 
 /**
+ * @brief Essentially the same as 'EdgeSimple', but allows us to
+ *
  * Essentially the same as 'EdgeSimple', but allows us to
  * distinguish pairs associated with dual graphs.
  * @author kstephe2, 6/2020, plan to introduce as needed
@@ -15,7 +17,7 @@ public class GraphSimple extends EdgeSimple {
 	}
 	
 	/**
-	 * form a root (0,f)
+	 * @brief form a root (0,f)
 	 * @param root int
 	 */
 	public GraphSimple(int f) {
@@ -34,7 +36,7 @@ public class GraphSimple extends EdgeSimple {
 	}
 	
 	/** Convert <v,w> edge to dual edge <f,g>;
-	 * note <f,g> points clockwise to <v,w>. 
+	 * @brief note <f,g> points clockwise to <v,w>. 
 	 * @param p PackData
 	 * @param es EdgeSimple
 	 */
@@ -45,7 +47,7 @@ public class GraphSimple extends EdgeSimple {
 	}
 		
 	/**
-	 * does this equal given gs
+	 * @brief does this equal given gs
 	 * @param es
 	 * @param orient
 	 * @return
@@ -58,7 +60,7 @@ public class GraphSimple extends EdgeSimple {
 	}
 	
 	/** 
-	 * Convert type to 'EdgeSimple'.
+	 * @brief Convert type to 'EdgeSimple'.
 	 * @return EdgeSimple
 	 */
 	public EdgeSimple convert() {

@@ -9,6 +9,8 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 /**
+ * @brief for rendering icons in icon combobox.
+ *
  * for rendering icons in icon combobox. The JComboBox list is a
  * list of CPIcon's, so that's what 'value' will be in the calls.
  * @author kens

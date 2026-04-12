@@ -4,46 +4,56 @@ import complex.Complex;
 import geometry.SphericalMath;
 
 /**
- * For manipulations of 3x3 real matrices 
+ * @brief 3 × 3 real matrix for rotations, rigid motions, and general
+ *        linear algebra on 3-D vectors.
  *
-// NOTE.  The (x,y,z) coordinate system is assumed to be right-handed.
-// Coordinate axis rotation matrices are of the form
-//   RX =    1       0       0
-//           0     cos(t) -sin(t)
-//           0     sin(t)  cos(t)
-// where t > 0 indicates a counterclockwise rotation in the yz-plane
-//   RY =  cos(t)    0     sin(t)
-//           0       1       0
-//        -sin(t)    0     cos(t)
-// where t > 0 indicates a counterclockwise rotation in the zx-plane
-//   RZ =  cos(t) -sin(t)    0
-//         sin(t)  cos(t)    0
-//           0       0       1
-// where t > 0 indicates a counterclockwise rotation in the xy-plane.
-//
-// These are elements of SO(3): they are orthogonal with determinant +1.
-//   Inverse is simply the transpose.
-*/
+ * In CirclePack this class is used primarily for SO(3) rotation matrices
+ * that orient the "apparent sphere" (the viewer's perspective of the
+ * Riemann sphere).  For an orthogonal matrix, the inverse is simply the
+ * transpose.
+ *
+ * @par Coordinate-axis rotation conventions (right-handed system)
+ * <pre>
+ *   RX =  1       0        0        (ccw in yz-plane)
+ *         0     cos t   −sin t
+ *         0     sin t    cos t
+ *
+ *   RY =  cos t    0     sin t      (ccw in zx-plane)
+ *           0      1       0
+ *        −sin t    0     cos t
+ *
+ *   RZ =  cos t  −sin t    0        (ccw in xy-plane)
+ *         sin t   cos t    0
+ *           0       0      1
+ * </pre>
+ *
+ * @author Ken Stephenson
+ */
     public class Matrix3D {
+        /** Row 0 entries: m[0][0], m[0][1], m[0][2]. */
         public double m00, m01, m02;
+        /** Row 1 entries: m[1][0], m[1][1], m[1][2]. */
         public double m10, m11, m12;
+        /** Row 2 entries: m[2][0], m[2][1], m[2][2]. */
         public double m20, m21, m22;
 
+        /** @brief Cached 3 × 3 identity matrix. */
         private static Matrix3D identityMatrix = 
         	new Matrix3D(1.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.0);
 
+        /** @brief Cached 3 × 3 zero matrix. */
         private static Matrix3D zeroMatrix = 
         	new Matrix3D(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
 
-        // Constructors
-        public Matrix3D() { // starts as zero matrix
+        /** @brief Default constructor: all entries zero. */
+        public Matrix3D() {
             this.m00 = 0d; this.m01 = 0d; this.m02 = 0d;
             this.m10 = 0d; this.m11 = 0d; this.m12 = 0d;
             this.m20 = 0d; this.m21 = 0d; this.m22 = 0d;
         }
         
         /**
-         * Clone existing matrix; identity on error
+         * @brief Clone existing matrix; identity on error
          * @param inM
          */
         public Matrix3D(Matrix3D inM) {
@@ -55,7 +65,7 @@ import geometry.SphericalMath;
         }
         
         /**
-         * Matrix from 0 entries
+         * @brief Matrix from 0 entries
          * @param m00
          * @param m01
          * @param m02
@@ -75,7 +85,7 @@ import geometry.SphericalMath;
         }
 
         /**
-         * Identity 3x3 real matrix 
+         * @brief Identity 3x3 real matrix 
          * @return
          */
         public static Matrix3D Identity() {
@@ -83,7 +93,7 @@ import geometry.SphericalMath;
         }
 
         /**
-         * Zero 3x3 real matrix
+         * @brief Zero 3x3 real matrix
          * @return
          */
         public static Matrix3D Zero() {
@@ -91,7 +101,7 @@ import geometry.SphericalMath;
         }
 
         /**
-         * Transpose of real 3x3 matrix
+         * @brief Transpose of real 3x3 matrix
          * @return new Matrix3D
          */
         public Matrix3D Transpose() {
@@ -101,7 +111,7 @@ import geometry.SphericalMath;
         }
         
         /**
-         * Matrix determined by the product of rotations about axis
+         * @brief Matrix determined by the product of rotations about axis
          * of xyz coord system (treated as fixed). Each angle in radians, 
          * counterclockwise rotation as viewed from the positive end 
          * of the axis involved; first apply z-rotation, then x-rotation, 
@@ -130,7 +140,7 @@ import geometry.SphericalMath;
         }
         
         /**
-         * Given 'mob' which is a rigid motion of the sphere, find
+         * @brief Given 'mob' which is a rigid motion of the sphere, find
          * the three angles to produce 'mob' using 'FromEulerAnglesXYZ'
          * above.  
          * @param mob Mobius
@@ -147,7 +157,7 @@ import geometry.SphericalMath;
         }
         
         /**
-         * Build matrix for rigid motion that fixes axis through 
+         * @brief Build matrix for rigid motion that fixes axis through 
          * spherical point sph_z. The motion is cclw rotation by
          * theta radians in looking toward the origin from sph_z.
          * @param theta double
@@ -184,7 +194,7 @@ import geometry.SphericalMath;
         }
         
     	/**
-    	 * Given (theta,phi) point on the sphere, find rigid motion of sphere
+    	 * @brief Given (theta,phi) point on the sphere, find rigid motion of sphere
     	 * moving it to the north pole. Compute angle and then cross product to
     	 * get axis of rotation.
     	 * @param sph_z Complex (theta,phi)
@@ -210,7 +220,7 @@ import geometry.SphericalMath;
     	}    		
 
         /**
-         * Matrix multiplication, Mleft*Mright
+         * @brief Matrix multiplication, Mleft*Mright
          * @param left, right matrices in the matrix product
          * @return Matrix3D=left*right
          */
@@ -231,7 +241,7 @@ import geometry.SphericalMath;
         }
 
         /**
-         * matrix times column vector M.v
+         * @brief matrix times column vector M.v
          * @param vector Point3D (i.e., 3x1)
          * @param matrix Matrix3D
          * @return Point3D, matrix*vector
@@ -245,7 +255,7 @@ import geometry.SphericalMath;
         }
 
         /**
-         * matrix times column vector M.v
+         * @brief matrix times column vector M.v
          * @param matrix Matrix3D
          * @param vector Point3D (column),
          * @return Point3D, matrix*vector
@@ -255,7 +265,7 @@ import geometry.SphericalMath;
         }
 
         /**
-         * matric times scalar
+         * @brief matric times scalar
          * @param matrix Matrix3D
          * @param scalar double
          * @return Matrix3D scalar*matrix
@@ -275,7 +285,7 @@ import geometry.SphericalMath;
         }
 
         /**
-         * matrix addition
+         * @brief matrix addition
          * @param left Matrix3D
          * @param right Matrix3D
          * @return Matrix3D left+right
@@ -295,7 +305,7 @@ import geometry.SphericalMath;
         }
 
         /**
-         * matric subtraction, Mleft-Mright
+         * @brief matric subtraction, Mleft-Mright
          * @param left Matrix3D
          * @param right Matrix3D
          * @return Matrix3D left-right
@@ -315,7 +325,7 @@ import geometry.SphericalMath;
         }
 
         /**
-         * matrix negation
+         * @brief matrix negation
          * @param matrix Matrix3D
          * @return Matrix3D (-1)*matrix
          */
@@ -334,7 +344,7 @@ import geometry.SphericalMath;
         }
 
         /**
-         * Are these matrices equal?
+         * @brief Are these matrices equal?
          * @param left Matrix3D
          * @param right Matrix3D
          * @return boolean
@@ -350,7 +360,7 @@ import geometry.SphericalMath;
         }
 
         /**
-         * Returns the determinant of 'this'
+         * @brief Returns the determinant of 'this'
          * @return double
          */
         public double Determinant() {
@@ -374,7 +384,7 @@ import geometry.SphericalMath;
         }
         
         /**
-         * Returns inverse of a matrix
+         * @brief Returns inverse of a matrix
          * @param m Matrix3D
          * @return Matrix3D inverse of m
          */
@@ -396,7 +406,7 @@ import geometry.SphericalMath;
         }
         
         /**
-         * Return l^2 norm of matrix (i.e., as though a 9-vector)
+         * @brief Return l^2 norm of matrix (i.e., as though a 9-vector)
          * @return double
          */
         public double norm() {
@@ -404,7 +414,7 @@ import geometry.SphericalMath;
        }
         
        /**
-        * Return true if 'Matrix3D' has a NaN entry.
+        * @brief Return true if 'Matrix3D' has a NaN entry.
         * @param m Matrix3D
         * @return boolean: true if NaN, else false
         */

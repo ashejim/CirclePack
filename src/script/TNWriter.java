@@ -17,6 +17,8 @@ import canvasses.MyCanvasMode;
 import circlePack.PackControl;
 
 /**
+ * @brief Write script to a file using the tree of CPTreeNode's
+ *
  * Write script to a file using the tree of CPTreeNode's
  * @author kens
  *
@@ -32,7 +34,7 @@ public class TNWriter {
 	}
 	
 	/** 
-	 * Write the CPTreeNodes to a file
+	 * @brief Write the CPTreeNodes to a file
 	 * @param f, File
 	 */
 	public void Write_from_TN(File f) {

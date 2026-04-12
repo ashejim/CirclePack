@@ -9,6 +9,8 @@ import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 
 /**
+ * @brief This demo class contains a main method to demonstrate the use and
+ *
  * This demo class contains a main method to demonstrate the use and
  * functionality of the <code>PreviewImageHyperlinkListener</code>
  * class. It displays a remote directory on the author's web server

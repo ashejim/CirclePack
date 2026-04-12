@@ -12,6 +12,8 @@ import packing.PackData;
 import packing.PackExtender;
 import util.CmdStruct;
 /**
+ * @brief Iterative adjustment routines for Schwarzian-based packing refinement.
+ *
  * This code if for experimenting with packing
  * algorithms for the sphere using (intrinsic) 
  * schwarzians. (I've copied 'SpherePack', which
@@ -30,7 +32,6 @@ import util.CmdStruct;
  * successive bdry vertices are not adjustable and
  * will be initialized as boundary conditions. 
  */
-
 public class SchwarzAdjust extends PackExtender {
 
 	// mode names
@@ -140,7 +141,7 @@ public class SchwarzAdjust extends PackExtender {
 	}
 	
 	/**
-	 * Check a vertex's packing condition vis-a-vis
+	 * @brief Check a vertex's packing condition vis-a-vis
 	 * intrinsic schwarzians. 
 	 * Main concern is difference between recorded schwarzian s_{n-2} 
 	 * and its computed value from {s_1,....,s_{n-3}}.
@@ -153,7 +154,7 @@ public class SchwarzAdjust extends PackExtender {
 //	}
 	
 	/**
-	 * Determine list 'adjEdges' of edges to be visited
+	 * @brief Determine list 'adjEdges' of edges to be visited
 	 * for possible adjustment. Avoid bdry edges and
 	 * edges having a degree 3 vertex. 
 	 * @param spec String

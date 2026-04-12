@@ -16,6 +16,8 @@ import javax.swing.border.LineBorder;
 import allMains.CirclePack;
 
 /**
+ * @brief This JPanel contains a vertex label, a bar, and possibly an icon.
+ *
  * This JPanel contains a vertex label, a bar, and possibly an icon. If
  * mode=true, then this represents radius info and the height of bar can be
  * adjusted with the mouse. If mode=false, this is angle sum info provided from
@@ -108,6 +110,10 @@ public class DisplayBar extends JPanel implements MouseListener,
 		bar.setBackground(Color.green);
 	}
 
+	/**
+	 * @brief TODO: Document placePointer.
+	 * @param location
+	 */
 	public void placePointer(double location) {
 		if (pointer == null) {
 			pointer = new JLabel(icon);
@@ -193,6 +199,10 @@ public class DisplayBar extends JPanel implements MouseListener,
 
 	}
 
+	/**
+	 * @brief TODO: Document mouseEntered.
+	 * @param evt
+	 */
 	public void mouseEntered(MouseEvent evt) {
 		parent.lightupFlower(vertNum);
 	}
@@ -201,17 +211,33 @@ public class DisplayBar extends JPanel implements MouseListener,
 	public void mouseReleased(MouseEvent evt) {
 	}
 
+	/**
+	 * @brief TODO: Document mousePressed.
+	 * @param evt
+	 */
 	public void mousePressed(MouseEvent evt) {
 	}
 
+	/**
+	 * @brief TODO: Document mouseExited.
+	 * @param evt
+	 */
 	public void mouseExited(MouseEvent evt) {
 	}
 
+	/**
+	 * @brief TODO: Document mouseDragged.
+	 * @param evt
+	 */
 	public void mouseDragged(MouseEvent evt) {
 		mouseClicked(new MouseEvent(evt.getComponent(), 0, 0, 0, evt.getX(),
 				evt.getY(), 1, false, MouseEvent.BUTTON1));
 	}
 
+	/**
+	 * @brief TODO: Document mouseMoved.
+	 * @param evt
+	 */
 	public void mouseMoved(MouseEvent evt) {
 	}
 

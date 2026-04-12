@@ -26,6 +26,8 @@ import listManip.HalfLink;
 import listManip.NodeLink;
 
 /**
+ * @brief Utility routines for working with 'Path2D.
+ *
  * Utility routines for working with 'Path2D.Double' objects: 
  * finding length, max distance from the origin, output for 
  * postscript, scaling, etc. Creating closed circle paths,
@@ -42,7 +44,7 @@ public class PathUtil {
 	public static final double FLAT_FACTOR=0.01; // typical: flatness=extent*FLAT_FACTOR
 
 	/**
-	 * Find largest of length and width; e.g., we use it to choose appropriate
+	 * @brief Find largest of length and width; e.g., we use it to choose appropriate
 	 * 'flatness' parameter.
 	 * @param gpath
 	 * @return double
@@ -55,7 +57,7 @@ public class PathUtil {
 	}
 	
 	/**
-	 * get 'flatness' for interpolating with polygonal path.
+	 * @brief get 'flatness' for interpolating with polygonal path.
 	 * @param gpath Path2D.Double
 	 * @return double
 	 */
@@ -66,7 +68,7 @@ public class PathUtil {
 	}
 	
 	/** 
-	 * Returns length of 'Path2D.Double', flatness computed 
+	 * @brief Returns length of 'Path2D.Double', flatness computed 
 	 * by 'gpFlatness'.
 	 * @param Path2D.Double gpath
 	 * @return
@@ -77,7 +79,7 @@ public class PathUtil {
 	}
 	
 	/** 
-	 * Returns length of 'Path2D.Double' based on polygonal approximation
+	 * @brief Returns length of 'Path2D.Double' based on polygonal approximation
 	 * for given flatness parameter.
 	 * @param Path2D.Double gpath
 	 * @param double flatness
@@ -115,7 +117,7 @@ public class PathUtil {
 	}
 	
 	/**
-	 * Return distance from 'z' to the 'Path2D.Double', positive if 'z'
+	 * @brief Return distance from 'z' to the 'Path2D.Double', positive if 'z'
 	 * is inside, negative if 'z' is outside.
 	 * @param gpath
 	 * @param flatness
@@ -160,7 +162,7 @@ public class PathUtil {
 	}
 	
 	/**
-	 * Find the center and radius of the smallest euclidean disc containing
+	 * @brief Find the center and radius of the smallest euclidean disc containing
 	 * the bounding rectangle to a polygon approximating a Path2D.Double,
 	 * with 'flatness' parameter.
 	 * @param gpath
@@ -192,7 +194,7 @@ public class PathUtil {
 	}
 	
 	/**
-	 * Return a vector of polygons (each a vector of Complex's) approximating 
+	 * @brief Return a vector of polygons (each a vector of Complex's) approximating 
 	 * the given 'Path2D.Double'. May have more than one polygon if path has 
 	 * components. Use this, e.g. when we want to put the path into postscript output.
 	 * @param Path2D.Double gpath, double flatness
@@ -204,7 +206,7 @@ public class PathUtil {
 	}
 	
 	/**
-	 * Return a vector of polygons (each a vector of Complex's) approximating 
+	 * @brief Return a vector of polygons (each a vector of Complex's) approximating 
 	 * the given 'Path2D.Double'. May have more than one polygon if path has 
 	 * components. Use this, e.g. when we want to put the path into postscript output.
 	 * @param gpath Path2D.Double
@@ -258,7 +260,7 @@ public class PathUtil {
 	}
 	
 	/**
-	 * Return a Path2D.Double representing eucl circle (z,r) with
+	 * @brief Return a Path2D.Double representing eucl circle (z,r) with
 	 * N (at least 4) segments. See 'CPCircle' for code source.
 	 * @param rad
 	 * @param z Complex
@@ -280,7 +282,7 @@ public class PathUtil {
 	}
 	
 	/**
-     * Create a Path2D.Double in the complex plane by parsing 
+     * @brief Create a Path2D.Double in the complex plane by parsing 
      * the complex function described in 'path_text' in terms of
      * real variable 't' for t in [0,1]. Default to 'N' points.
      * description using real variable 't' for t in [0,1]. 
@@ -327,7 +329,7 @@ public class PathUtil {
     }
     
 	/**
-	 * Return the point on the (flattened) path which is closest to
+	 * @brief Return the point on the (flattened) path which is closest to
 	 * the given point z.
 	 * @param z Complex
 	 * @param path Path2D.Double
@@ -355,7 +357,7 @@ public class PathUtil {
 	}
 	
 	/**
-	 * Return the point on the polygonal path which is closest to
+	 * @brief Return the point on the polygonal path which is closest to
 	 * the given point z. The polygon is assumed to be closed.
 	 * @param z Complex
 	 * @param poly Vector<Complex>, the polygon
@@ -378,7 +380,7 @@ public class PathUtil {
 	}
 
 	/**
-	   * Return the shortest closed interior edge path which
+	   * @brief Return the shortest closed interior edge path which
 	   * misses 'path' except for starting/ending at the origin
 	   * of 'seededge' (which must lie in 'path'). Note: 'path' 
 	   * may have multiple connected components, but it 'path' 
@@ -612,7 +614,7 @@ public class PathUtil {
 	  }
 
 	/**
-	   * Using the red chain and 'pairLink', find a short 
+	   * @brief Using the red chain and 'pairLink', find a short 
 	   * non-separating path of interior edges which either
 	   * is closed or starts/ends on distinct boundary 
 	   * components. CAN NOT guarantee that it is minimal 
@@ -732,7 +734,7 @@ public class PathUtil {
 	  }
 
 	/**
-	   * Return 'HalfLink' path of interior edges which 
+	   * @brief Return 'HalfLink' path of interior edges which 
 	   * is among the shortest combinatorially starting 
 	   * and ending at an end of 'seed' edge without 
 	   * crossing 'path'. Make a small shift of ends

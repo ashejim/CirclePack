@@ -15,6 +15,8 @@ import listManip.GraphLink;
 import util.PathBaryUtil;
 
 /**
+ * @brief Static helper methods offloaded from PackData to reduce class size.
+ *
  * 'PackData' is bloated, so starting in 2020, I'm offloading some static
  * routines here.
  * @author kens
@@ -23,7 +25,7 @@ import util.PathBaryUtil;
 public class PackMethods {
 	
 	/** 
-	 * Specialized routine for sending paths in barycentric 
+	 * @brief Specialized routine for sending paths in barycentric 
 	 * coordinates to a file, part of the work with John 
 	 * Bowers for 3D printing software. 
 	 * 
@@ -95,7 +97,7 @@ public class PackMethods {
 	}
 
 	/**
-	 * For eucl packing with 'xyzpoint' data, this 
+	 * @brief For eucl packing with 'xyzpoint' data, this 
 	 * computes the ratios 3D/2D. The first spot is 
 	 * unused. The 3D areas are stored in p.utilDoubles
 	 * @param p PackData

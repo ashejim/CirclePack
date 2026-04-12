@@ -1,6 +1,8 @@
 package exceptions;
 
 /**
+ * @brief These are exceptions in computed data: radii, centers, curvatures, aims, etc.
+ *
  * These are exceptions in computed data: radii, centers, curvatures, aims, etc.
  * as when dividing by zeros, infinite value, distances (eg. might run into 
  * invalid data from a center or radius), quantity that comes out <= 0 when

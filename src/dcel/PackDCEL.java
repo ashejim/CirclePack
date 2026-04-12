@@ -40,7 +40,24 @@ import util.TriAspect;
 import util.TriData;
 import util.UtilPacket;
 
-/** 
+/**
+ * @brief Doubly-connected edge list (DCEL) with circle-packing geometry data.
+ *
+ * This is the primary combinatorial data structure for a circle packing.
+ * It stores the triangulation as arrays of {@link combinatorics.komplex.Vertex},
+ * {@link combinatorics.komplex.HalfEdge}, and {@link combinatorics.komplex.DcelFace}
+ * objects, together with the "red chain" ({@link combinatorics.komplex.RedEdge})
+ * that encodes boundary and side-pairing information for multiply-connected
+ * surfaces.
+ *
+ * @note The DCEL representation replaced an older adjacency-list model.
+ *       Many legacy routines in {@link packing.PackData} delegate to
+ *       this class for combinatorial queries.
+ *
+ * @see CombDCEL   Static combinatorial construction and manipulation routines.
+ * @see RawManip   Low-level DCEL surgery (flips, insertions, deletions).
+ * @see packing.PackData  The top-level packing container that owns a PackDCEL.
+ * 
  * The "DCEL" is a common way that computer scientists 
  * encode graphs; it's also called a 'half-edge' structure.
  * I have converted the combinatorics underlying CirclePack
@@ -68,37 +85,54 @@ import util.UtilPacket;
  *
  */
 public class PackDCEL {
+	/** Maximum allocated vertex index. */
 	public int sizeLimit;
+	/** The owning PackData (may be null for standalone DCEL operations). */
 	public PackData p;
 
-	public int vertCount;		// number of vertices (eventually sync'ed with nodeCount)
+	/** Number of vertices. */
+	public int vertCount;
+	/** Number of half-edges (each undirected edge contributes 2). */
 	public int edgeCount;
+	/** Total number of faces (interior + ideal). */
 	public int faceCount;
-	public int intFaceCount;	// number of interior faces (larger face indices are ideal faces)
-	public int idealFaceCount;  // indexes are the largest and set to negative
+	/** Number of interior (non-ideal) faces. */
+	public int intFaceCount;
+	/** Number of ideal (exterior) faces; their faceIndx values are negative. */
+	public int idealFaceCount;
 	
-	// important objects: vertices is key, edges/faces/idealFaces more ephemeral
-	public Vertex[] vertices; // indexed from 1
-	public HalfEdge[] edges;  // indexed from 1; some have pointers to 'RedEdge's
-	public DcelFace[] faces;      // indexed from 1
-	public DcelFace[] idealFaces; // indexed from 1 (but 'faceIndx' is the negative of the index)
-	// note edges and faces are subject to change with new layout
+	/** Vertex array, indexed from 1 to vertCount. */
+	public Vertex[] vertices;
+	/** Half-edge array, indexed from 1; some carry pointers to RedEdges. */
+	public HalfEdge[] edges;
+	/** Interior face array, indexed from 1. */
+	public DcelFace[] faces;
+	/** Ideal (exterior) face array, indexed from 1 (faceIndx is the negative of the index). */
+	public DcelFace[] idealFaces;
 
-	// final layout information 
-	public HalfLink layoutOrder; // order sufficient to set every center
-	public HalfLink stragglers; // faces not in layoutOrder
+	/** Ordered list of half-edges sufficient to lay out every circle center. */
+	public HalfLink layoutOrder;
+	/** Faces not reached by layoutOrder (disconnected components, etc.). */
+	public HalfLink stragglers;
 	
-	public VertexMap oldNew;  // NEEDED FOR CIRCLEPACK {old,new}
-	public RedEdge redChain; // doubly-linked, cclw edges about a fundamental region
-	public ArrayList<RedEdge> sideStarts; // red edges starting paired sides, will have 'mobIndx'
-	public HalfEdge alpha; // origin normally placed at origin
-	public HalfEdge gamma; // origin normally on positive y-axis, default 'alpha.twin'
+	/** Old-to-new vertex index mapping after renumbering. */
+	public VertexMap oldNew;
+	/** Head of the red chain: a circular doubly-linked list of RedEdges bounding a fundamental region. */
+	public RedEdge redChain;
+	/** Red edges that start paired sides; each carries a mobIndx for side-pairing Möbius maps. */
+	public ArrayList<RedEdge> sideStarts;
+	/** The "alpha" edge: its origin is normally placed at the origin during layout. */
+	public HalfEdge alpha;
+	/** The "gamma" edge: its origin is normally placed on the positive y-axis (default: alpha.twin). */
+	public HalfEdge gamma;
 	
-	public PairLink pairLink;  // linked list of 'SideData' on side-pairings
+	/** Linked list of SideData describing side-pairings for multiply-connected surfaces. */
+	public PairLink pairLink;
 	
-	// face-by-face data storage: used, e.g. in typical 'repack' 
-	//   calls and for work in 'ProjStruct'. Offen the data is
-	//   in 'labels' and treated as homogeneous (eucl) data.
+	/**
+	 * Per-face auxiliary data (e.g. for repacking, projective structures).
+	 * Often holds homogeneous (Euclidean) label data.
+	 */
 	public TriData[] triData; 
 	
 	boolean debug;
@@ -139,7 +173,7 @@ public class PackDCEL {
 */    
 	
 	/**
-	 * Cleanup routine: needed because '*_raw' routines 
+	 * @brief Cleanup routine: needed because '*_raw' routines 
 	 * modify dcel structure w/o complete update: 'vertCount', 
 	 * 'vertices', edge connectivity should be in tact and 
 	 * often 'redChain' is in tact. The calling routine 
@@ -159,7 +193,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Cleanup routine: needed because '*_raw' routines 
+	 * @brief Cleanup routine: needed because '*_raw' routines 
 	 * modify dcel structure w/o complete update: 'vertCount', 
 	 * 'vertices', edge connectivity should be in tact and 
 	 * often 'redChain' is in tact. The calling routine 
@@ -206,7 +240,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Reallocate space for 'vertices' in increments of 1000.
+	 * @brief Reallocate space for 'vertices' in increments of 1000.
 	 * @param new_size int
 	 * @param keepit boolean, true, then copy existing
 	 * @return int size
@@ -222,7 +256,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Create and populate 'triData[]'. This loads 'radii', 
+	 * @brief Create and populate 'triData[]'. This loads 'radii', 
 	 * 'invDist's, 'aim'.
 	 * @return int faceCount
 	 */
@@ -235,7 +269,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Update or create 'triData'. Return true if there are 
+	 * @brief Update or create 'triData'. Return true if there are 
 	 * nontrivial inversive distances so we can set
 	 * "oldReliable" flag in repacking.
 	 * @return boolean
@@ -272,7 +306,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * The "red" chain is a closed cclw chain of edges about
+	 * @brief The "red" chain is a closed cclw chain of edges about
 	 * a simply connected fundamental domain for the complex.
 	 * This is rather difficult because 'this' PackDCEL should 
 	 * remain unchanged --- we depend on 'bouquet' to create 
@@ -299,7 +333,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Given full set of edges, redo the face numbers. Start by
+	 * @brief Given full set of edges, redo the face numbers. Start by
 	 * setting all former '.face' entries to null and, starting
 	 * with alpha, resetting them, renumbering from 1. Ideal 
 	 * (i.e. outside) faces will have the highest indices.
@@ -433,7 +467,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Standard normalization: a at origin, g on positive y-axis.
+	 * @brief Standard normalization: a at origin, g on positive y-axis.
 	 * Not ready for spherical case yet
 	 * @param pdcel PackDCEL
 	 * @param a Complex
@@ -449,7 +483,7 @@ public class PackDCEL {
 	} 
 
 	/**
-	 * Place a 'HalfEdge' so 'origin' is at z=0 and other
+	 * @brief Place a 'HalfEdge' so 'origin' is at z=0 and other
 	 * end is on the positive imaginary axis. Store the centers. 
 	 * @param edge HalfEdge
 	 */
@@ -483,7 +517,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Compute the center of the vertex opposite 'edge' in
+	 * @brief Compute the center of the vertex opposite 'edge' in
 	 * 'edge.face'. 
 	 * @param edge HalfEdge
 	 * @return CircleSimple  
@@ -501,7 +535,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Compute center of vert v opposite the given 'edge' 
+	 * @brief Compute center of vert v opposite the given 'edge' 
 	 * in its face. Compute as average of locations based on 
 	 * all edges opposite v whose other centers are already in place,
 	 * indicated by 'eutil>0' for the edge's twin. Set 
@@ -554,7 +588,7 @@ public class PackDCEL {
 	}
 	
 	/** 
-	 * Return integer array with the generations of verts, 
+	 * @brief Return integer array with the generations of verts, 
 	 * generation "1" being those v with 'vutil' 
 	 * non-zero. Additional info is returned via 'uP'.  
 	 * @param max int, if max>0, stop at last with gen = max.
@@ -612,7 +646,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Use 'layoutOrder' and radii to recompute centers 
+	 * @brief Use 'layoutOrder' and radii to recompute centers 
 	 * using 'layoutOrder' and normalizing to put alpha
 	 * at the origin and gamma on the positive y-axis. 
 	 * @return int count
@@ -622,7 +656,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Use and radii to recompute centers using 
+	 * @brief Use and radii to recompute centers using 
 	 * 'layoutOrder'. However, first face in layout
 	 * order is already in position. Do not normallize.
 	 * @param firstHE HalfEdge
@@ -633,7 +667,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Use radii to recompute centers using 'hlink',
+	 * @brief Use radii to recompute centers using 'hlink',
 	 * starting by laying out the first face in normalized
 	 * position and ending by rotating so gamma is on the
 	 * positive y-axis. 
@@ -645,7 +679,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Use schwarzians to recompute centers using
+	 * @brief Use schwarzians to recompute centers using
 	 * 'layoutOrder', starting by laying out the first 
 	 * face in normalized position and ending by rotating 
 	 * so gamma is on the positive y-axis. 
@@ -656,7 +690,7 @@ public class PackDCEL {
 	}
 	  
 	/**
-	 * Use 'hlink' for 'order' (default to 'layoutOrder') 
+	 * @brief Use 'hlink' for 'order' (default to 'layoutOrder') 
 	 * to compute centers. If 'fixFirst' is false, then
 	 * the first face (generally 'alpha') is already laid
 	 * out, so layout remaining in order. If 'fixFirst' is
@@ -816,7 +850,7 @@ public class PackDCEL {
 	}
 	
 	/** 
-	 * Recompute centers of circles via 'layoutOrder' as usual,
+	 * @brief Recompute centers of circles via 'layoutOrder' as usual,
 	 * but if 'v' is valid vertex, then report its placements,
 	 * which may be more than one. Option to recompute first 
 	 * face or leave it in current location. Option to apply 
@@ -937,7 +971,7 @@ public class PackDCEL {
 	}
 
 	/** 
-	 * Draw an edge-pairing boundary segment.
+	 * @brief Draw an edge-pairing boundary segment.
 	 * @param n int, index of side-pair (indices start at 1)
 	 * @param do_label boolean, label also?
 	 * @param do_circle boolean, circles also?
@@ -1001,7 +1035,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Flip the specified edges. In a triangulation, an interior edge is
+	 * @brief Flip the specified edges. In a triangulation, an interior edge is
 	 * shared by two faces. To "flip" the edge means to remove it and
 	 * replace it with the other diagonal in the union of those faces. The
 	 * number of faces, edges, and vertices is not changed, but we are out
@@ -1066,7 +1100,7 @@ public class PackDCEL {
 	}
 	
 	/**
- 	 * NEEDED FOR CIRCLEPACK
+ 	 * @brief NEEDED FOR CIRCLEPACK
 	 * "local refine" is a process for adding additional vertices
 	 * as barycenters and flipping edges to get a finer circle
 	 * packing near the designated vertices.
@@ -1091,7 +1125,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * "local refine" is a process for adding additional vertices
+	 * @brief "local refine" is a process for adding additional vertices
 	 * as barycenters and flipping edges to get a finer circle
 	 * packing near the designated vertices.
 	 * @param arrayV ArrayList<Vertex>
@@ -1191,7 +1225,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Form bouquet of the combinatorial flowers, eg., for writing or
+	 * @brief Form bouquet of the combinatorial flowers, eg., for writing or
 	 * creating DCEL structure.
 	 * @return int[][], null on error
 	 */
@@ -1211,7 +1245,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Directly count the distinct petals. (Don't recount first
+	 * @brief Directly count the distinct petals. (Don't recount first
 	 * for closed flower)
 	 * @param v int
 	 * @return
@@ -1227,7 +1261,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Count the number of non-ideal faces at 'vert'
+	 * @brief Count the number of non-ideal faces at 'vert'
 	 * @param vert Vertex
 	 * @return int
 	 */
@@ -1246,7 +1280,7 @@ public class PackDCEL {
 	
 
 	/**
-	 * Return count of bdry verts from v1 to v2 (inclusive) if v1/v2 are
+	 * @brief Return count of bdry verts from v1 to v2 (inclusive) if v1/v2 are
 	 * on the same bdry component; otherwise 0.
 	 * @param v1 int
 	 * @param v2 int
@@ -1272,7 +1306,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Based on current 'bdryFaces', find all bdry edges
+	 * @brief Based on current 'bdryFaces', find all bdry edges
 	 * @return ArrayList<HalfEdge>
 	 */
 	public ArrayList<HalfEdge> getBdryEdges() {
@@ -1289,7 +1323,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Given directed dual (f,g) between faces, return 
+	 * @brief Given directed dual (f,g) between faces, return 
 	 * halfedge (v,w) which is cclw to (f,g); so f is 
 	 * on the left of (v,w), g is on the right.
 	 * @param dedge EdgeSimple
@@ -1310,7 +1344,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Given HalfEdge (v,w), return ordered ends, g then f,
+	 * @brief Given HalfEdge (v,w), return ordered ends, g then f,
 	 * of dual edge (f,g). CAUTION: f is to left of (v,w), g 
 	 * to right, so result goes from right to left across (v,w).
 	 * Return null if f an ideal face. If (v,w) is a oriented 
@@ -1356,7 +1390,7 @@ public class PackDCEL {
 	}
 
 	/**
- 	 * NEEDED FOR CIRCLEPACK
+ 	 * @brief NEEDED FOR CIRCLEPACK
 	 * Dual graph store in 'EdgeLink'. This is linked list of 
 	 * 'EdgeSimple' objects, which are just pairs {f,g} of 
 	 * indices of faces sharing an edge.
@@ -1386,7 +1420,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Get angle in 'edge.face' at 'edge.origin' using current
+	 * @brief Get angle in 'edge.face' at 'edge.origin' using current
 	 * radii.
 	 * @param edge HalfEdge
 	 * @return double, 0.0 if bdry edge
@@ -1396,7 +1430,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Get angle in 'edge.face' at 'edge.origin' assuming origin
+	 * @brief Get angle in 'edge.face' at 'edge.origin' assuming origin
 	 * radius is 'r'. If 'r' is <= 0, then use current recorded radius.
 	 * @param edge HalfEdge
 	 * @param r double, possibly <=0
@@ -1419,7 +1453,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Get the angle sum at 'vert' using radius 'rad'.
+	 * @brief Get the angle sum at 'vert' using radius 'rad'.
 	 * Note: if 'rad' is <= 0, then computation uses current 
 	 * stored radius.
 	 * @param vert Vertex
@@ -1442,7 +1476,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Get the angle sum at 'vert' using current radii 
+	 * @brief Get the angle sum at 'vert' using current radii 
 	 * stored for edges, face-by-face.
 	 * @param vert Vertex
 	 * @return double
@@ -1459,7 +1493,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Find the official rad/cent for the origin of the 
+	 * @brief Find the official rad/cent for the origin of the 
 	 * given 'HalfEdge'. If the origin is 'RedVertex', 
 	 * then look clw for first 'RedEdge'. If normal non-red, 
 	 * then data is stored in 'PackData.vertices[]'. 
@@ -1489,7 +1523,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Get the radius of 'edge.origin' appropriate to this 'edge';
+	 * @brief Get the radius of 'edge.origin' appropriate to this 'edge';
 	 * e.g., it may be stored with nearest clw red edge. 
 	 * Get its internal form (i.e., x-rad for hyp case).
 	 * @param edge HalfEdge
@@ -1520,7 +1554,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Get appropriate center, perhaps in nearest clw red edge.
+	 * @brief Get appropriate center, perhaps in nearest clw red edge.
 	 * @param edge HalfEdge
 	 * @return new Complex
 	 */
@@ -1553,7 +1587,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Set center for v in all locations and in any 
+	 * @brief Set center for v in all locations and in any 
 	 * associated 'RedEdges'. (Compare with 'setCent4Edge' 
 	 * which only set's the value associated with one edge.)
 	 * @param v int
@@ -1576,7 +1610,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Set cent/rad for 'origin' and appropriate 'RedEdge's 
+	 * @brief Set cent/rad for 'origin' and appropriate 'RedEdge's 
 	 * (if a 'RedVertex'). Data for a vert may differ in 
 	 * different 'RedEdge's having that vert. 
 	 * @param edge HalfEdge
@@ -1609,7 +1643,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Set center for origin v of given 'edge'. If v is 
+	 * @brief Set center for origin v of given 'edge'. If v is 
 	 * a 'RedVertex', then v's center is stored in first 
 	 * clw red edge; it may differ in other red edges with
 	 * origin v and may differ from Vertex.origin. 
@@ -1642,7 +1676,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Set vert's radius (hyp: in its internal x-rad form) 
+	 * @brief Set vert's radius (hyp: in its internal x-rad form) 
 	 * in all locations; i.e., in 'Vertex' and in red edge
 	 * for any with this origin. (Compare with 'setRad4Edge' 
 	 * which only sets it for one associated red edge.)
@@ -1663,7 +1697,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Set the radius (in its internal form x-rad for hyp case)
+	 * @brief Set the radius (in its internal form x-rad for hyp case)
 	 * in 'Vertex' and nearest clw red edge, if there is one.
 	 * (Compare with 'setVertRadii' which sets this radius in all
 	 * occurrences of its origin vertex.)
@@ -1689,7 +1723,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Multiply all radii stored for 'v' by the given 
+	 * @brief Multiply all radii stored for 'v' by the given 
 	 * positive factor. Initially, intended for eucl 
 	 * geom only as part of affine packing. (3/2021)
 	 * @param v int
@@ -1710,7 +1744,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * When new vertices are created, e.g., from "add_cir",
+	 * @brief When new vertices are created, e.g., from "add_cir",
 	 * we accumulate associated edges in order. They should
 	 * already have radii, so we set an approximate center by
 	 * using it along with data from the edge.
@@ -1730,7 +1764,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * set center and radius (in its internal form);
+	 * @brief set center and radius (in its internal form);
 	 * this sets data only for the given edge, so for
 	 * 'RedVertex' it stores in the appropriate 'RedEdge'.
 	 * @param edge HalfEdge
@@ -1742,7 +1776,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Determine if vertex is bdry; if no, return null,
+	 * @brief Determine if vertex is bdry; if no, return null,
 	 * else return first 'HalfEdge', that is, one with 
 	 * 'twin.face' being an ideal face. (This normally is 
 	 * 'v.halfedge', but calling routine can use return
@@ -1761,7 +1795,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Is this a boundary vertex? Depends on bdry edges
+	 * @brief Is this a boundary vertex? Depends on bdry edges
 	 * being identified with 'faceIndx'<0.
 	 * @param v int
 	 * @return boolean
@@ -1774,7 +1808,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * boundary edge? Depends on face existing and
+	 * @brief boundary edge? Depends on face existing and
 	 * having negative index, indicating ideal face.
 	 * @param he HalfEdge
 	 * @return boolean
@@ -1788,7 +1822,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Find the 'HalfEdge' for edge <v.w>
+	 * @brief Find the 'HalfEdge' for edge <v.w>
 	 * @param es EdgeSimple
 	 * @return HalfEdge or null on failure
 	 */
@@ -1808,7 +1842,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Find the 'HalfEdge' for edge <v.w>
+	 * @brief Find the 'HalfEdge' for edge <v.w>
 	 * @param v int
 	 * @param v int
 	 * @return HalfEdge or null on failure
@@ -1818,7 +1852,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Find the 'HalfEdge' based on 'vertIndx's of
+	 * @brief Find the 'HalfEdge' based on 'vertIndx's of
 	 * the given 'he' (typically from a related 
 	 * DCEL structure).
 	 * @param he HalfEdge
@@ -1830,7 +1864,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Find 'dcel.Face' for given edge <v,w> 
+	 * @brief Find 'dcel.Face' for given edge <v,w> 
 	 * @param v int
 	 * @param w int
 	 * @return dcel.Face or null on failure
@@ -1848,7 +1882,7 @@ public class PackDCEL {
 	}
 
 	/** 
-	 * Recompute, draw, and/or post circles and/or faces along a
+	 * @brief Recompute, draw, and/or post circles and/or faces along a
 	 * specified HalfLink. Typical call has 'heTree' null, in 
 	 * which case we redo the full 'layoutTree' using averaging
 	 * to compute centers. For faces we further draw and/or post 
@@ -2116,7 +2150,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Get the incircle of the triangle formed by three
+	 * @brief Get the incircle of the triangle formed by three
 	 * circles. In hyperbolic case, need radii since we
 	 * use the generalized tangency points in the computation.
 	 * @param c0 CircleSimple
@@ -2147,7 +2181,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Find the incircle for the given face. For eucl
+	 * @brief Find the incircle for the given face. For eucl
 	 * and sph cases, just use 3 centers; for hyp case,
 	 * use 3 generalized tangency points.
 	 * @param face Face
@@ -2162,7 +2196,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Return center of incircle of face with given index.
+	 * @brief Return center of incircle of face with given index.
 	 * @param face int
 	 * @return CircleSimple, null on error
 	 */
@@ -2199,7 +2233,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Return Face consisting of vertices {a,b,c} or 
+	 * @brief Return Face consisting of vertices {a,b,c} or 
 	 * {a,c,b}, null on failure, eg. if 'this' face 
 	 * is ideal.
 	 * @param a int
@@ -2226,7 +2260,7 @@ public class PackDCEL {
 	}
 
 	/**
-	 * Return open list of centers of corners of this face.
+	 * @brief Return open list of centers of corners of this face.
 	 * (Generally will have 3 corners). The first corner
 	 * is for the origin of 'face.edge'.
 	 * @param face Face
@@ -2247,7 +2281,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Get open cclw list of face centers for the 
+	 * @brief Get open cclw list of face centers for the 
 	 * interior faces around 'vert'.
 	 * 
 	 * TODO: Should lay this out to avoid ambiguity
@@ -2290,7 +2324,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Return the vertices forming the face starting at edge from
+	 * @brief Return the vertices forming the face starting at edge from
 	 * v to w, one of its petals. 
 	 * @param bouquet
 	 * @param v int, vertex
@@ -2337,7 +2371,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Find the complex "center" of given 'Face'. If the face has
+	 * @brief Find the complex "center" of given 'Face'. If the face has
 	 * three vertices (typical), then return center of incircle of
 	 * triangle formed by vertices. Else, return average of centers
 	 * of vertices. 
@@ -2360,7 +2394,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Create a new packDCEL object, with p=null, whose orientation 
+	 * @brief Create a new packDCEL object, with p=null, whose orientation 
 	 * is opposite to 'this'.
 	 * @return PackDCEL
 	 */
@@ -2370,7 +2404,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Swap vertices for 'v' and 'w'. This has minimal impact 
+	 * @brief Swap vertices for 'v' and 'w'. This has minimal impact 
 	 * on the DCEL structure, eg., drawing order, etc., but 
 	 * calling routine may adjust various lists. Note that all 
 	 * the 'Vertex' info goes along, 'aim', 'rad', etc., so if 
@@ -2415,7 +2449,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Create the dual DCEL structure. 
+	 * @brief Create the dual DCEL structure. 
 	 * 
 	 * If 'full' is false, don't include dual edges to ideal 
 	 * faces; in particular, the dual of this dual will not be 
@@ -2497,7 +2531,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Update the side-pairing maps using updated rededge centers.
+	 * @brief Update the side-pairing maps using updated rededge centers.
 	 * @return 0 if 'redChain' or 'pairLink' doesn't exist or
 	 * a computation fails.
 	 */
@@ -2516,7 +2550,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Set 'alpha' edge; its vert is normally placed at origin,
+	 * @brief Set 'alpha' edge; its vert is normally placed at origin,
 	 * should be interior. 'v'>0 indicates preference;
 	 * if 'v'<=0 or 'v' not interior, try current 'alpha' if
 	 * it's interior. Else look for first interior; nothing
@@ -2609,7 +2643,7 @@ public class PackDCEL {
 	}
 	
     /**
-     * Set packing 'gamma' halfedge; it's vertex generally 
+     * @brief Set packing 'gamma' halfedge; it's vertex generally 
      * placed on y+ axis and can't be the origin of 'alpha'.
      * Default is 'gamma=alpha.twin'.
      * @param v int, preference or 0
@@ -2637,7 +2671,7 @@ public class PackDCEL {
     } 
     
 	/**
-	 * Write this DCEL structure to a file.
+	 * @brief Write this DCEL structure to a file.
 	 * TODO: This is an early format, 4/2017, and should
 	 * probably be rethought, but need it for 3D modeling work 
 	 * now.
@@ -2703,7 +2737,7 @@ public class PackDCEL {
 	}
 	
 	/**
-	 * Write the dual graph to a file.
+	 * @brief Write the dual graph to a file.
 	 * TODO: This is an early format, 4/2017, and should probably 
 	 * be rethought, but need if for 3D modeling work now.
 	 * @param filename

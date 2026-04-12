@@ -7,6 +7,9 @@ import java.io.Reader;
 import java.io.StreamTokenizer;
 import java.util.Vector;
 
+/**
+ * @brief C P I_ C P File Reader.
+ */
 public class CPI_CPFileReader {
     
     Vector<CPI_CPFileSection> section;	

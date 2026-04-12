@@ -29,6 +29,8 @@ import util.ColorUtil;
 import util.StringUtil;
 
 /**
+ * @brief Holds combinatoric triangulations; eventually want more general
+ *
  * Holds combinatoric triangulations; eventually want more general 
  * combinatoric polygonal cells. Faces indexed starting at 1.
  * @author kens
@@ -60,7 +62,7 @@ public class Triangulation {
 	}
 	
 	/**
-	 * Attempt to create 'PackData' from 'Triangulation' object. 
+	 * @brief Attempt to create 'PackData' from 'Triangulation' object. 
 	 * Calling routine must set radii, aims, etc. Errors may not 
 	 * show up until packing is processed in calling routine.
 	 * @param Tri Triangulation
@@ -213,7 +215,7 @@ public class Triangulation {
 	} 
 
 	/** 
-	 * Process collection of triangles to see if it can	
+	 * @brief Process collection of triangles to see if it can	
 	 * form a packing complex. For now we don't bother to try 
 	 * to salvage bad data --- just throw 'DataException'.
 	 * 
@@ -553,7 +555,7 @@ public class Triangulation {
 	}
 
 	/**
-	 * Read a file of combinatorial polygons (n-tuples of indices, one 
+	 * @brief Read a file of combinatorial polygons (n-tuples of indices, one 
 	 * n-tuple per line) and create a 'Triangulation' object. Try to
 	 * handle several possible formats: CirclePack, OFF, VTK, and 
 	 * (for triangulations) even more rudimentary formats. Data may 
@@ -999,7 +1001,7 @@ public class Triangulation {
 	} // done with OFF reading
     
 	/**
-	 * Read the original faces from the file, possibly not all triangles.
+	 * @brief Read the original faces from the file, possibly not all triangles.
 	 * @param fp BufferedReader, open	
 	 * @param tmpfaces Vector<Face>, instantiated, but must be size 0
 	 * @param faceclrs Vector<Color>, instantiated, but must be size 0
@@ -1078,7 +1080,7 @@ public class Triangulation {
 	}
  	
     /**
-     * Parse lines with doubles to get xyz data and possibly colors. 
+     * @brief Parse lines with doubles to get xyz data and possibly colors. 
      * Start with incoming line, return with next line.   	
      * @param fp BufferedReader, open by calling routine
      * @param pts Vector<Point3D>, instantiated, but must be size 0
@@ -1171,7 +1173,7 @@ public class Triangulation {
     }    		
 	
 	/**
-	 * Create Delaunay triangulation from points (2D or spherical);
+	 * @brief Create Delaunay triangulation from points (2D or spherical);
 	 * no boundary specified in this call.
 	 * @param hes int, prescribed geometry
 	 * @param pts Vector<Complex>, Complex
@@ -1203,7 +1205,7 @@ public class Triangulation {
 	}
 	
 	/**
-	 * Given face and index in its vert[3], find neighboring bdry vertex.
+	 * @brief Given face and index in its vert[3], find neighboring bdry vertex.
 	 * @param face int
 	 * @param indx int
 	 * @param posboolean: true, then positive (counterclockwise)
@@ -1235,7 +1237,7 @@ public class Triangulation {
 	}
 
 	/**
-	 * Return index of first face containing edge [s,e], else -1's
+	 * @brief Return index of first face containing edge [s,e], else -1's
 	 * @param s int, start vertex
 	 * @param e int, end vertex
 	 * @param pos boolean. true means want [s,e] as oriented edge
@@ -1259,7 +1261,7 @@ public class Triangulation {
 	}
 
 	/**
-	 * Given faces f1 and f2 sharing vertex v, return indices
+	 * @brief Given faces f1 and f2 sharing vertex v, return indices
 	 * in f1 and f2, respectively, for the first end of the shared edge
 	 * containing v. 
 	 * @param tri Triangulation
@@ -1296,7 +1298,7 @@ public class Triangulation {
 	}
 
 	/**
-	 * Alternate type of cookie cutting: (Jan 2017) We basically 
+	 * @brief Alternate type of cookie cutting: (Jan 2017) We basically 
 	 * keep only those faces whose centroids are in the region. 
 	 * We want a simply connected result, however, so we must 
 	 * fill in any encircled faces. Problem: many boundary faces 
@@ -1541,7 +1543,7 @@ public class Triangulation {
 	}
 
 	/**
-	 * Create new triangulation by barycentrically subdividing
+	 * @brief Create new triangulation by barycentrically subdividing
 	 * the given triangulation, breaking each face into six faces. 
 	 * The main need for this is triangulations with multiple edges
 	 * between the same vertices and should yield legitimate

@@ -39,6 +39,8 @@ import javax.swing.event.ChangeListener;
 import util.xNumField;
 
 /**
+ * @brief MultiSlider class.
+ *
  * @version 1.13 2007-06-12
  * @author Cay Horstmann
  */
@@ -55,6 +57,8 @@ public class MultiSlider {
 }
 
 /**
+ * @brief A frame with many sliders and a text field to show slider values.
+ *
  * A frame with many sliders and a text field to show slider values.
  */
 class SliderTestFrame extends JFrame {
@@ -180,7 +184,7 @@ class SliderTestFrame extends JFrame {
 	}
 
 	/**
-	 * Adds a slider to the slider panel and hooks up the listener
+	 * @brief Adds a slider to the slider panel and hooks up the listener
 	 * 
 	 * @param s           the slider
 	 * @param description the slider description

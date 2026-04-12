@@ -19,6 +19,8 @@ import listManip.VertexMap;
 import packing.PackData;
 
 /**
+ * @brief A "tile" is a combinatorial polygon with 'vertCount' vertices; the
+ *
  * A "tile" is a combinatorial polygon with 'vertCount' vertices; the
  * class extends 'Face', so has additional information, such as color,
  * tile type, mark, etc. 'vert' is the counterclockwise oriented list of 
@@ -116,7 +118,7 @@ public class Tile extends Face {
 	}
 	
 	/**
-	 * Create the canonical packing for this single 
+	 * @brief Create the canonical packing for this single 
 	 * tile, almost always in mode=3. However, there
 	 * are three modes: simple mode, mode=1, provides 
 	 * an n-flower for an n-sided tile; mode=2 adds a 
@@ -316,7 +318,7 @@ public class Tile extends Face {
 	}
 	
 	/**
-	 * Get closed list of border vertices: if not augmented, 
+	 * @brief Get closed list of border vertices: if not augmented, 
 	 * just list of corner vertices.
 	 * 
 	 * @return NodeLink, null on error
@@ -336,7 +338,7 @@ public class Tile extends Face {
 	}
 	
 	/**
-	 * Are v and w cclw contiguous in 'vert'? i.e., does {v,w} 
+	 * @brief Are v and w cclw contiguous in 'vert'? i.e., does {v,w} 
 	 * form an edge of 'this'? If yes and v!=w, return index of 
 	 * that edge. 
 	 * 
@@ -373,7 +375,7 @@ public class Tile extends Face {
 	}
 	
 	/**
-	 * This method depends on 'tileFlower's. Consider vert[indx]: 
+	 * @brief This method depends on 'tileFlower's. Consider vert[indx]: 
 	 * return |index| for the index of the tile across the 
 	 * cclw edge (dir >= 0) or across the clw edge (dir < 0).
 	 * Note: sometimes negative entries are stored during processing;
@@ -397,7 +399,7 @@ public class Tile extends Face {
 	}
 	
 	/**
-	 * Find the minimum of the maximal depths of subdivisions.
+	 * @brief Find the minimum of the maximal depths of subdivisions.
 	 * Indicate if all tiles reach the same depth. Return 
 	 * n>=0 if all are the same depth n, but return -n if
 	 * all reach depth n, but some go deeper.
@@ -432,7 +434,7 @@ public class Tile extends Face {
 	}
 
 	/**
-	 * Return the cclw closed list of augmented vertices 
+	 * @brief Return the cclw closed list of augmented vertices 
 	 * forming the boundary of this tile. If there are 
 	 * no augmented vertices, then just return the closed 
 	 * vertex list. 
@@ -457,7 +459,7 @@ public class Tile extends Face {
 	}
 		
 	/**
-	 * Return the cclw list of augmented vertices associated with
+	 * @brief Return the cclw list of augmented vertices associated with
 	 * 'indx' edge of this tile, including first and last vert. 
 	 * If the edge goes from v=vert[indx] to w=vert[indx+1], then 
 	 * search 'augVert' for v and w to determine the segment of 
@@ -515,7 +517,7 @@ public class Tile extends Face {
 	}
 
     /** 
-     * Build new 'Tile' object whose data duplicates this. 
+     * @brief Build new 'Tile' object whose data duplicates this. 
      * However, 'myTileData' is set to null and, if needed, 
      * must be copied separately and attached. (This prevents 
      * recursion).
@@ -561,7 +563,7 @@ public class Tile extends Face {
     }
     
     /**
-     * Recursively translate 'vert' and 'augVert' arrays and 'baryVert'
+     * @brief Recursively translate 'vert' and 'augVert' arrays and 'baryVert'
      * according to 'vmap', which lists <old,new>.
      * @param vmap VertexMap
      * @return int 'vertCount', 0 if vmap is null
@@ -592,7 +594,7 @@ public class Tile extends Face {
     }
     
     /**
-     * For debugging, call this from eclipse to see 'vert' and 'augVert' vertices.
+     * @brief For debugging, call this from eclipse to see 'vert' and 'augVert' vertices.
      * @return int, count
      */
     public int debugPrint() {
@@ -612,7 +614,7 @@ public class Tile extends Face {
     }
     
     /**
-     * Given lists int[][2], 't', and 'nt', return vector of 
+     * @brief Given lists int[][2], 't', and 'nt', return vector of 
      * EdgeSimple's (myindex,nghbindex): entry 'myindex' of 't' 
      * is matched to entry 'nghbindex' of 'nt'.  
      * 

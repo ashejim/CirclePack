@@ -4,6 +4,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
+ * @brief This class is a handler for SAX parsers that will throw an exception upon
+ *
  * This class is a handler for SAX parsers that will throw an exception upon
  * successful retrieval of the content contained within "preview-image" tags.
  * Throwing the exception will generally interrupt the SAX parser, preventing

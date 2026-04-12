@@ -5,6 +5,8 @@ import java.awt.Color;
 import allMains.CPBase;
 
 /**
+ * @brief Commands for displaying objects in CirclePack canvasses: encode
+ *
  * Commands for displaying objects in CirclePack canvasses: encode
  * draw, fill, thickness, and possibly depth data in compact form.
  * 
@@ -59,7 +61,7 @@ public class DispFlags {
 	}
 
 	/**
-	 * Initial parsing of display string
+	 * @brief Initial parsing of display string
 	 * @param str
 	 */
 	public void parseDispStr(String str) {
@@ -170,7 +172,7 @@ public class DispFlags {
 	}
 	
 	/** 
-	 * Fill uses 'fillOpacity' to modify color
+	 * @brief Fill uses 'fillOpacity' to modify color
 	 * @return Color
 	 */
 	public Color getFillColor() {
@@ -185,7 +187,7 @@ public class DispFlags {
 	}
 	
 	/**
-	 * Only get this if boolean 'label' is true
+	 * @brief Only get this if boolean 'label' is true
 	 * @return String
 	 */
 	public String getLabel() {
@@ -195,7 +197,7 @@ public class DispFlags {
 	}
 	
 	/**
-	 * This sets boolean 'label' true and sets 'labelStr'
+	 * @brief This sets boolean 'label' true and sets 'labelStr'
 	 * @param lab String
 	 */
 	public void setLabel(String lab) {
@@ -205,7 +207,7 @@ public class DispFlags {
 	}
 	
 	/**
-	 * Put info back in compact string form to be included
+	 * @brief Put info back in compact string form to be included
 	 * in 'disp' command
 	 * 
 	 * Samples: 

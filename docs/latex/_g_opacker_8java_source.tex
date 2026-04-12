@@ -1,0 +1,1151 @@
+\doxysection{GOpacker.\+java}
+\hypertarget{_g_opacker_8java_source}{}\label{_g_opacker_8java_source}\index{src/rePack/GOpacker.java@{src/rePack/GOpacker.java}}
+\doxymbox{\hyperlink{_g_opacker_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00001}00001\ \textcolor{keyword}{package\ }rePack;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00003}00003\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00004}00004\ \textcolor{keyword}{import}\ java.util.Arrays;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00005}00005\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00007}00007\ \textcolor{keyword}{import}\ JNI.SolverData;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00008}00008\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00009}00009\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00010}00010\ \textcolor{keyword}{import}\ exceptions.CombException;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00011}00011\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00012}00012\ \textcolor{keyword}{import}\ exceptions.MiscException;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00013}00013\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00014}00014\ \textcolor{keyword}{import}\ geometry.CircleSimple;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00015}00015\ \textcolor{keyword}{import}\ geometry.EuclMath;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00016}00016\ \textcolor{keyword}{import}\ geometry.HyperbolicMath;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00017}00017\ \textcolor{keyword}{import}\ geometry.NSpole;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00018}00018\ \textcolor{keyword}{import}\ geometry.SphericalMath;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00019}00019\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00020}00020\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00021}00021\ \textcolor{keyword}{import}\ packing.PackLite;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00077}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker}{00077}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab2fa68f57c2c904097f3b69acc83d521}{GOpacker}}\ \textcolor{keyword}{extends}\ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_adecb495a47009dd67032971a309ac856}{RePacker}}\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00078}00078\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00079}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a099d188f50a91059495aae1e01403e30}{00079}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a099d188f50a91059495aae1e01403e30}{mode}};\ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00080}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_acbaf9da4dd7b740cbfe120bcbbf49396}{00080}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_acbaf9da4dd7b740cbfe120bcbbf49396}{NOT\_YET\_SET}}=0;\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00081}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ac016744371b5d755a120ced5ddcf4ca3}{00081}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ac016744371b5d755a120ced5ddcf4ca3}{MAX\_PACK}}=1;\ \textcolor{comment}{//\ 1:\ default,\ max\ pack\ for\ unit\ disc.\ (for\ sphere,\ use\ POLY\_PACK)}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00082}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8a0ada6df4d282dcedf5d2fe09cb1dbd}{00082}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8a0ada6df4d282dcedf5d2fe09cb1dbd}{POLY\_PACK}}=2;\ \textcolor{comment}{//\ 2:\ polygon,\ side\ count\ =\ size\ of\ 'corners'\ (once\ it's\ set\ up)}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00083}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ad1312a03d6f923f8dac8ca307d15a6f8}{00083}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ad1312a03d6f923f8dac8ca307d15a6f8}{ORTHO\_BDRY}}=3;\ \textcolor{comment}{//\ 3:\ bdry\ circles\ orthogonal\ to\ unit\ circle.}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00084}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_af205ba40d676a5c59efc19472df7c547}{00084}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_af205ba40d676a5c59efc19472df7c547}{FIXED\_CORNERS}}=4;\ \textcolor{comment}{//\ fix\ corner\ locations,\ let\ rest\ of\ bdry\ float}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00085}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab25b3fa1e6bb5531897192c6d2dda224}{00085}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab25b3fa1e6bb5531897192c6d2dda224}{FIXED\_BDRY}}=5;\ \ \textcolor{comment}{//\ boundary\ radii\ and\ centers\ are\ not\ changed}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00086}00086\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00087}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a1dd2f7ffe4cc803c68c2c1eea5b74d8d}{00087}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a1dd2f7ffe4cc803c68c2c1eea5b74d8d}{currentCrit}};\ \ \textcolor{comment}{//\ keep\ track\ of\ last\ value\ of\ 'crit'\ requested\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00088}00088\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00089}00089\ \ \ \ \ \textcolor{comment}{//\ persistent\ objects}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00090}00090\ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_lite}{PackLite}}\ myPLite;\ \ \ \ \ \ \ \textcolor{comment}{//\ create\ on\ startup,\ holds\ radii/centers}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00091}00091\ \ \ \ \ \textcolor{keywordtype}{int}\ origNodeCount;\ \ \ \ \ \ \textcolor{comment}{//\ original\ parent\ nodeCount\ for\ weak\ check\ of\ consistency\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00092}00092\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00093}00093\ \ \ \ \ \textcolor{comment}{//\ these\ are\ null\ unless\ the\ goal\ is\ a\ polygonal\ packing}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00094}00094\ \ \ \ \ \textcolor{keywordtype}{int}\ []parentCorners;\ \textcolor{comment}{//\ corner\ vertices\ in\ original\ indices}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00095}00095\ \ \ \ \ \textcolor{keywordtype}{int}\ []corners;\ \ \textcolor{comment}{//\ null\ until\ 'parentCorners'\ are\ translated\ to\ local\ indices.}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00096}00096\ \ \ \ \ ArrayList<NodeLink>\ sides;\ \ \textcolor{comment}{//\ list\ of\ bdry\ verts\ along\ sides,\ include\ both\ ends}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00097}00097\ \ \ \ \ \textcolor{keywordtype}{double}\ []cornerAngles;\ \textcolor{comment}{//\ for\ POLY\_PACK\ mode\ only,\ default\ to\ pi-\/2pi/n\ =\ pi(1-\/2/n)}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00098}00098\ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ []cornerLocations;\ \textcolor{comment}{//\ for\ FIXED\_CORNER\ mode\ only}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00099}00099\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00100}00100\ \ \ \ \ \textcolor{comment}{//\ sparse\ matrix\ structural\ stuff\ for\ linear\ system}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00101}00101\ \ \ \ \ \doxymbox{\hyperlink{class_j_n_i_1_1_solver_data}{SolverData}}\ sData;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00102}00102\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00103}00103\ \ \ \ \ VWJ\ []vwjA;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00104}00104\ \ \ \ \ VWJ\ []vwjRHS;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00105}00105\ \ \ \ \ \textcolor{comment}{//\ for\ filling\ righthand\ side\ of\ linear\ system}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00106}00106\ \ \ \ \ \textcolor{keywordtype}{int}\ rhsIJcount;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00107}00107\ \ \ \ \ \textcolor{keywordtype}{int}\ []rhsV;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00108}00108\ \ \ \ \ \textcolor{keywordtype}{int}\ []rhsWindx;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00110}00110\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00111}00111\ \ \ \ \ \textcolor{keywordtype}{double}\ [][]sectorTans;\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00112}00112\ \ \ \ \ \textcolor{comment}{/*\ for\ interior\ v,\ sectorTans[v]\ are\ based\ on\ radii;}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00113}00113\ \textcolor{comment}{\ \ \ \ \ *\ is\ array\ of\ tan(angle/2)\ for\ faces\ about\ v;\ entry\ j\ is\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00114}00114\ \textcolor{comment}{\ \ \ \ \ *\ for\ face\ \{v,v\_j,v\_\{j+1\}\}.\ */}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00115}00115\ \ \ \ \ \textcolor{keywordtype}{double}\ []conductances;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00116}00116\ \ \ \ \ \textcolor{comment}{/*\ total\ node\ conductances\ for\ interior\ v;\ computed\ using}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00117}00117\ \textcolor{comment}{\ \ \ \ \ *\ sectorTans\ and\ radii.\ \ */}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00118}00118\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00119}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_aba2853e184547e1c019c5c973fc9d688}{00119}}\ \ \ \ \ \textcolor{keyword}{public}\ Vector<Double>\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_aba2853e184547e1c019c5c973fc9d688}{myPLiteError}};\ \textcolor{comment}{//\ successive\ error\ after\ set\ cycles\ are\ done}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00120}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a6c9b56167a365bd0245888ce49788955}{00120}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a6c9b56167a365bd0245888ce49788955}{localError}};\ \textcolor{comment}{//\ error\ in\ localradii/centers\ during\ riffles}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00121}00121\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00122}00122\ \ \ \ \ \textcolor{keywordtype}{boolean}\ debug=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00123}00123\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00124}00124\ \ \ \ \ \textcolor{keywordtype}{int}\ passes;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00125}00125\ \ \ \ \ \textcolor{keywordtype}{double}\ errtol;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00126}00126\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00127}00127\ \ \ \ \ \textcolor{comment}{//\ constructor(s)}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00128}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab2fa68f57c2c904097f3b69acc83d521}{00128}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab2fa68f57c2c904097f3b69acc83d521}{GOpacker}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ pd)\ \{\ \textcolor{comment}{//\ default\ to\ 10\ passes}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00129}00129\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(pd,10);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00130}00130\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00131}00131\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00132}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ac58f39491de53f6dc75d72d7fe5f1f34}{00132}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ac58f39491de53f6dc75d72d7fe5f1f34}{GOpacker}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ pd,\textcolor{keywordtype}{int}\ pass\_limit)\ \{\ \textcolor{comment}{//\ default:\ max\ pack\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00133}00133\ \ \ \ \ \ \ \ \ super(pd,pass\_limit);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00134}00134\ \ \ \ \ \ \ \ \ passes=pass\_limit;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00135}00135\ \ \ \ \ \ \ \ \ errtol=.001;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00136}00136\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_af4c54dfffdce4a1c2cd4e006b472da91}{realLoad}}(\textcolor{keyword}{null});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00137}00137\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8bb55770d4a25887157144d62542c820}{setMode}}(0);\ \ \textcolor{comment}{//\ NOT\_YET\_SET;}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00138}00138\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00139}00139\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00140}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ae019b2519f8d41c255936ebd8880f0af}{00140}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ae019b2519f8d41c255936ebd8880f0af}{GOpacker}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ pd,\doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ vint)\ \{\ \textcolor{comment}{//\ specify\ interior}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00141}00141\ \ \ \ \ \ \ \ \ super(pd,30);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00142}00142\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8bb55770d4a25887157144d62542c820}{setMode}}(0);\ \textcolor{comment}{//\ NOT\_YET\_SET;}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00143}00143\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_af4c54dfffdce4a1c2cd4e006b472da91}{realLoad}}(vint);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00144}00144\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00145}00145\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00150}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ae97bc1177ad59da7c710adf47c7162c0}{00150}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ae97bc1177ad59da7c710adf47c7162c0}{load}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00151}00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00152}00152\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00153}00153\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00171}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_af4c54dfffdce4a1c2cd4e006b472da91}{00171}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_af4c54dfffdce4a1c2cd4e006b472da91}{realLoad}}(\doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ v\_int)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00172}00172\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00173}00173\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a86db0ac8b84db1aa96e3b31b3825a3b5}{status}}=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_adecb495a47009dd67032971a309ac856}{RePacker}}.FAILURE;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00174}00174\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a76b60c626b93571cff386b62311f4ed0}{setCorners}}(\textcolor{keyword}{null},\textcolor{keyword}{null});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00175}00175\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00176}00176\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ persistent\ 'PackLite',\ 'SolverData',\ and\ 'rhs'\ stuff}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00177}00177\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_lite}{PackLite}}\ myPLite=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classpacking_1_1_pack_lite}{PackLite}}(\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00178}00178\ \ \ \ \ \ \ \ \ origNodeCount=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.nodeCount;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00179}00179\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00180}00180\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ what\ to\ do\ about\ aims?\ Let's\ reset\ to\ default,\ then\ change\ as}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00181}00181\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ appropriate\ to\ mode.}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00182}00182\ \ \ \ \ \ \ \ \ myPLite.aims=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.vertCount+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00183}00183\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPLite.intVertCount;v++)\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00184}00184\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.aims[v]=2.0*Math.PI;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00185}00185\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=myPLite.intVertCount+1;v<=myPLite.vertCount;v++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00186}00186\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.aims[v]=-\/.1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00187}00187\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00188}00188\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ initiate\ SolverData}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00189}00189\ \ \ \ \ \ \ \ \ sData=\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab63e5e2ccd7191bceb58d56c7d26f9ee}{initSolverData}}(myPLite);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00190}00190\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00191}00191\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ready\ to\ go}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00192}00192\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a86db0ac8b84db1aa96e3b31b3825a3b5}{status}}=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_adecb495a47009dd67032971a309ac856}{RePacker}}.LOADED;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00193}00193\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ myPLite.vertCount;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00194}00194\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00195}00195\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00200}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8bb55770d4a25887157144d62542c820}{00200}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8bb55770d4a25887157144d62542c820}{setMode}}(\textcolor{keywordtype}{int}\ md)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00201}00201\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(md)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00202}00202\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 0:\ \textcolor{comment}{//\ not\ yet\ set}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00203}00203\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a099d188f50a91059495aae1e01403e30}{mode}}=\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_acbaf9da4dd7b740cbfe120bcbbf49396}{NOT\_YET\_SET}};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00206}00206\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00207}00207\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 2:\ \textcolor{comment}{//\ polygonal\ region}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00208}00208\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a099d188f50a91059495aae1e01403e30}{mode}}=\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8a0ada6df4d282dcedf5d2fe09cb1dbd}{POLY\_PACK}};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00211}00211\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00212}00212\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 3:\ \textcolor{comment}{//\ bdry\ centers\ on\ unit\ circle}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00213}00213\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00214}00214\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a099d188f50a91059495aae1e01403e30}{mode}}=\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ad1312a03d6f923f8dac8ca307d15a6f8}{ORTHO\_BDRY}};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00215}00215\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00216}00216\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00217}00217\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 4:\ \textcolor{comment}{//\ fixed\ corner}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00218}00218\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00219}00219\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a099d188f50a91059495aae1e01403e30}{mode}}=\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_af205ba40d676a5c59efc19472df7c547}{FIXED\_CORNERS}};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00220}00220\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00221}00221\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00222}00222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 5:\ \textcolor{comment}{//\ fixed\ bdry}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00223}00223\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a099d188f50a91059495aae1e01403e30}{mode}}=\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab25b3fa1e6bb5531897192c6d2dda224}{FIXED\_BDRY}};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00225}00225\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00226}00226\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00227}00227\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00228}00228\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00229}00229\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a099d188f50a91059495aae1e01403e30}{mode}}=\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ac016744371b5d755a120ced5ddcf4ca3}{MAX\_PACK}};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00230}00230\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00231}00231\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00232}00232\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00233}00233\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00247}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab63e5e2ccd7191bceb58d56c7d26f9ee}{00247}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_j_n_i_1_1_solver_data}{SolverData}}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab63e5e2ccd7191bceb58d56c7d26f9ee}{initSolverData}}(\doxymbox{\hyperlink{classpacking_1_1_pack_lite}{PackLite}}\ pL)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00248}00248\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00249}00249\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ijCount=0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00250}00250\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=pL.\doxymbox{\hyperlink{classpacking_1_1_pack_lite_a398abcfd7101abe4ffabc9c8ac7f6ad4}{intVertCount}};v++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00251}00251\ \ \ \ \ \ \ \ \ \ \ \ \ ijCount\ +=pL.\doxymbox{\hyperlink{classpacking_1_1_pack_lite_a9f0764ccbd853097559fce43cd31c45f}{vNum}}[v]+1;\ \textcolor{comment}{//\ larger\ than\ needed,\ but\ will\ be\ adjusted\ later}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00252}00252\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00253}00253\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ Ap\ and\ Ai\ data\ for\ compressed\ column\ format}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00254}00254\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Ap\ has\ 1+number\ of\ column\ (=intVertCount+1)\ entries,\ with\ Ap[0]=0.}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00255}00255\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_j_n_i_1_1_solver_data}{SolverData}}\ sdata=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{class_j_n_i_1_1_solver_data}{SolverData}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00256}00256\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00257}00257\ \ \ \ \ \ \ \ \ VWJ\ []tmp\_vwj=\textcolor{keyword}{new}\ VWJ[ijCount];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00258}00258\ \ \ \ \ \ \ \ \ VWJ\ []tmp\_rhs=\textcolor{keyword}{new}\ VWJ[ijCount];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00259}00259\ \ \ \ \ \ \ \ \ sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a130a6323cd7f63fb7262ad39923c1b78}{nz\_entries}}=0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00260}00260\ \ \ \ \ \ \ \ \ rhsIJcount=0;\ \textcolor{comment}{//\ separate\ pointer\ to\ non-\/zero\ entries}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00261}00261\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00262}00262\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first,\ find\ and\ list\ (possibly)\ non-\/zero\ entry\ spots\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00263}00263\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ in\ the\ square\ matrix,\ interior-\/to-\/interior}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00264}00264\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=pL.\doxymbox{\hyperlink{classpacking_1_1_pack_lite_a398abcfd7101abe4ffabc9c8ac7f6ad4}{intVertCount}};v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00265}00265\ \ \ \ \ \ \ \ \ \ \ \ \ tmp\_vwj[sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a130a6323cd7f63fb7262ad39923c1b78}{nz\_entries}}++]=\textcolor{keyword}{new}\ VWJ(v,v,-\/1);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00266}00266\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []flower=pL.\doxymbox{\hyperlink{classpacking_1_1_pack_lite_aac4808fea55f50ecfa4561efe9096e0f}{flowers}}[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00267}00267\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=pL.\doxymbox{\hyperlink{classpacking_1_1_pack_lite_a9f0764ccbd853097559fce43cd31c45f}{vNum}}[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00268}00268\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flower[0]!=flower[num])\ \textcolor{comment}{//\ this\ shouldn't\ happen}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00269}00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ num++;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00270}00270\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00271}00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=flower[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00272}00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (w<=pL.\doxymbox{\hyperlink{classpacking_1_1_pack_lite_a398abcfd7101abe4ffabc9c8ac7f6ad4}{intVertCount}})\ \textcolor{comment}{//\ w\ interior}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00273}00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp\_vwj[sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a130a6323cd7f63fb7262ad39923c1b78}{nz\_entries}}++]=\textcolor{keyword}{new}\ VWJ(v,w,j);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00274}00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00275}00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp\_rhs[rhsIJcount++]=\textcolor{keyword}{new}\ VWJ(v,w,j);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00276}00276\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00277}00277\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00278}00278\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00279}00279\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ non-\/zero\ spots\ are\ in\ vwjA;\ sort\ these\ and\ store\ in\ 'Ai',}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00280}00280\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ put\ counts\ in\ 'Ap'}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00281}00281\ \ \ \ \ \ \ \ \ vwjA=\textcolor{keyword}{new}\ VWJ[sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a130a6323cd7f63fb7262ad39923c1b78}{nz\_entries}}];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00282}00282\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a130a6323cd7f63fb7262ad39923c1b78}{nz\_entries}};i++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00283}00283\ \ \ \ \ \ \ \ \ \ \ \ \ vwjA[i]=tmp\_vwj[i];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00284}00284\ \ \ \ \ \ \ \ \ Arrays.sort(vwjA);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00285}00285\ \ \ \ \ \ \ \ \ sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_ac69aaca7fe1de7d62d10c8b6bf5453f4}{Ai}}=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a130a6323cd7f63fb7262ad39923c1b78}{nz\_entries}}];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00286}00286\ \ \ \ \ \ \ \ \ sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a198a82a13ed1c8ce815ee3ec274c74e3}{Ap}}=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[pL.\doxymbox{\hyperlink{classpacking_1_1_pack_lite_a398abcfd7101abe4ffabc9c8ac7f6ad4}{intVertCount}}+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00287}00287\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a130a6323cd7f63fb7262ad39923c1b78}{nz\_entries}};i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00288}00288\ \ \ \ \ \ \ \ \ \ \ \ \ sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a198a82a13ed1c8ce815ee3ec274c74e3}{Ap}}[vwjA[i].w]++;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00289}00289\ \ \ \ \ \ \ \ \ \ \ \ \ sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_ac69aaca7fe1de7d62d10c8b6bf5453f4}{Ai}}[i]=vwjA[i].v-\/1;\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00290}00290\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00291}00291\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ w=2;w<=pL.\doxymbox{\hyperlink{classpacking_1_1_pack_lite_a398abcfd7101abe4ffabc9c8ac7f6ad4}{intVertCount}};w++)\ \textcolor{comment}{//\ Ap\ entries\ are\ cummulative}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00292}00292\ \ \ \ \ \ \ \ \ \ \ \ \ sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a198a82a13ed1c8ce815ee3ec274c74e3}{Ap}}[w]\ +=\ sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a198a82a13ed1c8ce815ee3ec274c74e3}{Ap}}[w-\/1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00293}00293\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00294}00294\ \ \ \ \ \ \ \ \ vwjRHS=\textcolor{keyword}{new}\ VWJ[rhsIJcount];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00295}00295\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<rhsIJcount;j++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00296}00296\ \ \ \ \ \ \ \ \ \ \ \ \ vwjRHS[j]=tmp\_rhs[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00297}00297\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00298}00298\ \ \ \ \ \ \ \ \ sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a515d1245f4d68f3095f0b739945b48a3}{intNum}}=pL.\doxymbox{\hyperlink{classpacking_1_1_pack_lite_a398abcfd7101abe4ffabc9c8ac7f6ad4}{intVertCount}};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00299}00299\ \ \ \ \ \ \ \ \ sdata.\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data_a8ea0af940c917481523d42ca51a27f39}{bdryNum}}=pL.\doxymbox{\hyperlink{classpacking_1_1_pack_lite_a1d814e3772cbfd2062076642623b3b35}{bdryCount}};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00300}00300\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00301}00301\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sdata;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00302}00302\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00303}00303\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00308}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_af7eaddd4937a8919964dee042c6ee61e}{00308}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_af7eaddd4937a8919964dee042c6ee61e}{startRiffle}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00309}00309\ \ \ \ \ \ \ \ \ myPLite.radii=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.vertCount+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00310}00310\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=myPLite.vertCount;k++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00311}00311\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[k]=1.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00312}00312\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00313}00313\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a5a88b30458aa2ab7ca0f77340ec623a3}{totalPasses}}=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_aa88401355cb8a0b5b9a6146c2ccf81f8}{localPasses}}=0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00314}00314\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a86db0ac8b84db1aa96e3b31b3825a3b5}{status}}=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_adecb495a47009dd67032971a309ac856}{RePacker}}.RIFFLE;\ \textcolor{comment}{//\ ready\ to\ continue\ riffling}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00315}00315\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_aba2853e184547e1c019c5c973fc9d688}{myPLiteError}}=\textcolor{keyword}{new}\ Vector<Double>(1);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00316}00316\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00317}00317\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00318}00318\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00327}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ad0088f20743e96a7eb61f04cac229ee0}{00327}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ad0088f20743e96a7eb61f04cac229ee0}{reStartRiffle}}(\textcolor{keywordtype}{int}\ passNum)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00328}00328\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.hes!=0)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00329}00329\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}'reStartRiffle'\ applies\ only\ to\ eucl\ packings"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00330}00330\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00331}00331\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00332}00332\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=myPLite.vertCount;k++)\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00333}00333\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[k]=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.getRadius(myPLite.v2parent[k]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00334}00334\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (passNum<0)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00335}00335\ \ \ \ \ \ \ \ \ \ \ \ \ passNum=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a730cc29c038b4495726585878b1d6961}{passLimit}};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00336}00336\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00337}00337\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a730cc29c038b4495726585878b1d6961}{passLimit}}=passNum;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00338}00338\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00339}00339\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_aa88401355cb8a0b5b9a6146c2ccf81f8}{localPasses}}=0;\ \textcolor{comment}{//\ leave\ 'totalPasses'\ unchanged}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00340}00340\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a86db0ac8b84db1aa96e3b31b3825a3b5}{status}}=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_adecb495a47009dd67032971a309ac856}{RePacker}}.RIFFLE;\ \textcolor{comment}{//\ ready\ to\ continue\ riffling}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00341}00341\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_aba2853e184547e1c019c5c973fc9d688}{myPLiteError}}=\textcolor{keyword}{new}\ Vector<Double>(1);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00342}00342\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8799cc3cb7e23af3f62f97fddec19763}{continueRiffle}}(passNum);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00343}00343\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00344}00344\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00350}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8799cc3cb7e23af3f62f97fddec19763}{00350}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8799cc3cb7e23af3f62f97fddec19763}{continueRiffle}}(\textcolor{keywordtype}{int}\ passNum)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00351}00351\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00352}00352\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (passNum<0)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00353}00353\ \ \ \ \ \ \ \ \ \ \ \ \ passNum=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a730cc29c038b4495726585878b1d6961}{passLimit}};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00354}00354\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00355}00355\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a730cc29c038b4495726585878b1d6961}{passLimit}}=passNum;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00356}00356\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00357}00357\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ time\ through?}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00358}00358\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a099d188f50a91059495aae1e01403e30}{mode}}==\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_acbaf9da4dd7b740cbfe120bcbbf49396}{NOT\_YET\_SET}})\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00359}00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8bb55770d4a25887157144d62542c820}{setMode}}(\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab2fa68f57c2c904097f3b69acc83d521}{GOpacker}}.MAX\_PACK);\ \textcolor{comment}{//\ default}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00360}00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00361}00361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ but\ is\ this\ a\ sphere\ with\ punctured\ face?}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00362}00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a1c9a031c3513ae772ac41ed42e964c82}{setSphBdry}}()>0)\ \textcolor{comment}{//\ these\ sets\ bdry\ rad/centers\ (if\ there\ are\ 3\ bdry\ verts)}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00363}00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8bb55770d4a25887157144d62542c820}{setMode}}(\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab2fa68f57c2c904097f3b69acc83d521}{GOpacker}}.FIXED\_BDRY);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00364}00364\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00365}00365\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00366}00366\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ************************\ main\ loop\ ****************************}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00367}00367\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00368}00368\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pass=0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00369}00369\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (passNum==0)\ \{\ \textcolor{comment}{//\ want\ layout\ only}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00370}00370\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a7dbee3892fd252cc7f5983056a1ee3a0}{layoutBdry}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00371}00371\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a55885861ce07412419da599a8422049a}{layoutCenters}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00372}00372\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00373}00373\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00374}00374\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (pass<passNum)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00375}00375\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00376}00376\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ centers\ for\ bdry\ circles\ based\ on\ current\ radii}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00377}00377\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a7dbee3892fd252cc7f5983056a1ee3a0}{layoutBdry}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00378}00378\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00379}00379\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ layout\ interior\ via\ Tutte\ embedding}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00380}00380\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00381}00381\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a55885861ce07412419da599a8422049a}{layoutCenters}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00382}00382\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00383}00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reset\ radii\ to\ effective\ radii\ based\ on\ new\ centers}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00384}00384\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a6bb708921c10904fedc6bf6775dceda6}{setEffective}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00385}00385\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00386}00386\ \ \ \ \ \ \ \ \ \ \ \ \ pass++;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00387}00387\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00388}00388\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ judge\ results.\ good\ enough,\ then\ exit}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00389}00389\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a6c9b56167a365bd0245888ce49788955}{localError}}=\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ad874600108e9a86bb9ce84e24aa5ebd2}{l2quality}}(.001);\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00390}00390\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00391}00391\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a6c9b56167a365bd0245888ce49788955}{localError}}\ <\ .0001)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00392}00392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_aba2853e184547e1c019c5c973fc9d688}{myPLiteError}}==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00393}00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_aba2853e184547e1c019c5c973fc9d688}{myPLiteError}}=\textcolor{keyword}{new}\ Vector<Double>(1);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00394}00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_aba2853e184547e1c019c5c973fc9d688}{myPLiteError}}.addElement(Double.valueOf(\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a6c9b56167a365bd0245888ce49788955}{localError}}));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00395}00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a86db0ac8b84db1aa96e3b31b3825a3b5}{status}}=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_adecb495a47009dd67032971a309ac856}{RePacker}}.RIFFLE;\ \textcolor{comment}{//\ ready\ to\ continue\ riffling}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00396}00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_aa88401355cb8a0b5b9a6146c2ccf81f8}{localPasses}}\ +=\ pass;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00397}00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a5a88b30458aa2ab7ca0f77340ec623a3}{totalPasses}}\ +=\ pass;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00398}00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a1814acae7922bd0361de0d5110b00e88}{reapResults}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00399}00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pass;\textcolor{comment}{//\ kick\ out}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00400}00400\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00401}00401\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00402}00402\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ outer\ while}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00403}00403\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ********************************************************}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00404}00404\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00405}00405\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ results\ in\ parent\ packing}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00406}00406\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a1814acae7922bd0361de0d5110b00e88}{reapResults}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00407}00407\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00408}00408\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a86db0ac8b84db1aa96e3b31b3825a3b5}{status}}=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_adecb495a47009dd67032971a309ac856}{RePacker}}.RIFFLE;\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00409}00409\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pass;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00410}00410\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00411}00411\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00416}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a7dbee3892fd252cc7f5983056a1ee3a0}{00416}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a7dbee3892fd252cc7f5983056a1ee3a0}{layoutBdry}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00417}00417\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a099d188f50a91059495aae1e01403e30}{mode}})\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00418}00418\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab25b3fa1e6bb5531897192c6d2dda224}{FIXED\_BDRY}}:\ \textcolor{comment}{//\ nothing\ to\ do}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00419}00419\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00420}00420\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00421}00421\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00422}00422\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_af205ba40d676a5c59efc19472df7c547}{FIXED\_CORNERS}}:}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00423}00423\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00424}00424\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_aa4e4d815076b955f69bf3b2d77281226}{setFixedShape}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00425}00425\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00426}00426\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00427}00427\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8a0ada6df4d282dcedf5d2fe09cb1dbd}{POLY\_PACK}}:\ \textcolor{comment}{//\ polygon\ packing}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00428}00428\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00429}00429\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ not\ yet\ implemented}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00430}00430\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a944484a2c1b520cfa398790598639cb4}{setPolyCenters}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00431}00431\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00432}00432\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00433}00433\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ad1312a03d6f923f8dac8ca307d15a6f8}{ORTHO\_BDRY}}:\ \textcolor{comment}{//\ bdry\ circles\ ortho\ to\ unit\ circle}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00434}00434\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00435}00435\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a97f7b326ccfeecd95213b49e1656f184}{setOrthoCenters}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00436}00436\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00437}00437\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00438}00438\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:\ \textcolor{comment}{//\ MAX\_PACKING\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00439}00439\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00440}00440\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ae2e338090e6fdbb41698a171b8fe3661}{setHoroCenters}}();\ \textcolor{comment}{//\ for\ max\ packing,\ place\ around\ inside\ of\ unit\ circle}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00441}00441\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00442}00442\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00443}00443\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00444}00444\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00445}00445\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00453}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a55885861ce07412419da599a8422049a}{00453}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a55885861ce07412419da599a8422049a}{layoutCenters}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00454}00454\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00455}00455\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ linear\ system\ data\ based\ on\ localradii}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00456}00456\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_adb9c00c14eeb7ec8b2749b8bc5feead2}{updateMatrices}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00457}00457\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00458}00458\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Compute\ z:\ system\ is\ A*z=b\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00459}00459\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ stat=\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ac8763bf6cb595ec911f9d8f377a28ce8}{getTutteCenters}}(sData);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00460}00460\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00461}00461\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ the\ new\ interior\ centers}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00462}00462\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (stat>0)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00463}00463\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a64959c152c1d308552f3473236e33fe9}{storeLocalZ}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00464}00464\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00465}00465\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ myPLite.intVertCount;\ \textcolor{comment}{//\ anything\ meaningful\ to\ return?}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00466}00466\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00467}00467\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00474}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ac8763bf6cb595ec911f9d8f377a28ce8}{00474}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ac8763bf6cb595ec911f9d8f377a28ce8}{getTutteCenters}}(\doxymbox{\hyperlink{class_j_n_i_1_1_solver_data}{SolverData}}\ sD)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00475}00475\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00476}00476\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00477}00477\ \textcolor{comment}{//\ OBE:\ as\ of\ 3/2022\ have\ deleted\ all\ the\ former\ JNI\ stuff\ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00478}00478\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ sData\ =\ new\ SolverFunction().apply(sData);}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00479}00479\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00480}00480\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}SolverFunction\ UMFpackException\ occurred:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00481}00481\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00482}00482\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00483}00483\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00484}00484\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00485}00485\ \textcolor{comment}{//\ \ here's\ the\ way\ to\ do\ this\ in\ separate\ thread:}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00486}00486\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00487}00487\ \textcolor{comment}{//\ \ \ \ \ \ try\ \{}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00488}00488\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ CompletableFuture<SolverData>\ future=}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00489}00489\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ CompletableFuture.completedFuture(sData)}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00490}00490\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ .thenApply(new\ SolverFunction())}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00491}00491\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ .thenApply((solverData1)-\/>\{System.out.printf("{}Done.\(\backslash\)n"{});return\ solverData1;\});}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00492}00492\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00493}00493\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ sData=future.get();}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00494}00494\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00495}00495\ \textcolor{comment}{//\ \ \ \ \ \ \}\ catch\ (InterruptedException\ ex)\ \{}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00496}00496\ \textcolor{comment}{//\ \ \ \ \ \ CirclePack.cpb.errMsg("{}SolverFunction\ interruption\ occurred:\ "{}+ex.getMessage());}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00497}00497\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ return\ 0;}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00498}00498\ \textcolor{comment}{//\ \ \ \ \ \ \}\ catch\ (ExecutionException\ ex)\ \{}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00499}00499\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg("{}SolverFunction\ execution\ error\ occurred:\ "{}+ex.getMessage());}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00500}00500\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ return\ 0;}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00501}00501\ \textcolor{comment}{//\ \ \ \ \ \ \}}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00502}00502\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00503}00503\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00504}00504\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00505}00505\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00512}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_adb9c00c14eeb7ec8b2749b8bc5feead2}{00512}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_adb9c00c14eeb7ec8b2749b8bc5feead2}{updateMatrices}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00513}00513\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00514}00514\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00515}00515\ \ \ \ \ \ \ \ \ sectorTans=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.intVertCount+1][];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00516}00516\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPLite.intVertCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00517}00517\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ double\ ckangsum=0.0;\ //\ for\ debugging}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00518}00518\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []flower=myPLite.flowers[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00519}00519\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []data=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.vNum[v]];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00520}00520\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<myPLite.vNum[v];j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00521}00521\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=flower[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00522}00522\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ u=flower[j+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00523}00523\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cang=\doxymbox{\hyperlink{classgeometry_1_1_eucl_math}{EuclMath}}.\doxymbox{\hyperlink{classgeometry_1_1_eucl_math_a65e508e2f5aa2fc4339efdcacb843dcb}{e\_cos\_overlap}}(myPLite.radii[v],myPLite.radii[w],myPLite.radii[u]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00524}00524\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ ckangsum\ +=Math.acos(cang);\ //\ debugging:\ check\ angle\ sum}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00525}00525\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data[j]=Math.sqrt((1.0-\/cang)/(1.0+cang));\ \textcolor{comment}{//\ half\ angle\ formula}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00526}00526\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00527}00527\ \ \ \ \ \ \ \ \ \ \ \ \ sectorTans[v]=data;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00528}00528\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00529}00529\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00530}00530\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ total\ conductances\ for\ variable\ vertices}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00531}00531\ \ \ \ \ \ \ \ \ conductances=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.intVertCount+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00532}00532\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPLite.intVertCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00533}00533\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []st=sectorTans[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00534}00534\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=myPLite.vNum[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00535}00535\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []flower=myPLite.flowers[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00536}00536\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flower[0]==flower[num])\ \{\ \ \textcolor{comment}{//\ interior\ vertex}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00537}00537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=flower[0];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00538}00538\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ conductances[v]=(st[num-\/1]+st[0])/(myPLite.radii[v]+myPLite.radii[w]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00539}00539\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<num;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00540}00540\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t1=st[j-\/1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00541}00541\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t2=st[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00542}00542\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=flower[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00543}00543\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ conductances[v]\ +=(t1+t2)/(myPLite.radii[v]+myPLite.radii[w]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00544}00544\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00545}00545\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00546}00546\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ bdry\ vertex}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00547}00547\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=flower[0];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00548}00548\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ conductances[v]=st[0]/(myPLite.radii[v]+myPLite.radii[w]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00549}00549\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<num;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00550}00550\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t1=st[j-\/1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00551}00551\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t2=st[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00552}00552\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=flower[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00553}00553\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ conductances[v]\ +=(t1+t2)/(myPLite.radii[v]+myPLite.radii[w]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00554}00554\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00555}00555\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=flower[num];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00556}00556\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ conductances[v]\ +=st[num-\/1]/(myPLite.radii[v]+myPLite.radii[w]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00557}00557\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00558}00558\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00559}00559\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00560}00560\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ 'Aentries'}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00561}00561\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=sData.nz\_entries;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00562}00562\ \ \ \ \ \ \ \ \ sData.Aentries=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[n];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00563}00563\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;k<n;k++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00564}00564\ \ \ \ \ \ \ \ \ \ \ \ \ VWJ\ vwj=vwjA[k];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00565}00565\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=vwj.v;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00566}00566\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=vwj.w;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00567}00567\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j=vwj.j;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00568}00568\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=myPLite.vNum[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00569}00569\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []st=sectorTans[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00570}00570\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []flower=myPLite.flowers[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00571}00571\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j<0)\ \{\ \textcolor{comment}{//\ edge\ to\ self\ if\ j=-\/1}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00572}00572\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sData.Aentries[k]=-\/1.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00573}00573\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00574}00574\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (flower[0]==flower[num])\ \{\ \textcolor{comment}{//\ interior\ vertex}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00575}00575\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00576}00576\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j==0)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00577}00577\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t1=st[num-\/1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00578}00578\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00579}00579\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t1=st[j-\/1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00580}00580\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t2=st[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00581}00581\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00582}00582\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ this\ is\ transition\ probability\ from\ v\ to\ w.\ Conductance\ on\ an\ edge\ is\ ratio}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00583}00583\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ of\ dual\ circle\ center\ distance\ divided\ by\ circle\ center\ distance.\ rad[v]}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00584}00584\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ doesn't\ appear\ in\ t1,\ t2\ because\ it\ cancels\ with\ rad[v]\ that\ would\ appear}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00585}00585\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ in\ conductance.}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00586}00586\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sData.Aentries[k]=((t1+t2)/(myPLite.radii[v]+myPLite.radii[w]))/conductances[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00587}00587\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00588}00588\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ bdry\ vertex}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00589}00589\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00590}00590\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j==0\ ||\ j==num)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00591}00591\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t1=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00592}00592\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00593}00593\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t1=st[j-\/1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00594}00594\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t2=st[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00595}00595\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sData.Aentries[k]=((t1+t2)/(myPLite.radii[v]+myPLite.radii[w]))/conductances[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00596}00596\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00597}00597\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00598}00598\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00599}00599\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ rhs\ stuff,\ which\ is\ -\/B*zb,\ with\ B\ the\ m\ x\ n\ matrix}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00600}00600\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ of\ transition,\ interior-\/to-\/bdry,\ m=intVertCount,\ n=bdryCount,\ and}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00601}00601\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ zb\ is\ the\ vertor\ of\ bdry\ centers.}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00602}00602\ \ \ \ \ \ \ \ \ sData.rhsX=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.intVertCount];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00603}00603\ \ \ \ \ \ \ \ \ sData.rhsY=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.intVertCount];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00604}00604\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;k<rhsIJcount;k++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00605}00605\ \ \ \ \ \ \ \ \ \ \ \ \ VWJ\ vwj=vwjRHS[k];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00606}00606\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=vwj.v;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00607}00607\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=vwj.w;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00608}00608\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j=vwj.j;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00609}00609\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=myPLite.vNum[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00610}00610\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []st=sectorTans[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00611}00611\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []flower=myPLite.flowers[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00612}00612\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ tranprob=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00613}00613\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ bdry=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00614}00614\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flower[0]!=flower[num])\ \{\ \textcolor{comment}{//\ v\ is\ bdry}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00615}00615\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bdry=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00616}00616\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ num++;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00617}00617\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00618}00618\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00619}00619\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bdry)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00620}00620\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j==0)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00621}00621\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t=st[0];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00622}00622\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j==num)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00623}00623\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t=st[j-\/1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00624}00624\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00625}00625\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t=st[j-\/1]+st[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00626}00626\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00627}00627\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00628}00628\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t=st[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00629}00629\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j==0)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00630}00630\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t\ +=st[num-\/1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00631}00631\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00632}00632\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t+=st[j-\/1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00633}00633\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00634}00634\ \ \ \ \ \ \ \ \ \ \ \ \ tranprob=1.0*(t/(myPLite.radii[v]+myPLite.radii[w]))/conductances[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00635}00635\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00636}00636\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ have\ to\ introduce\ negative\ sign}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00637}00637\ \ \ \ \ \ \ \ \ \ \ \ \ sData.rhsX[v-\/1]\ -\/=\ tranprob*myPLite.centers[w].x;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00638}00638\ \ \ \ \ \ \ \ \ \ \ \ \ sData.rhsY[v-\/1]\ -\/=\ tranprob*myPLite.centers[w].y;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00639}00639\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00640}00640\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00641}00641\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00642}00642\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00643}00643\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00649}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a64959c152c1d308552f3473236e33fe9}{00649}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a64959c152c1d308552f3473236e33fe9}{storeLocalZ}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00650}00650\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00651}00651\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;k<myPLite.intVertCount;k++)\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00652}00652\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[k+1]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(sData.Zx[k],sData.Zy[k]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00653}00653\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ myPLite.intVertCount;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00654}00654\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00655}00655\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_misc_exception}{MiscException}}(\textcolor{stringliteral}{"{}error\ getting\ new\ centers:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00656}00656\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00657}00657\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00658}00658\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00668}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a6bb708921c10904fedc6bf6775dceda6}{00668}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a6bb708921c10904fedc6bf6775dceda6}{setEffective}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00669}00669\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00670}00670\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ handle\ interior\ first:\ their\ anglesum\ and\ aim\ are\ 2*pi}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00671}00671\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v\ =\ 1;\ v\ <=\ myPLite.intVertCount;\ v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00672}00672\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ area\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00673}00673\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num\ =\ myPLite.vNum[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00674}00674\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z\ =\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(myPLite.centers[v]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00675}00675\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower\ =\ myPLite.flowers[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00676}00676\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ num;\ j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00677}00677\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ jr\ =\ flower[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00678}00678\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ jl\ =\ flower[j\ +\ 1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00679}00679\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ zr\ =\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(myPLite.centers[jr]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00680}00680\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ zl\ =\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(myPLite.centers[jl]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00681}00681\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ radius\ of\ sector\ at\ v}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00682}00682\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r\ =\ 0.5\ *\ (zr.\doxymbox{\hyperlink{classcomplex_1_1_complex_abf8a9392412c0e349a2d8424a00d0dac}{minus}}(z).abs()\ +\ zl.\doxymbox{\hyperlink{classcomplex_1_1_complex_abf8a9392412c0e349a2d8424a00d0dac}{minus}}(z).\doxymbox{\hyperlink{classcomplex_1_1_complex_aec43a8d3e1882921b50f57e27dd8eb67}{abs}}()\ -\/\ zr.\doxymbox{\hyperlink{classcomplex_1_1_complex_abf8a9392412c0e349a2d8424a00d0dac}{minus}}(zl).\doxymbox{\hyperlink{classcomplex_1_1_complex_aec43a8d3e1882921b50f57e27dd8eb67}{abs}}());}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00683}00683\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cC\ =\ \doxymbox{\hyperlink{classgeometry_1_1_eucl_math}{EuclMath}}.\doxymbox{\hyperlink{classgeometry_1_1_eucl_math_a703129fa0942d995713641c0f9b2e838}{e\_cos\_corners}}(myPLite.centers[v],}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00684}00684\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[jr],\ myPLite.centers[jl]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00685}00685\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cC\ <\ -\/1.0)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00686}00686\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cC\ =\ -\/1.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00687}00687\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cC\ >\ 1.0)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00688}00688\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cC\ =\ 1.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00689}00689\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ang\ =\ Math.acos(cC);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00690}00690\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ area\ +=\ 0.5\ *\ r\ *\ r\ *\ ang;\ \textcolor{comment}{//\ add\ area\ of\ sector}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00691}00691\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00692}00692\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00693}00693\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ effective\ radii\ at\ interior\ if\ it\ is\ adjustable}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00694}00694\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPLite.aims[v]>0.0)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00695}00695\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[v]\ =\ Math.sqrt(area\ /\ Math.PI);\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00696}00696\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ finished\ with\ interiors}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00697}00697\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00698}00698\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a099d188f50a91059495aae1e01403e30}{mode}}==\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ab25b3fa1e6bb5531897192c6d2dda224}{FIXED\_BDRY}})}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00699}00699\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00700}00700\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00701}00701\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ do\ boundary,\ where,\ if\ there's\ not\ specified\ angle\ sum,}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00702}00702\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ we\ try\ to\ maintain\ the\ current\ angle\ sum;}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00703}00703\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v\ =\ myPLite.intVertCount+1;\ v\ <=\ myPLite.vertCount;\ v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00704}00704\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ area\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00705}00705\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ angsum=0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00706}00706\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z\ =\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(myPLite.centers[v]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00707}00707\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower\ =\ myPLite.flowers[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00708}00708\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num\ =\ myPLite.vNum[v]-\/1;\ \textcolor{comment}{//\ num\ faces}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00709}00709\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <=\ num;\ j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00710}00710\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ jr\ =\ flower[j];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00711}00711\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ jl\ =\ flower[j\ +\ 1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00712}00712\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ zr\ =\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(myPLite.centers[jr]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00713}00713\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ zl\ =\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(myPLite.centers[jl]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00714}00714\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ radius\ of\ sector\ at\ v}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00715}00715\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r\ =\ 0.5\ *\ (zr.\doxymbox{\hyperlink{classcomplex_1_1_complex_abf8a9392412c0e349a2d8424a00d0dac}{minus}}(z).abs()\ +\ zl.\doxymbox{\hyperlink{classcomplex_1_1_complex_abf8a9392412c0e349a2d8424a00d0dac}{minus}}(z).\doxymbox{\hyperlink{classcomplex_1_1_complex_aec43a8d3e1882921b50f57e27dd8eb67}{abs}}()\ -\/\ zr.\doxymbox{\hyperlink{classcomplex_1_1_complex_abf8a9392412c0e349a2d8424a00d0dac}{minus}}(zl).\doxymbox{\hyperlink{classcomplex_1_1_complex_aec43a8d3e1882921b50f57e27dd8eb67}{abs}}());}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00716}00716\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cC\ =\ \doxymbox{\hyperlink{classgeometry_1_1_eucl_math}{EuclMath}}.\doxymbox{\hyperlink{classgeometry_1_1_eucl_math_a703129fa0942d995713641c0f9b2e838}{e\_cos\_corners}}(myPLite.centers[v],}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00717}00717\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[jr],\ myPLite.centers[jl]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00718}00718\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cC\ <\ -\/1.0)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00719}00719\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cC\ =\ -\/1.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00720}00720\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cC\ >\ 1.0)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00721}00721\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cC\ =\ 1.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00722}00722\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ang\ =\ Math.acos(cC);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00723}00723\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angsum\ +=\ ang;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00724}00724\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ area\ +=\ 0.5\ *\ r\ *\ r\ *\ ang;\ \textcolor{comment}{//\ add\ area\ of\ sector}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00725}00725\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00726}00726\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00727}00727\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ positive\ aim,\ want\ effective\ radii\ to\ give\ same\ area\ as\ aim\ would}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00728}00728\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPLite.aims[v]>0.001)\ \{\ \textcolor{comment}{//\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00729}00729\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angsum=myPLite.aims[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00730}00730\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[v]\ =\ (Math.sqrt(2.0*area/angsum));\ \textcolor{comment}{//\ +\ myPLite.radii[v])\ /\ 2.0;}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00731}00731\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00732}00732\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ negative\ aim,\ want\ area\ as\ current\ angle\ sum\ would\ give,\ except\ we}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00733}00733\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ average\ radius\ with\ current\ value\ to\ prevent\ oscillations\ (can\ test\ if}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00734}00734\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ this\ is\ helpful\ later}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00735}00735\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (myPLite.aims[v]<-\/.001)\ \{\ \textcolor{comment}{//\ or\ same\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00736}00736\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[v]\ =\ (Math.sqrt(2.0*area/angsum)\ +\ myPLite.radii[v])\ /\ 2.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00737}00737\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00738}00738\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00739}00739\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Note:\ if\ 'targetArea'\ is\ between\ -\/.001\ and\ .001,\ then\ the}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00740}00740\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ local\ radius\ does\ not\ change.\ (E.g.,\ with\ 3\ bdry\ circles}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00741}00741\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ in\ the\ spherical\ case.)}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00742}00742\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00743}00743\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ finished\ with\ boundary\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00744}00744\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00745}00745\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00746}00746\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00747}00747\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00748}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ad874600108e9a86bb9ce84e24aa5ebd2}{00748}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ad874600108e9a86bb9ce84e24aa5ebd2}{l2quality}}(\textcolor{keywordtype}{double}\ crit)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00749}00749\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []ans=\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a06d155e765270af22b04eafa1c7693f3}{packQuality}}(crit);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00750}00750\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans[0];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00751}00751\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00752}00752\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00761}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a06d155e765270af22b04eafa1c7693f3}{00761}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ []\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a06d155e765270af22b04eafa1c7693f3}{packQuality}}(\textcolor{keywordtype}{double}\ crit)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00762}00762\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []ans=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[2];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00763}00763\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sas=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00764}00764\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=myPLite.intVertCount;k++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00765}00765\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r=myPLite.radii[k];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00766}00766\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=myPLite.vNum[k];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00767}00767\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []flower=myPLite.flowers[k];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00768}00768\ \ \ \ \ \ \ \ \ \ \ \ \ sas=-\/myPLite.aims[k];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00769}00769\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00770}00770\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sas\ +=\ Math.acos(\doxymbox{\hyperlink{classgeometry_1_1_eucl_math}{EuclMath}}.\doxymbox{\hyperlink{classgeometry_1_1_eucl_math_a65e508e2f5aa2fc4339efdcacb843dcb}{e\_cos\_overlap}}(r,}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00771}00771\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[flower[j]],myPLite.radii[flower[j+1]]));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00772}00772\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00773}00773\ \ \ \ \ \ \ \ \ \ \ \ \ sas=Math.abs(sas);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00774}00774\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sas>ans[0])\ ans[0]=sas;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00775}00775\ \ \ \ \ \ \ \ \ \ \ \ \ ans[1]\ +=\ sas*sas;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00776}00776\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00777}00777\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00778}00778\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00779}00779\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00785}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a1814acae7922bd0361de0d5110b00e88}{00785}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a1814acae7922bd0361de0d5110b00e88}{reapResults}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00786}00786\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.hes==0)\ \{\ \textcolor{comment}{//\ eucl\ case}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00787}00787\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.nodeCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00788}00788\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=myPLite.parent2v[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00789}00789\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00790}00790\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.setRadius(v,myPLite.radii[k]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00791}00791\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.setCenter(v,\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(myPLite.centers[k]));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00792}00792\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00793}00793\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00794}00794\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00795}00795\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00796}00796\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.hes>0)\ \{\ \textcolor{comment}{//\ sph\ case}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00797}00797\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.nodeCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00798}00798\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=myPLite.parent2v[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00799}00799\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ sc=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math}{SphericalMath}}.\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aba7cca1b57c72b994ef26ed18c133745}{e\_to\_s\_data}}(myPLite.centers[k],myPLite.radii[k]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00800}00800\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00801}00801\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.setCenter(v,\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(sc.\doxymbox{\hyperlink{classgeometry_1_1_circle_simple_a059622538832dc4107683c82cf29734b}{center}}));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00802}00802\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.setRadius(v,sc.\doxymbox{\hyperlink{classgeometry_1_1_circle_simple_ad0e97e48c1d6370efa1907e2993015bd}{rad}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00803}00803\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00804}00804\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00805}00805\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00806}00806\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classgeometry_1_1_n_spole}{NSpole}}\ nsPoler=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classgeometry_1_1_n_spole}{NSpole}}(\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}});\ \ \textcolor{comment}{//\ routines\ are\ here}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00807}00807\ \ \ \ \ \ \ \ \ \ \ \ \ nsPoler.\doxymbox{\hyperlink{classgeometry_1_1_n_spole_a1d84c53237a7a64e837862399f4adb0e}{parseNSpole}}(\textcolor{keyword}{null});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00808}00808\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00809}00809\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00810}00810\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ hyp\ case}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00811}00811\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.nodeCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00812}00812\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=myPLite.parent2v[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00813}00813\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ sc=\doxymbox{\hyperlink{classgeometry_1_1_hyperbolic_math}{HyperbolicMath}}.\doxymbox{\hyperlink{classgeometry_1_1_hyperbolic_math_a2af1b260de1764e6789e4063e7a9aa0f}{e\_to\_h\_data}}(myPLite.centers[k],myPLite.radii[k]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00814}00814\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00815}00815\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.setCenter(v,\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(sc.\doxymbox{\hyperlink{classgeometry_1_1_circle_simple_a059622538832dc4107683c82cf29734b}{center}}));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00816}00816\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.setRadius(v,sc.\doxymbox{\hyperlink{classgeometry_1_1_circle_simple_ad0e97e48c1d6370efa1907e2993015bd}{rad}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00817}00817\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00818}00818\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00819}00819\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00820}00820\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00821}00821\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00822}00822\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00823}00823\ \ \ \ \ \textcolor{comment}{/*\ ******************************************************}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00824}00824\ \textcolor{comment}{\ \ \ \ \ *\ Methods\ for\ positioning\ boundary\ circles}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00825}00825\ \textcolor{comment}{\ \ \ \ \ ******************************************************\ */}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00826}00826\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00833}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ae2e338090e6fdbb41698a171b8fe3661}{00833}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ae2e338090e6fdbb41698a171b8fe3661}{setHoroCenters}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00834}00834\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ fvalue=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00835}00835\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ fprime=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00836}00836\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00837}00837\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ initial\ guess:\ (sum\ of\ bdry\ radii)/pi}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00838}00838\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ R=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00839}00839\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ minrad=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00840}00840\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []r=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.bdryCount+1];\ \textcolor{comment}{//\ closed\ list\ of\ radii}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00841}00841\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<myPLite.bdryCount;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00842}00842\ \ \ \ \ \ \ \ \ \ \ \ \ R\ +=\ r[j]=myPLite.radii[j+myPLite.intVertCount+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00843}00843\ \ \ \ \ \ \ \ \ \ \ \ \ minrad=\ (r[j]>minrad)\ ?\ r[j]\ :\ minrad;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00844}00844\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (java.lang.Double.isNaN(R))}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00845}00845\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}R\ is\ NaN\ ???"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00846}00846\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00847}00847\ \ \ \ \ \ \ \ \ r[myPLite.bdryCount]=r[0];\ \textcolor{comment}{//\ to\ close\ up}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00848}00848\ \ \ \ \ \ \ \ \ R\ /=\ Math.PI;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00849}00849\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (R<2.0*minrad)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00850}00850\ \ \ \ \ \ \ \ \ \ \ \ \ R=3.0*minrad;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00851}00851\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00852}00852\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Newton\ iteration\ to\ find\ R}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00853}00853\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ keepon=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00854}00854\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (keepon)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00855}00855\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00856}00856\ \ \ \ \ \ \ \ \ \ \ \ \ fvalue=-\/2.0*Math.PI;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00857}00857\ \ \ \ \ \ \ \ \ \ \ \ \ fprime=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00858}00858\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<myPLite.bdryCount;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00859}00859\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ Rrr=R-\/r[j]-\/r[j+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00860}00860\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ RRrr=R*Rrr;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00861}00861\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ab=r[j]*r[j+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00862}00862\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fvalue\ +=\ Math.acos((RRrr-\/ab)/(RRrr+ab));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00863}00863\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (java.lang.Double.isNaN(fvalue))}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00864}00864\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}acos\ failed:\ R="{}}+R+\textcolor{stringliteral}{"{};\ r[j]="{}}+r[j]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00865}00865\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fprime\ +=\ -\/1.0*(R+Rrr)*Math.sqrt(ab/RRrr)/(RRrr+ab);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00866}00866\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00867}00867\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00868}00868\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ this\ working?}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00869}00869\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ newR=R-\/fvalue/fprime;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00870}00870\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR<R/2.0\ ||\ newR>2.0*R)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00871}00871\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println("{}big\ change\ in\ R="{}+R+"{};\ newR="{}+newR);}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00872}00872\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR<R/2.0)\ \{\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00873}00873\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newR=R/2;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00874}00874\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR<2.0*minrad)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00875}00875\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newR=(2.0*minrad+R)/2.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00876}00876\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00877}00877\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR>2.0*R)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00878}00878\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newR=2.0*R;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00879}00879\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00880}00880\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00881}00881\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(newR-\/R)<.00001)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00882}00882\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ keepon=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00883}00883\ \ \ \ \ \ \ \ \ \ \ \ \ R=newR;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00884}00884\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00885}00885\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00886}00886\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ scale\ all\ radii\ by\ 1/R}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00887}00887\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=myPLite.vertCount;k++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00888}00888\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[k]\ /=\ R;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00889}00889\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00890}00890\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ boundary\ centers,\ first\ on\ y-\/axis.}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00891}00891\ \ \ \ \ \ \ \ \ myPLite.centers[myPLite.intVertCount+1]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(0.0,1.0-\/myPLite.radii[myPLite.intVertCount+1]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00892}00892\ \textcolor{comment}{//\ \ \ \ \ \ double\ chkarg=0.0;\ //\ for\ debugging}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00893}00893\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=myPLite.intVertCount+2;k<=myPLite.vertCount;k++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00894}00894\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rj=myPLite.radii[k-\/1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00895}00895\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rj1=myPLite.radii[k];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00896}00896\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ RRrr=1.0-\/rj-\/rj1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00897}00897\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ab=rj*rj1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00898}00898\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ delta\ =\ Math.acos((RRrr-\/ab)/(RRrr+ab));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00899}00899\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ arg=myPLite.centers[k-\/1].arg()+delta;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00900}00900\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ chkarg\ +=delta;}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00901}00901\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d=1.0-\/myPLite.radii[k];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00902}00902\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[k]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(d*Math.cos(arg),d*Math.sin(arg));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00903}00903\ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00904}00904\ \textcolor{comment}{//\ \ \ \ \ \ chkarg\ /=2.0*Math.PI;}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00905}00905\ \textcolor{comment}{//\ \ \ \ \ \ System.out.println("{}R\ is\ "{}+R+"{}\ and\ chkarg\ is\ "{}+chkarg);}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00906}00906\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ R;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00907}00907\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00908}00908\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00915}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a97f7b326ccfeecd95213b49e1656f184}{00915}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a97f7b326ccfeecd95213b49e1656f184}{setOrthoCenters}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00916}00916\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ fvalue=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00917}00917\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ fprime=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00918}00918\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00919}00919\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ initial\ guess:\ (sum\ of\ bdry\ radii)/pi}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00920}00920\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ R=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00921}00921\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ minrad=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00922}00922\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []r=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.bdryCount+1];\ \textcolor{comment}{//\ closed\ list\ of\ radii}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00923}00923\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<myPLite.bdryCount;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00924}00924\ \ \ \ \ \ \ \ \ \ \ \ \ R\ +=\ r[j]=myPLite.radii[j+myPLite.intVertCount+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00925}00925\ \ \ \ \ \ \ \ \ \ \ \ \ minrad=\ (r[j]>minrad)\ ?\ r[j]\ :\ minrad;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00926}00926\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (java.lang.Double.isNaN(R))}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00927}00927\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}R\ is\ NaN\ ???"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00928}00928\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00929}00929\ \ \ \ \ \ \ \ \ r[myPLite.bdryCount]=r[0];\ \textcolor{comment}{//\ to\ close\ up}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00930}00930\ \ \ \ \ \ \ \ \ R\ /=\ 2.0*Math.PI;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00931}00931\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (R<minrad)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00932}00932\ \ \ \ \ \ \ \ \ \ \ \ \ R=2.0*minrad;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00933}00933\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00934}00934\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Newton\ iteration\ to\ find\ R}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00935}00935\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ keepon=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00936}00936\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (keepon)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00937}00937\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00938}00938\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ RR=R*R;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00939}00939\ \ \ \ \ \ \ \ \ \ \ \ \ fvalue=-\/2.0*Math.PI;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00940}00940\ \ \ \ \ \ \ \ \ \ \ \ \ fprime=0.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00941}00941\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<myPLite.bdryCount;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00942}00942\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fvalue\ +=\ 2.0*Math.atan(r[j]/R);\ \textcolor{comment}{//\ angle\ each\ boundary\ circle\ intercepts\ at\ origin}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00943}00943\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (java.lang.Double.isNaN(fvalue))}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00944}00944\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}acos\ failed:\ R="{}}+R+\textcolor{stringliteral}{"{};\ r[j]="{}}+r[j]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00945}00945\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fprime\ +=\ -\/2.0*r[j]/(RR+r[j]*r[j]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00946}00946\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00947}00947\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00948}00948\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ this\ working?}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00949}00949\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ newR=R-\/fvalue/fprime;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00950}00950\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR<R/2.0\ ||\ newR>2.0*R)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00951}00951\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println("{}big\ change\ in\ R="{}+R+"{};\ newR="{}+newR);}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00952}00952\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR<R/2.0)\ \{\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00953}00953\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newR=R/2;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00954}00954\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR<minrad)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00955}00955\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newR=(minrad+R)/2.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00956}00956\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00957}00957\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR>2.0*R)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00958}00958\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newR=2.0*R;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00959}00959\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00960}00960\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00961}00961\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(newR-\/R)<.00001)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00962}00962\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ keepon=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00963}00963\ \ \ \ \ \ \ \ \ \ \ \ \ R=newR;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00964}00964\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00965}00965\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00966}00966\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ scale\ all\ radii\ by\ 1/R}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00967}00967\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=myPLite.vertCount;k++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00968}00968\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[k]\ /=\ R;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00969}00969\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00970}00970\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ boundary\ centers,\ first\ on\ y-\/axis;\ center\ is\ distance\ sqrt(r\string^2+1\string^2)\ from\ origin}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00971}00971\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00972}00972\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad=myPLite.radii[myPLite.intVertCount+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00973}00973\ \ \ \ \ \ \ \ \ myPLite.centers[myPLite.intVertCount+1]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(0.0,Math.sqrt(rad*rad+1.0));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00974}00974\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ accumArg=Math.atan(rad)+Math.PI/2.0;\ \textcolor{comment}{//\ pi/2\ +\ half\ of\ angle\ subtended\ by\ first\ bdry\ circle\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00975}00975\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=myPLite.intVertCount+2;k<=myPLite.vertCount;k++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00976}00976\ \ \ \ \ \ \ \ \ \ \ \ \ rad=myPLite.radii[k];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00977}00977\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ delta=Math.atan(rad);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00978}00978\ \ \ \ \ \ \ \ \ \ \ \ \ accumArg\ +=delta;\ \textcolor{comment}{//\ increment\ by\ half\ the\ angle\ subtended}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00979}00979\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d=Math.sqrt(rad*rad+1.0);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00980}00980\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[k]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(d*Math.cos(accumArg),d*Math.sin(accumArg));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00981}00981\ \ \ \ \ \ \ \ \ \ \ \ \ accumArg\ +=delta;\ \textcolor{comment}{//\ increment\ by\ the\ other\ half}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00982}00982\ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00983}00983\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ R;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00984}00984\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00985}00985\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00992}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a944484a2c1b520cfa398790598639cb4}{00992}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a944484a2c1b520cfa398790598639cb4}{setPolyCenters}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00993}00993\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00994}00994\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00995}00995\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00996}00996\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sides==\textcolor{keyword}{null}\ ||\ (N=sides.size())<3)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00997}00997\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}No\ sides\ or\ too\ few\ sides\ given"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00998}00998\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l00999}00999\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ record\ the\ side\ lengths\ based\ on\ radii}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01000}01000\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []sidelengths=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[N];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01001}01001\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<N;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01002}01002\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ myside=sides.get(i);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01003}01003\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=myside.size();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01004}01004\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01005}01005\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ and\ last\ radii}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01006}01006\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ length=myPLite.radii[myside.get(0)];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01007}01007\ \ \ \ \ \ \ \ \ \ \ \ \ length\ +=myPLite.radii[myside.get(n-\/1)];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01008}01008\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01009}01009\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ plus\ diameters\ of\ circle\ in\ between}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01010}01010\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<n-\/1;j++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01011}01011\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ length\ +=2.0*myPLite.radii[myside.get(j)];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01012}01012\ \ \ \ \ \ \ \ \ \ \ \ \ sidelengths[i]=length;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01013}01013\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01014}01014\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01015}01015\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ rectangle\ (or\ even\ number\ of\ sides),\ average\ opposites}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01016}01016\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []avglengths=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[N];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01017}01017\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (2*(\textcolor{keywordtype}{int})(((\textcolor{keywordtype}{double})N)/2.0)==N)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01018}01018\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ no2=N/2;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01019}01019\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<no2;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01020}01020\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ avglengths[i]=avglengths[i+no2]=(sidelengths[i]+sidelengths[i+no2])/2.0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01021}01021\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01022}01022\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01023}01023\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01024}01024\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(N)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01025}01025\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 4:\ \textcolor{comment}{//\ rectangle}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01026}01026\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01027}01027\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ width=avglengths[0];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01028}01028\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ height=avglengths[1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01029}01029\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ aspect=height/width;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01030}01030\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ factor=2.0*(aspect+1)/(width+height);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01031}01031\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPLite.vertCount;v++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01032}01032\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[v]\ *=\ factor;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01033}01033\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<4;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01034}01034\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sidelengths[i]\ *=factor;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01035}01035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ avglengths[i]\ *=factor;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01036}01036\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01037}01037\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01038}01038\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ lowerleft\ (-\/1,-\/aspect),\ upper\ right\ (1,aspect).}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01039}01039\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ On\ each\ edge,\ spread\ vertices\ proportially\ to\ cover}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01040}01040\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ unit\ vector\ edge\ directions,\ based\ on\ arguments}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01041}01041\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ convention:\ 0'th\ edge\ is\ horizontal,\ right\ to\ left}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01042}01042\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ []edgedir=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[4];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01043}01043\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ turn=Math.PI;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01044}01044\ \ \ \ \ \ \ \ \ \ \ \ \ edgedir[0]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(0.0,turn).\doxymbox{\hyperlink{classcomplex_1_1_complex_ad7b151465dd125ddd8d3d2a2573df2de}{exp}}();\ \textcolor{comment}{//\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01045}01045\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01046}01046\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ successive\ directions\ computed\ from\ turning\ angles}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01047}01047\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<4;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01048}01048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ turn\ +=\ Math.PI-\/cornerAngles[(i+1)\%4];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01049}01049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ edgedir[i]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(0.0,turn).\doxymbox{\hyperlink{classcomplex_1_1_complex_ad7b151465dd125ddd8d3d2a2573df2de}{exp}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01050}01050\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01051}01051\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01052}01052\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ plant\ the\ initial\ corner,\ by\ convention\ at\ 1+aspect*i}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01053}01053\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ spot=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(1.0,aspect);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01054}01054\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01055}01055\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ do\ the\ edges\ in\ turn}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01056}01056\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k=0;k<4;k++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01057}01057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sidefactor=avglengths[k]/sidelengths[k];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01058}01058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ side=sides.get(k);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01059}01059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=side.size();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01060}01060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01061}01061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[side.get(0)]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(spot);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01062}01062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ prev=sidefactor*myPLite.radii[side.get(0)];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01063}01063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01064}01064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_ad0fb7fcb5fcfb5ef7160a017e7392476}{m}}=1;\doxymbox{\hyperlink{classre_pack_1_1_re_packer_ad0fb7fcb5fcfb5ef7160a017e7392476}{m}}<n;\doxymbox{\hyperlink{classre_pack_1_1_re_packer_ad0fb7fcb5fcfb5ef7160a017e7392476}{m}}++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01065}01065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=side.get(\doxymbox{\hyperlink{classre_pack_1_1_re_packer_ad0fb7fcb5fcfb5ef7160a017e7392476}{m}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01066}01066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ next=sidefactor*myPLite.radii[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01067}01067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ spot=spot.\doxymbox{\hyperlink{classcomplex_1_1_complex_a37cceb4559d9d41156e914717c7fdb98}{add}}(edgedir[k].times(prev+next));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01068}01068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[v]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(spot);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01069}01069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prev=next;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01070}01070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01071}01071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01072}01072\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01073}01073\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01074}01074\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01075}01075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 3:\ \textcolor{comment}{//\ triangle}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01076}01076\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01077}01077\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ fix\ this\ up.\ Must\ be\ given\ 'cornerAngles'}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01078}01078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01079}01079\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01080}01080\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01081}01081\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01082}01082\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01083}01083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01084}01084\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01085}01085\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01092}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_aa4e4d815076b955f69bf3b2d77281226}{01092}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_aa4e4d815076b955f69bf3b2d77281226}{setFixedShape}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01093}01093\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01094}01094\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01095}01095\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01096}01096\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sides==\textcolor{keyword}{null}\ ||\ (N=sides.size())<3)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01097}01097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}No\ sides\ or\ too\ few\ sides\ given"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01098}01098\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01099}01099\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ record\ the\ side\ lengths\ based\ on\ radii}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01100}01100\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []sidelengths=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[N];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01101}01101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<N;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01102}01102\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ myside=sides.get(i);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01103}01103\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=myside.size();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01104}01104\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01105}01105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ and\ last\ radii}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01106}01106\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ length=myPLite.radii[myside.get(0)];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01107}01107\ \ \ \ \ \ \ \ \ \ \ \ \ length\ +=myPLite.radii[myside.get(n-\/1)];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01108}01108\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01109}01109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ plus\ diameters\ of\ circle\ in\ between}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01110}01110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<n-\/1;j++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01111}01111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ length\ +=2.0*myPLite.radii[myside.get(j)];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01112}01112\ \ \ \ \ \ \ \ \ \ \ \ \ sidelengths[i]=length;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01113}01113\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01114}01114\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01115}01115\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ intended\ lengths\ and\ unit\ vector\ directions\ of\ the\ sides}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01116}01116\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []givenlength=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[N];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01117}01117\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ []edgedir=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[N];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01118}01118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<N;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01119}01119\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ myside=sides.get(i);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01120}01120\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ fz=myPLite.centers[myside.getFirst()];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01121}01121\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ lz=myPLite.centers[myside.getLast()];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01122}01122\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ vec=fz.\doxymbox{\hyperlink{classcomplex_1_1_complex_abf8a9392412c0e349a2d8424a00d0dac}{minus}}(lz);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01123}01123\ \ \ \ \ \ \ \ \ \ \ \ \ givenlength[i]=vec.\doxymbox{\hyperlink{classcomplex_1_1_complex_aec43a8d3e1882921b50f57e27dd8eb67}{abs}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01124}01124\ \ \ \ \ \ \ \ \ \ \ \ \ edgedir[i]=vec.\doxymbox{\hyperlink{classcomplex_1_1_complex_a75082c83a7dd1c06d94e15b962365c82}{divide}}(givenlength[i]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01125}01125\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01126}01126\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01127}01127\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ s=0;s<N;s++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01128}01128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sidefactor=givenlength[s]/sidelengths[s];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01129}01129\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ myside=sides.get(s);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01130}01130\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=myside.size();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01131}01131\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ spot=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(myPLite.centers[myside.getFirst()]);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01132}01132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ prev=sidefactor*myPLite.radii[myside.get(0)];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01133}01133\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01134}01134\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_ad0fb7fcb5fcfb5ef7160a017e7392476}{m}}=1;\doxymbox{\hyperlink{classre_pack_1_1_re_packer_ad0fb7fcb5fcfb5ef7160a017e7392476}{m}}<n;\doxymbox{\hyperlink{classre_pack_1_1_re_packer_ad0fb7fcb5fcfb5ef7160a017e7392476}{m}}++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01135}01135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=myside.get(\doxymbox{\hyperlink{classre_pack_1_1_re_packer_ad0fb7fcb5fcfb5ef7160a017e7392476}{m}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01136}01136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ next=sidefactor*myPLite.radii[v];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01137}01137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ spot=spot.\doxymbox{\hyperlink{classcomplex_1_1_complex_a37cceb4559d9d41156e914717c7fdb98}{add}}(edgedir[s].times(prev+next));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01138}01138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[v]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(spot);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01139}01139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prev=next;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01140}01140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01141}01141\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01142}01142\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01143}01143\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01144}01144\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01145}01145\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01146}01146\ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01153}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a2e67c8eedc94850d5e15c20a7ea6a759}{01153}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a2e67c8eedc94850d5e15c20a7ea6a759}{sideSetup}}(\textcolor{keywordtype}{int}\ []crnrs)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01154}01154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPLite.vertCount\ \ <=1)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01155}01155\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_comb_exception}{CombException}}(\textcolor{stringliteral}{"{}GOpack\ failed:\ no\ interior\ vertices"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01156}01156\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01157}01157\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get/check\ the\ corners}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01158}01158\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=crnrs.length;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01159}01159\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n<3)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01160}01160\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}GOpack\ failed:\ less\ than\ 3\ corners\ specified"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01161}01161\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01162}01162\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ corners\ in\ cclw\ 'neworder'}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01163}01163\ \ \ \ \ \ \ \ \ sides=\textcolor{keyword}{new}\ ArrayList<NodeLink>(n);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01164}01164\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []neworder=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[n+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01165}01165\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ first=crnrs[0];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01166}01166\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01167}01167\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ a\ knockout\ list}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01168}01168\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []kolst=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[n];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01169}01169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<n;i++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01170}01170\ \ \ \ \ \ \ \ \ \ \ \ \ kolst[i]=crnrs[i];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01171}01171\ \ \ \ \ \ \ \ \ neworder[0]=neworder[n]=first;\ \textcolor{comment}{//\ first\ one\ remains\ first}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01172}01172\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01173}01173\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;(i<myPLite.bdryCount\ \&\&\ tick<n);i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01174}01174\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ indx=(first+i-\/myPLite.intVertCount-\/1)\%myPLite.bdryCount+myPLite.intVertCount+1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01175}01175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<n;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01176}01176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx==kolst[j])\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01177}01177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ neworder[tick]=indx;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01178}01178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ kolst[j]=0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01179}01179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01180}01180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01181}01181\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01182}01182\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01183}01183\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tick<n)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01184}01184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}didn't\ get\ all\ the\ corners\ in\ order"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01185}01185\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01186}01186\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01187}01187\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ find\ the\ segments}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01188}01188\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ current=first;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01189}01189\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01190}01190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01191}01191\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ nlk=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01192}01192\ \ \ \ \ \ \ \ \ \ \ \ \ nlk.\doxymbox{\hyperlink{classlist_manip_1_1_node_link_a99f53137ef68d03fab45e670ef27f1b0}{add}}(current);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01193}01193\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<myPLite.bdryCount;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01194}01194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=(current+j-\/myPLite.intVertCount-\/1)\%myPLite.bdryCount+myPLite.intVertCount+1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01195}01195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k==neworder[i+1])\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01196}01196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nlk.\doxymbox{\hyperlink{classlist_manip_1_1_node_link_a99f53137ef68d03fab45e670ef27f1b0}{add}}(k);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01197}01197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ current=k;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01198}01198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ j=myPLite.bdryCount;\ \textcolor{comment}{//\ kickout}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01199}01199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01200}01200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01201}01201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nlk.\doxymbox{\hyperlink{classlist_manip_1_1_node_link_a99f53137ef68d03fab45e670ef27f1b0}{add}}(k);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01202}01202\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01203}01203\ \ \ \ \ \ \ \ \ \ \ \ \ sides.add(nlk);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01204}01204\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01205}01205\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01206}01206\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ no\ cornerAngles,\ set\ to\ default\ pi-\/2pi/n.}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01207}01207\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cornerAngles==\textcolor{keyword}{null}\ ||\ cornerAngles.length!=n)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01208}01208\ \ \ \ \ \ \ \ \ \ \ \ \ cornerAngles=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[n];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01209}01209\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01210}01210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cornerAngles[i]=Math.PI*(1-\/2.0/(\textcolor{keywordtype}{double})n);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01211}01211\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01212}01212\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01213}01213\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ aims:\ 2*pi\ in\ interior,\ pi\ on\ bdry,\ angles\ at\ corners}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01214}01214\ \ \ \ \ \ \ \ \ myPLite.aims=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.vertCount+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01215}01215\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<=myPLite.intVertCount;i++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01216}01216\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.aims[i]=2.0*Math.PI;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01217}01217\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=myPLite.intVertCount+1;i<=myPLite.vertCount;i++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01218}01218\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.aims[i]=Math.PI;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01219}01219\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01220}01220\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.aims[corners[i]]=cornerAngles[i];\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01221}01221\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01222}01222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ n;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01223}01223\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01224}01224\ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01232}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a76b60c626b93571cff386b62311f4ed0}{01232}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a76b60c626b93571cff386b62311f4ed0}{setCorners}}(\textcolor{keywordtype}{int}\ []pCorners,\textcolor{keywordtype}{double}\ []pAngles)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01233}01233\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8bb55770d4a25887157144d62542c820}{setMode}}(\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_acbaf9da4dd7b740cbfe120bcbbf49396}{NOT\_YET\_SET}});\ \textcolor{comment}{//\ default\ (eventually\ max\ pack);\ should\ reset\ later}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01234}01234\ \ \ \ \ \ \ \ \ corners=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01235}01235\ \ \ \ \ \ \ \ \ sides=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01236}01236\ \ \ \ \ \ \ \ \ parentCorners=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01237}01237\ \ \ \ \ \ \ \ \ cornerAngles=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01238}01238\ \ \ \ \ \ \ \ \ cornerLocations=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01239}01239\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pCorners==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01240}01240\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01241}01241\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01242}01242\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01243}01243\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((n=pCorners.length)<3)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01244}01244\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}GOpack\ needs\ at\ least\ 3\ corners"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01245}01245\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01246}01246\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ corners,\ both\ parent\ and\ local\ }}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01247}01247\ \ \ \ \ \ \ \ \ parentCorners=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[n];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01248}01248\ \ \ \ \ \ \ \ \ corners=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[n];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01249}01249\ \ \ \ \ \ \ \ \ cornerAngles=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[n];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01250}01250\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01251}01251\ \ \ \ \ \ \ \ \ \ \ \ \ parentCorners[i]=pCorners[i];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01252}01252\ \ \ \ \ \ \ \ \ \ \ \ \ corners[i]=myPLite.parent2v[parentCorners[i]];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01253}01253\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01254}01254\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01255}01255\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ corner\ angles,\ default\ is\ pi*(1-\/2/n)}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01256}01256\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pAngles!=\textcolor{keyword}{null}\ \&\&\ pAngles.length==n)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01257}01257\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01258}01258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cornerAngles[i]=Math.PI*pAngles[i];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01259}01259\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01260}01260\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ default}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01261}01261\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01262}01262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cornerAngles[i]=Math.PI*(1-\/2.0/((\textcolor{keywordtype}{double})n));}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01263}01263\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01264}01264\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8bb55770d4a25887157144d62542c820}{setMode}}(\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a8a0ada6df4d282dcedf5d2fe09cb1dbd}{POLY\_PACK}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01265}01265\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01266}01266\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a2e67c8eedc94850d5e15c20a7ea6a759}{sideSetup}}(corners);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01267}01267\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01268}01268\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01275}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a1c9a031c3513ae772ac41ed42e964c82}{01275}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a1c9a031c3513ae772ac41ed42e964c82}{setSphBdry}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01276}01276\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPLite.bdryCount!=3)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01277}01277\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01278}01278\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad=2*Math.sqrt(3)-\/3.0;\ \textcolor{comment}{//\ radius\ so\ circles\ are}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01279}01279\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ca=1.0-\/rad;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01280}01280\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=myPLite.intVertCount+1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01281}01281\ \ \ \ \ \ \ \ \ myPLite.radii[k]=rad;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01282}01282\ \ \ \ \ \ \ \ \ myPLite.centers[k]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(0.0,ca);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01283}01283\ \ \ \ \ \ \ \ \ k++;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01284}01284\ \ \ \ \ \ \ \ \ myPLite.radii[k]=rad;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01285}01285\ \ \ \ \ \ \ \ \ myPLite.centers[k]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(-\/Math.sqrt(3),-\/1.0).\doxymbox{\hyperlink{classcomplex_1_1_complex_ad3d80696b9c43028347a7f7608c78f99}{times}}(ca*.5);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01286}01286\ \ \ \ \ \ \ \ \ k++;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01287}01287\ \ \ \ \ \ \ \ \ myPLite.radii[k]=rad;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01288}01288\ \ \ \ \ \ \ \ \ myPLite.centers[k]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(Math.sqrt(3),-\/1.0).\doxymbox{\hyperlink{classcomplex_1_1_complex_ad3d80696b9c43028347a7f7608c78f99}{times}}(ca*.5);}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01289}01289\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 3;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01290}01290\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01291}01291\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01296}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a61e594bd5848e898e9922450cb8e70b0}{01296}}\ \ \ \ \ \textcolor{keyword}{public}\ String\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a61e594bd5848e898e9922450cb8e70b0}{getStatus}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01297}01297\ \ \ \ \ \ \ \ \ StringBuilder\ strb=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}GOpack\ for\ p"{}}+\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.packNum+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01298}01298\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a86db0ac8b84db1aa96e3b31b3825a3b5}{status}}==\doxymbox{\hyperlink{classre_pack_1_1_re_packer_adecb495a47009dd67032971a309ac856}{RePacker}}.FAILURE)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01299}01299\ \ \ \ \ \ \ \ \ \ \ \ \ strb.append(\textcolor{stringliteral}{"{}is\ in\ FAILURE\ state"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01300}01300\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a86db0ac8b84db1aa96e3b31b3825a3b5}{status}}==\doxymbox{\hyperlink{classre_pack_1_1_re_packer_adecb495a47009dd67032971a309ac856}{RePacker}}.RIFFLE)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01301}01301\ \ \ \ \ \ \ \ \ \ \ \ \ strb.append(\textcolor{stringliteral}{"{}is\ ready\ to\ RIFFLE"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01302}01302\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a86db0ac8b84db1aa96e3b31b3825a3b5}{status}}==\doxymbox{\hyperlink{classre_pack_1_1_re_packer_adecb495a47009dd67032971a309ac856}{RePacker}}.LOADED)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01303}01303\ \ \ \ \ \ \ \ \ \ \ \ \ strb.append(\textcolor{stringliteral}{"{}is\ LOADED\ and\ ready"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01304}01304\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a86db0ac8b84db1aa96e3b31b3825a3b5}{status}}==\doxymbox{\hyperlink{classre_pack_1_1_re_packer_adecb495a47009dd67032971a309ac856}{RePacker}}.IN\_THREAD)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01305}01305\ \ \ \ \ \ \ \ \ \ \ \ \ strb.append(\textcolor{stringliteral}{"{}is\ working\ IN\_THREAD\ (in\ a\ separate\ thread)"{}});}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01306}01306\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ strb.toString();}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01307}01307\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01308}01308\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01313}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a244e32fc9e58a31a4193785db099555d}{01313}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_g_opacker_a244e32fc9e58a31a4193785db099555d}{getOrigNodeCount}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01314}01314\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ origNodeCount;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01315}01315\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01316}01316\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01323}\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ae6522003bfd3113c264ae7fe27b15669}{01323}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ []\doxymbox{\hyperlink{classre_pack_1_1_g_opacker_ae6522003bfd3113c264ae7fe27b15669}{getSphCorners}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01324}01324\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPLite.bdryCount!=3)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01325}01325\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01326}01326\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []ans=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[3];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01327}01327\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<3;i++)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01328}01328\ \ \ \ \ \ \ \ \ \ \ \ \ ans[i]=myPLite.v2parent[myPLite.intVertCount+i+1];}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01329}01329\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01330}01330\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01331}01331\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01332}01332\ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01333}01333\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01343}01343\ \textcolor{keyword}{class\ }VWJ\ \textcolor{keyword}{implements}\ Comparable<Object>\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01344}01344\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ v;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01345}01345\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ j;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01346}01346\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ w;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01347}01347\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01348}01348\ \ \ \ \ \textcolor{keyword}{public}\ VWJ(\textcolor{keywordtype}{int}\ nv,\textcolor{keywordtype}{int}\ nw,\textcolor{keywordtype}{int}\ nj)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01349}01349\ \ \ \ \ \ \ \ \ v=nv;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01350}01350\ \ \ \ \ \ \ \ \ w=nw;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01351}01351\ \ \ \ \ \ \ \ \ j=nj;\ \textcolor{comment}{//\ often\ j\ =\ -\/1\ when\ v\ ==\ w}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01352}01352\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01353}01353\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01358}01358\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ compareTo(Object\ o1)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01359}01359\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ vv=((VWJ)o1).v;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01360}01360\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ww=((VWJ)o1).w;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01361}01361\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this.w<ww)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01362}01362\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01363}01363\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (this.w==ww)\ \{}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01364}01364\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this.v==vv)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01365}01365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01366}01366\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (this.v>vv)}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01367}01367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01368}01368\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01369}01369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01370}01370\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01371}01371\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01372}01372\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01373}01373\ }
+\DoxyCodeLine{\Hypertarget{_g_opacker_8java_source_l01374}01374\ \}}
+
+\end{DoxyCode}

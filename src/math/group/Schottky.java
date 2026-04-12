@@ -6,6 +6,8 @@ import math.Mobius;
 import complex.Complex;
 
 /**
+ * @brief Schottky group implementation using paired circles and Möbius generators.he word.
+ *
  *
  * <p>Title: </p>
  * <p>Description: Specifics of the class: Only two generators A, B. <p>

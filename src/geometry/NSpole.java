@@ -13,6 +13,8 @@ import packing.PackData;
 import util.StringUtil;
 
 /**
+ * @brief North/south pole normalization utilities for spherical packings.
+ *
  * Select and implement 'NSpole' normalizations. 
  * @author kstephe2
   */
@@ -46,7 +48,7 @@ public class NSpole {
 	}
 	
 	/**
-	 * Process an NSpole call
+	 * @brief Process an NSpole call
 	 * @param flagSegs Vector<Vector<String>>
 	 * @return int, 0 on failure
 	 */
@@ -266,7 +268,7 @@ public class NSpole {
 	}
 	
 	/**
-	 * Load a vector with tangency points based on current radii/centers
+	 * @brief Load a vector with tangency points based on current radii/centers
 	 * @return Complex[]
 	 */
 	public Complex []loadTangency() {
@@ -291,7 +293,7 @@ public class NSpole {
 	}
 
 	/**
-	 * Load a vector based on current packing centers. 
+	 * @brief Load a vector based on current packing centers. 
 	 * @return Complex[]
 	 */
 	public Complex []loadCenters() {
@@ -304,7 +306,7 @@ public class NSpole {
 	}
 
 	/**
-	 * Given vector of points in the plane, return a Mobius 
+	 * @brief Given vector of points in the plane, return a Mobius 
 	 * transformation that puts the centroid of their stereo 
 	 * projections to the sphere close to the origin in 3-space. 
 	 * Return null on error. Note that the resulting Mobius
@@ -465,7 +467,7 @@ public class NSpole {
 	}
 
 	/**
-	 * Apply Mobius to get new centers/radii, or if M==null, transfer
+	 * @brief Apply Mobius to get new centers/radii, or if M==null, transfer
 	 * data temporarily held in cent and rad.
 	 * @param M Mobius, or null
 	 * @return

@@ -6,6 +6,8 @@ import packing.CPdrawing;
 import complex.Complex;
 
 /**
+ * @brief For maintaining viewpoint for spherical packings.
+ *
  * For maintaining viewpoint for spherical packings. Spherical 
  * centers are given as complex numbers, but really they are 
  * (theta, phi) pairs; radii are angles from 0 to Pi. (Everything 
@@ -35,7 +37,7 @@ public class SphView {
 	}
 
 	/**
-	 * Return new Complex giving coords of visual plane (i.e., (y,z) coords in 
+	 * @brief Return new Complex giving coords of visual plane (i.e., (y,z) coords in 
 	 * 3-space) for given point pt=(theta,phi) from the apparent sphere.
 	 * @param pt, complex (theta,phi) (from apparent sphere.
 	 * @return new Complex (y,z) in 3-space (x-axis toward the viewer).
@@ -45,7 +47,7 @@ public class SphView {
 	} 
 	
 	/**
-	 * Return (theta,phi) (on apparent sphere) when given pt=(y,z) on visual 
+	 * @brief Return (theta,phi) (on apparent sphere) when given pt=(y,z) on visual 
 	 * plane. If |pt|>1, project point to unit circle first.
 	 * @param pt= Complex (y,z) 
 	 * @return (theta,phi) on apparent sphere
@@ -62,7 +64,7 @@ public class SphView {
 	}
 	
 	/**
-	 * Convert pt (theta,phi) on the real sphere to new Complex (theta,pi)
+	 * @brief Convert pt (theta,phi) on the real sphere to new Complex (theta,pi)
 	 * on the apparent sphere using viewMatrix. (Check: cos(theta)<0 implies 
 	 * pt is on back of apparent sphere.)
 	 * @param sph_pt (theta,phi)
@@ -77,7 +79,7 @@ public class SphView {
 	}
 
 	/**
-	 * Converts point on the apparent sphere to new Complex (theta,phi)
+	 * @brief Converts point on the apparent sphere to new Complex (theta,phi)
 	 * on the real sphere using transpose (inverse) of viewMatrix.
 	 * @param sph_pt (theta,phi)
 	 * @return new Complex (theta,phi)

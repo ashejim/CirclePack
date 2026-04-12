@@ -41,6 +41,8 @@ import packing.CPdrawing;
 import panels.LocatorPanel;
 
 /**
+ * @brief Panel containing the active packing canvas and associated
+ *
  * Panel containing the active packing canvas and associated 
  * tool bars. Size currently fixed. 
  * (Note: in old versions search on 'DISP_CHOICE' to find 
@@ -108,7 +110,7 @@ public class MainFrame extends JFrame {
 
 	// Constructor
 	/**
-	 * Create the principal canvas of an application, used for
+	 * @brief Create the principal canvas of an application, used for
 	 * displaying circle packings.
 	 * @param cpd, CPDrawing
 	 * @param File mainMyT, for loading main toolbar on top
@@ -227,7 +229,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * Given Dimension of display, what is max 'activeSize' we can set?
+	 * @brief Given Dimension of display, what is max 'activeSize' we can set?
 	 * @param displayDim, Dimension of display area
 	 * @return Dimension
 	 */
@@ -241,7 +243,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * Given 'MainFrame' height, what is associated 'activeSize'?
+	 * @brief Given 'MainFrame' height, what is associated 'activeSize'?
 	 * @param height
 	 * @return int
 	 */
@@ -250,7 +252,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * Currently, only allow square canvasses, so us max of wide/high.
+	 * @brief Currently, only allow square canvasses, so us max of wide/high.
 	 * @param wide, int pixels
 	 * @param high, int pixels
 	 */
@@ -268,7 +270,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * Get the dimension of the main canvas.
+	 * @brief Get the dimension of the main canvas.
 	 * @return
 	 */
 	public static Dimension getCanvasDim() {
@@ -329,7 +331,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * update the label showing the xy coords
+	 * @brief update the label showing the xy coords
 	 * @param z
 	 */
 	public void updateLocPanel(int hes,Complex z) {
@@ -337,7 +339,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * Return the active screen
+	 * @brief Return the active screen
 	 * @return 'CPDrawing'
 	 */
 	public CPdrawing getCPDrawing() {
@@ -379,6 +381,8 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
+ * @brief For closing the activeFrame; if 'PackControl' isn't open,
+ *
      * For closing the activeFrame; if 'PackControl' isn't open,
      * then call for exit; 'no' response, then make PackControl visible
      * and make activeFrame invisible.

@@ -3,6 +3,8 @@ package previewimage;
 import org.xml.sax.SAXException;
 
 /**
+ * @brief Signals that a preview image has been successfully extracted from an
+ *
  * Signals that a preview image has been successfully extracted from an
  * XML document by the SAX parser. This exception stops the SAX parser
  * from continuing with unnecessary parsing once the preview image has
@@ -17,7 +19,7 @@ class PreviewImageFoundException extends SAXException {
 	protected String base64Image;
 	
 	/**
-	 * Create a new instance containing the successfully located base 64 string
+	 * @brief Create a new instance containing the successfully located base 64 string
 	 * representation of the preview image.
 	 * 
 	 * @param base64Image the successfully located preview image
@@ -25,7 +27,7 @@ class PreviewImageFoundException extends SAXException {
 	protected PreviewImageFoundException(String base64Image) {this.base64Image = base64Image;}
 	
 	/**
-	 * Get the successfully located base 64 string representation of the
+	 * @brief Get the successfully located base 64 string representation of the
 	 * preview image encapsulated by this instance.
 	 * 
 	 * @return a base 64 string representation of the successfully located preview image

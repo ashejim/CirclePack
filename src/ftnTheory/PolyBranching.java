@@ -9,6 +9,9 @@ import geometry.HyperbolicMath;
 import packing.PackData;
 import packing.PackExtender;
 
+/**
+ * @brief Poly Branching functionality for circle packing experiments.
+ */
 public class PolyBranching extends PackExtender {
 
 	Vector<Integer> branchVerts;

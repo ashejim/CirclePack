@@ -9,6 +9,8 @@ import math.Mobius;
 import packing.PackData;
 
 /**
+ * @brief Linked list of SideData objects encoding side-pairings for multiply-connected surfaces.
+ *
  * Linked list of 'SideData' objects; these contain data 
  * on side-pairings and non-pairing border segments for 
  * non-simply connected complexes with dcel structures.
@@ -27,7 +29,7 @@ public class PairLink extends LinkedList<SideData> {
 	}
 
 	/**
-	 * Search through 'pairLink' to the index of the 'SideData' which
+	 * @brief Search through 'pairLink' to the index of the 'SideData' which
 	 * is a mate to 'sideDes'. Match involves 'startEdge' of one equal
 	 * to 'endEdge' of other and vice verse. Return -1 if not found; may
 	 * indicate an error.
@@ -49,7 +51,7 @@ public class PairLink extends LinkedList<SideData> {
 	}
 	 
 	/**
-	 * Find 'SideData' with given label.
+	 * @brief Find 'SideData' with given label.
 	 * @param labelStr 
 	 * @return SideData, or null if not found
 	 */
@@ -68,7 +70,7 @@ public class PairLink extends LinkedList<SideData> {
 	}
 	
 	/**
-	 * How many side-pairings are there?
+	 * @brief How many side-pairings are there?
 	 * @return int
 	 */
 	public int countPairs() {
@@ -89,7 +91,7 @@ public class PairLink extends LinkedList<SideData> {
 	}
 	
 	/**
-	 * Get the nth side-pairing.
+	 * @brief Get the nth side-pairing.
 	 * @param n int
 	 * @return SideData, null if doesn't exist
 	 */
@@ -110,7 +112,7 @@ public class PairLink extends LinkedList<SideData> {
 	}
 	
 	/**
-	 * Given RedEdge 'redge', find its side and return the Mobius
+	 * @brief Given RedEdge 'redge', find its side and return the Mobius
 	 * mapping 'redge.twinred' to 'redge'.
 	 * @param redge RedEdge
 	 * @return Mobius, identity on error or not found

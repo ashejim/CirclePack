@@ -2,6 +2,8 @@ package geometry;
 import complex.Complex;
 import complex.MathComplex;
 /**
+ * @brief Data holder for geodesic arcs used in plotting.
+ *
  * Holds info on geodesics for use in plotting. Used in any of 
  * the geometries. See 'SphericalMath' for geometric background.
  */

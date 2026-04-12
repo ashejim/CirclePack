@@ -1,6 +1,8 @@
 package util;
 
 /**
+ * @brief Holds intermediate data for riffle routines.
+ *
  * Holds intermediate data for riffle routines.
 */
 public class RiffleState {

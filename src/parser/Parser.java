@@ -3,6 +3,9 @@ import java.util.Vector;
 
 import complex.Complex;
 
+/**
+ * @brief Parser.
+ */
 public class Parser {
   private String parsedString="";
   private Vector<String> v=new Vector<String>();
@@ -46,7 +49,7 @@ public class Parser {
   }
 
   /**
-   * Read numerical characters from the parsedString until a
+   * @brief Read numerical characters from the parsedString until a
    * terminal character is encountered; remove results from
    * parsedString and return number as a substring.
    * @return
@@ -64,7 +67,7 @@ public class Parser {
   }
   
  /**
-   * Read letters from the parsedString until a
+   * @brief Read letters from the parsedString until a
    * terminal character is encountered; remove results from
    * parsedString and return them.
    * @return
@@ -83,7 +86,7 @@ public class Parser {
   }
   
   /**
-   * Given a fresh function expression as a string, do the
+   * @brief Given a fresh function expression as a string, do the
    * standard replacements, clear out the old vector, reset,
    * parse the new expression, then send it for recursive
    * analysis. This does not 'compute' the value of the
@@ -127,7 +130,7 @@ public class Parser {
   }
   
   /**
-   * Call the evaluator's setVariable method.
+   * @brief Call the evaluator's setVariable method.
    * @param z
    */
   public void setVariable(Complex z) {

@@ -57,6 +57,8 @@ import dragdrop.ToolDragSourceListener;
 import dragdrop.ToolTransferable;
 
 /**
+ * @brief StackBox for COMMAND nodes
+ *
  * StackBox for COMMAND nodes
  * @author kens
  *
@@ -117,6 +119,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		redisplaySB(myWidth);
 	}
 
+	/**
+	 * @brief TODO: Document buildComponents.
+	 */
 	public void buildComponents() {
 		emptyBorder=new EmptyBorder(0,0,0,0);
 		Border inner=new LineBorder(Color.green);
@@ -172,6 +177,10 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 
 		compList=null;
 		compTimer = new Timer(5000, new ActionListener() {
+			/**
+			 * @brief TODO: Document actionPerformed.
+			 * @param e
+			 */
 			public void actionPerformed(ActionEvent e) { 
 				if(compList!=null) compList.hide();
 			}
@@ -344,6 +353,10 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		setFixedSizes(compactPanel,dmn.width,dmn.height); 
 	}
 
+	/**
+	 * @brief TODO: Document redisplaySB.
+	 * @param wide
+	 */
 	public void redisplaySB(int wide) {
 		myWidth=wide;
 		this.removeAll();
@@ -387,6 +400,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 			boxMenu=editModeMenu;
 	}
 
+	/**
+	 * @brief TODO: Document buildUpperPanel.
+	 */
 	public void buildUpperPanel() {
 		upperPanel.removeAll();
 		upperPanel.revalidate();
@@ -466,6 +482,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		} // end of switch
 	}
 
+	/**
+	 * @brief TODO: Document buildTipPanel.
+	 */
 	public void buildTipPanel() {
 		switch (currentMode) {
 		case DISPLAY: {
@@ -483,7 +502,7 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 	}
 
 	/**
-	 * Return (after some processing) the command string in
+	 * @brief Return (after some processing) the command string in
 	 * 'cmdEditor'. 
 	 * @return
 	 */
@@ -491,6 +510,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		return (detailCmdStr(cmdEditor.getText()));
 	}
 
+	/**
+	 * @brief TODO: Document startEdit.
+	 */
 	public void startEdit() {
 		if (currentMode!=DISPLAY) return;
 
@@ -555,6 +577,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		redisplaySB(myWidth);
 		// Unlock the viewport and get the stack box in view.
 		EventQueue.invokeLater(new Runnable() {
+			/**
+			 * @brief TODO: Document run.
+			 */
 			public void run() {
 				((LockableJViewport) PackControl.scriptHover.stackScroll.getViewport()).setLocked(false);
 				setViewRect();
@@ -563,6 +588,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		//<<<AF//
 	}
 
+	/**
+	 * @brief TODO: Document cancelEdit.
+	 */
 	public void cancelEdit() {
 		if (currentMode==DISPLAY) return;
 		
@@ -597,6 +625,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		redisplaySB(myWidth);
 		// Unlock the viewport.
 		EventQueue.invokeLater(new Runnable() {
+			/**
+			 * @brief TODO: Document run.
+			 */
 			public void run() {
 				((LockableJViewport) PackControl.scriptHover.stackScroll.getViewport()).setLocked(false);
 			}
@@ -604,6 +635,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		//<<<AF//
 	}
 
+	/**
+	 * @brief TODO: Document acceptEdit.
+	 */
 	public void acceptEdit() {
 		if (currentMode==DISPLAY) return;
 
@@ -699,6 +733,10 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 			DragSource dragSource=DragSource.getDefaultDragSource();
 			dragSource.createDefaultDragGestureRecognizer(myTool,DnDConstants.ACTION_LINK,
 					new DragGestureListener() {
+				/**
+				 * @brief TODO: Document dragGestureRecognized.
+				 * @param event
+				 */
 				public void dragGestureRecognized(DragGestureEvent event) {
 					Transferable transferable=new ToolTransferable((MyTool)event.getComponent());
 					event.startDrag(null,transferable,new ToolDragSourceListener());
@@ -730,6 +768,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		redisplaySB(myWidth);
 		// Unlock the viewport.
 		EventQueue.invokeLater(new Runnable() {
+			/**
+			 * @brief TODO: Document run.
+			 */
 			public void run() {
 				((LockableJViewport) PackControl.scriptHover.stackScroll.getViewport()).setLocked(false);
 			}
@@ -737,6 +778,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		//<<<AF//
 	}
 
+	/**
+	 * @brief TODO: Document open.
+	 */
 	public void open() {
 		if (isOpen) return;
 		
@@ -754,6 +798,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		//AF>>>//
 		// Unlock the viewport.
 		EventQueue.invokeLater(new Runnable() {
+			/**
+			 * @brief TODO: Document run.
+			 */
 			public void run() {
 				((LockableJViewport) PackControl.scriptHover.stackScroll.getViewport()).setLocked(false);
 			}
@@ -761,6 +808,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		//<<<AF//
 	}
 
+	/**
+	 * @brief TODO: Document close.
+	 */
 	public void close() {
 		if (!isOpen) return;
 		
@@ -775,6 +825,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		//AF>>>//
 		// Unlock the viewport.
 		EventQueue.invokeLater(new Runnable() {
+			/**
+			 * @brief TODO: Document run.
+			 */
 			public void run() {
 				((LockableJViewport) PackControl.scriptHover.stackScroll.getViewport()).setLocked(false);
 			}
@@ -816,6 +869,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		//AF>>>//
 		// Unlock the viewport.
 		EventQueue.invokeLater(new Runnable() {
+			/**
+			 * @brief TODO: Document run.
+			 */
 			public void run() {
 				((LockableJViewport) PackControl.scriptHover.stackScroll.getViewport()).setLocked(false);
 			}
@@ -823,6 +879,9 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		//<<<AF//
 	}
 
+	/**
+	 * @brief TODO: Document deleteChildNodes.
+	 */
 	public void deleteChildNodes() {}
 
 	/** 
@@ -933,7 +992,7 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 	}
 
 	/**
-	 * Create menus for 'CmdBox's, either edit or display mode.
+	 * @brief Create menus for 'CmdBox's, either edit or display mode.
 	 * @param editmode, boolean: true, then for edit mode
 	 * @return JPopupMenu
 	 */
@@ -974,6 +1033,10 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 		return editpop;
 	}
 
+	/**
+	 * @brief TODO: Document keyReleased.
+	 * @param evt
+	 */
 	public void keyReleased(KeyEvent evt) {
 		String cmd =getCmdText();
 
@@ -1013,10 +1076,14 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 
 	// ignore these events (req'd for KeyListener)
 	public void keyPressed(KeyEvent evt) {}
+	/**
+	 * @brief TODO: Document keyTyped.
+	 * @param evt
+	 */
 	public void keyTyped(KeyEvent evt) {}
 
 	/**
-	 * prepare command strings: trim, get rid of line breaks and '<', '>', etc.
+	 * @brief prepare command strings: trim, get rid of line breaks and '<', '>', etc.
 	 * Currently allow '"' double quotes.
 	 * @param rawstr
 	 * @return

@@ -19,6 +19,8 @@ import panels.CPPreferences;
 import util.CPTimer;
 
 /**
+ * @brief Need a standalone version of CirclePack, to be run from a shell
+ *
  * Need a standalone version of CirclePack, to be run from a shell 
  * or remotely. It will still generate images in a backing plane
  * so it can generate an output jpg. 
@@ -26,7 +28,6 @@ import util.CPTimer;
  * @author kens, May 2019
  *
  */
-
 public class ShellControl extends CPBase {
 	
 	public static String CPVersion= new String("CirclePack, "+circlePack.Version.version+", "+
@@ -122,7 +123,7 @@ public class ShellControl extends CPBase {
 	}
 
 	/**
-	 * put debug message in shell
+	 * @brief put debug message in shell
 	 * @param msgstr String
 	 */
 	public void myDebugMsg(String msgstr) {
@@ -138,7 +139,7 @@ public class ShellControl extends CPBase {
 	}
 	
 	/**
-	 * Replace 'packings[pnum]' with new packing; old packing
+	 * @brief Replace 'packings[pnum]' with new packing; old packing
 	 * is generally orphaned.
 	 * @param p PackData
 	 * @param pnum int
@@ -174,7 +175,7 @@ public class ShellControl extends CPBase {
 	}
 			
 	/** 
-	 * Open a command socket at a given port, local host.
+	 * @brief Open a command socket at a given port, local host.
 	 * In future, may change host, may search for unused port,
 	 * etc.
 	 * 

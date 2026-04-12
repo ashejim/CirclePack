@@ -29,6 +29,9 @@ import allMains.CirclePack;
 import circlePack.PackControl;
 import exceptions.ParserException;
 
+/**
+ * @brief Post Panel.
+ */
 public class PostPanel extends JPanel implements ActionListener {
 
 	private static final long 
@@ -348,7 +351,7 @@ public class PostPanel extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Use 'checks' data to form flag string
+	 * @brief Use 'checks' data to form flag string
 	 * 
 	 * @return
 	 */
@@ -386,7 +389,7 @@ public class PostPanel extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * String for closing a 'post' command
+	 * @brief String for closing a 'post' command
 	 * @return String
 	 */
 	public String createSuffix() {
@@ -402,7 +405,7 @@ public class PostPanel extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * Create the flag segment for opening a postscript file.
+	 * @brief Create the flag segment for opening a postscript file.
 	 * @param name
 	 * @return
 	 */
@@ -476,7 +479,7 @@ public class PostPanel extends JPanel implements ActionListener {
 	}
 
 	/** 
-	 * Uses file chooser for postscript output.
+	 * @brief Uses file chooser for postscript output.
 	 * Returns string[0]=directory, string[1]=filename.
 	 * Note this sets 'PostDirectory', which is used in parsing 'post' 
 	 * command. This should prevent conflict between what a chooser
@@ -501,7 +504,7 @@ public class PostPanel extends JPanel implements ActionListener {
 	}
 
 	/** 
-	 * Uses file chooser for jpg output.
+	 * @brief Uses file chooser for jpg output.
 	 * Returns string[0]=directory, string[1]=filename.
 	 * Note this sets 'PostDirectory', which is used in parsing 'post' 
 	 * command. This should prevent conflict between what a chooser
@@ -526,7 +529,7 @@ public class PostPanel extends JPanel implements ActionListener {
 	}
 
 	/** 
-	 * Uses file chooser for 'AboutImage' jpg output.
+	 * @brief Uses file chooser for 'AboutImage' jpg output.
 	 * Returns string[0]=directory, string[1]=filename.
 	 * Note this sets 'PostDirectory', which is used in parsing 'post' 
 	 * command. This should prevent conflict between what a chooser

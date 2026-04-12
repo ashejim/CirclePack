@@ -1,0 +1,83 @@
+\doxysection{Sph\+Packer.\+java}
+\hypertarget{_sph_packer_8java_source}{}\label{_sph_packer_8java_source}\index{src/rePack/SphPacker.java@{src/rePack/SphPacker.java}}
+\doxymbox{\hyperlink{_sph_packer_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00001}00001\ \textcolor{keyword}{package\ }rePack;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00003}00003\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00004}00004\ \textcolor{keyword}{import}\ exceptions.PackingException;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00005}00005\ \textcolor{keyword}{import}\ input.CommandStrParser;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00006}00006\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00022}\doxymbox{\hyperlink{classre_pack_1_1_sph_packer}{00022}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_a3960e1707d344d7c8455eea20e75e558}{SphPacker}}\ \textcolor{keyword}{extends}\ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_adecb495a47009dd67032971a309ac856}{RePacker}}\ \{}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00023}00023\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00024}\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_ae56944fe16e3365a6dea2396024260f5}{00024}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_sph_packer_ae56944fe16e3365a6dea2396024260f5}{SPH\_GOPACK\_THRESHOLD}}=501;\ \ \textcolor{comment}{//\ for\ smaller\ packs,\ default\ to\ Java}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00025}\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_aaf2dc15e5a410a60f7b69b80ef1a6a84}{00025}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classre_pack_1_1_sph_packer_aaf2dc15e5a410a60f7b69b80ef1a6a84}{MPI2}}=2.0*Math.PI;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00026}00026\ \ \ \ \ \textcolor{keywordtype}{int}\ punc\_vert;\ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00027}00027\ \ \ \ \ \textcolor{keywordtype}{boolean}\ swap=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00028}00028\ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00029}00029\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00030}\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_a3960e1707d344d7c8455eea20e75e558}{00030}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classre_pack_1_1_sph_packer_a3960e1707d344d7c8455eea20e75e558}{SphPacker}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ pd,\textcolor{keywordtype}{int}\ p\_vert,\textcolor{keywordtype}{int}\ pass\_limit)\ \{\ \textcolor{comment}{//\ pass\_limit\ suggests\ using\ Java\ methods}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00031}00031\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}=pd;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00032}00032\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a043f900308ad6a26be3d67391849e058}{pdcel}}=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.packDCEL;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00033}00033\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pass\_limit<0)\ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00034}00034\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a730cc29c038b4495726585878b1d6961}{passLimit}}=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_ac4abbb7efcee99e2c6d198287e1f8074}{PASSLIMIT}};}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00035}00035\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00036}00036\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a730cc29c038b4495726585878b1d6961}{passLimit}}=pass\_limit;\ \textcolor{comment}{//\ passLimit=5000;}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00037}00037\ \ \ \ \ \ \ \ \ punc\_vert=p\_vert;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00038}00038\ \ \ \ \ \ \ \ \ punc\_vert=\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_aa0710acacb078a9fb8e915ae6bbaf658}{load}}();\ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00039}00039\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00040}00040\ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00044}\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_ac55de6a7b0aca281a953d421fb168447}{00044}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_sph_packer_ac55de6a7b0aca281a953d421fb168447}{reStartRiffle}}(\textcolor{keywordtype}{int}\ passNum)\ \{\textcolor{keywordflow}{return}\ 1;\}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00045}\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_a4c10516a12664b000afffebebd2ea2ab}{00045}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classre_pack_1_1_sph_packer_a4c10516a12664b000afffebebd2ea2ab}{l2quality}}(\textcolor{keywordtype}{double}\ crit)\ \{\textcolor{keywordflow}{return}\ 1;\}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00046}\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_a5871b3d7eeddff8c0d8d05c59734cf84}{00046}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_sph_packer_a5871b3d7eeddff8c0d8d05c59734cf84}{startRiffle}}()\ \{\textcolor{keywordflow}{return}\ 1;\}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00047}\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_abc830c901544bbf8896ecdc1dbfaed45}{00047}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_sph_packer_abc830c901544bbf8896ecdc1dbfaed45}{restartRiffle}}(\textcolor{keywordtype}{int}\ passnum)\ \{\textcolor{keywordflow}{return}\ 1;\}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00048}\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_a9ba11cdb90c0c1d3269365bd0764a112}{00048}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_sph_packer_a9ba11cdb90c0c1d3269365bd0764a112}{continueRiffle}}(\textcolor{keywordtype}{int}\ passNum)\ \{\textcolor{keywordflow}{return}\ 1;\}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00056}\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_aa0710acacb078a9fb8e915ae6bbaf658}{00056}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_sph_packer_aa0710acacb078a9fb8e915ae6bbaf658}{load}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pv=punc\_vert;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pv<=0\ ||\ (pv>0\ \&\&\ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.isBdry(pv)))\ \{}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ pv=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.nodeCount;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ deg=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.packDCEL.vertices[pv].getNum();}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (deg<6)\ \{}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.packDCEL.vertices[pv].getFlower(\textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<flower.length;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ d=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.packDCEL.vertices[flower[j]].getNum();}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00065}00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (d>deg\ \&\&\ !\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.isBdry(flower[j]))\ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pv=flower[j];}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00069}00069\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00070}00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pv;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00071}00071\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00072}00072\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00080}\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_ab8938a8bad6ea9d0369562726e33ed32}{00080}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classre_pack_1_1_sph_packer_ab8938a8bad6ea9d0369562726e33ed32}{maxPack}}(\textcolor{keywordtype}{int}\ pass\_limit)\ \textcolor{keywordflow}{throws}\ \doxymbox{\hyperlink{classexceptions_1_1_packing_exception}{PackingException}}\ \{}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00081}00081\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a730cc29c038b4495726585878b1d6961}{passLimit}}=pass\_limit;\ \textcolor{comment}{//\ passLimit=5000;}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ok=1;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00083}00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (punc\_vert!=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.nodeCount)\ \{}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.packDCEL.swapNodes(punc\_vert,\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.nodeCount)==0)}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ swap=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00087}00087\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00088}00088\ \ \ \ \ \ \ \ \ ok\ *=\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.puncture\_vert(\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.nodeCount);}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ok!=0)\ \{}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ ok\ *=\doxymbox{\hyperlink{classinput_1_1_command_str_parser}{CommandStrParser}}.\doxymbox{\hyperlink{classinput_1_1_command_str_parser_ad2c354ce742f567dba1b7cd963fb0323}{jexecute}}(\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}},\textcolor{stringliteral}{"{}max\_pack\ "{}}+\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a730cc29c038b4495726585878b1d6961}{passLimit}});}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00091}00091\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00092}00092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ok==0)}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00094}00094\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ok;}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00095}00095\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00096}00096\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00101}\doxymbox{\hyperlink{classre_pack_1_1_sph_packer_acb062fcbb7f473b1ee0eb2d7636dd2ba}{00101}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classre_pack_1_1_sph_packer_acb062fcbb7f473b1ee0eb2d7636dd2ba}{reapResults}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classinput_1_1_command_str_parser}{CommandStrParser}}.\doxymbox{\hyperlink{classinput_1_1_command_str_parser_ad2c354ce742f567dba1b7cd963fb0323}{jexecute}}(\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}},\textcolor{stringliteral}{"{}proj"{}})==0)\ \{}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}Opps,\ failed\ to\ convert\ back\ to\ sphere)"{}});}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00105}00105\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00106}00106\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (swap\ \&\&\ \doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.packDCEL.swapNodes(punc\_vert,\doxymbox{\hyperlink{classre_pack_1_1_re_packer_a185e36302af70bffe9a280f32d11cd13}{p}}.nodeCount)==0)}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}Opps,\ failed\ to\ swap\ vertices\ back"{}});}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00108}00108\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00109}00109\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00110}00110\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sph_packer_8java_source_l00111}00111\ \}}
+
+\end{DoxyCode}

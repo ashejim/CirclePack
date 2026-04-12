@@ -2,12 +2,13 @@ package util;
 import java.awt.Color;
 
 /**
+ * @brief Miscellaneous math utilities.
+ *
  * Miscellaneous math utilities. 
  * As of December 2012, many of number formatting methods seem to 
  * be OBE and are not called.
  * @author kstephe2
  */
-
 public class MathUtil {
 	public static String Error = "";
 	public static double accuracy = 10E-4;
@@ -199,7 +200,7 @@ public class MathUtil {
 	}
 
 	/**
-	 * Generate a random Color object
+	 * @brief Generate a random Color object
 	 * @return Color
 	 */
 	public static Color randomColor() {
@@ -232,7 +233,7 @@ public class MathUtil {
 	}
 	
 	/**
-	 * Given double 'aim' (e.g., intended angle sum
+	 * @brief Given double 'aim' (e.g., intended angle sum
 	 * for a vertex), return integer 'order' of 
 	 * branching that aim reflects. 0 for unbranched.
 	 * @param aim double
@@ -256,7 +257,7 @@ public class MathUtil {
 
 
 	/**
-	 * Converting string to int when string might be a double
+	 * @brief Converting string to int when string might be a double
 	 * @param s String
 	 * @return int
 	 * @throws NumberFormatException

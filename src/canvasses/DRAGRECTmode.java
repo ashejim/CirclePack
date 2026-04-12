@@ -14,6 +14,8 @@ import java.awt.geom.Point2D;
 import complex.Complex;
 
 /**
+ * @brief ===== active canvas cursor mode ====
+ *
  * ===== active canvas cursor mode ====
  * This is drags a rectangle to zoom in on a local area.
  */
@@ -78,7 +80,7 @@ public class DRAGRECTmode extends MyCanvasMode {
 	}
 	
 	/**
-	 * If a rectangular viewport has been initiated, this 
+	 * @brief If a rectangular viewport has been initiated, this 
 	 * returns the rectangle.
 	 * @return
 	 */

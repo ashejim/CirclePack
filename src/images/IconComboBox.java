@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
 /**
+ * @brief ComboBox with custom renderer for choosing icons
+ *
  * ComboBox with custom renderer for choosing icons 
  * for CirclePack. The icons are passed as a prepared 
  * vector of CPIcon's.

@@ -14,6 +14,8 @@ import listManip.HalfLink;
 import math.Mobius;
 
 /**
+ * @brief This is a traditional branch point, extra angle assigned to an interior circle.
+ *
  * This is a traditional branch point, extra angle assigned to an interior circle.
  * It is defined in this convoluted way to make processing fit the mold of more
  * general branch types.
@@ -73,7 +75,7 @@ public class TradBrModPt extends GenBrModPt {
 	}
 
 	/**
-	 * No parameters to set for this branch type.
+	 * @brief No parameters to set for this branch type.
 	 * @return 1
 	 */
 	public int setParameters(Vector<Vector<String>> flagSegs) {
@@ -81,7 +83,7 @@ public class TradBrModPt extends GenBrModPt {
 	}
 	
 	 /**
-	  * See if there are special actions for display on screen.
+	  * @brief See if there are special actions for display on screen.
 	  * I don't think there are any for traditional branch points,
 	  * so pass the rest of flags to 'super'. May flush some
 	  * commands designed for other types of branch points.
@@ -113,7 +115,7 @@ public class TradBrModPt extends GenBrModPt {
 	}
 	
 	/**
-	 * Return string with aim at v
+	 * @brief Return string with aim at v
 	 * @return String
 	 */
 	public String getParameters() {

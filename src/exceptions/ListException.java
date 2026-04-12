@@ -1,6 +1,8 @@
 package exceptions;
 
 /**
+ * @brief Exceptions when processing various lists, e.
+ *
  * Exceptions when processing various lists, e.g., vlist, elist, etc.
  * @author kens
  *

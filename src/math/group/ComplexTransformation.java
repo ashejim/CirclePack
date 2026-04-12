@@ -3,6 +3,11 @@ import complex.Complex;
 
 public class ComplexTransformation  {
   private int level=0;
+  /**
+   * @brief Abstract base class for transformations of the complex plane.
+   * @param z
+   * @return Complex
+   */
   public Complex apply(Complex z) { 
 	  return z;}
   public String getType() { 

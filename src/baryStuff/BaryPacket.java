@@ -4,6 +4,8 @@ import packing.PackData;
 import complex.Complex;
 
 /**
+ * @brief Hold information on a line segment lying in a triangle
+ *
  * Hold information on a line segment lying in a triangle
  * using barycentric coords. Currently for eucl only.
  * @author kens
@@ -36,7 +38,7 @@ public class BaryPacket {
 	}
 	
 	/**
-	 * Record 'start' and adjust it to make sure it's
+	 * @brief Record 'start' and adjust it to make sure it's
 	 * in the closed triangle.
 	 * @param strt, BaryPoint
 	 */
@@ -50,7 +52,7 @@ public class BaryPacket {
 	}
 	
 	/**
-	 * Record 'end' and adjust it to make sure it's
+	 * @brief Record 'end' and adjust it to make sure it's
 	 * in the closed triangle.
 	 * @param strt, BaryPoint
 	 */
@@ -134,7 +136,7 @@ public class BaryPacket {
 	}
 
 	/**
-	 * Get the complex number for 'start' relative to packing p
+	 * @brief Get the complex number for 'start' relative to packing p
 	 * @param p, PackData
 	 * @param bp, BaryPacket
 	 * @return Complex or null on error
@@ -145,7 +147,7 @@ public class BaryPacket {
 	}
 	
 	/**
-	 * Get the complex number for 'end' relative to packing p
+	 * @brief Get the complex number for 'end' relative to packing p
 	 * @param p PackData
 	 * @param bp BaryPacket
 	 * @return Complex or null on error
@@ -156,7 +158,7 @@ public class BaryPacket {
 	}
 	
 	/**
-	 * The BaryPoint 'this.start' must be set and must lie in 
+	 * @brief The BaryPoint 'this.start' must be set and must lie in 
 	 * the closed face. (Move it a little if too close to 
 	 * vertex or edge.) Given 'baryNext' is second point, in 
 	 * barycentric coords. This routine sets 'this.end' to

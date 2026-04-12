@@ -1,5 +1,8 @@
 package orickStuff;
 
+/**
+ * @brief C P I_ Complex2 Triangle.
+ */
 public class CPI_Complex2Triangle {
     CPI_Complex2  p[]  = new CPI_Complex2[3];
 

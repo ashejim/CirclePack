@@ -12,6 +12,8 @@ import listManip.NodeLink;
 import packing.PackData;
 
 /**
+ * @brief A Frame for sliders controlling specified radii.
+ *
  * A Frame for sliders controlling specified radii.
  * @author kstephe2, June 2020
  *

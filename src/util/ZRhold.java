@@ -2,6 +2,9 @@ package util;
 
 import complex.Complex;
 
+/**
+ * @brief Z Rhold.
+ */
 public class ZRhold {
 
 	Complex center;

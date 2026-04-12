@@ -24,6 +24,8 @@ import circlePack.PackControl;
 import exceptions.InOutException;
 
 /**
+ * @brief Extends 'ComboBox' for situations where file/web
+ *
  * Extends 'ComboBox' for situations where file/web 
  * addresses are maintained and stored in lists and 
  * startup files. 
@@ -65,7 +67,7 @@ public class MemComboBox extends JComboBox<String>
 	}
 	
 	/**
-	 * Get an entry from 'urlVector'
+	 * @brief Get an entry from 'urlVector'
 	 * @param indx int
 	 * @return String
 	 */
@@ -80,7 +82,7 @@ public class MemComboBox extends JComboBox<String>
 	}
 
 	/**
-	 * Loads 'urlVector' of saved URL's from a named file
+	 * @brief Loads 'urlVector' of saved URL's from a named file
 	 * @param File file, source of saved URL's
 	 */
 	public void loadURLs(File file) {
@@ -115,7 +117,7 @@ public class MemComboBox extends JComboBox<String>
 	}
 	
 	/**
-	 * Add 'itemname' to stored list held for this 
+	 * @brief Add 'itemname' to stored list held for this 
 	 * combo box; name moves (or is added) to stored 
 	 * list so it comes up first next time CirclePack 
 	 * is run. Don't move it into the model's element 
@@ -156,7 +158,7 @@ public class MemComboBox extends JComboBox<String>
 	}
 
 	/**
-	 * Saves the URL's entered in this combobox in the 
+	 * @brief Saves the URL's entered in this combobox in the 
 	 * designated file, putting the element of index 
 	 * 'hitindx' at the top.
 	 * @param hit int
@@ -185,7 +187,7 @@ public class MemComboBox extends JComboBox<String>
 	}
 
 	/** 
-	 * returns the entry in the combobox edit line, 
+	 * @brief returns the entry in the combobox edit line, 
 	 * suitably adjusted
 	 * @return String
 	 */

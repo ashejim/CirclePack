@@ -29,6 +29,8 @@ import util.StringUtil;
 import util.UtilPacket;
 
 /**
+ * @brief Linked list for 'HalfEdge's for DCEL structures.
+ *
  * Linked list for 'HalfEdge's for DCEL structures.
  * @author kens, September 2020
  *
@@ -65,7 +67,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * not necessarily extended edges
+	 * @brief not necessarily extended edges
 	 * @param p PackData
 	 * @param datastr String
 	 */
@@ -74,7 +76,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Allow extended edges
+	 * @brief Allow extended edges
 	 * @param p
 	 * @param items
 	 * @param xtd, boolean, yes for extended
@@ -91,7 +93,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * not necessarily extended edges
+	 * @brief not necessarily extended edges
 	 * @param p PackData
 	 * @param items Vector<String>
 	 */
@@ -100,7 +102,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * Convert 'EdgeLink' to (legal) 'HalfLink'.
+	 * @brief Convert 'EdgeLink' to (legal) 'HalfLink'.
 	 * @param elink
 	 */
 	public HalfLink(EdgeLink elink) {
@@ -115,7 +117,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * Convert 'FaceLink' to 'HalfLink'.
+	 * @brief Convert 'FaceLink' to 'HalfLink'.
 	 * @param p
 	 * @param flink
 	 */
@@ -128,7 +130,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Return closed redChain comprising the augmented
+	 * @brief Return closed redChain comprising the augmented
 	 * edges of the given tile, starting with the 
 	 * given tile vertex.
 	 * @param p PackData
@@ -172,7 +174,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Chain of successive 'HalfEdge's extracted from 'NodeLink'.
+	 * @brief Chain of successive 'HalfEdge's extracted from 'NodeLink'.
 	 * Check if successive entries form halfedge's; stop when 
 	 * there is a break.
 	 * @param pdcel PackDCEL
@@ -198,7 +200,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Not associated with any PackData
+	 * @brief Not associated with any PackData
 	 * @param datastr
 	 */
 	public HalfLink(String datastr) {
@@ -215,7 +217,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * Initiate empty list
+	 * @brief Initiate empty list
 	 * @param p
 	 */
 	public HalfLink(PackData p) {
@@ -223,7 +225,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/** 
-	 * Enforce legality of vertex indices if 'packData' is not null. 'edge.v' 
+	 * @brief Enforce legality of vertex indices if 'packData' is not null. 'edge.v' 
 	 * and 'edge.w' must be positive.
 	 * @param edge EdgeSimple
 	 * @return boolean, true if added
@@ -240,7 +242,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Remove occurances of <v,w> or <w,v>
+	 * @brief Remove occurances of <v,w> or <w,v>
 	 * @param es EdgeSimple
 	 * @return int count
 	 */
@@ -259,7 +261,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Remove occurrences of 'edge', irrespective of order
+	 * @brief Remove occurrences of 'edge', irrespective of order
 	 * @param edge EdgeSimple
 	 * @return int count
 	 */
@@ -280,7 +282,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * Add links to this list (if it is associated with PackData); 
+	 * @brief Add links to this list (if it is associated with PackData); 
 	 * flag also permits 'extended' edges.
 	 * @param datastr String
 	 * @param xtd boolean, true==>allow 'extended' edges
@@ -292,7 +294,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	} // this.size();
 	
 	/**
-	 * Add links to this list (if it is associated with PackData).
+	 * @brief Add links to this list (if it is associated with PackData).
 	 * Don't have much to do now, since we don't have string 
 	 * representation of 'HalfEdge's.
 	 * @param items Vector<String>
@@ -967,7 +969,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Make a distinct copy of this linked list, disregarding
+	 * @brief Make a distinct copy of this linked list, disregarding
 	 * 'packData' setting.
 	 * @return new HalfLink
 	 */
@@ -981,7 +983,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Abut another 'HalfLink' to the end of this one.
+	 * @brief Abut another 'HalfLink' to the end of this one.
 	 * @param moreEL
 	 * @return count of new edges (some may be improper, some redundant)
 	 */
@@ -1000,7 +1002,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Given v, return first edge starting at v.
+	 * @brief Given v, return first edge starting at v.
 	 * Return -1 if not found.
 	 * @param v int
 	 * @return edge starting at v or null
@@ -1016,7 +1018,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Given w, return first edge ending at w.
+	 * @brief Given w, return first edge ending at w.
 	 * @param w int
 	 * @return edge ending at w or null
 	 */
@@ -1031,7 +1033,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Is <v,w> an edge in the list?
+	 * @brief Is <v,w> an edge in the list?
 	 * @param v int
 	 * @param w int
 	 * @return int, first index for edge or -1 if not found
@@ -1046,7 +1048,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	
 
 	/**
-	 * Return a combinatorial geodesic 'HalfLink' between two sets
+	 * @brief Return a combinatorial geodesic 'HalfLink' between two sets
 	 * of vertices. This can fail in various ways, so exceptions
 	 * must be caught. There may be multiple shortest paths,
 	 * even with same endpoints; this returns the first encountered.
@@ -1173,7 +1175,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * This is list of 'HalfEdge's whose faces form
+	 * @brief This is list of 'HalfEdge's whose faces form
 	 * a closed contiguous chain along the full side 
 	 * 'sideIndx' of the packing, or if 'sideIndx<0', 
 	 * along the full red chain. Note that the first
@@ -1352,7 +1354,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * Rotate EdgeLink so it starts with 'edge', if 'edge'
+	 * @brief Rotate EdgeLink so it starts with 'edge', if 'edge'
 	 * is in the link.
 	 * @param hlink EdgeLink
 	 * @param edge HalfEdge
@@ -1380,7 +1382,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * Replace each HalfEdge by its twin, but 
+	 * @brief Replace each HalfEdge by its twin, but 
 	 * keep list in same order (see 'reverseLink' to 
 	 * reverse list order)
 	 * @param hlink HalfLink
@@ -1398,7 +1400,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Reverse list order (but elements not 
+	 * @brief Reverse list order (but elements not 
 	 * individually reversed; see 'reverseElements')
 	 * @param hlink HalfLink
 	 * @return HalfLink, possibly null
@@ -1414,7 +1416,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/** 
-     * Check if edge {v,w} (or {w,v}) is in given edge list.
+     * @brief Check if edge {v,w} (or {w,v}) is in given edge list.
      * @param halflist HalfLink
      * @param v int
      * @param w int
@@ -1435,7 +1437,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
     }
     
     /**
-     * Find index of edge <v,w> or <w,v> in the list
+     * @brief Find index of edge <v,w> or <w,v> in the list
      * @param hlist HalfLink
      * @param v int
      * @param w int
@@ -1456,7 +1458,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
     }
     
     /**
-     * Return random entry from 'edgelist'; caution, does not adjust
+     * @brief Return random entry from 'edgelist'; caution, does not adjust
      * for repeat entries.
      * @param edgelist
      * @return null on empty list
@@ -1469,7 +1471,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
     }
 
     /**
-     * Convert a polygonal path into a linked list of edges; first convert
+     * @brief Convert a polygonal path into a linked list of edges; first convert
      * to a 'FaceLink', then go down the right side of this chain of faces.
      * May have a preferred starting vertex. Note: sometimes an 'EdgeLink'
      * is better since in is based on indices.
@@ -1603,7 +1605,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	 /**
-	  * Does the given list of halfedges have vertices that 
+	  * @brief Does the given list of halfedges have vertices that 
 	  * separate the complex? If the return is 0, then 
 	  * answer is NO, else return the lowest index of circles
 	  * not reachable.
@@ -1623,7 +1625,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	 }
 	 
 	 /**
-	  * Create an HalfLink that eliminates duplicate edges.
+	  * @brief Create an HalfLink that eliminates duplicate edges.
 	  * @param el HalfLink
 	  * @param orient boolean, true, then take account of orientation
 	  * @return new HalfLink
@@ -1641,7 +1643,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	 }
 
 	 /**
-	  * Check if this list contains oriented edge (v,w) 
+	  * @brief Check if this list contains oriented edge (v,w) 
 	  * @param es EdgeSimple
 	  * @return boolean
 	  */
@@ -1658,7 +1660,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	 }
 	 
 	 /**
-	  * Check if this list contains oriented edge (v,w) 
+	  * @brief Check if this list contains oriented edge (v,w) 
 	  * @param edge HalfEdge
 	  * @return boolean
 	  */
@@ -1668,7 +1670,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	 }
 	 
 	/**
-	 * Create a list of entries as a string
+	 * @brief Create a list of entries as a string
 	 * @return String, null on error
 	 */
 	public String toString() {
@@ -1684,7 +1686,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Add 'HalfEdge's which separates 'vlist' vertices from 
+	 * @brief Add 'HalfEdge's which separates 'vlist' vertices from 
 	 * 'alphaIndx' and from those vertices connected to 'alphaIndx'
 	 * in the complement of 'vlist'. Vertices along this edge
 	 * are not in 'vlist' and may include 'alphaIndx' itself.
@@ -1765,7 +1767,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Pick first edge off a string. Return null on failure.
+	 * @brief Pick first edge off a string. Return null on failure.
 	 * @param p PackData
 	 * @param str String
 	 * @return HalfEdge, null if none found
@@ -1780,7 +1782,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 		
 	/**
-	 * Pick first edge off a string. Return null on failure.
+	 * @brief Pick first edge off a string. Return null on failure.
 	 * @param p PackData
 	 * @param flagsegs Vector<Vector<String>>
 	 * @return EdgeSimple, null if none found
@@ -1791,7 +1793,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * Return fresh EdgeLink with entries translated from 
+	 * @brief Return fresh EdgeLink with entries translated from 
 	 * 'hlink' using 'vmap'. So, entry <v,w> in 'hlink' and 
 	 * entries <v,V> and <w,W> in 'vmap' leads to EdgeSimple 
 	 * <V,W> entry. If 'vmap' has no translation for v or w, 
@@ -1827,7 +1829,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Return EdgeSimple with entries translated from 
+	 * @brief Return EdgeSimple with entries translated from 
 	 * 'hlink' using 'vmap'. So, entry <v,w> in 'hlink' and 
 	 * entries <v,V> and <w,W> in 'vmap' leads to EdgeSimple 
 	 * <V,W> entry. If 'vmap' has no translation for v or w, 
@@ -1853,7 +1855,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Return all outward spokes from the given vertices.
+	 * @brief Return all outward spokes from the given vertices.
 	 * @param pdcel PackDCEL
 	 * @param vlist NodeLink
 	 * @return HalfLink, null on error or empty
@@ -1873,7 +1875,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Find the link of 'next' halfedges starting with 'edge':
+	 * @brief Find the link of 'next' halfedges starting with 'edge':
 	 * i.e. edge, edge.next,edge.next.next, etc. ending with
 	 * 'edge.prev'. Thus these bound a face, usually there are
 	 * 3, but for ideal face may be more. Set safety to avoid
@@ -1898,7 +1900,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Build the 'HalfLink' whose faces define the contiguous
+	 * @brief Build the 'HalfLink' whose faces define the contiguous
 	 * chain of faces to the left of 'hlink'; used, e.g., for 
 	 * holonomy or layout purposes. 
 	 * 
@@ -1990,7 +1992,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	
 	
 	/**
-	 * Given a vertex list, convert it (to the extent possible) to 
+	 * @brief Given a vertex list, convert it (to the extent possible) to 
 	 * an edge list. If 'extended' flag true, do "hex-extended" 
 	 * edges, which pass through interior vertices so same number 
 	 * of edges are on each side. See 'axis_extend' call. 
@@ -2039,7 +2041,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * Expect items to specify a GraphLink of dual edges <f,g>;
+	 * @brief Expect items to specify a GraphLink of dual edges <f,g>;
 	 * convert to associated halfedges <v,w>; so f is on left
 	 * side of <v,w>, g is on right.
 	 * @param p PackData
@@ -2058,7 +2060,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 		
 	/**
-	 * Make up list by looking through SetBuilder specs 
+	 * @brief Make up list by looking through SetBuilder specs 
 	 * (from {..} set-builder notation). Use 'tmpUtil' to 
 	 * collect information before creating the HalfLink
 	 * for return. (Have not yet implemented many edge 

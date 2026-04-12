@@ -16,6 +16,8 @@ import util.MathUtil;
 import util.StringUtil;
 
 /**
+ * @brief Linked list of Doubles, used to pass values when
+ *
  * Linked list of Doubles, used to pass values when
  * necessary, as with 'schwarzians' or 'uzians'.
  * @author kensm
@@ -86,7 +88,7 @@ public class DoubleLink extends LinkedList<Double> {
 	}
 	
 	/**
-	 * Add linked list at end of this list. 
+	 * @brief Add linked list at end of this list. 
 	 * @param datastr
 	 * @return
 	 */	
@@ -96,7 +98,7 @@ public class DoubleLink extends LinkedList<Double> {
 	}
 	
 	/**
-	 * Add links to this list.
+	 * @brief Add links to this list.
 	 * @param items Vector<String>
 	 * @return int count
 	 */	
@@ -260,7 +262,7 @@ public class DoubleLink extends LinkedList<Double> {
 	
 	
 	/**
-	 * Make a distinct copy of this linked list; no check
+	 * @brief Make a distinct copy of this linked list; no check
 	 * of validity of the entries.
 	 * @return DoubleLink
 	 */
@@ -274,7 +276,7 @@ public class DoubleLink extends LinkedList<Double> {
 	}
 		
 	/**
-	 * Abut a copy of given @see DoubleLink to the end of this one. 
+	 * @brief Abut a copy of given @see DoubleLink to the end of this one. 
 	 * @param moreDL @see DoubleLink
 	 * @return count of new Doubles (some may be redundant)
 	 */
@@ -293,7 +295,7 @@ public class DoubleLink extends LinkedList<Double> {
 	}
 	
 	/**
-	 * Pick first complex off first string of first vector of vector
+	 * @brief Pick first complex off first string of first vector of vector
 	 * of string vectors. 
 	 * @param flagsegs Vector<Vector<String>>
 	 * @return Complex, null on failure
@@ -309,7 +311,7 @@ public class DoubleLink extends LinkedList<Double> {
 	}
 
 	/**
-	 * Pick first complex off string
+	 * @brief Pick first complex off string
 	 * @param str String
 	 * @return Double, null on failure
 	 */
@@ -323,7 +325,7 @@ public class DoubleLink extends LinkedList<Double> {
 	}
 	
 	/**
-	 * Index 'indx' points to entry d, then rotate, returning a new DoubleLink
+	 * @brief Index 'indx' points to entry d, then rotate, returning a new DoubleLink
 	 * starting and ending with d.
 	 * @param link @see DoubleLink
 	 * @param indx new starting index
@@ -348,7 +350,7 @@ public class DoubleLink extends LinkedList<Double> {
 	}
 	
 	/**
-	 * Return a new 'PointLink' whose order is the reverse of this
+	 * @brief Return a new 'PointLink' whose order is the reverse of this
 	 * @return new 'PointLink', null if this is empty.
 	 */
 	public DoubleLink reverseMe() {
@@ -363,7 +365,7 @@ public class DoubleLink extends LinkedList<Double> {
 	}
 	
 	/**
-     * Return random entry from pointlist; caution, does not adjust
+     * @brief Return random entry from pointlist; caution, does not adjust
      * for repeat entries.
      * @param pointlist
      * @return Complex, null on error
@@ -376,7 +378,7 @@ public class DoubleLink extends LinkedList<Double> {
     }
 
 	 /**
-	  * Set 'packData' (which helps determine eligibility of entries)
+	  * @brief Set 'packData' (which helps determine eligibility of entries)
 	  * @param p PackData
 	  */
 	 public void setPackData(PackData p) {

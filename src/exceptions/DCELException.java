@@ -1,10 +1,11 @@
 package exceptions;
 
 /**
+ * @brief Exceptions relating to the combinatorics of DCEL structures for use
+ *
  * Exceptions relating to the combinatorics of DCEL structures for use
  * with circle packing.
  */
-
 public class DCELException extends RuntimeException {
 
 	private static final long 

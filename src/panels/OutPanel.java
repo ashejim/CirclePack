@@ -41,6 +41,8 @@ import util.PathUtil;
 import util.StringUtil;
 
 /**
+ * @brief This code was edited or generated using
+ *
 * This code was edited or generated using 
 * CloudGarden's Jigloo SWT/Swing GUI Builder, 
 * which is free for non-commercial use. 
@@ -219,7 +221,7 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 	}
 
 	/**
-	 * Process an 'output' specification and write the data to an open 
+	 * @brief Process an 'output' specification and write the data to an open 
 	 * 'BufferedWriter'. Return the number of data items written.
 	 * @param fp BufferedWriter: already open
 	 * @param p PackData
@@ -630,7 +632,7 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 		} 
 
 		/**
-		 * Loop through data objects to print. Note, 'Vfe' has been
+		 * @brief Loop through data objects to print. Note, 'Vfe' has been
 		 * set based on the types of objects selected: vertices, faces,
 		 * edges, and a few others. There may be more than one 'DataObj' 
 		 * specified. E.g, if Vfe==1 for vertices, we might want both 
@@ -760,7 +762,7 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 		}
 		
 	/**
-	 * Parse a data string to see what data it specifies; return 'dataCode'
+	 * @brief Parse a data string to see what data it specifies; return 'dataCode'
 	 * or null if there's no data.
 	 * @param datastr String
 	 * @return 'dataCode'
@@ -1087,6 +1089,8 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 }
 
 /**
+ * @brief Specialized object for storing output information
+ *
  * Specialized object for storing output information
  */
 class DataObj{

@@ -16,6 +16,8 @@ import input.CPFileManager;
 import util.StringUtil;
 
 /**
+ * @brief Static routines for creating Delaunay triangulations with
+ *
  * Static routines for creating Delaunay triangulations with
  * calls to 'qhull' (for the sphere) and 'triangle' for regions
  * in the plane. I'm using 'ProcessBuilder'.
@@ -30,7 +32,7 @@ public class ProcessDelaunay {
 	static int localID=0;
 
 	/**
-	 * For the sphere, the data is theta/phi; here it is converted to xyz form and
+	 * @brief For the sphere, the data is theta/phi; here it is converted to xyz form and
 	 * put in an input file with this format:
 	 * 
 	 * 3 <N> x1 y1 z1 x2 y2 z2 ... xN yN zN
@@ -126,7 +128,7 @@ public class ProcessDelaunay {
 	}
 
 	/**
-	 * For the plane, the data has points and possibly segments 
+	 * @brief For the plane, the data has points and possibly segments 
 	 * defining a planar straight line graph; that is, a *.node file
 	 * or a *.poly file.
 	 * 

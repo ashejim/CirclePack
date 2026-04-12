@@ -9,9 +9,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
+ * @brief Utility panel with name and number field for integer quantities
+ *
  * Utility panel with name and number field for integer quantities
  */
-
 public class intNumField extends JPanel {
 
 	private static final long 
@@ -89,7 +90,7 @@ public class intNumField extends JPanel {
 	}
 
 	/** 
-	 * Enter an integer value
+	 * @brief Enter an integer value
 	 * @param n
 	 */
 	public void setField(int n) {
@@ -97,7 +98,7 @@ public class intNumField extends JPanel {
 	}
 	
 	/**
-	 * Return the current integer value, with any variables
+	 * @brief Return the current integer value, with any variables
 	 * interpreted.
 	 * @return int, 0 on error
 	 */
@@ -110,7 +111,7 @@ public class intNumField extends JPanel {
 	}
 	
 	/**
-	 * Return the uniterpreted text of the integer field
+	 * @brief Return the uniterpreted text of the integer field
 	 * @return String
 	 */
 	public String getText() {

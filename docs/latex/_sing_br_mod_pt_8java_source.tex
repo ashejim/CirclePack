@@ -1,0 +1,320 @@
+\doxysection{Sing\+Br\+Mod\+Pt.\+java}
+\hypertarget{_sing_br_mod_pt_8java_source}{}\label{_sing_br_mod_pt_8java_source}\index{src/branching/SingBrModPt.java@{src/branching/SingBrModPt.java}}
+\doxymbox{\hyperlink{_sing_br_mod_pt_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00001}00001\ \textcolor{keyword}{package\ }branching;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00003}00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00004}00004\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00005}00005\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00006}00006\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00008}00008\ \textcolor{keyword}{import}\ canvasses.DisplayParser;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00009}00009\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00010}00010\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00011}00011\ \textcolor{keyword}{import}\ combinatorics.komplex.Vertex;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00012}00012\ \textcolor{keyword}{import}\ dcel.RawManip;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00013}00013\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00014}00014\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00015}00015\ \textcolor{keyword}{import}\ ftnTheory.GenModBranching;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00016}00016\ \textcolor{keyword}{import}\ input.CommandStrParser;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00017}00017\ \textcolor{keyword}{import}\ komplex.EdgeSimple;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00018}00018\ \textcolor{keyword}{import}\ listManip.HalfLink;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00019}00019\ \textcolor{keyword}{import}\ math.Mobius;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00020}00020\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00068}\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt}{00068}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a740b9ca527978829f78be8dacbe64c83}{SingBrModPt}}\ \textcolor{keyword}{extends}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ace9bae267116a8a244bdff710a50c3ab}{GenBrModPt}}\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00069}00069\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00070}00070\ \ \ \ \ \textcolor{keywordtype}{int}\ singFace;\ \ \ \ \ \ \ \textcolor{comment}{//\ original\ face\ index\ (but\ ephermeral)}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00071}00071\ \ \ \ \ \textcolor{keywordtype}{double}[]\ overlaps;\ \ \textcolor{comment}{//\ parameters,\ 2\ specified,\ on\ computed}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00073}00073\ \ \ \ \ \textcolor{comment}{//\ need\ to\ save\ some\ info}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00074}00074\ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex}{Vertex}}[]\ corner;\ \ \textcolor{comment}{//\ verts\ of\ 'singFace'}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00075}00075\ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}[]\ faceEdge;\ \textcolor{comment}{//\ edges\ of\ original\ face\ (these\ get\ split)}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00076}00076\ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}[]\ secondEdge;\ \textcolor{comment}{//\ created\ when\ faceEdge\ is\ split}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00078}00078\ \ \ \ \ \textcolor{comment}{//\ four\ added\ circles:\ 3\ guides\ and\ 'vanishing'}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00079}00079\ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex}{Vertex}}[]\ guide;\ \ \ \ \ \textcolor{comment}{//\ guide[j]\ is\ across\ from\ corner[j]}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00080}00080\ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex}{Vertex}}\ vanishing;\ \ \ \textcolor{comment}{//\ barycenter,\ carries\ 'myAim',\ ultimately\ radius\ 0.}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00081}00081\ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex}{Vertex}}[]\ connect;\ \ \ \textcolor{comment}{//\ connect[j]\ is\ across\ from\ corner[j]}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00082}00082\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00083}00083\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00084}\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a740b9ca527978829f78be8dacbe64c83}{00084}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a740b9ca527978829f78be8dacbe64c83}{SingBrModPt}}(\doxymbox{\hyperlink{classftn_theory_1_1_gen_mod_branching}{GenModBranching}}\ g,\textcolor{keywordtype}{int}\ bID,\textcolor{keywordtype}{double}\ aim,\ \textcolor{keywordtype}{int}\ f,\ \textcolor{keywordtype}{double}\ o1,\textcolor{keywordtype}{double}\ o2)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00085}00085\ \ \ \ \ \ \ \ \ super(g,bID,aim);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00086}00086\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a88d05de6ca6689d342f46b591974eb00}{gmb}}=g;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00087}00087\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_addf901b17c1aa181d9f8299e06cb5a32}{myType}}=\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ace9bae267116a8a244bdff710a50c3ab}{GenBrModPt}}.SINGULAR;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00088}00088\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_af91664f7cc1637821bd15337967ef305}{myEdge}}=pdc.faces[f].edge;\ \textcolor{comment}{//\ halfedge\ associated\ with\ f}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00089}00089\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00090}00090\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ default\ overlaps\ to\ \ pi/3;\ indexing\ from\ 0}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00091}00091\ \ \ \ \ \ \ \ \ overlaps=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00092}00092\ \ \ \ \ \ \ \ \ overlaps[0]=overlaps[1]=overlaps[2]=0.3333333;\ \textcolor{comment}{//\ Pi/3}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00093}00093\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00094}00094\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ debug\ help}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00095}00095\ \ \ \ \ \ \ \ \ System.out.println(\textcolor{stringliteral}{"{}sing\ attempt:\ a\ =\ "{}}+aim/Math.PI+\textcolor{stringliteral}{"{};\ f\ =\ "{}}+f+}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{};\ overlaps/Pi\ "{}}+o1+\textcolor{stringliteral}{"{}\ "{}}+o2+\textcolor{stringliteral}{"{}\ "{}}+(1.0-\/o1-\/o2));}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00097}00097\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a2588ea411616738d5a7b0d12a3758cb5}{modifyPackData}}();}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a800556717fff38bc4b3add217cd5c055}{success}}=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00100}00100\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00101}00101\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00105}\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a2588ea411616738d5a7b0d12a3758cb5}{00105}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a2588ea411616738d5a7b0d12a3758cb5}{modifyPackData}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00106}00106\ \ \ \ \ \ \ \ \ faceEdge=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}[3];}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00107}00107\ \ \ \ \ \ \ \ \ secondEdge=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}[3];}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00108}00108\ \ \ \ \ \ \ \ \ corner=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex}{Vertex}}[3];}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00109}00109\ \ \ \ \ \ \ \ \ connect=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex}{Vertex}}[3];}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00110}00110\ \ \ \ \ \ \ \ \ guide=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex}{Vertex}}[3];}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00111}00111\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00112}00112\ \ \ \ \ \ \ \ \ faceEdge[0]=\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_af91664f7cc1637821bd15337967ef305}{myEdge}};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00113}00113\ \ \ \ \ \ \ \ \ faceEdge[1]=faceEdge[0].next;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00114}00114\ \ \ \ \ \ \ \ \ faceEdge[2]=faceEdge[1].next;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00115}00115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ corner[j]=faceEdge[j].origin;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ he=faceEdge[(j+1)\%3];}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ connect[j]=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00119}00119\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00120}00120\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00121}00121\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ 'eventHorizon'}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00122}00122\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a677fe13868c49ab40c6a59086a08d5da}{eventHorizon}}=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}();}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00123}00123\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=corner[j].vertIndx;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=corner[(j+1)\%3].vertIndx;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ u=connect[(j+2)\%3].vertIndx;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ es=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(v,u);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a677fe13868c49ab40c6a59086a08d5da}{eventHorizon}}.add(pdc.findHalfEdge(es));}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ es=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(u,w);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a677fe13868c49ab40c6a59086a08d5da}{eventHorizon}}.add(pdc.findHalfEdge(es));}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00131}00131\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00132}00132\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00133}00133\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ 'vanishing'}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00134}00134\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ van=\doxymbox{\hyperlink{classdcel_1_1_raw_manip}{RawManip}}.\doxymbox{\hyperlink{classdcel_1_1_raw_manip_af6f3e92501260da41523e6b69fa03b26}{addBary\_raw}}(pdc,faceEdge[0],\textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00135}00135\ \ \ \ \ \ \ \ \ vanishing=pdc.vertices[van];}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00136}00136\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00137}00137\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ successively\ split\ 'faceEdge's}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00138}00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classdcel_1_1_raw_manip}{RawManip}}.\doxymbox{\hyperlink{classdcel_1_1_raw_manip_a8c0477dc02bbc483e183fb83b3ad58a3}{splitEdge\_raw}}(pdc,faceEdge[j]);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ guide[(j+2)\%3]=faceEdge[j].twin.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ secondEdge[(j+1)\%3]=faceEdge[j].twin.prev.twin.prev;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00142}00142\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00143}00143\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00144}00144\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ encircling\ link\ for\ local\ holonomy\ \ \ }}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00145}00145\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a596db105d274c900dba42ba14dd081fd}{myHoloBorder}}=\doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}.\doxymbox{\hyperlink{classlist_manip_1_1_half_link_ab72504e83fdf8a30d2753a2b7ba909dc}{leftsideLink}}(pdc,\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a677fe13868c49ab40c6a59086a08d5da}{eventHorizon}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00146}00146\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a596db105d274c900dba42ba14dd081fd}{myHoloBorder}}.add(0,\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a677fe13868c49ab40c6a59086a08d5da}{eventHorizon}}.get(0));}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00147}00147\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00148}00148\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ 'myHoloBorder'\ to\ 'layoutAddons'}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00149}00149\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ad59836f24f1a9f4acd3fbed06a2a22ac}{layoutAddons}}=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}();}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00150}00150\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ad59836f24f1a9f4acd3fbed06a2a22ac}{layoutAddons}}.abutMore(\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a596db105d274c900dba42ba14dd081fd}{myHoloBorder}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00151}00151\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00152}00152\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ record\ exclusions}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00153}00153\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a913ed1c975bc64447b3cb254f501cd02}{myExclusions}}=\textcolor{keyword}{new}\ ArrayList<combinatorics.komplex.Vertex>();}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00154}00154\ \ \ \ \ \ \ \ \ Iterator<HalfEdge>\ eis=\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a677fe13868c49ab40c6a59086a08d5da}{eventHorizon}}.iterator();}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00155}00155\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (eis.hasNext())\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a913ed1c975bc64447b3cb254f501cd02}{myExclusions}}.add(eis.next().origin);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00157}00157\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00158}00158\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a913ed1c975bc64447b3cb254f501cd02}{myExclusions}}.add(vanishing);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00159}00159\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a913ed1c975bc64447b3cb254f501cd02}{myExclusions}}.add(guide[0]);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00160}00160\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a913ed1c975bc64447b3cb254f501cd02}{myExclusions}}.add(guide[1]);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00161}00161\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a913ed1c975bc64447b3cb254f501cd02}{myExclusions}}.add(guide[2]);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00162}00162\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00163}00163\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pdc.vertCount;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00164}00164\ \ \ \ \ \}\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00165}00165\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00169}\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a00b6de1bb496ffa88c1efaabdf51d6f7}{00169}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a00b6de1bb496ffa88c1efaabdf51d6f7}{dismantle}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00170}00170\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00171}00171\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00182}\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_ab500fbeea230c0627862a2910319f13f}{00182}}\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_ab500fbeea230c0627862a2910319f13f}{setParameters}}(Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00183}00183\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00184}00184\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ gotovers=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00185}00185\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []ovlp=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[2];}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00186}00186\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00187}00187\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ flags:\ -\/a\ aim,\ -\/o\ o1\ o2}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00188}00188\ \ \ \ \ \ \ \ \ Iterator<Vector<String>>\ fit=flagSegs.iterator();}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00189}00189\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fit.hasNext())\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00190}00190\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<String>\ items=fit.next();}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00191}00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00192}00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_affec8dad5a974bd2fd18b3f7d3118a35}{isFlag}}(items.get(0)))}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00193}00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}usage:\ -\/a\ aim\ -\/o\ o1\ o2"{}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00194}00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ str=items.remove(0);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00195}00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (str.charAt(1))\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00196}00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'a'}:\ \textcolor{comment}{//\ new\ aim}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00197}00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00198}00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myAim=Double.parseDouble(items.get(0));}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00199}00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00200}00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00201}00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00202}00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'o'}:\ \textcolor{comment}{//\ overlaps}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00203}00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<2;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ovlp[i]=Double.parseDouble(items.remove(0));}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00206}00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ovlp[i]<=0\ ||\ ovlp[i]>=1.0)}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00207}00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}overlap\ not\ in\ (0,1)"{}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((ovlp[0]+ovlp[1])>.99999999)}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00211}00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}sum\ of\ o1\ o2\ overlaps\ not\ in\ (0,1)"{}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gotovers=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00213}00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00214}00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00215}00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00216}00216\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00217}00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}usage:\ -\/a\ aim,\ -\/o\ o1\ o2"{}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00218}00218\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00219}00219\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00220}00220\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00221}00221\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ overlaps}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00222}00222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (gotovers)}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00223}00223\ \ \ \ \ \ \ \ \ \ \ \ \ count+=\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a400d6e5cd86c57050c73926609aa0e1a}{resetOverlaps}}(ovlp[0],ovlp[1]);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00224}00224\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00225}00225\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00226}00226\ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00227}00227\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00236}\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a400d6e5cd86c57050c73926609aa0e1a}{00236}}\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a400d6e5cd86c57050c73926609aa0e1a}{resetOverlaps}}(\textcolor{keywordtype}{double}\ o0,\textcolor{keywordtype}{double}\ o1)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00237}00237\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (o0<=0.0\ ||\ o0>=1.0\ ||\ o1<=0.0\ ||\ o1>=1.0\ ||\ (o0+o1)>=1.0)}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00238}00238\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00239}00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}'singular'\ usage:\ 2\ overlaps\ in\ [0,1],\ sum\ <=\ 1"{}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00240}00240\ \ \ \ \ \ \ \ \ \ overlaps[0]=o0;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00241}00241\ \ \ \ \ \ \ \ \ \ overlaps[1]=o1;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00242}00242\ \ \ \ \ \ \ \ \ \ overlaps[2]=1-\/(overlaps[0]+overlaps[1]);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00243}00243\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00244}00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ faceEdge[j].setInvDist(Math.cos(overlaps[j]*Math.PI));}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00245}00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ secondEdge[j].setInvDist(Math.cos(overlaps[j]*Math.PI));}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00246}00246\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00247}00247\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00248}00248\ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00249}00249\ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00259}\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_ac123833a43221673c8c39b4afe2236af}{00259}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_ac123833a43221673c8c39b4afe2236af}{displayMe}}(Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00260}00260\ \ \ \ \ \ \ \ \ Vector<Vector<String>>\ newFlagSegs=\textcolor{keyword}{new}\ Vector<Vector<String>>(1);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00261}00261\ \ \ \ \ \ \ \ \ Vector<String>\ items=\textcolor{keyword}{new}\ Vector<String>(2);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00262}00262\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=0;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00263}00263\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<flagSegs.size();j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00264}00264\ \ \ \ \ \ \ \ \ \ \ \ \ String\ dispCode=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00265}00265\ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(j);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00266}00266\ \ \ \ \ \ \ \ \ \ \ \ \ String\ str=items.get(0);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00267}00267\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ hit=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00268}00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00269}00269\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ info\ to\ reconstruct\ new\ command:\ }}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00270}00270\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ e.g.\ -\/h1fc20\ converts\ to\ -\/cfc20\ <chap[1]>}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00271}00271\ \ \ \ \ \ \ \ \ \ \ \ \ String\ suff=\textcolor{stringliteral}{"{}"{}};\ \ \textcolor{comment}{//\ save\ suffex\ of\ original,\ e.g.\ 'fc5t4'\ }}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00272}00272\ \ \ \ \ \ \ \ \ \ \ \ \ String\ target=\textcolor{keyword}{null};\ \textcolor{comment}{//\ build\ target\ list}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00273}00273\ \ \ \ \ \ \ \ \ \ \ \ \ Character\ c=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00274}00274\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str.length()>2)\ \ \ \textcolor{comment}{//\ possible\ number\ here}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00275}00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ c=Character.valueOf(str.charAt(2));}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00276}00276\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00277}00277\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ look\ for\ objects\ to\ parse\ here}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00278}00278\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c2;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00279}00279\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str.startsWith(\textcolor{stringliteral}{"{}-\/s"{}})\ ||\ str.startsWith(\textcolor{stringliteral}{"{}-\/j"{}}))\ \{\ \textcolor{comment}{//\ flush\ these\ for\ singular\ points}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00280}00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hit=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00281}00281\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00282}00282\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (str.length()>1\ \&\&\ ((c2=str.charAt(1))==\textcolor{charliteral}{'h'}\ ||\ c2==\textcolor{charliteral}{'y'}))\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00283}00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00284}00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str.startsWith(\textcolor{stringliteral}{"{}-\/h"{}}))\ \{\ \textcolor{comment}{//\ guides}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00285}00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (c!=\textcolor{keyword}{null}\ \&\&\ ((\textcolor{keywordtype}{char})c==\textcolor{charliteral}{'1'}\ ||\ (\textcolor{keywordtype}{char})c==\textcolor{charliteral}{'2'}\ ||\ (\textcolor{keywordtype}{char})c==\textcolor{charliteral}{'3'}))\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00286}00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((\textcolor{keywordtype}{char})c==\textcolor{charliteral}{'1'})}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00287}00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ target=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+guide[0]+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00288}00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((\textcolor{keywordtype}{char})c==\textcolor{charliteral}{'2'})}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00289}00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ target=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+guide[1]+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00290}00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00291}00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ target=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+guide[2]+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00292}00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str.length()>3)}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00293}00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ suff=str.substring(3);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00294}00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00295}00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ default\ to\ all\ three}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00296}00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ target=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+guide[0]+\textcolor{stringliteral}{"{}\ "{}}+guide[1]+\textcolor{stringliteral}{"{}\ "{}}+guide[2]+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00297}00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str.length()>2)}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00298}00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ suff=str.substring(2);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00299}00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00300}00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dispCode=\textcolor{stringliteral}{"{}-\/c"{}};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00301}00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hit=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00302}00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00303}00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (str.startsWith(\textcolor{stringliteral}{"{}-\/y"{}}))\ \{\ \textcolor{comment}{//\ newBrSpot}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00304}00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ target=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+vanishing+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00305}00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dispCode=\textcolor{stringliteral}{"{}-\/c"{}};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00306}00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hit=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00307}00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00308}00308\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00309}00309\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ h/y\ circle\ case}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00310}00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00311}00311\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ In\ singular\ case,\ edges\ between\ the\ three\ circles\ (r,g,b)\ go\ through}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00312}00312\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ the\ branch\ value.\ This\ option\ draws\ those\ edges.}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00313}00313\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (str.startsWith(\textcolor{stringliteral}{"{}-\/e"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00314}00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dispCode=\textcolor{stringliteral}{"{}-\/e"{}};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00315}00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hit=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00316}00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ target=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+vanishing+\textcolor{stringliteral}{"{}\ corner[0]\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00317}00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vanishing+\textcolor{stringliteral}{"{}\ corner[1]\ \ "{}}+vanishing+\textcolor{stringliteral}{"{}\ corner[2]"{}});}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00318}00318\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00319}00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00320}00320\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ if\ -\/w\ or\ -\/wr\ flag,\ have\ parent\ run\ it,\ or\ store\ it\ to\ pass\ on\ to\ parent}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00321}00321\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (items.size()>0\ \&\&\ items.get(0).startsWith(\textcolor{stringliteral}{"{}-\/w"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00322}00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ fs=items.remove(0);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00323}00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classinput_1_1_command_str_parser}{CommandStrParser}}.\doxymbox{\hyperlink{classinput_1_1_command_str_parser_ad2c354ce742f567dba1b7cd963fb0323}{jexecute}}(p,\textcolor{stringliteral}{"{}disp\ "{}}+fs);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00324}00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n++;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00325}00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items.size()>0)\ \textcolor{comment}{//\ save\ anything\ after\ the\ -\/w\ flag}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00326}00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newFlagSegs.add(items);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00327}00327\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00328}00328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00329}00329\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ just\ past\ along\ other\ items}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00330}00330\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00331}00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newFlagSegs.add(items);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00332}00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hit=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00333}00333\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00334}00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00335}00335\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ build\ display\ string\ and\ display\ on\ packData's\ screen}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00336}00336\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hit)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00337}00337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ pulloff=\textcolor{keyword}{new}\ StringBuilder();}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00338}00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pulloff.append(dispCode);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00339}00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pulloff.append(suff);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00340}00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pulloff.append(target);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00341}00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00342}00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ found\ something?\ display\ on\ parent\ canvas}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00343}00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pulloff.length()>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00344}00344\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n=\doxymbox{\hyperlink{classcanvasses_1_1_display_parser}{DisplayParser}}.\doxymbox{\hyperlink{classcanvasses_1_1_display_parser_a2c368c521d3db6ba013379ef5e441d50}{dispParse}}(p,p.cpDrawing,}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00345}00345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_a91c3e38ba488dbc94a71bdbb850e354f}{flagSeg}}(pulloff.toString()));}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00346}00346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00347}00347\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00348}00348\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ loop\ through\ items}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00349}00349\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00350}00350\ \ \ \ \ \ \ \ \ n+=\doxymbox{\hyperlink{classcanvasses_1_1_display_parser}{DisplayParser}}.\doxymbox{\hyperlink{classcanvasses_1_1_display_parser_a2c368c521d3db6ba013379ef5e441d50}{dispParse}}(p,p.cpDrawing,newFlagSegs);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00351}00351\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00352}00352\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n!=0)}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00353}00353\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcircle_pack_1_1_pack_control}{PackControl}}.\doxymbox{\hyperlink{classcircle_pack_1_1_pack_control_a414c5141ef8ceab2ab9d7f7999c0af1d}{canvasRedrawer}}.\doxymbox{\hyperlink{classcanvasses_1_1_canvas_re_draw_manager_ad889ca61c679b87cfcd651bc4c734a53}{paintMyCanvasses}}(p,\textcolor{keyword}{false});\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00354}00354\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ n;}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00355}00355\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00356}00356\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00357}\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a997604889830c7e699524ade6503a1dd}{00357}}\ \ \ \ \ \textcolor{keyword}{public}\ String\ \doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a997604889830c7e699524ade6503a1dd}{getParameters}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00358}00358\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}Singular\ branch\ face,\ aim\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00359}00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myAim/Math.PI+\textcolor{stringliteral}{"{}*Pi\ on\ face\ "{}}+singFace);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00360}00360\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00361}00361\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00362}\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_ae6937aab0fb0090b9551d7564531cdc7}{00362}}\ \ \ \ \ \textcolor{keyword}{public}\ String\ \doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_ae6937aab0fb0090b9551d7564531cdc7}{reportExistence}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00363}00363\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a800556717fff38bc4b3add217cd5c055}{success}})}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00364}00364\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00365}00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Started\ 'singular'\ branch\ point;\ face\ =\ "{}}+singFace);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00366}00366\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00367}00367\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00368}00368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Failed\ to\ initiate\ 'singular'\ branching\ for\ face\ =\ "{}}+singFace);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00369}00369\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00370}00370\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00371}\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_ae2a45428607a4afbb35cf80800a60ab4}{00371}}\ \ \ \ \ \textcolor{keyword}{public}\ String\ \doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_ae2a45428607a4afbb35cf80800a60ab4}{reportStatus}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00372}00372\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}'singular',\ ID\ "{}}+\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a06a048132abb3e0a04ecc20f69c676e2}{branchID}}+\textcolor{stringliteral}{"{}:\ face="{}}+singFace+}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00373}00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{},\ aim="{}}+myAim+\textcolor{stringliteral}{"{},\ holonomy\ err="{}}+}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00374}00374\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_mobius}{Mobius}}.\doxymbox{\hyperlink{classmath_1_1_mobius_a5d70413cac93a7f0d4283ab055691bdd}{frobeniusNorm}}(\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a57e66c8b4526a6a2cc9a382b919cef7b}{getLocalHolonomy}}()));}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00375}00375\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00376}00376\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00382}\doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a91126f146f62f40a4c6b8e364c2aa1e1}{00382}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a91126f146f62f40a4c6b8e364c2aa1e1}{renew}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00383}00383\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reset\ the\ overlaps}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00384}00384\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_sing_br_mod_pt_a400d6e5cd86c57050c73926609aa0e1a}{resetOverlaps}}(overlaps[0],overlaps[1]);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00385}00385\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reset\ aim}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00386}00386\ \ \ \ \ \ \ \ \ p.setAim(vanishing.vertIndx,myAim);}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00387}00387\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ colors}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00388}00388\ \ \ \ \ \ \ \ \ p.setCircleColor(vanishing.vertIndx,\textcolor{keyword}{new}\ Color(200,200,200));\ \textcolor{comment}{//\ black}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00389}00389\ \ \ \ \ \ \ \ \ p.setCircleColor(guide[0].vertIndx,\textcolor{keyword}{new}\ Color(200,0,0));\ \textcolor{comment}{//\ red}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00390}00390\ \ \ \ \ \ \ \ \ p.setCircleColor(corner[0].vertIndx,\textcolor{keyword}{new}\ Color(255,0,0));\ \textcolor{comment}{//\ light\ red}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00391}00391\ \ \ \ \ \ \ \ \ p.setCircleColor(guide[1].vertIndx,\textcolor{keyword}{new}\ Color(0,200,0));\ \textcolor{comment}{//\ green}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00392}00392\ \ \ \ \ \ \ \ \ p.setCircleColor(corner[1].vertIndx,\textcolor{keyword}{new}\ Color(0,255,0));\ \textcolor{comment}{//\ light\ green}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00393}00393\ \ \ \ \ \ \ \ \ p.setCircleColor(guide[2].vertIndx,\textcolor{keyword}{new}\ Color(0,0,200));\ \textcolor{comment}{//\ blue}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00394}00394\ \ \ \ \ \ \ \ \ p.setCircleColor(corner[2].vertIndx,\textcolor{keyword}{new}\ Color(0,0,255));\ \textcolor{comment}{//\ light\ blue}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00395}00395\ \ \ \ \ \ \ \ \ p.setCircleColor(\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_af91664f7cc1637821bd15337967ef305}{myEdge}}.origin.vertIndx,\textcolor{keyword}{new}\ Color(125,0,0));\ \textcolor{comment}{//\ light\ red}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00396}00396\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00397}00397\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sing_br_mod_pt_8java_source_l00398}00398\ \}}
+
+\end{DoxyCode}

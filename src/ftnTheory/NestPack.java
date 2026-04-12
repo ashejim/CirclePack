@@ -4,6 +4,9 @@ import allMains.CirclePack;
 import packing.PackData;
 import packing.PackExtender;
 
+/**
+ * @brief Nest Pack functionality for circle packing experiments.
+ */
 public class NestPack extends PackExtender {
 
 //	Vector<PackData> packTree;

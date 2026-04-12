@@ -20,6 +20,8 @@ import math.Mobius;
 import util.StringUtil;
 
 /**
+ * @brief A @see GenBranchPt of the "singular" type conceived
+ *
  * A @see GenBranchPt of the "singular" type conceived 
  * by Ed Crane. The event horizon consists of the three
  * vertices of the specified 'singFace' and the neighboring
@@ -63,7 +65,6 @@ import util.StringUtil;
  * @author kens, May 2012
  *
  */
-
 public class SingBrModPt extends GenBrModPt {
 	
 	int singFace;       // original face index (but ephermeral)
@@ -169,7 +170,7 @@ public class SingBrModPt extends GenBrModPt {
 	}
 		
 	/**
-	 * Singular branch point parameters are the overlap angles associated
+	 * @brief Singular branch point parameters are the overlap angles associated
 	 * with the three edges of 'singFace'. This is similar to 'fractured'
 	 * branch points, but since the overlap angles must sum to Pi, we 
 	 * specify two overlaps and compute the third.
@@ -225,7 +226,7 @@ public class SingBrModPt extends GenBrModPt {
 	 }
 	
 	 /**
-	  * For an already established 'singular' branch point, this just
+	  * @brief For an already established 'singular' branch point, this just
 	  * adjusts the overlap angles. 'o0', 'o1' in [0,1], 'o0+o1+o2'=1.0.
 	  * Record in 'overlaps' and set inv distances. 
 	  * @param o0 double
@@ -247,7 +248,7 @@ public class SingBrModPt extends GenBrModPt {
 	 }
 	 
 	 /**
-	  * See if there are special actions for display.
+	  * @brief See if there are special actions for display.
 	  * If so, do them, remove them, and pass the rest 
 	  * to 'super'. May flush some commands designed for 
 	  * other types of branch points.

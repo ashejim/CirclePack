@@ -1,0 +1,775 @@
+\doxysection{Traffic\+Center.\+java}
+\hypertarget{_traffic_center_8java_source}{}\label{_traffic_center_8java_source}\index{src/input/TrafficCenter.java@{src/input/TrafficCenter.java}}
+\doxymbox{\hyperlink{_traffic_center_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00001}00001\ \textcolor{keyword}{package\ }input;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00003}00003\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00004}00004\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00006}00006\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00007}00007\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00008}00008\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00009}00009\ \textcolor{keyword}{import}\ exceptions.CombException;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00010}00010\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00011}00011\ \textcolor{keyword}{import}\ exceptions.ExtenderException;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00012}00012\ \textcolor{keyword}{import}\ exceptions.InOutException;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00013}00013\ \textcolor{keyword}{import}\ exceptions.JNIException;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00014}00014\ \textcolor{keyword}{import}\ exceptions.MiscException;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00015}00015\ \textcolor{keyword}{import}\ exceptions.PackingException;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00016}00016\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00017}00017\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00018}00018\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00019}00019\ \textcolor{keyword}{import}\ util.BoolParser;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00020}00020\ \textcolor{keyword}{import}\ util.CallPacket;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00021}00021\ \textcolor{keyword}{import}\ util.ForSpec;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00022}00022\ \textcolor{keyword}{import}\ util.ResultPacket;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00023}00023\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00054}\doxymbox{\hyperlink{classinput_1_1_traffic_center}{00054}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classinput_1_1_traffic_center_a25418e7406b84a4bc6ee8b71f4e63bd8}{TrafficCenter}}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00055}00055\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00056}\doxymbox{\hyperlink{classinput_1_1_traffic_center_a1e83a9e624c1bf9622c3d20eb8dbcfb0}{00056}}\ \ \ \ \ \textcolor{keyword}{protected}\ String\ \doxymbox{\hyperlink{classinput_1_1_traffic_center_a1e83a9e624c1bf9622c3d20eb8dbcfb0}{lastCmd}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00057}\doxymbox{\hyperlink{classinput_1_1_traffic_center_aa653147706645e3b94310377ee08f908}{00057}}\ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classinput_1_1_traffic_center_aa653147706645e3b94310377ee08f908}{MAX\_DEPTH}}=5;\ \textcolor{comment}{//\ max\ recursion\ depth}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00059}00059\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00060}\doxymbox{\hyperlink{classinput_1_1_traffic_center_a25418e7406b84a4bc6ee8b71f4e63bd8}{00060}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classinput_1_1_traffic_center_a25418e7406b84a4bc6ee8b71f4e63bd8}{TrafficCenter}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00061}00061\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classinput_1_1_traffic_center_a1e83a9e624c1bf9622c3d20eb8dbcfb0}{lastCmd}}=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00062}00062\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00063}00063\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00084}\doxymbox{\hyperlink{classinput_1_1_traffic_center_a0caede66cc8cbcd37d67d515ff312f7f}{00084}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classinput_1_1_traffic_center_a0caede66cc8cbcd37d67d515ff312f7f}{parseWrapper}}(String\ cmd,\ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p,\ \textcolor{keywordtype}{boolean}\ remember,}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ useThread,\ \textcolor{keywordtype}{int}\ dep,\doxymbox{\hyperlink{classinput_1_1_my_console}{MyConsole}}\ myc)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00086}00086\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ String\ cmdf\ =\ \textcolor{keyword}{new}\ String(cmd.trim());}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00087}00087\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ packData\ =\ p;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00088}00088\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{boolean}\ mf\ =\ remember;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ depth\ =\ dep;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00090}00090\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ \doxymbox{\hyperlink{classinput_1_1_my_console}{MyConsole}}\ mycon=myc;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00091}00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (depth\ >\ 0\ ||\ cmdf.contains(\textcolor{stringliteral}{"{}!!"{}}))}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ useThread\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{boolean}\ threadOK\ =\ useThread;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00094}00094\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00095}00095\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ Thread\ workerThread\ =\ \textcolor{keyword}{new}\ Thread(\textcolor{keyword}{new}\ Runnable()\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ run()\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_af53f3e292ee3298cf4f17f60fa650149}{cmdDebug}})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println(\textcolor{stringliteral}{"{}new\ 'workerThread'\ in\ TrafficCenter"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.flush();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a0e64fbf84e16bef4e96064bb8b93431a}{runSpinner}}.\doxymbox{\hyperlink{classcircle_pack_1_1_run_progress_ac5047148c8f9bcfc6a4a60ed672fae92}{startstop}}(\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00104}00104\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println("{}set\ owl\ on"{});}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}\ rP=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}(packData,cmdf);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ab1a42d44a30cabf69049dc00f51bb9a8}{memoryFlag}}=mf;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a22f538b6ccb24c8557e01fda966b1ceb}{trafficCenter}}.\doxymbox{\hyperlink{classinput_1_1_traffic_center_a763987eab837c447234e2a37af67c891}{parseCmdSeq}}(rP,\ depth,\ mycon);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classinput_1_1_shell_manager}{ShellManager}}.\doxymbox{\hyperlink{classinput_1_1_shell_manager_ab26ef78be1a91fc0a759329bf1287f1d}{processCmdResults}}(rP,mycon);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}'TrafficCenter'\ work\ thread\ error:\ "{}}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00112}00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a0e64fbf84e16bef4e96064bb8b93431a}{runSpinner}}.\doxymbox{\hyperlink{classcircle_pack_1_1_run_progress_ac5047148c8f9bcfc6a4a60ed672fae92}{startstop}}(\textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00115}00115\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println("{}turn\ owl\ off"{});}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ workerThread.start();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00120}00120\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ System.out.println("{}cmd="{}+cmdf+"{}.\ threadOK\ is\ "{}+threadOK);}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ wait\ for\ thread\ to\ finish\ before\ continuing}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!threadOK)\ \{\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00124}00124\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println("{}waiting\ for\ thread"{});}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ workerThread.join();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00126}00126\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println("{}done\ with\ thread"{});}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00128}00128\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00129}00129\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ e)\ \{\}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00130}00130\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00131}00131\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00132}00132\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00146}\doxymbox{\hyperlink{classinput_1_1_traffic_center_a763987eab837c447234e2a37af67c891}{00146}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classinput_1_1_traffic_center_a763987eab837c447234e2a37af67c891}{parseCmdSeq}}(\doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}\ rP,\textcolor{keywordtype}{int}\ depth,\doxymbox{\hyperlink{classinput_1_1_my_console}{MyConsole}}\ mcs)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00147}00147\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00148}00148\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cmdCount\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00149}00149\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00150}00150\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ CAUTION:\ 'packnum'\ is\ overall\ pack\ number;\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00151}00151\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ commands\ can\ change\ it\ globally\ or\ can\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00152}00152\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ change\ it\ temporarily\ just\ for\ itself.}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00153}00153\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ packnum\ =\ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad1845ee7d3fc77785163b791f98c0ffa}{packData}}.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a47440adc7b651b3c31302e6620a7c019}{packNum}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00154}00154\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ newpnum\ =\ packnum;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00155}00155\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00156}00156\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ clear\ MyConsole\ displays}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00157}00157\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcircle_pack_1_1_pack_control}{PackControl}}.\doxymbox{\hyperlink{classcircle_pack_1_1_pack_control_a174da0283e788fb6cfb3e29ad2d69f84}{consoleCmd}}.\doxymbox{\hyperlink{classinput_1_1_my_console_ad8e1381bea9fb5bfc7e9a69d36e26bc2}{dispConsoleMsg}}(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00158}00158\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcircle_pack_1_1_pack_control}{PackControl}}.\doxymbox{\hyperlink{classcircle_pack_1_1_pack_control_a725f2a9f05792ae6feb4997692afff47}{consoleActive}}.\doxymbox{\hyperlink{classinput_1_1_my_console_ad8e1381bea9fb5bfc7e9a69d36e26bc2}{dispConsoleMsg}}(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00159}00159\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcircle_pack_1_1_pack_control}{PackControl}}.\doxymbox{\hyperlink{classcircle_pack_1_1_pack_control_a7344bc17bf62fcc97582336df5aaf6d2}{consolePair}}.\doxymbox{\hyperlink{classinput_1_1_my_console_ad8e1381bea9fb5bfc7e9a69d36e26bc2}{dispConsoleMsg}}(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00160}00160\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00161}00161\ \ \ \ \ \ \ \ \ StringBuilder\ cmdbldr=\textcolor{keyword}{new}\ StringBuilder(rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a18f57ff48567ce47eab8c21e1ee8b3c4}{origCmdString}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00162}00162\ \ \ \ \ \ \ \ \ String[]\ cmds=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00163}00163\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00164}00164\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Manage\ case\ of\ double-\/quoted\ strings:\ new\ as\ of\ 6/2020}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00165}00165\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdbldr.indexOf(\textcolor{stringliteral}{"{}\(\backslash\)"{}"{}})>=0)\ \{\ \textcolor{comment}{//\ a\ double\ quote\ occurs}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ break\ into\ alternating\ unquoted/quoted\ segments}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<StringBuilder>\ sbvec=\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_aeea4a2a126d8a39ab2e5f4585694a74a}{cmdSplitter}}(cmdbldr);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00170}00170\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sbvec==\textcolor{keyword}{null}\ ||\ sbvec.size()==0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00171}00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmds\ =\ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a18f57ff48567ce47eab8c21e1ee8b3c4}{origCmdString}}.split(\textcolor{stringliteral}{"{};"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00172}00172\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00174}00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmds=\textcolor{keyword}{new}\ String[sbvec.size()];}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<StringBuilder>\ sls=sbvec.iterator();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00176}00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00177}00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (sls.hasNext())\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00178}00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmds[tick++]=sls.next().toString();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00179}00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00180}00180\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00181}00181\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00182}00182\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00183}00183\ \ \ \ \ \ \ \ \ \ \ \ \ cmds\ =\ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a18f57ff48567ce47eab8c21e1ee8b3c4}{origCmdString}}.split(\textcolor{stringliteral}{"{};"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00184}00184\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00185}00185\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00186}00186\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cycle\ through\ the\ individual\ commands.}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00187}00187\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ cmds.length;\ j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00188}00188\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00189}00189\ \ \ \ \ \ \ \ \ \ \ \ \ newpnum=packnum;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00190}00190\ \ \ \ \ \ \ \ \ \ \ \ \ cmds[j]\ =\ cmds[j].trim();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00191}00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].length()==0)\ \textcolor{comment}{//\ skip\ if\ ';;'}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00192}00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00193}00193\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00194}00194\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ catch\ "{}for"{}\ and\ "{}FOR"{}\ here\ (and\ consolidate\ remaining\ cmds[.]\ to\ use\ in\ loop).}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00195}00195\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].startsWith(\textcolor{stringliteral}{"{}for\ "{}})\ ||\ cmds[j].startsWith(\textcolor{stringliteral}{"{}FOR\ "{}})\ ||\ cmds[j].startsWith(\textcolor{stringliteral}{"{}For\ "{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00196}00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ wholeStr=\textcolor{keyword}{new}\ StringBuilder(cmds[j]+\textcolor{stringliteral}{"{};"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00197}00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ J=j+1;J<cmds.length;J++)}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00198}00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ wholeStr.append(cmds[J]+\textcolor{stringliteral}{"{};"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00199}00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'for'\ loops\ run\ their\ own\ threads}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00200}00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_af53f3e292ee3298cf4f17f60fa650149}{cmdDebug}})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00201}00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println(\textcolor{stringliteral}{"{}new\ 'for'\ loop\ thread"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00202}00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.flush();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00203}00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classinput_1_1_traffic_center_adfa4fc2b19ae2392e4a4deb03e84a257}{forWrapper}}(\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a06bb8f75b7154fedb298cec41ba66c36}{cpDrawing}}[packnum].\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing_aced70a77033fa5643fdf254fc8516d20}{getPackData}}(),wholeStr.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a8ad12668e9bfd9fe3a6c94bc1f7646ba}{toString}}(),mcs);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdCount++;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00206}00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};\ \textcolor{comment}{//\ to\ break\ out\ of\ 'for'\ loop\ on\ cmd[j]}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00207}00207\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ 'for'\ catch}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ catch\ 'IF\ THEN\ (ELSE)'\ here\ (and\ consolidate\ remaining\ as\ part\ of\ if-\/then)}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].startsWith(\textcolor{stringliteral}{"{}IF"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00211}00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ wholeStr=\textcolor{keyword}{new}\ StringBuilder(cmds[j]+\textcolor{stringliteral}{"{};"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ J=j+1;J<cmds.length;J++)}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00213}00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ wholeStr.append(cmds[J]+\textcolor{stringliteral}{"{};"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00214}00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cmdadd=\doxymbox{\hyperlink{classinput_1_1_traffic_center_a490e3646d1b08f4c76ff79b20e9b7cac}{ifThenWrapper}}(\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a06bb8f75b7154fedb298cec41ba66c36}{cpDrawing}}[packnum].\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing_aced70a77033fa5643fdf254fc8516d20}{getPackData}}(),wholeStr.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a8ad12668e9bfd9fe3a6c94bc1f7646ba}{toString}}(),mcs,rP);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00215}00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a77b9a0cec4be4f4b36c6cd5f619e9fc7}{interrupt}})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00216}00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_aea9aeb547c9a3f8cecd1c942156e0767}{msgs}}=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}'IF'\ failed"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00217}00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=cmdCount+cmdadd;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00218}00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00219}00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00220}00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdCount\ +=cmdadd;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00221}00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00222}00222\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ 'if-\/then'\ catch}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00223}00223\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ debugging}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00225}00225\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_af53f3e292ee3298cf4f17f60fa650149}{cmdDebug}})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00226}00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println(\textcolor{stringliteral}{"{}cmd:\ "{}}+cmds[j]);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00227}00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.flush();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00228}00228\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00229}00229\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00230}00230\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ user\ interrupt,\ ignore\ rest\ of\ commands\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00231}00231\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(cmds[j].startsWith(\textcolor{stringliteral}{"{}break"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00232}00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_aea9aeb547c9a3f8cecd1c942156e0767}{msgs}}=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}'break'\ interrupted\ commands"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00233}00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a77b9a0cec4be4f4b36c6cd5f619e9fc7}{interrupt}}=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00234}00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=cmdCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00235}00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00236}00236\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ 'break'\ catch}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00237}00237\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00238}00238\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ global\ change\ in\ 'PackData'\ for\ active\ pack}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00239}00239\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].startsWith(\textcolor{stringliteral}{"{}act"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00240}00240\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ pack\ number\ could\ be\ from\ a\ variable}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ ss\ =\ \doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_abec5bedb3c5bf928bea967988c57357b}{varSub}}(cmds[j].substring(3).trim());}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00243}00243\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00244}00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newpnum\ =\ -\/1;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00245}00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00246}00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newpnum\ =\ Integer.parseInt(ss);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00247}00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (NumberFormatException\ e)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00248}00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.errorMsgs\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}malformed\ pack\ number"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00249}00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.cmdCount\ =\ -\/cmdCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00250}00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00251}00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00252}00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newpnum\ <\ 0\ ||\ newpnum\ >=\ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a3e5f238f18f948fefe2104d22dae3867}{NUM\_PACKS}})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00253}00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.errorMsgs\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}illegal\ pack\ number"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00254}00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.msgs\ =\ Integer.valueOf(-\/cmdCount).toString();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00255}00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00256}00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00257}00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcircle_pack_1_1_pack_control}{PackControl}}.\doxymbox{\hyperlink{classcircle_pack_1_1_pack_control_ac20b5490b0423a6fd8e11d47c3400dde}{switchActivePack}}(newpnum);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00258}00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ packnum\ =\ newpnum;\ \textcolor{comment}{//\ change\ in\ global\ pack\ number}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00259}00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdCount++;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00260}00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};\ \textcolor{comment}{//\ continue\ for\ loop\ on\ cmds[j]}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00261}00261\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ 'act'\ catch}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00262}00262\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00263}00263\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].startsWith(\textcolor{stringliteral}{"{}delay\ "{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00264}00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00265}00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ remaining\ portion\ of\ command}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00266}00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmds[j]\ =\ cmds[j].substring(6).trim();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00267}00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].length()\ ==\ 0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00268}00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.errorMsgs\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}usage:\ delay\ \{x\}"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00269}00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.msgs\ =\ Integer.valueOf(-\/cmdCount).toString();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00270}00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00271}00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00272}00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ could\ be\ a\ variable\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00273}00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].length()>1\ \&\&\ cmds[j].charAt(0)==\textcolor{charliteral}{'\_'})\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00274}00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmds[j]\ =\ \doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_abec5bedb3c5bf928bea967988c57357b}{varSub}}(cmds[j]);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00275}00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ delay\ =Double.parseDouble(cmds[j]);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00276}00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (delay\ >\ 10)}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00277}00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ delay\ =\ 10;\ \textcolor{comment}{//\ limit\ 10\ seconds}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00278}00278\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00279}00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ here's\ the\ actual\ sleep}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00280}00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (delay\ >\ 0.0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00281}00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Thread.sleep((\textcolor{keywordtype}{long})\ (delay\ *\ 1000.0));}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00282}00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00283}00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdCount++;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00284}00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00285}00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (InterruptedException\ ie)\ \{\}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00286}00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00287}00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.errorMsgs\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}usage:\ delay\ \{x\}"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00288}00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.msgs\ =\ Integer.valueOf(-\/cmdCount).toString();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00289}00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00290}00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00291}00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};\ \textcolor{comment}{//\ continue\ loop\ on\ cmds[j]}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00292}00292\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ 'delay'\ catch}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00293}00293\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00294}00294\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Catch\ "{}:="{}\ variable-\/setting\ calls:\ vname:=value}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00295}00295\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ Note:\ this\ option\ must\ be\ processed\ further\ below,}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00296}00296\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ since\ here\ we\ just\ change\ 'cmds[j]'\ to\ 'set\_variable'}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00297}00297\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].contains(\textcolor{stringliteral}{"{}:="{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00298}00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k\ =\ cmds[j].indexOf(\textcolor{stringliteral}{"{}:="{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00299}00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k<=0\ )\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00300}00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.errorMsgs\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}malformed\ ':='\ attempt"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00301}00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.msgs\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}-\/"{}}\ +\ cmdCount);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00302}00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00303}00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00304}00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ vname\ =\ cmds[j].substring(0,\ k).trim();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00305}00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ vname\ can't\ contain\ a\ space}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00306}00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ m\ =\ vname.lastIndexOf(\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00307}00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m\ >\ 0)}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00308}00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vname\ =\ vname.substring(m\ +\ 1);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00309}00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00310}00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ common\ mistake:\ first\ char\ might\ be\ '\_'\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00311}00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ (which\ should\ be\ used\ only\ for\ referring\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00312}00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ to\ an\ existing\ variable)}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00313}00313\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vname.charAt(0)==\textcolor{charliteral}{'\_'})\ \{\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00314}00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vname.length()==1)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00315}00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.errorMsgs\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}malformed\ ':='\ attempt.\ Extraneous\ '\_'\ perhaps?"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00316}00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.msgs\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}-\/"{}}\ +\ cmdCount);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00317}00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00318}00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00319}00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vname=vname.substring(1);\ \textcolor{comment}{//\ omit\ the\ '\_'\ symbol}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00320}00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00321}00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k\ +=2;\ \textcolor{comment}{//\ move\ beyond\ "{}:="{}}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00322}00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00323}00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ make\ sure\ name\ contains\ only\ letters}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00324}00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ and\ digits}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00325}00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00326}00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ rest\ =\ string\ value\ of\ this\ variable,\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00327}00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ may\ have\ variables\ itself\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00328}00328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k>=cmds[j].length()\ ||\ cmds[j].substring(k).trim().length()==0)}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00329}00329\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00330}00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ valu\ =\ \doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_abec5bedb3c5bf928bea967988c57357b}{varSub}}(cmds[j].substring(k).trim());}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00331}00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (valu==\textcolor{keyword}{null}\ ||\ valu.length()==0)}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00332}00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};\ \textcolor{comment}{//\ skip,\ continue\ loop\ on\ cmds[j]}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00333}00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ re-\/form\ command,\ will\ continue\ processing\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00334}00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmds[j]=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}set\_variable\ "{}}+vname+\textcolor{stringliteral}{"{}\ "{}}+valu);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00335}00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ in\ processing\ 'var'\ command\ look\ for\ '\{...\}'\ structure}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00336}00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ to\ set\ to\ some\ value\ returned\ by\ a\ function.}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00337}00337\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ ':='\ catch}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00338}00338\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00339}00339\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ *****\ Commands\ with\ recursion:\ '!!',\ [.]}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00340}00340\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ '!!'\ is\ call\ to\ repeat\ lastCmd:\ to\ avoid\ infinite\ recursion,\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00341}00341\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ '!!'\ is\ never\ included\ in\ 'lastCmd'.\ Also,\ '!!'\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00342}00342\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ terminates\ the\ rest\ of\ the\ current\ command\ sequence,\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00343}00343\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ except\ it\ allows\ several\ '!!'\ commands\ in\ immediate\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00344}00344\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ succession.}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00345}00345\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ 'lastCmd'\ will\ remain\ unchanged,\ so\ !!\ can\ be\ used\ again.}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00346}00346\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].charAt(0)==\textcolor{charliteral}{'!'}\ \&\&\ cmds[j].charAt(1)==\textcolor{charliteral}{'!'})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00347}00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ redoCmd\ =\ \textcolor{keyword}{new}\ String(\doxymbox{\hyperlink{classinput_1_1_traffic_center_a1e83a9e624c1bf9622c3d20eb8dbcfb0}{lastCmd}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00348}00348\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}\ rsP=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}(\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a06bb8f75b7154fedb298cec41ba66c36}{cpDrawing}}[newpnum].\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing_aced70a77033fa5643fdf254fc8516d20}{getPackData}}(),redoCmd);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00349}00349\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classinput_1_1_traffic_center_a763987eab837c447234e2a37af67c891}{parseCmdSeq}}(rP,0,mcs);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00350}00350\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ repeat\_count=rsP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00351}00351\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classinput_1_1_traffic_center_a1e83a9e624c1bf9622c3d20eb8dbcfb0}{lastCmd}}\ =\ \textcolor{keyword}{new}\ String(redoCmd);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00352}00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ command\ failed\ or\ there's\ another\ command\ not\ !!}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00353}00353\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (repeat\_count\ <\ 0}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00354}00354\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ (j\ ==\ (cmds.length\ -\/\ 1)\ ||\ !cmds[j\ +\ 1]}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00355}00355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .contains(\textcolor{stringliteral}{"{}!!"{}})))\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00356}00356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=-\/cmdCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00357}00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00358}00358\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00359}00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdCount\ +=\ repeat\_count;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00360}00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00361}00361\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ '!!'\ catch}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00362}00362\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00363}00363\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ********\ Substitute\ from\ script\ for\ '[.]'\ named\ commands}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00364}00364\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].charAt(0)==\textcolor{charliteral}{'['})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00365}00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_ade88441883ec4009d036b2716d49bf7c}{scriptManager}}.\doxymbox{\hyperlink{classscript_1_1_script_manager_a83e2b57cdaeee984cef973fdb7ed8977}{isScriptLoaded}}())\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00366}00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ fe\ =\ \textcolor{keyword}{new}\ String(}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00367}00367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}error:\ '[.]'\ call\ fails,\ no\ script\ is\ loaded"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00368}00368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00369}00369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}=fe;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00370}00370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00371}00371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}=rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}.concat(fe);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00372}00372\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=-\/cmdCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00373}00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00374}00374\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00375}00375\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k\ =\ cmds[j].indexOf(\textcolor{charliteral}{']'});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00376}00376\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k\ <\ 0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00377}00377\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ fe=\textcolor{stringliteral}{"{}cmd\ format\ error\ in\ '[.]':\ "{}}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00378}00378\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}right\ bracket\ missing"{}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00379}00379\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00380}00380\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}=fe;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00381}00381\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00382}00382\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}=rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}.concat(fe);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00383}00383\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=-\/cmdCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00384}00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00385}00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00386}00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ brktcmd\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00387}00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k\ ==\ 1)\ \textcolor{comment}{//\ empty\ bracket?\ do\ next}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00388}00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ brktcmd\ =\ (String)\ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_ade88441883ec4009d036b2716d49bf7c}{scriptManager}}.\doxymbox{\hyperlink{classscript_1_1_script_manager_a9b631e19c2aff9399691c8e90b94980c}{getCommandString}}();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00389}00389\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00390}00390\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (depth\ >\ \doxymbox{\hyperlink{classinput_1_1_traffic_center_aa653147706645e3b94310377ee08f908}{MAX\_DEPTH}})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00391}00391\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ fe\ =\ \textcolor{keyword}{new}\ String(}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00392}00392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Command\ parsing\ error:\ "{}}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00393}00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}recursive\ search\ depth\ for\ command\ replacement\ exceeded."{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00394}00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcircle_pack_1_1_pack_control}{PackControl}}.\doxymbox{\hyperlink{classcircle_pack_1_1_pack_control_a174da0283e788fb6cfb3e29ad2d69f84}{consoleCmd}}.\doxymbox{\hyperlink{classinput_1_1_my_console_ad8e1381bea9fb5bfc7e9a69d36e26bc2}{dispConsoleMsg}}(fe);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00395}00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00396}00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}=fe;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00397}00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00398}00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}=rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}.concat(fe);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00399}00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=-\/cmdCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00400}00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00401}00401\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00402}00402\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00403}00403\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ key=(String)\ cmds[j].substring(1,\ k);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00404}00404\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00405}00405\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ could\ be\ a\ variable\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00406}00406\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key.length()>1\ \&\&\ key.charAt(0)==\textcolor{charliteral}{'\_'})\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00407}00407\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ key\ =\ \doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_abec5bedb3c5bf928bea967988c57357b}{varSub}}(key);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00408}00408\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ brktcmd=(String)\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_ade88441883ec4009d036b2716d49bf7c}{scriptManager}}.\doxymbox{\hyperlink{classscript_1_1_script_manager_acbafd6f0c9f5a989ce1395afe5c7d8c9}{findCmdByName}}(key,1);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00409}00409\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (brktcmd==\textcolor{keyword}{null})\ \{\ \textcolor{comment}{//\ named\ command\ not\ found}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00410}00410\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ fe\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}Named\ script\ command\ ["{}}\ +\ key}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00411}00411\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}]\ not\ found"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00412}00412\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcircle_pack_1_1_pack_control}{PackControl}}.\doxymbox{\hyperlink{classcircle_pack_1_1_pack_control_a174da0283e788fb6cfb3e29ad2d69f84}{consoleCmd}}.\doxymbox{\hyperlink{classinput_1_1_my_console_ad8e1381bea9fb5bfc7e9a69d36e26bc2}{dispConsoleMsg}}(fe);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00413}00413\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00414}00414\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}=fe;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00415}00415\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00416}00416\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}=rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}.concat(fe);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00417}00417\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00418}00418\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00419}00419\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00420}00420\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00421}00421\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ here's\ recursive\ call}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00422}00422\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}\ uP=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}(\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a06bb8f75b7154fedb298cec41ba66c36}{cpDrawing}}[newpnum].\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing_aced70a77033fa5643fdf254fc8516d20}{getPackData}}(),brktcmd);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00423}00423\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ab1a42d44a30cabf69049dc00f51bb9a8}{memoryFlag}}=rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ab1a42d44a30cabf69049dc00f51bb9a8}{memoryFlag}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00424}00424\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classinput_1_1_traffic_center_a763987eab837c447234e2a37af67c891}{parseCmdSeq}}(uP,depth+1,mcs);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00425}00425\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (uP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}!=\textcolor{keyword}{null}\ \&\&\ uP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}.trim().length()>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00426}00426\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00427}00427\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}=uP.\doxymbox{\hyperlink{classutil_1_1_result_packet_aea9aeb547c9a3f8cecd1c942156e0767}{msgs}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00428}00428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00429}00429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}=rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}.concat(\textcolor{stringliteral}{"{};"{}}+uP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00430}00430\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00431}00431\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (uP.\doxymbox{\hyperlink{classutil_1_1_result_packet_aea9aeb547c9a3f8cecd1c942156e0767}{msgs}}!=\textcolor{keyword}{null}\ \&\&\ uP.\doxymbox{\hyperlink{classutil_1_1_result_packet_aea9aeb547c9a3f8cecd1c942156e0767}{msgs}}.trim().length()>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00432}00432\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_aea9aeb547c9a3f8cecd1c942156e0767}{msgs}}==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00433}00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_aea9aeb547c9a3f8cecd1c942156e0767}{msgs}}=uP.\doxymbox{\hyperlink{classutil_1_1_result_packet_aea9aeb547c9a3f8cecd1c942156e0767}{msgs}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00434}00434\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00435}00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.msgs\ =\ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_aea9aeb547c9a3f8cecd1c942156e0767}{msgs}}.concat(\textcolor{stringliteral}{"{};"{}}+uP.\doxymbox{\hyperlink{classutil_1_1_result_packet_aea9aeb547c9a3f8cecd1c942156e0767}{msgs}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00436}00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00437}00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdCount\ +=\ uP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}};\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00438}00438\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};\ \textcolor{comment}{//\ continue\ loop\ on\ cmds[j]}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00439}00439\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ '[.]'\ catch}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00440}00440\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00441}00441\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ remaining\ cases,\ need\ to\ check\ for\ and\ remove\ "{}-\/p"{}\ flag}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00442}00442\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00443}00443\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ First,\ handle\ -\/p\ flag\ to\ temporarily\ change\ packing}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00444}00444\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].contains(\textcolor{stringliteral}{"{}-\/p"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00445}00445\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ sb=\textcolor{keyword}{new}\ StringBuilder(cmds[j]);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00446}00446\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newpnum=\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_aa6e04f990fc377a1fc793a917ac44ce3}{extractPackNum}}(sb);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00447}00447\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newpnum<0)}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00448}00448\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newpnum=packnum;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00449}00449\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmds[j]=sb.toString();\ \textcolor{comment}{//\ new\ command\ with\ -\/p\ flag\ removed}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00450}00450\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ '-\/p'\ catch}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00451}00451\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00452}00452\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ **********\ handoff\ to\ 'PackExtender'?\ (.e.g.\ '|BQ|')}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00453}00453\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].charAt(0)\ ==\ \textcolor{charliteral}{'|'})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00454}00454\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String[]\ cmdcontent\ =\ \doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_a2ef449020815ba99af42f1850086cdf9}{getXtender}}(cmds[j]);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00455}00455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender}{PackExtender}}\ pXdr\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00456}00456\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdcontent\ !=\ \textcolor{keyword}{null}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00457}00457\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ cmdcontent[1].length()\ >\ 0}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00458}00458\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ (pXdr\ =\ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a06bb8f75b7154fedb298cec41ba66c36}{cpDrawing}}[newpnum].\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing_aced70a77033fa5643fdf254fc8516d20}{getPackData}}()}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00459}00459\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .\doxymbox{\hyperlink{classpacking_1_1_pack_data_a994470cddfc07eadbdbf0e45175f7f1f}{findXbyAbbrev}}(cmdcontent[0]))\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00460}00460\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k\ =\ cmdcontent[1].indexOf(\textcolor{charliteral}{'\ '});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00461}00461\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ cmd\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00462}00462\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<Vector<String>>\ flagSegs=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00463}00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k\ >\ 0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00464}00464\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd\ =\ cmdcontent[1].substring(0,\ k).trim();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00465}00465\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flagSegs=\ \doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_a91c3e38ba488dbc94a71bdbb850e354f}{flagSeg}}(cmdcontent[1].substring(k));}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00466}00466\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00467}00467\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00468}00468\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd\ =\ \textcolor{keyword}{new}\ String(cmdcontent[1]);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00469}00469\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00470}00470\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ rslt\ =\ pXdr.\doxymbox{\hyperlink{classpacking_1_1_pack_extender_a1bfeee7e3e669c5aba51e4556935484f}{cmdParser}}(cmd,\ flagSegs);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00471}00471\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rslt\ <=\ 0)\ \{\ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00472}00472\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.errorMsgs\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}extender\ '"{}}\ +\ cmdcontent[0]}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00473}00473\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}'\ cmd\ failed"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00474}00474\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=-\/cmdCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00475}00475\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00476}00476\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00477}00477\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdCount\ +=\ 1;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00478}00478\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00479}00479\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.errorMsgs\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}failed\ extender\ attempt"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00480}00480\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=-\/cmdCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00481}00481\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00482}00482\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00483}00483\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ 'extender'\ handoff}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00484}00484\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00485}00485\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00486}00486\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===================================================}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00487}00487\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =====\ here's\ where\ most\ commands\ are\ handled\ ======}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00488}00488\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===================================================}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00489}00489\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00490}00490\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00491}00491\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00492}00492\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ valueCall=\textcolor{keyword}{false};\ \textcolor{comment}{//\ fork\ to\ reap\ command\ value?}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00493}00493\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00494}00494\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ *****\ Special\ case:\ 'get\_variable'.\ user\ may\ accidently\ put\ '\_'\ in\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00495}00495\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ front\ of\ name,\ then\ 'varSub'\ will\ screw\ things\ up.\ So}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00496}00496\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ replace\ an\ extraneous\ '\_'\ by\ a\ blank\ (there\ should\ be\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00497}00497\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ at\ most\ one\ '\_',\ and\ it\ should\ be\ proceeded\ by\ a\ blank)}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00498}00498\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].startsWith(\textcolor{stringliteral}{"{}get\_var"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00499}00499\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=cmds[j].indexOf(\textcolor{charliteral}{'\ '});\ \textcolor{comment}{//\ first\ blank}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00500}00500\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ you\ see\ '\_'\ after\ k,\ it\ should\ be\ replaced\ by\ a\ blank}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00501}00501\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].indexOf(\textcolor{charliteral}{'\_'},k)>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00502}00502\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmds[j]=\textcolor{keyword}{new}\ String(cmds[j].substring(0,k)+cmds[j].substring(k).replace(\textcolor{stringliteral}{"{}\ \_"{}},\textcolor{stringliteral}{"{}\ "{}}));}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00503}00503\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00504}00504\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00505}00505\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00506}00506\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ***********\ catch\ '\{..cmd..\}'\ for\ value\ call\ }}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00507}00507\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmds[j].charAt(0)\ ==\ \textcolor{charliteral}{'\{'})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00508}00508\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ bracesstr=\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_a741575199e34e69f17e03dc6dead543d}{getBracesString}}(cmds[j]);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00509}00509\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bracesstr==\textcolor{keyword}{null}\ ||\ bracesstr.length()==0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00510}00510\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.errorMsgs\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}empty\ braces"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00511}00511\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=-\/cmdCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00512}00512\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00513}00513\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00514}00514\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ valueCall=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00515}00515\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmds[j]=bracesstr;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00516}00516\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00517}00517\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00518}00518\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ sbld\ =\ \textcolor{keyword}{new}\ StringBuilder(cmds[j]);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00519}00519\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00520}00520\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ apply\ varSub\ to\ occurrences\ of\ '\_',\ but\ only\ AFTER\ the}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00521}00521\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ command\ itself\ (many\ of\ which\ have\ '\_').}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00522}00522\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=sbld.indexOf(\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00523}00523\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k<=0\ ||\ sbld.indexOf(\textcolor{stringliteral}{"{}\_"{}},k+1)<=0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00524}00524\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmds[j]=sbld.toString();\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00525}00525\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00526}00526\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00527}00527\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmds[j]=\textcolor{keyword}{new}\ String(sbld.substring(0,k)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00528}00528\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_abec5bedb3c5bf928bea967988c57357b}{varSub}}(cmds[j].substring(k+1)));}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00529}00529\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00530}00530\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00531}00531\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Here's\ the\ typical\ call\ to\ execute\ single\ commands}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00532}00532\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00533}00533\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00534}00534\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00535}00535\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ errMsg\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00536}00536\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00537}00537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!valueCall)\ \textcolor{comment}{//\ this\ is\ the\ typical\ situation}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00538}00538\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count\ =\ \doxymbox{\hyperlink{classinput_1_1_command_str_parser}{CommandStrParser}}.\doxymbox{\hyperlink{classinput_1_1_command_str_parser_ad2c354ce742f567dba1b7cd963fb0323}{jexecute}}(}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00539}00539\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a06bb8f75b7154fedb298cec41ba66c36}{cpDrawing}}[newpnum].\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing_aced70a77033fa5643fdf254fc8516d20}{getPackData}}(),\ cmds[j]);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00540}00540\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ this\ puts\ resulting\ value\ in\ 'CPcallPacket'}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00541}00541\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a2dc14a38fd2b30adaf422e57d3ddb727}{CPcallPacket}}=\doxymbox{\hyperlink{classinput_1_1_command_str_parser}{CommandStrParser}}.\doxymbox{\hyperlink{classinput_1_1_command_str_parser_a1b8bdb1e48aec6359c8cc989bfb3b7d8}{valueExecute}}(\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a06bb8f75b7154fedb298cec41ba66c36}{cpDrawing}}[newpnum].\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing_aced70a77033fa5643fdf254fc8516d20}{getPackData}}(),\ cmds[j]);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00542}00542\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a2dc14a38fd2b30adaf422e57d3ddb727}{CPcallPacket}}==\textcolor{keyword}{null}\ ||\ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a2dc14a38fd2b30adaf422e57d3ddb727}{CPcallPacket}}.\doxymbox{\hyperlink{classutil_1_1_call_packet_a13c30a28c3d79534db3a70e4c205d969}{error}})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00543}00543\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.errorMsgs\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}value\ computation,\ \{..cmd..\}\ failed"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00544}00544\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=-\/cmdCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00545}00545\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00546}00546\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00547}00547\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00548}00548\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00549}00549\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}\ pex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00550}00550\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errMsg\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}ParserException:\ //\ in\ "{}}\ +\ cmds[j]\ +\ \textcolor{stringliteral}{"{}\ "{}}\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00551}00551\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ pex.getMessage()\ +\ \textcolor{stringliteral}{"{};\ "{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00552}00552\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\doxymbox{\hyperlink{classexceptions_1_1_comb_exception}{CombException}}\ cex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00553}00553\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errMsg\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}CombException:\ "{}}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00554}00554\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ cex.getMessage());\ \textcolor{comment}{//\ +\ "{}\ in\ "{}\ +\ cmds[j]\ +\ "{};\ "{});}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00555}00555\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\doxymbox{\hyperlink{classexceptions_1_1_misc_exception}{MiscException}}\ cex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00556}00556\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errMsg\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}MiscException:\ "{}}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00557}00557\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ cex.getMessage());\ \textcolor{comment}{//\ +\ "{}\ in\ "{}\ +\ cmds[j]\ +\ "{};\ "{});}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00558}00558\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\doxymbox{\hyperlink{classexceptions_1_1_packing_exception}{PackingException}}\ cex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00559}00559\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errMsg\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}PackingException:\ "{}}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00560}00560\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ cex.getMessage());\ \textcolor{comment}{//\ +\ "{}\ in\ "{}\ +\ cmds[j]\ +\ "{};\ "{});}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00561}00561\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}\ cex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00562}00562\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errMsg\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}DataException:\ "{}}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00563}00563\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ cex.getMessage());\ \textcolor{comment}{//\ +\ "{}\ in\ "{}\ +\ cmds[j]\ +\ "{};\ "{});}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00564}00564\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\doxymbox{\hyperlink{classexceptions_1_1_in_out_exception}{InOutException}}\ cex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00565}00565\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errMsg\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}InOutException:\ "{}}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00566}00566\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ cex.getMessage());\ \textcolor{comment}{//\ +\ "{}\ in\ "{}\ +\ cmds[j]\ +\ "{};\ "{});}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00567}00567\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (NullPointerException\ nex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00568}00568\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println(nex.toString());}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00569}00569\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nex.printStackTrace(System.out);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00570}00570\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errMsg\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}NullPointerException:\ "{}}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00571}00571\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ nex.getMessage());\ \textcolor{comment}{//\ +\ "{}\ in\ "{}\ +\ cmds[j]\ +\ "{};\ "{});}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00572}00572\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ catch\ (IOException\ iox)\ \{}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00573}00573\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errMsg\ =\ new\ String("{}IOException:\ "{}\ +\ iox.getMessage()}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00574}00574\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ "{}\ in\ "{}\ +\ cmds[j]\ +\ "{};\ "{});}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00575}00575\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\doxymbox{\hyperlink{classexceptions_1_1_extender_exception}{ExtenderException}}\ iox)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00576}00576\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errMsg\ =\ \textcolor{keyword}{new}\ String(iox.getMessage());}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00577}00577\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (\doxymbox{\hyperlink{classexceptions_1_1_j_n_i_exception}{JNIException}}\ jni)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00578}00578\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errMsg\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}JNIException:\ "{}}+jni.getMessage());}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00579}00579\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00580}00580\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errMsg\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}Exception:\ in\ "{}}\ +\ cmds[j]\ +\ \textcolor{stringliteral}{"{}:\ "{}}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00581}00581\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ ex.getMessage()\ +\ \textcolor{stringliteral}{"{};\ "{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00582}00582\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00583}00583\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (errMsg\ !=\ \textcolor{keyword}{null}\ ||\ count\ ==\ 0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00584}00584\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdCount\ +=\ count;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00585}00585\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (errMsg\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00586}00586\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00587}00587\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}=errMsg;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00588}00588\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00589}00589\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ad76723af697240ce97a3d403a2e4efea}{errorMsgs}}.concat(errMsg);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00590}00590\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00591}00591\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=-\/cmdCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00592}00592\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00593}00593\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00594}00594\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdCount++;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00595}00595\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ catch-\/all\ 'else'}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00596}00596\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ 'for'\ loop\ through\ cmds[j].}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00597}00597\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00598}00598\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ab1a42d44a30cabf69049dc00f51bb9a8}{memoryFlag}})}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00599}00599\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classinput_1_1_traffic_center_a1e83a9e624c1bf9622c3d20eb8dbcfb0}{lastCmd}}\ =\ \textcolor{keyword}{new}\ String(rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a18f57ff48567ce47eab8c21e1ee8b3c4}{origCmdString}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00600}00600\ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=cmdCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00601}00601\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00602}00602\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00603}00603\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00613}\doxymbox{\hyperlink{classinput_1_1_traffic_center_a857c111ba1487d01670c927949690fc6}{00613}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classutil_1_1_call_packet}{CallPacket}}\ \doxymbox{\hyperlink{classinput_1_1_traffic_center_a857c111ba1487d01670c927949690fc6}{parseValueCall}}(\doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}\ rP,\textcolor{keywordtype}{int}\ depth,\doxymbox{\hyperlink{classinput_1_1_my_console}{MyConsole}}\ mcs)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00614}00614\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_call_packet}{CallPacket}}\ rtnCp=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00615}00615\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00616}00616\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ have\ to\ do\ preprocessing\ as\ in\ 'parseCmdSeq'\ to\ catch,\ -\/p\ flag,\ etc.}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00617}00617\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00618}00618\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rtnCp;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00619}00619\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00620}00620\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00641}\doxymbox{\hyperlink{classinput_1_1_traffic_center_a490e3646d1b08f4c76ff79b20e9b7cac}{00641}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classinput_1_1_traffic_center_a490e3646d1b08f4c76ff79b20e9b7cac}{ifThenWrapper}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p,String\ wholeStr,\doxymbox{\hyperlink{classinput_1_1_my_console}{MyConsole}}\ myc,\doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}\ rP)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00642}00642\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ifk=wholeStr.indexOf(\textcolor{stringliteral}{"{}IF"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00643}00643\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ thenk=wholeStr.indexOf(\textcolor{stringliteral}{"{}THEN"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00644}00644\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ elsek=wholeStr.indexOf(\textcolor{stringliteral}{"{}ELSE"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00645}00645\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00646}00646\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Is\ this\ an\ 'IF-\/THEN'\ statement}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00647}00647\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ifk!=0\ ||\ thenk<0)\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00648}00648\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00649}00649\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00650}00650\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ the\ condition\ string}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00651}00651\ \ \ \ \ \ \ \ \ String\ condition=wholeStr.substring(ifk+2,\ thenk).trim();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00652}00652\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (condition.contains(\textcolor{stringliteral}{"{};"{}}))}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00653}00653\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00654}00654\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00655}00655\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ then\ and\ else\ commands}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00656}00656\ \ \ \ \ \ \ \ \ String\ thenStr=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00657}00657\ \ \ \ \ \ \ \ \ String\ elseStr=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00658}00658\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (elsek<0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00659}00659\ \ \ \ \ \ \ \ \ \ \ \ \ thenStr=wholeStr.substring(thenk+4).trim();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00660}00660\ \ \ \ \ \ \ \ \ \ \ \ \ elseStr=\textcolor{stringliteral}{"{}break"{}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00661}00661\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00662}00662\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00663}00663\ \ \ \ \ \ \ \ \ \ \ \ \ thenStr=wholeStr.substring(thenk+4,elsek).trim();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00664}00664\ \ \ \ \ \ \ \ \ \ \ \ \ elseStr=wholeStr.substring(elsek+4).trim();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00665}00665\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00666}00666\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00667}00667\ \ \ \ \ \ \ \ \ Boolean\ outcome=\doxymbox{\hyperlink{classutil_1_1_bool_parser}{BoolParser}}.\doxymbox{\hyperlink{classutil_1_1_bool_parser_a832f48d9cffaf69e414cfaac5f176efa}{trueFalse}}(p,condition);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00668}00668\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (outcome==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00669}00669\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}if-\/then\ condition\ failed\ to\ evaluate\ correctly"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00670}00670\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00671}00671\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00672}00672\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ carry\ out\ the\ 'then'\ or\ 'else'\ commands}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00673}00673\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}\ innerRP=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00674}00674\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (outcome)\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00675}00675\ \ \ \ \ \ \ \ \ \ \ \ \ innerRP=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}(p,thenStr);\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00676}00676\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00677}00677\ \ \ \ \ \ \ \ \ \ \ \ \ innerRP=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}(p,elseStr);\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00678}00678\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00679}00679\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00680}00680\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a22f538b6ccb24c8557e01fda966b1ceb}{trafficCenter}}.\doxymbox{\hyperlink{classinput_1_1_traffic_center_a763987eab837c447234e2a37af67c891}{parseCmdSeq}}(innerRP,0,myc);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00681}00681\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ pass\ along\ interrupt\ signal\ (e.g.\ from\ 'break')}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00682}00682\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (innerRP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a77b9a0cec4be4f4b36c6cd5f619e9fc7}{interrupt}})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00683}00683\ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a77b9a0cec4be4f4b36c6cd5f619e9fc7}{interrupt}}=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00684}00684\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00685}00685\ \ \ \ \ \ \ \ \ rP.cmdCount\ +=innerRP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00686}00686\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ innerRP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00687}00687\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00688}00688\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00703}\doxymbox{\hyperlink{classinput_1_1_traffic_center_adfa4fc2b19ae2392e4a4deb03e84a257}{00703}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classinput_1_1_traffic_center_adfa4fc2b19ae2392e4a4deb03e84a257}{forWrapper}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p,String\ wholeStr,\doxymbox{\hyperlink{classinput_1_1_my_console}{MyConsole}}\ myc)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00704}00704\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ delay=0.0;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00705}00705\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00706}00706\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ build\ up\ the\ calling\ string}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00707}00707\ \ \ \ \ \ \ \ \ StringBuilder\ forString\ =\ \textcolor{keyword}{new}\ StringBuilder(wholeStr.substring(0,3)+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00708}00708\ \ \ \ \ \ \ \ \ StringBuffer\ restbuf\ =\ \textcolor{keyword}{new}\ StringBuffer(wholeStr.substring(3).trim());}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00709}00709\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ initial\ section\ should\ be\ loop\ parameters}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00710}00710\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k\ =\ \doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_a9bb7262738a6b62d9d1841e4f1ad201d}{getForString}}(restbuf);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00711}00711\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k\ <=\ 0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00712}00712\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}malformed\ 'for'\ string\ specs"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00713}00713\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00714}00714\ \ \ \ \ \ \ \ \ String\ specStr\ =\ restbuf.substring(0,\ k);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00715}00715\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ build\ the\ 'for'\ specification\ info}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00716}00716\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_for_spec}{ForSpec}}\ forSpec\ =\ \doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_a5856b261c0dde1fec9eac0b32a9a5f33}{getForSpec}}(specStr);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00717}00717\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (forSpec\ ==\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00718}00718\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}malformed\ 'for'\ string\ specs"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00719}00719\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00720}00720\ \ \ \ \ \ \ \ \ forSpec.\doxymbox{\hyperlink{classutil_1_1_for_spec_a2ac07778fb79191d0d4eb2bd47ea5bc2}{setItNum}}();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00721}00721\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cautionary\ check\ to\ avoid\ unplanned\ huge\ loops}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00722}00722\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (forString.charAt(0)==\textcolor{charliteral}{'f'}\ \&\&\ forSpec.\doxymbox{\hyperlink{classutil_1_1_for_spec_a2cb56ebb24fb61a223674c92cb5196fc}{itNum}}\ >\ 10)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00723}00723\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00724}00724\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}'for'\ loop\ with\ >\ 10\ repeats\ requires\ 'FOR'\ form"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00725}00725\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00726}00726\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ history}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00727}00727\ \ \ \ \ \ \ \ \ forString.append(\textcolor{stringliteral}{"{}\ "{}}+specStr+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00728}00728\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00729}00729\ \ \ \ \ \ \ \ \ restbuf.delete(0,k);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00730}00730\ \ \ \ \ \ \ \ \ String\ cmdTail=restbuf.toString().trim();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00731}00731\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00732}00732\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdTail.startsWith(\textcolor{stringliteral}{"{}-\/d"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00733}00733\ \ \ \ \ \ \ \ \ \ \ \ \ cmdTail\ =\ cmdTail.substring(2).trim();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00734}00734\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdTail.length()\ ==\ 0}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00735}00735\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ (k\ =\ cmdTail.indexOf(\textcolor{charliteral}{'\ '}))\ <\ 0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00736}00736\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}-\/d\ flag:\ no\ \{x\}\ given"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00737}00737\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00738}00738\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00739}00739\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ delay\ =\ Double.parseDouble(cmdTail.substring(0,\ k));}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00740}00740\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00741}00741\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}-\/d\ flag:\ failed\ to\ get\ \{x\}"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00742}00742\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00743}00743\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (delay\ <\ 0.0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00744}00744\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}-\/d\ flag:\ \{x\}\ negative"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00745}00745\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00746}00746\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00747}00747\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ save\ this\ -\/d\ specification\ for\ history}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00748}00748\ \ \ \ \ \ \ \ \ \ \ \ \ forString.append(\textcolor{stringliteral}{"{}\ -\/d\ "{}}\ +\ cmdTail.substring(0,\ k)\ +\ \textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00749}00749\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ but\ remove\ from\ 'tailCmds'}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00750}00750\ \ \ \ \ \ \ \ \ \ \ \ \ cmdTail\ =\ cmdTail.substring(k).trim();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00751}00751\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00752}00752\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00753}00753\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ fp\ \ \ \ \ \ \ \ \ \ =\ p;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00754}00754\ \textcolor{comment}{//\ \ \ \ \ \ final\ String\ forStr\ \ \ \ \ \ \ \ =\ forString.toString();}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00755}00755\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ \doxymbox{\hyperlink{classutil_1_1_for_spec}{ForSpec}}\ finalForSpec\ =\ forSpec;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00756}00756\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ String\ \ fcmd\ \ \ \ \ \ \ \ \ =\ cmdTail;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00757}00757\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ fdelay\ \ \ \ \ \ \ \ =\ delay;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00758}00758\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ \doxymbox{\hyperlink{classinput_1_1_my_console}{MyConsole}}\ mycon=myc;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00759}00759\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00760}00760\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00761}00761\ \ \ \ \ \ \ \ \ \ \ \ \ Thread\ forThread\ =\ \textcolor{keyword}{new}\ Thread(\textcolor{keyword}{new}\ Runnable()\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00762}00762\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ run()\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00763}00763\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a0e64fbf84e16bef4e96064bb8b93431a}{runSpinner}}.\doxymbox{\hyperlink{classcircle_pack_1_1_run_progress_ac5047148c8f9bcfc6a4a60ed672fae92}{startstop}}(\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00764}00764\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ cmd\ =\ fcmd;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00765}00765\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p\ =\ fp;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00766}00766\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00767}00767\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ accumCount\ =\ 0;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00768}00768\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ varName\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00769}00769\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (finalForSpec.\doxymbox{\hyperlink{classutil_1_1_for_spec_a854e4a21a794dc2955bb5239c44319c4}{varName}}\ !=\ \textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00770}00770\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varName\ =\ finalForSpec.\doxymbox{\hyperlink{classutil_1_1_for_spec_a854e4a21a794dc2955bb5239c44319c4}{varName}}.trim();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00771}00771\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ varVal\ =\ finalForSpec.\doxymbox{\hyperlink{classutil_1_1_for_spec_aad4136c25efe90d82e0e13ea7287e5d7}{start}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00772}00772\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ varDelta\ =\ finalForSpec.\doxymbox{\hyperlink{classutil_1_1_for_spec_a25a743d7ec601db79ec72b7c0eac2a51}{delta}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00773}00773\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ start\ =\ finalForSpec.\doxymbox{\hyperlink{classutil_1_1_for_spec_aad4136c25efe90d82e0e13ea7287e5d7}{start}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00774}00774\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ end\ =\ finalForSpec.\doxymbox{\hyperlink{classutil_1_1_for_spec_a9dac95a2484608a8d81cc7c6939030de}{end}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00775}00775\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ delta\ =\ finalForSpec.\doxymbox{\hyperlink{classutil_1_1_for_spec_a25a743d7ec601db79ec72b7c0eac2a51}{delta}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00776}00776\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00777}00777\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ delay\ =\ fdelay;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00778}00778\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00779}00779\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}\ rP=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00780}00780\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ named\ =\ !(varName\ ==\ \textcolor{keyword}{null}\ ||\ varName.length()\ ==\ 0);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00781}00781\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(delta)\ <\ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_abc8344978dc0488db9006c41cd5860a5}{GENERIC\_TOLER}})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00782}00782\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(\textcolor{stringliteral}{"{}'for'\ increment\ too\ small"{}});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00783}00783\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00784}00784\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (delta\ <\ 0)\ \{\ \textcolor{comment}{//\ flip\ increment\ orientation}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00785}00785\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ delta\ *=\ -\/1.0;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00786}00786\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start\ *=\ -\/1.0;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00787}00787\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ end\ *=\ -\/1.0;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00788}00788\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00789}00789\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00790}00790\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (start\ <=\ end)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00791}00791\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00792}00792\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ loop\ variable\ if\ named}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00793}00793\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (named)\ \{\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00794}00794\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ newVal\ =\ Double.valueOf(varVal).toString();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00795}00795\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<String>\ itm=\textcolor{keyword}{new}\ Vector<String>(1);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00796}00796\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ itm.add(newVal);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00797}00797\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<Vector<String>>\ flsg=\textcolor{keyword}{new}\ Vector<Vector<String>>(1);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00798}00798\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flsg.add(itm);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00799}00799\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_ae881c9a7252175d55b9badfcee0dfbdb}{varControl}}.\doxymbox{\hyperlink{classvariables_1_1_var_control_a6b0ff0e1fb111409b86e415400fcf2cf}{putVariable}}(p,varName,flsg);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00800}00800\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00801}00801\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00802}00802\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00803}00803\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00804}00804\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ here's\ the\ actual\ next\ execution\ pass}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00805}00805\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_result_packet}{ResultPacket}}(p,cmd);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00806}00806\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a22f538b6ccb24c8557e01fda966b1ceb}{trafficCenter}}.\doxymbox{\hyperlink{classinput_1_1_traffic_center_a763987eab837c447234e2a37af67c891}{parseCmdSeq}}(rP,0,mycon);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00807}00807\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ if\ iteration\ got\ interrupt\ signal\ (e.g.\ from\ 'break')}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00808}00808\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a77b9a0cec4be4f4b36c6cd5f619e9fc7}{interrupt}})\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00809}00809\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start=end;\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00810}00810\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00811}00811\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accumCount\ +=\ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00812}00812\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00813}00813\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a0e64fbf84e16bef4e96064bb8b93431a}{runSpinner}}.\doxymbox{\hyperlink{classcircle_pack_1_1_run_progress_ac5047148c8f9bcfc6a4a60ed672fae92}{startstop}}(\textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00814}00814\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00815}00815\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}'for'\ count\ at\ exception:\ "{}}\ +\ accumCount);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00816}00816\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00817}00817\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00818}00818\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (delay\ >\ 0.0)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00819}00819\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00820}00820\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Thread.sleep((\textcolor{keywordtype}{long})\ (delay\ *\ 1000.0));}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00821}00821\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (InterruptedException\ ie)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00822}00822\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00823}00823\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00824}00824\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00825}00825\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start\ +=\ delta;\ \textcolor{comment}{//\ iteration\ variables}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00826}00826\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varVal\ +=\ varDelta;\ \textcolor{comment}{//\ increment\ real\ variables}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00827}00827\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accumCount++;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00828}00828\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ big\ while}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00829}00829\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00830}00830\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ results\ in\ messages\ and\ history;\ info\ is\ from}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00831}00831\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ last\ execution,\ but\ count\ is\ accumulated}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00832}00832\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00833}00833\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_a0267a7704d07b2aa2eb3a733c86016d7}{cmdCount}}=accumCount;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00834}00834\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rP.\doxymbox{\hyperlink{classutil_1_1_result_packet_ab1a42d44a30cabf69049dc00f51bb9a8}{memoryFlag}}=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00835}00835\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classinput_1_1_shell_manager}{ShellManager}}.\doxymbox{\hyperlink{classinput_1_1_shell_manager_ab26ef78be1a91fc0a759329bf1287f1d}{processCmdResults}}(rP,mycon);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00836}00836\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00837}00837\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a0e64fbf84e16bef4e96064bb8b93431a}{runSpinner}}.\doxymbox{\hyperlink{classcircle_pack_1_1_run_progress_ac5047148c8f9bcfc6a4a60ed672fae92}{startstop}}(\textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00838}00838\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_parser_exception}{ParserException}}(}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00839}00839\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}problem\ processing\ results:\ "{}}\ +\ ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00840}00840\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00841}00841\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a0e64fbf84e16bef4e96064bb8b93431a}{runSpinner}}.\doxymbox{\hyperlink{classcircle_pack_1_1_run_progress_ac5047148c8f9bcfc6a4a60ed672fae92}{startstop}}(\textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00842}00842\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00843}00843\ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00844}00844\ \ \ \ \ \ \ \ \ \ \ \ \ forThread.start();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00845}00845\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00846}00846\ \ \ \ \ \ \ \ \ \ \ \ \ System.gc();\ \textcolor{comment}{//\ suggest\ garbage\ collection}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00847}00847\ \ \ \ \ \ \ \ \ \ \ \ \ forThread.join();}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00848}00848\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00849}00849\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00850}00850\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00851}00851\ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00852}00852\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00853}00853\ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00854}00854\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00866}\doxymbox{\hyperlink{classinput_1_1_traffic_center_a5336c1099dc0a7a42d6aa2484b294750}{00866}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classinput_1_1_traffic_center_a5336c1099dc0a7a42d6aa2484b294750}{cmdGUI}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p,String\ cmd)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00867}00867\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00868}00868\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classinput_1_1_command_str_parser}{CommandStrParser}}.\doxymbox{\hyperlink{classinput_1_1_command_str_parser_ad2c354ce742f567dba1b7cd963fb0323}{jexecute}}(p,cmd);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00869}00869\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00870}00870\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}jexecute\ error;\ "{}}+ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00871}00871\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00872}00872\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00873}00873\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00874}00874\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00883}\doxymbox{\hyperlink{classinput_1_1_traffic_center_ae220e3259529c40b6e809d8abe5d2bdb}{00883}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classinput_1_1_traffic_center_ae220e3259529c40b6e809d8abe5d2bdb}{cmdGUI}}(String\ cmd)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00884}00884\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00885}00885\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classinput_1_1_command_str_parser}{CommandStrParser}}.\doxymbox{\hyperlink{classinput_1_1_command_str_parser_ad2c354ce742f567dba1b7cd963fb0323}{jexecute}}(cmd);}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00886}00886\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00887}00887\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}jexecute\ problem:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00888}00888\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00889}00889\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00890}00890\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00891}00891\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00892}00892\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_traffic_center_8java_source_l00893}00893\ \}}
+
+\end{DoxyCode}

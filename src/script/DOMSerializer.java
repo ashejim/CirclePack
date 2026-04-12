@@ -32,16 +32,31 @@ public class DOMSerializer {
     lineSeparator = "\n";
   }
 
+  /**
+   * @brief TODO: Document serialize.
+   * @param doc
+   * @param out
+   */
   public void serialize(Document doc, OutputStream out) throws IOException {
     Writer writer = new OutputStreamWriter(out);
     serialize(doc, writer);
   }
 
+  /**
+   * @brief TODO: Document serialize.
+   * @param doc
+   * @param file
+   */
   public void serialize(Document doc, File file) throws IOException {
     Writer writer = new FileWriter(file);
     serialize(doc, writer);
   }
 
+  /**
+   * @brief TODO: Document serialize.
+   * @param doc
+   * @param writer
+   */
   public void serialize(Document doc, Writer writer) throws IOException {
     // Start serialization recursion with no indenting
     serializeNode(doc, writer, "");

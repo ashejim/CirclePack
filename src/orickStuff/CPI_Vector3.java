@@ -1,6 +1,8 @@
 package orickStuff;
 
 /**
+ * @brief Converted from Orick's C++ code.
+ *
  * Converted from Orick's C++ code. This should be replaced 
  * by 'Point3' objects. For now I will comment out some
  * things never called.
@@ -164,7 +166,7 @@ public class CPI_Vector3 {
 	}
 
 	/**
-	 * Length of remaining vector after projection in
+	 * @brief Length of remaining vector after projection in
 	 * direction of v is removed.
 	 * @param v CPI_Vector3
 	 * @return double
@@ -176,7 +178,7 @@ public class CPI_Vector3 {
 	}
 
 	/**
-	 * Return this vector minus projection in direction of v
+	 * @brief Return this vector minus projection in direction of v
 	 * @param v CPI_Vector3
 	 * @return this
 	 */
@@ -191,7 +193,7 @@ public class CPI_Vector3 {
 	}
 
 	/**
-	 * Given point a in the sphere, apply the Mobius transformation
+	 * @brief Given point a in the sphere, apply the Mobius transformation
 	 * of the sphere that maps a to the origin while fixing the endpoints
 	 * of the vector through a.
 	 * @param a CPI_Vector3
@@ -254,7 +256,7 @@ public class CPI_Vector3 {
 */	
 
 	/**
-	 * angle from v to 'this' in the plane they form.
+	 * @brief angle from v to 'this' in the plane they form.
 	 * @param v
 	 * @return
 	 */

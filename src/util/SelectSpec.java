@@ -8,7 +8,9 @@ import geometry.CircleSimple;
 import geometry.HyperbolicMath;
 import packing.PackData;
 
-/** 
+/**
+ * @brief For use with 'SetBuilderParser' for holding selection descriptions.
+ * 
  * For use with 'SetBuilderParser' for holding selection descriptions.
  * Note that 'negation' is a standard part of selection specification.
  * However, 'isConnective' true, then this is purely a connective, no
@@ -69,7 +71,7 @@ public class SelectSpec {
 	}
 	
 	/**
-	 * Convert string specification to double value for a given 
+	 * @brief Convert string specification to double value for a given 
 	 * vertex, face, or tile index, depending on 'object' bits:
 	 *    bit: 1=circle, 2=face, 4=tile
 	 * uP.rtnflag=0 for error or if we're after a righthand side
@@ -526,7 +528,7 @@ public class SelectSpec {
 	}
 	
 	/**
-	 * Compare double 'x' to 'y' according to 'this.condition'
+	 * @brief Compare double 'x' to 'y' according to 'this.condition'
 	 * return true or false (and false for error).
 	 * @param x double
 	 * @param y double (irrelevant for unitary conditions)

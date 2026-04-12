@@ -16,6 +16,8 @@ import packing.PackData;
 import packing.ReadWrite;
 
 /**
+ * @brief CPSocketServer class.
+ *
  * 
  * @author Frank Martin (Freiberg) started this, 2012
  *

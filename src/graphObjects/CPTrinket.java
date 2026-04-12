@@ -13,6 +13,8 @@ import packing.CPdrawing;
 import util.ColorUtil;
 
 /**
+ * @brief Class for "trinket" images (all euclidean) for canvases, colored
+ *
  * Class for "trinket" images (all euclidean) for canvases, colored 
  * shapes like stars, crosses, etc.. To mark locations; size is relative
  * to canvas (not real world) and adjusts with text.  
@@ -154,7 +156,7 @@ public class CPTrinket {
 	}
 
 	/** 
-	 * In drawing, calling program sets x, y point in correct geometry.
+	 * @brief In drawing, calling program sets x, y point in correct geometry.
 	 * @param trink, index of desired trinket among those available
 	 * @param Color
 	 * @param scale, factor (if >1) by which to scale default size (10 pixel)

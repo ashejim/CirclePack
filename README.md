@@ -30,7 +30,7 @@ Add some links to CP book, paper, and Bowers paper  -->
 
 ## 🛠 Installation
 
-CirclePack is a Java app, and should run on any Java platform. If not installed, download and install the lateset JRE or [JDK](https://www.oracle.com/java/technologies/downloads/). Then download and double click the .jar file.
+CirclePack is a Java app, and should run on any Java platform. If not installed, download and install the lateset JRE or [JDK](https://www.oracle.com/java/technologies/downloads/). Chosse your OS, download an installation file and install.
 
 For development, the CirclePack source files can be run from an IDE **using SplashMain** (./src/allMains/SplashMain). The additional jar files found in CirclePack/jars/ may need to be manual added to the project configuration files.
 
@@ -39,12 +39,14 @@ For development, the CirclePack source files can be run from an IDE **using Spla
 1. Clone a repo to your Github repo
    - [add steps here](www.google.com)
 
-2. Start a new project by cloning a Git repository: 'File | New | Project from Version Control' You can add it directly with a cloning link:
+2. Start a new project by cloning a Git repository: 'File | New | Project from Version Control'. You can add it directly with a cloning link:
    > <https://github.com/ashejim/CirclePack.git>
 
 ### Setup as a Java project in your IDE
 
-   1. (In IntelliJ) 'File | Project Structure'; add SDK and make 'src' the source folder.
+   0. (in IntelliJ) 'Projects' choose 'New Project'
+   
+   1. (In IntelliJ) 'File | Project Structure'; add SDK of your choice, in 'Project Structure | Modules' make 'src' the source folder.
 
    2. Create a Run Configuration; This may happen automatically, (upper-right next to the green bug, click the dots). CP uses packages not included in your standard SDK. Add the /jar subfolder to the project depenedcies as follows: 'File | Project Structure -> Modules -> Dependencies'
 

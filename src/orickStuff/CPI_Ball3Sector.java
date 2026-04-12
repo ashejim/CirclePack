@@ -1,5 +1,8 @@
 package orickStuff;
 
+/**
+ * @brief C P I_ Ball3 Sector.
+ */
 public class CPI_Ball3Sector {
     CPI_Vector3 c;
     double r; // in multiples of Math.PI

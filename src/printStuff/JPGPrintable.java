@@ -12,6 +12,8 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 /**
+ * @brief For printing JPG files
+ *
  * For printing JPG files
  * @author Alexander Fawkes
  *

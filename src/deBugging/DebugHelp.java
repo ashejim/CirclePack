@@ -17,6 +17,8 @@ import tiling.Tile;
 import tiling.TileData;
 
 /**
+ * @brief Some static debugging aids.
+ *
  * Some static debugging aids. @see LayoutBugs for various layout
  * debugging aides.
  * @author kens
@@ -27,7 +29,7 @@ public class DebugHelp {
 	public static File tmpdir=new File(System.getProperty("java.io.tmpdir"));
 
 	/**
-	 * When you want to display an intermediate packing
+	 * @brief When you want to display an intermediate packing
 	 * during testing. This loads it into one of the
 	 * 'CPBase.packings' and applies the given commands,
 	 * typically, 'repack', 'layout', 'disp', etc.
@@ -44,7 +46,7 @@ public class DebugHelp {
 	}
 	
 	/**
-	 * See if there's an error in a tileFlower
+	 * @brief See if there's an error in a tileFlower
 	 * @param tileData TileData
 	 */
 	public static int tFlowerCk(TileData tileData) {
@@ -63,7 +65,7 @@ public class DebugHelp {
 	}
 	
 	/**
-	 * For debugging SolveData usage: create *.m 'matlab' file in the default
+	 * @brief For debugging SolveData usage: create *.m 'matlab' file in the default
 	 * diretory. This gets size info, and various matrices Aentries, Ai, Ap, etc., 
 	 * and applies matlab code to reconstitute and then solve the resulting 
 	 * system A*Z=B. This can be compared to the Java call results.
@@ -136,7 +138,7 @@ public class DebugHelp {
 	}
 
 	/**
-	 * write pack data to packing directory
+	 * @brief write pack data to packing directory
 	 * @param p 
 	 * @param fname
 	 * @return String for msg.
@@ -153,7 +155,7 @@ public class DebugHelp {
 	}
 	
 	/**
-	 * Send tile info to System.out
+	 * @brief Send tile info to System.out
 	 * @param tile Tile
 	 */
 	public static void debugTileVerts(Tile tile) {
@@ -169,7 +171,7 @@ public class DebugHelp {
 	}
 
 	/** 
-	 * List the tileFlower info, (t,e), t=nghbindex, e=edgeindex in t.
+	 * @brief List the tileFlower info, (t,e), t=nghbindex, e=edgeindex in t.
 	 * @param td TileData
 	 */
 	public static void debugTileFlowers(TileData td) {
@@ -184,7 +186,7 @@ public class DebugHelp {
 	}
 	
 	/**
-	 * System print our a mobius in a form that can be copied to matlab
+	 * @brief System print our a mobius in a form that can be copied to matlab
 	 * @param name String
 	 * @param mob Mobius
 	 */

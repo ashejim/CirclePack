@@ -19,6 +19,8 @@ import packing.CPdrawing;
 import util.ColorUtil;
 
 /**
+ * @brief CPCircle extends Complex.
+ *
  * CPCircle extends Complex. x,y,radius set from outside. 
  * 'drawIt(boolean fill)' is main call for filled or open. 
  * Color settings in graphic context handled elsewhere.
@@ -150,7 +152,7 @@ public class CPCircle extends Complex {
 	}
 	
 	/** Draw circle: if fill is true, then fill with context color,
-	 * before drawing with col2 if col2!=null (typically col2 is
+	 * @brief before drawing with col2 if col2!=null (typically col2 is
 	 * the foreground color). if fill is false, draw only using col2.
 	 * @param fill, boolean
 	 * @param col2, Color
@@ -165,7 +167,7 @@ public class CPCircle extends Complex {
 	}
 		
 	/**
-	 * The principal color (col1) is that of graphics context. 
+	 * @brief The principal color (col1) is that of graphics context. 
 	 * There may be a secondary color. Possibilities for (fill,col2): 
 	 *    (false,*): draw in principal color
 	 *    (true,colr): fill with col1, draw bdry in col2
@@ -309,7 +311,7 @@ public class CPCircle extends Complex {
 	}
 	
 	/**
-	 * Options of two colors, fill and bdry. If either is null, then
+	 * @brief Options of two colors, fill and bdry. If either is null, then
 	 * default to the current graphics context color, usually fg. 
 	 * @param draw boolean, draw object?
 	 * @param bcolor Color, for object, may be null
@@ -321,7 +323,7 @@ public class CPCircle extends Complex {
 	}
 	
 	/**
-	 * Options of two colors, fill and bdry. If either is null, then
+	 * @brief Options of two colors, fill and bdry. If either is null, then
 	 * default to the current graphics context color, usually fg. 
 	 * @param draw boolean, draw object?
 	 * @param bcolor Color, for object, may be null
@@ -544,7 +546,7 @@ public class CPCircle extends Complex {
 	}
 	
 	/**
-	 * Manage various passes through 'sphDrawOnFront'. One pass
+	 * @brief Manage various passes through 'sphDrawOnFront'. One pass
 	 * for front and, if sphere is not opaque, one pass (with
 	 * color 'wash') for back. In each pass may involve fill
 	 * and draw operations with separate colors. Possibilities for 
@@ -563,7 +565,7 @@ public class CPCircle extends Complex {
 	}
 	
 	/**
-	 * Manage various passes through 'sphDrawOnFront'. One pass
+	 * @brief Manage various passes through 'sphDrawOnFront'. One pass
 	 * for front and, if sphere is not opague, one pass (with
 	 * color 'wash') for back. In each pass may involve fill
 	 * and draw operations with separate colors. Possibilities for 
@@ -674,7 +676,7 @@ public class CPCircle extends Complex {
 	}
 	
 	/**
-	 * Add circle to 'gpath', using Ellipse2D. Calling routine 
+	 * @brief Add circle to 'gpath', using Ellipse2D. Calling routine 
 	 * may close gpath
 	 * @param path, Path2D.Double; new or reset, we add segments
 	 * @param z, spherical 'apparent' center (x,y) (theta,phi).

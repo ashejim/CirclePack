@@ -8,6 +8,8 @@ import combinatorics.komplex.HalfEdge;
 import util.ColorUtil;
 
 /**
+ * @brief Data for 'HalfEdge's subject to adjustment
+ *
  * Data for 'HalfEdge's subject to adjustment
  * when circle packing via intrinsic schwarzians.
  * Computing a new schwarzian involves the N-3
@@ -19,7 +21,6 @@ import util.ColorUtil;
  * at 1. See 'theEdges' for array index. 
  * 
  */
-
 public class SchEdgeData {
 	final static double sqrt3=Math.sqrt(3);
 	
@@ -61,7 +62,7 @@ public class SchEdgeData {
 	}
 	
 	/**
-	 * Find the schwarzians that will complete the
+	 * @brief Find the schwarzians that will complete the
 	 * flower for this edge. 
 	 * @return false if a negative constraint, either
 	 *    cclw or clw.
@@ -104,7 +105,7 @@ public class SchEdgeData {
 	}
 	
 	/**
-	 * Given 'uzians' (indexed from 1), compute the
+	 * @brief Given 'uzians' (indexed from 1), compute the
 	 * next three schwarzians base on u1,u2,...,u{n-3}
 	 * @param uzians double[], indexed from 1
 	 * @return double[3], null if constraint is <= 0.
@@ -151,7 +152,7 @@ public class SchEdgeData {
 	}
 	
 	/**
-	 * Update errors/color for this edge, 'errorCCLW' 
+	 * @brief Update errors/color for this edge, 'errorCCLW' 
 	 * and 'errorCLW': errors are computed - current. 
 	 * Computations based on edges from this 'origin':
 	 *   + [0]: previous myN-3 schwarzians and 

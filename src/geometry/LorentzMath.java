@@ -5,6 +5,8 @@ import math.Point4D;
 import complex.Complex;
 
 /**
+ * @brief Computational routines for geometry in the Lorentz (hyperboloid) model.
+ *
  * Beginning now (12/2012) to build computations for geometry based on 
  * Lorentzian geometry. I expect to use these in certain situations now
  * and consider using them to replace older routines as I build up 
@@ -47,7 +49,7 @@ import complex.Complex;
 public class LorentzMath {
 	
 	/**
-	 * Given two circles (as Point4D), find inversive distance between them.
+	 * @brief Given two circles (as Point4D), find inversive distance between them.
 	 * @param c1 Point4D
 	 * @param c2 Point4D
 	 * @return double

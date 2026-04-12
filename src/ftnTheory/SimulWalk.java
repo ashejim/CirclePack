@@ -7,6 +7,8 @@ import packing.PackExtender;
 import exceptions.CombException;
 
 /**
+ * @brief For construction of 'Simultaneous' covering surfaces.
+ *
  * For construction of 'Simultaneous' covering surfaces. 
  */
 public class SimulWalk extends PackExtender {
@@ -28,7 +30,7 @@ public class SimulWalk extends PackExtender {
 	}
 	
 	/** 
-	 * Given a packing and two neighboring verts, to be
+	 * @brief Given a packing and two neighboring verts, to be
 	 * associated with 0 and 1, color faces black and white
 	 * if possible --- i.e., if the complex is tripartite.
 	 * Third type of vert is 'infty'. Order {0,1,infty} is

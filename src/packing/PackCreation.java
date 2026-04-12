@@ -34,13 +34,15 @@ import util.ColorUtil;
 import util.TriAspect;
 
 /**
+ * @brief Factory methods for constructing standard circle packings (seed, hex, Cayley graph, etc.).
+ *
  * Various static routines for building new packings.
  * @author kens
  */
 public class PackCreation {
 	
 	/**
-	 * Create combinatorics for n>=3 generations 
+	 * @brief Create combinatorics for n>=3 generations 
 	 * of hex cylinder with p,q combinatorics.
 	 * Need p>=q and n>=3.
 	 * @param p int, count in horizontal direction
@@ -162,7 +164,7 @@ public class PackCreation {
 	}
 	
 	/**
-	 * Create a symmetric tetrahedron on the sphere,
+	 * @brief Create a symmetric tetrahedron on the sphere,
 	 * all radii arcsin(sqrt(2/3)).
 	 * @return PackData
 	 */
@@ -203,7 +205,7 @@ public class PackCreation {
 	}
 
 	/**
-	 * Create a HxW hex torus, 
+	 * @brief Create a HxW hex torus, 
 	 * @param H int, height
 	 * @param W int, width
 	 * @return PackData
@@ -315,7 +317,7 @@ public class PackCreation {
 	}
 
 	/**
-	 * Create a packing of hex generations, spiraling out. 
+	 * @brief Create a packing of hex generations, spiraling out. 
 	 * Calling routine to set radii/centers. (See also 
 	 * 'GridMethods.HexByHand' for generating a uniform 
 	 * hex grid based on coord locations instead of spiraling.) 
@@ -350,7 +352,7 @@ public class PackCreation {
 	}
 
 	/** 
-	 * Create a 'seed' packing from scratch 
+	 * @brief Create a 'seed' packing from scratch 
 	 * (with CPDrawing=null)
 	 * NOTE: 'PackData.seed' call does the same, but 
 	 * within existing PackData object.
@@ -382,7 +384,7 @@ public class PackCreation {
 	}
 	
 	/** 
-	 * Create a euclidean 'seed' packing but using given 
+	 * @brief Create a euclidean 'seed' packing but using given 
 	 * n intrinsic schwarzians. Normalize combinatorics so 
 	 * center has max index and gamma=1; scale and rotate 
 	 * so gamma is centered at z=i.
@@ -581,7 +583,7 @@ public class PackCreation {
 	}
 
 	/** 
-	 * Implementation of Scott Scheffield's 'necklace' construction
+	 * @brief Implementation of Scott Scheffield's 'necklace' construction
 	 * for random planar triangulations (at least as described by Gill
 	 * and Rohde).
 	 * 
@@ -828,7 +830,7 @@ public class PackCreation {
 
 	
 	/**
-	 * adjoin three pentagons. 
+	 * @brief adjoin three pentagons. 
 	 * @param p PackData, existing seed 5 with 1 on bdry
 	 * @param sidelength
 	 * @return
@@ -866,7 +868,7 @@ public class PackCreation {
 	}
 	
 	/**
-	 * adjoin three pentagons. 
+	 * @brief adjoin three pentagons. 
 	 * @param p @see PackData, initial pentagon
 	 * @param sidelength int
 	 * @return
@@ -943,7 +945,7 @@ public class PackCreation {
 	}
 	
 	/**
-	 * Specialized routine to expand a pentagonal 
+	 * @brief Specialized routine to expand a pentagonal 
 	 * complex having equally spaced vertices 
 	 * 1 2 3 4 5 on its bdry and 6 at its center by 
 	 * adjoining 5 copies of itself to form a new 
@@ -1102,7 +1104,7 @@ public class PackCreation {
 	}
 
 	/**
-	 * Create N generations of pentagonal tiling meeting at triple
+	 * @brief Create N generations of pentagonal tiling meeting at triple
 	 * point. 
 	 * 
 	 * TODO: need to run 'paveMe' for 'TileData', but don't know what
@@ -1159,7 +1161,7 @@ public class PackCreation {
 	}
 
 	/**
-	 * Create N generations of pentagonal tiling meeting at quadruple point.
+	 * @brief Create N generations of pentagonal tiling meeting at quadruple point.
 	 * 
 	 * TODO: need to run 'paveMe' for 'TileData', but don't know what
 	 * vertex to use.
@@ -1209,7 +1211,7 @@ public class PackCreation {
 	}
 
 	/**
-	 * Subdivision rule of Bill Floyd (I think) that is said to be
+	 * @brief Subdivision rule of Bill Floyd (I think) that is said to be
 	 * a hyperbolic Penrose tiling. This is, again, p is a pentagonal tile,
 	 * but treated as a square with extra vertex in bottom. Number of sides 
 	 * across the top is 1, sides are 2^N, bottom 2^(N+1). Center vert is 6,
@@ -1242,7 +1244,7 @@ public class PackCreation {
 	}
 	
 	/**
-	 * Specialty routine for 'randNecklace'. Attach hex face and
+	 * @brief Specialty routine for 'randNecklace'. Attach hex face and
 	 * adjust blink. Note that p1.vertexMap should have {old,new}
 	 * pairs, old=index in p2, new=index in new p1.
 	 * @param p1, growing packing
@@ -1300,7 +1302,7 @@ public class PackCreation {
 	}
 	
 	/**
-	 * Create an n-tile that has been barycentrically
+	 * @brief Create an n-tile that has been barycentrically
 	 * subdivided and then its faces hex subdivided.
 	 * The center vert is 1, the n tile vertices are 
 	 * indexed 2,4,..2n, the mid vertices of the bdry
@@ -1328,7 +1330,7 @@ public class PackCreation {
 	}
 	
 	/**
-	 * DCEL version of specialized routine to create a 
+	 * @brief DCEL version of specialized routine to create a 
 	 * 'gens' generations of a pentagonal tiling in a
 	 * DCEL having equally spaced vertices 1 2 3 4 5 
 	 * on its bdry and 6 at its center. Calling routine
@@ -1397,7 +1399,7 @@ public class PackCreation {
 	}
 	
 	/**
-	 * This builds several generations of packing for the famous Kagome lattice,
+	 * @brief This builds several generations of packing for the famous Kagome lattice,
 	 * popular in theoretical physics and material science. For us, this is a
 	 * tiling, a pattern of hexagons and triangles. We build the tile data by hand
 	 * and then get the packing.
@@ -1552,7 +1554,7 @@ public class PackCreation {
 	}
 
 	/**
-	 * Create square grid packing with N vertices on each edge.
+	 * @brief Create square grid packing with N vertices on each edge.
 	 * We proceed by building the bouquet.
 	 * @param N int
 	 * @return new @see PackData
@@ -1715,7 +1717,7 @@ public class PackCreation {
 	}
 
 	/**
-	 * Create N generations of a 2D fusion tiling related
+	 * @brief Create N generations of a 2D fusion tiling related
 	 * to Fibonnacci numbers. I learned this from Natalie Frank.
 	 * There are four tile types, A, B, C, D, each has next
 	 * fusion stage made from a certain combination. Here is
@@ -1922,7 +1924,7 @@ public class PackCreation {
 	}
 	
 	/**
-	 * Renumber the four corners of current fusionA
+	 * @brief Renumber the four corners of current fusionA
 	 * @param p PackData, current stage 
 	 * @param corner1, bdry vert to become '1'.
 	 * @param w int, width
@@ -1955,7 +1957,7 @@ public class PackCreation {
 
 	
 	/**
-	 * Given PackData, add to its 'vlist' and 'elist' from
+	 * @brief Given PackData, add to its 'vlist' and 'elist' from
 	 * the lists 'nl' and 'el', resp., but using the EdgeLink 
 	 * of {old,new} pairs to translate the indices.
 	 * @param p PackData; we'll change the lists here
@@ -1988,7 +1990,7 @@ public class PackCreation {
 	}
 		
 	/**
-	 * Utility for bdry inspection. Find count and min/max 
+	 * @brief Utility for bdry inspection. Find count and min/max 
 	 * of intended degrees of circles that would be added
 	 * to the boundary in 'triGroup' construction. 'vutil'
 	 * is 0, 1, 2, for degree designation A, B, C in 'triGroup' 
@@ -2024,7 +2026,7 @@ public class PackCreation {
 	}
 	
 	/**
-	 * Create 'maxgens' generations of the Cayley graph of 
+	 * @brief Create 'maxgens' generations of the Cayley graph of 
 	 * the triangle group {A/2, B/2, C/2}. A, B, C are the
 	 * degrees of the vertices, which are marked as 1, 2, 3,
 	 * resp. One and only one may be zero, indicating a type
@@ -2408,6 +2410,8 @@ public class PackCreation {
 }
 
 /**
+ * @brief inner class for holding vertices as their flowers
+ *
  * inner class for holding vertices as their flowers
  * are completed.
  * @author kstephe2
@@ -2428,6 +2432,8 @@ class TmpVert {
 }
  
 /**
+ * @brief inner class for holding boundary nodes during triangle group
+ *
  * inner class for holding boundary nodes during triangle group
  * constructions. 
  * @author kstephe2

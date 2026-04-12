@@ -1,9 +1,10 @@
 package exceptions;
 
 /**
+ * @brief Exceptions caused by errors in command string formats.
+ *
  * Exceptions caused by errors in command string formats.
  */
-
 public class ParserException extends RuntimeException {
 
 	private static final long 

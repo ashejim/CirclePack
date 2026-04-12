@@ -27,6 +27,9 @@ import util.PathUtil;
 import util.RH_curve;
 import util.StringUtil;
 
+/**
+ * @brief Riem Hilbert functionality for circle packing experiments.
+ */
 public class RiemHilbert extends PackExtender {
 
 	enum ReadState {OPEN,FIND_CURVE,PATH,CIRCLE,READ_XY,READ_CR,NULL};
@@ -55,7 +58,7 @@ public class RiemHilbert extends PackExtender {
 	}
 	
 	/**
-	 * Read a formated file of Riemann Hilbert curves.
+	 * @brief Read a formated file of Riemann Hilbert curves.
 	 * @param fp
 	 * @param addon: true, then add to existing vector of curves
 	 * @return number of curves read
@@ -150,7 +153,7 @@ public class RiemHilbert extends PackExtender {
 	}
 
 	/**
-	 * Give restriction curve associated with vert 'v', null on error. 
+	 * @brief Give restriction curve associated with vert 'v', null on error. 
 	 * @param v, vertex
 	 * @return RH_curve associated with 'v'
 	 */
@@ -187,7 +190,7 @@ public class RiemHilbert extends PackExtender {
 	/**
 	 * TODO: Not used; would need work, esp. in sph case
 	 * 
-	 * Signed distance from center of 'v' to curve:
+	 * @brief Signed distance from center of 'v' to curve:
 	 * >=0 if bdry vert 'v' has center inside/on 
 	 * its restriction curve; else < 0.
 	 * @param v bdry vertex
@@ -217,7 +220,7 @@ public class RiemHilbert extends PackExtender {
 	}
 	
 	/**
-	 * Signed distance from circle to its curve. Plus: lies inside curve,
+	 * @brief Signed distance from circle to its curve. Plus: lies inside curve,
 	 * minimum distance. Negative: negative of (roughly) max distance to
 	 * @param v int
 	 * @return signed distance
@@ -253,7 +256,7 @@ public class RiemHilbert extends PackExtender {
 	}
 	
 	/**
-	 * Need to tell which boundary vertex of a packing is associated
+	 * @brief Need to tell which boundary vertex of a packing is associated
 	 * with which restriction curve. We also set colors: color the
 	 * boundary circles using 'spreadColorCodes' and record in the curves.
 	 * @param v, bdry vertex at which we start linking.
@@ -295,7 +298,7 @@ public class RiemHilbert extends PackExtender {
 	}
 	
 	/** 
-	 * Scale curves for listed boundary vertices by 'factor' 
+	 * @brief Scale curves for listed boundary vertices by 'factor' 
 	 * @param vertlist
 	 * @param factor
 	 * @return
@@ -324,7 +327,7 @@ public class RiemHilbert extends PackExtender {
 	}
 		
 	/** 
-	 * Rotate curves for listed boundary vertices by 'arg' radians 
+	 * @brief Rotate curves for listed boundary vertices by 'arg' radians 
 	 * @param vertlist
 	 * @param arg in radians
 	 * @return count
@@ -349,7 +352,7 @@ public class RiemHilbert extends PackExtender {
 	}
 
 	/**
-	 * Shade filled boundary circles to reflect how far each is from its
+	 * @brief Shade filled boundary circles to reflect how far each is from its
 	 * restriction curve: red indicates the circle intersects the
 	 * outside of the curve, blue that it lies fully inside. The
 	 * darker the shading, the further out/in (using radius as a

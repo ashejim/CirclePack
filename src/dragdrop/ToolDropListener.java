@@ -21,6 +21,8 @@ import packing.CPdrawing;
 
 
 /**
+ * @brief For MyTool drag/drop operation.
+ *
  * For MyTool drag/drop operation. This is the listener for the targets, 
  * which are currently the active canvas, the three smaller canvasses,
  * and the canvasses of PairFrame. 
@@ -43,14 +45,34 @@ public class ToolDropListener implements DropTargetListener {
 		whichPackFlag=active;
 	}
 	
+	/**
+	 * @brief TODO: Document dragEnter.
+	 * @param event
+	 */
 	public void dragEnter(DropTargetDragEvent event) {}
 	
+	/**
+	 * @brief TODO: Document dragExit.
+	 * @param event
+	 */
 	public void dragExit(DropTargetEvent event) {}
 	
+	/**
+	 * @brief TODO: Document dragOver.
+	 * @param event
+	 */
 	public void dragOver(DropTargetDragEvent event) {}
 	
+	/**
+	 * @brief TODO: Document dropActionChanged.
+	 * @param event
+	 */
 	public void dropActionChanged(DropTargetDragEvent event) {}
 	
+	/**
+	 * @brief TODO: Document drop.
+	 * @param event
+	 */
 	public void drop(DropTargetDropEvent event) {
 		if (!isDropOK(event)) {
 			event.rejectDrop();

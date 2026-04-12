@@ -7,6 +7,8 @@ import packing.PackData;
 import util.ColorUtil;
 
 /**
+ * @brief Gathers data on a vertex, as needed for inquiries or for
+ *
  * Gathers data on a vertex, as needed for inquiries or for
  * the 'Pack Info' window in GUI mode.
  * @author kstephe2

@@ -3,6 +3,8 @@ package komplex;
 import combinatorics.komplex.HalfEdge;
 
 /**
+ * @brief Simply an ordered pair (v,w) of vertices for use in, eg, EdgeLink.
+ *
  * Simply an ordered pair (v,w) of vertices for use in, eg, EdgeLink.java.
  * Added (12/2010) 'util' element for optional additional info. See
  * new 'GraphSimple' for, e.g., dual edges.
@@ -47,7 +49,7 @@ public class EdgeSimple {
 	}
 	
 	/**
-	 * does this equal given es
+	 * @brief does this equal given es
 	 * @param es
 	 * @param orient
 	 * @return

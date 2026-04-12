@@ -6,6 +6,8 @@ import packing.CPdrawing;
 import packing.PackData;
 
 /**
+ * @brief I need a manager for canvas repaint events: which packings are showing
+ *
  * I need a manager for canvas repaint events: which packings are showing
  * in which canvasses and what needs to be redrawn after various actions/events.
  * Note that simple single repaints can be called directly; use this manager
@@ -70,7 +72,7 @@ public class CanvasReDrawManager {
 	}
 	
 	/**
-	 * Paint all canvasses (or active only) for given packing
+	 * @brief Paint all canvasses (or active only) for given packing
 	 * @param pnum int, pack number
 	 * @param activeOnly boolean: yes means active pack only 
 	 */
@@ -96,7 +98,7 @@ public class CanvasReDrawManager {
 	}
 	
 	/**
-	 * Paint all canvasses (or active only) for given packing
+	 * @brief Paint all canvasses (or active only) for given packing
 	 * @param p PackData
 	 * @param aO boolean: yes means active pack only 
 	 */
@@ -105,7 +107,7 @@ public class CanvasReDrawManager {
 	}
 	
 	/**
-	 * Paint all canvasses (or active only) for given packing
+	 * @brief Paint all canvasses (or active only) for given packing
 	 * @param cpd @see CPDrawing
 	 * @param aO boolean: yes means active pack only 
 	 */

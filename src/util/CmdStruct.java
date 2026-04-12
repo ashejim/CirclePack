@@ -1,6 +1,8 @@
 package util;
 
 /**
+ * @brief Class to organize info on 'PackExtender' commands
+ *
  * Class to organize info on 'PackExtender' commands
  * @author kens
  *

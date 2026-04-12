@@ -24,6 +24,8 @@ import util.Base64InOut;
 import util.FileUtil;
 
 /**
+ * @brief This is the model behind CirclePack scripts.
+ *
  * This is the model behind CirclePack scripts. 
  * It loads script files, storing the data files, 
  * creating the workingFile, setting up the DOM 
@@ -64,7 +66,7 @@ public class ScriptModel {
 	}
 	
 	/**
-	 * This loads from a file (generally 
+	 * @brief This loads from a file (generally 
 	 * 'manager.scriptFile'). This is only 
 	 * called after user has chance to save the current 
 	 * script (if it has changed).
@@ -121,7 +123,7 @@ public class ScriptModel {
 	}
 	
 	/**
-	 * Use: Copy the original script file or web 
+	 * @brief Use: Copy the original script file or web 
 	 * data into a working file in XML format. The 
 	 * original is unaltered until a save action takes 
 	 * place. This method calls processIncludedFiles() 
@@ -173,7 +175,7 @@ public class ScriptModel {
 
 	
 	/**
-	 * Use: This method is responsible for processing the 'CPdata' section of a
+	 * @brief Use: This method is responsible for processing the 'CPdata' section of a
 	 * script and creating the vector of 'includedFiles'.
 	 * 
 	 * When it finds a file, it creates an 'IncludedFile' object, which keeps
@@ -304,7 +306,7 @@ public class ScriptModel {
 	} 
 	
 	/**
-	 * After included files have been processed, this 
+	 * @brief After included files have been processed, this 
 	 * writes their filenames into the CPdata section 
 	 * of workingFile.
 	 * @param writer
@@ -349,7 +351,7 @@ public class ScriptModel {
 	}
 
 	/**
-	 * Return index into 'includedFiles' if 'filename' 
+	 * @brief Return index into 'includedFiles' if 'filename' 
 	 * is found.
 	 * @param filename String, assume trimmed
 	 * @return int, index (first encountered) or -1 on not found
@@ -362,7 +364,7 @@ public class ScriptModel {
 	}
 
 	 /**
-	  * Get 'tmpFile' for an included 'filename'.
+	  * @brief Get 'tmpFile' for an included 'filename'.
 	  * @param filename String, base name
 	  * @return File with 'tmpFile' name, null if 
 	  * 	not found
@@ -378,7 +380,7 @@ public class ScriptModel {
 	 }
 
 	 /**
-	  * Sets up the URL for script based on 'namE'. 
+	  * @brief Sets up the URL for script based on 'namE'. 
 	  * If it starts with 'htt' then it's assumed to 
 	  * be web address, else look for file in file 
 	  * system, first by 'namE' alone, then in 
@@ -438,7 +440,7 @@ public class ScriptModel {
 	 }
 
 	 /**
-	  * Given script filename (or name from pop up 
+	  * @brief Given script filename (or name from pop up 
 	  * dialog, or file chosen in browser), read in 
 	  * the script and search for/execute 'EOL' 
 	  * command (execute on load).
@@ -495,7 +497,7 @@ public class ScriptModel {
 	 }
 
 	 /**
-	  * return true if this name is already in use.
+	  * @brief return true if this name is already in use.
 	  * @param name
 	  * @return
 	  */
@@ -509,7 +511,7 @@ public class ScriptModel {
 	 }
 
 	 /**
-	  * Is there a loaded script
+	  * @brief Is there a loaded script
 	  * @return boolean
 	  */
 	 public boolean isScriptLoaded() {

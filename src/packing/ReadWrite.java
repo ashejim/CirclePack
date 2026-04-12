@@ -39,6 +39,9 @@ import tiling.TileData;
 import util.ColorUtil;
 import util.StringUtil;
 
+/**
+ * @brief Read Write.
+ */
 public class ReadWrite {
 	
 	public static double TOLER=.0000000001; // TODO: fix up all thresholds
@@ -49,7 +52,7 @@ public class ReadWrite {
 	public static int[] readOldNew;
 
 	/**
-	 * Read new circle packing (or data for existing packing) into pack
+	 * @brief Read new circle packing (or data for existing packing) into pack
 	 * 'p' from an open file. Return 0 on error. Key "NODECOUNT:" or 
 	 * "TRIANTULATION:" indicates new packing, in which case basic 
 	 * combinatorics are read; "CHECKCOUNT:" indicates data for 'p'; 
@@ -1599,7 +1602,7 @@ public class ReadWrite {
 
 
 	  /** 
-	   * Write circle packing p to an open 'file'. Return 0 on error.
+	   * @brief Write circle packing p to an open 'file'. Return 0 on error.
 	  If basic combinatoric data is to be included, use key "NODECOUNT:";
 	  if only ancillary data is to be included, use "CHECKCOUNT:".
 	  (Note: specialized routines may be necessary: eg., when aims are
@@ -2136,7 +2139,7 @@ public class ReadWrite {
 		
 	
 	/**
-	 * Write *.dcel output; this format is tentative as of 4/2017.
+	 * @brief Write *.dcel output; this format is tentative as of 4/2017.
 	 * @param fp BufferedWriter
 	 * @param pdcel PackDCEL
 	 * @param dual boolean, if yes, write the dual dcel
@@ -2156,7 +2159,7 @@ public class ReadWrite {
 		
 	
 	/**
-	 * translation needed when reading "BOUQUET".
+	 * @brief translation needed when reading "BOUQUET".
 	 * 
 	 * @param old_v int
 	 * @return int

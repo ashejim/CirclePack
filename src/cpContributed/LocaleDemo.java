@@ -6,6 +6,8 @@ import java.util.Random;
 import java.util.Vector;
 
 /**
+ * @brief LocaleDemo prints the same random values for every installed Locale on the
+ *
  * LocaleDemo prints the same random values for every installed Locale on the
  * user's JVM. It is intended to demonstrate how to properly use the Locale
  * system to localize formatting for international users.

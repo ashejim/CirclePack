@@ -11,6 +11,8 @@ import javax.swing.JTextField;
 import complex.Complex;
 
 /**
+ * @brief ComplexField is a panel-contained text field for displaying complex
+ *
  * ComplexField is a panel-contained text field for displaying complex
  * values and optionally includes a text label title. It is intended
  * as a re-sizable replacement for the <code>zNumField</code> class.
@@ -45,7 +47,7 @@ public class ComplexField extends JPanel {
 	}
 	
 	/**
-	 * Create a titled instance.
+	 * @brief Create a titled instance.
 	 * 
 	 * @param title the title of the instance; <code>null</code> for no title
 	 */
@@ -98,7 +100,7 @@ public class ComplexField extends JPanel {
 	}
 	
 	/** 
-	 * Set the complex value to be displayed by this instance.
+	 * @brief Set the complex value to be displayed by this instance.
 	 * 
 	 * @param value the new <code>Complex</code> value
 	 */
@@ -109,7 +111,7 @@ public class ComplexField extends JPanel {
 	}
 	
 	/**
-	 * Get the complex value currently displayed by this instance, with
+	 * @brief Get the complex value currently displayed by this instance, with
 	 * any variables interpreted.
 	 * 
 	 * @return the <code>Complex</code>
@@ -120,7 +122,7 @@ public class ComplexField extends JPanel {
 	}
 	
 	/**
-	 * Return the uninterpreted 'real' text
+	 * @brief Return the uninterpreted 'real' text
 	 * @return String
 	 */
 	public String getTextReal() {
@@ -128,7 +130,7 @@ public class ComplexField extends JPanel {
 	}
 
 	/**
-	 * Return the uninterpreted 'real' text
+	 * @brief Return the uninterpreted 'real' text
 	 * @return String
 	 */
 	public String getTextImag() {
@@ -136,7 +138,7 @@ public class ComplexField extends JPanel {
 	}
 	
 	/**
-	 * Set whether or not the associated text fields are editable.
+	 * @brief Set whether or not the associated text fields are editable.
 	 * 
 	 * @param editable whether or not the text fields are editable
 	 */
@@ -146,7 +148,7 @@ public class ComplexField extends JPanel {
 	}
 
 	/**
-	 * Determine whether or not the associated text fields are editable.
+	 * @brief Determine whether or not the associated text fields are editable.
 	 * 
 	 * @return a <code>boolean</code> value representing whether or not both text fields are editable
 	 */
@@ -155,7 +157,7 @@ public class ComplexField extends JPanel {
 	}
 	
 	/**
-	 * Set the action command of the associated text fields.
+	 * @brief Set the action command of the associated text fields.
 	 * 
 	 * @param actionCommand the action command to set
 	 */
@@ -165,7 +167,7 @@ public class ComplexField extends JPanel {
 	}
 	
 	/**
-	 * Add an action listener to the associated text fields.
+	 * @brief Add an action listener to the associated text fields.
 	 * 
 	 * @param actionListener the ActionListener to add
 	 */

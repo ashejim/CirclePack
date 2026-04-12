@@ -11,6 +11,8 @@ import packing.PackExtender;
 import util.CmdStruct;
 
 /**
+ * @brief This may be miss-named.
+ *
  * This may be miss-named. The idea, suggested by Ed Crane, is to reduce
  * the complexity in conformal mapping by trying to tie the combinatorics
  * to the hyperbolic metric (or a related measure).

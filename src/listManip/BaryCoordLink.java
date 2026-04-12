@@ -10,6 +10,8 @@ import complex.Complex;
 import packing.PackData;
 
 /**
+ * @brief Linked list of 'BaryPacket's holding information on
+ *
  * Linked list of 'BaryPacket's holding information on
  * barycentric coordinate defined paths.
  * @author kens
@@ -126,7 +128,7 @@ public class BaryCoordLink extends LinkedList<BaryPacket> {
 */
 	
 	/**
-	 * Make a distinct copy of this linked list; no check
+	 * @brief Make a distinct copy of this linked list; no check
 	 * of validity of the indices.
 	 * @return NodeLink
 	 */
@@ -140,7 +142,7 @@ public class BaryCoordLink extends LinkedList<BaryPacket> {
 	}
 	
 	/**
-	 * Abut a 'BaryLink' to the end of this one.
+	 * @brief Abut a 'BaryLink' to the end of this one.
 	 * @param moreNL
 	 * @return count of new BaryPackets (some may be improper, 
 	 *  some redundant)
@@ -160,7 +162,7 @@ public class BaryCoordLink extends LinkedList<BaryPacket> {
 	}
 	
 	/**
-	 * Create path for packing p (not necessarily 'this.packData')
+	 * @brief Create path for packing p (not necessarily 'this.packData')
 	 * @param p PackData
 	 * @return Path2D.Double or null on error
 	 */
@@ -185,7 +187,7 @@ public class BaryCoordLink extends LinkedList<BaryPacket> {
 	}
 	
 	 /**
-	  * Set 'packData' (which helps determine eligibility of entries)
+	  * @brief Set 'packData' (which helps determine eligibility of entries)
 	  * @param p PackData
 	  */
 	 public void setPackData(PackData p) {

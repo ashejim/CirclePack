@@ -18,6 +18,8 @@ import exceptions.MiscException;
 import packing.CPdrawing;
 
 /**
+ * @brief Panel containing the three (or more??) small packing images
+ *
  * Panel containing the three (or more??) small packing images
  * and associated packing info
  */

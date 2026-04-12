@@ -13,6 +13,8 @@ import circlePack.PackControl;
 import circlePack.RunProgress;
 
 /**
+ * @brief This creates timer and owl/progress bar in several buttons.
+ *
  * This creates timer and owl/progress bar in several buttons.
  * @author kens
  *
@@ -86,7 +88,7 @@ public class OwlSpinner extends RunProgress {
 	}
 	
 	/**
-	 * Get the current progress button for the 'MainFrame';
+	 * @brief Get the current progress button for the 'MainFrame';
 	 * may be still owl, or progress bar
 	 * @return JButton
 	 */
@@ -95,7 +97,7 @@ public class OwlSpinner extends RunProgress {
 	}
 
 	/**
-	 * Get the current progress button for the 'PairFrame';
+	 * @brief Get the current progress button for the 'PairFrame';
 	 * may be still owl, or progress bar
 	 * @return JButton
 	 */

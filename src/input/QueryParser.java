@@ -34,6 +34,9 @@ import util.CallPacket;
 import util.StringUtil;
 import util.ViewBox;
 
+/**
+ * @brief Query Parser.
+ */
 public class QueryParser {
 	
 	public static int processQuery(PackData p,
@@ -71,7 +74,7 @@ public class QueryParser {
 	}
 	
 	/**
-	 * Return a String in response to a query. 
+	 * @brief Return a String in response to a query. 
 	 * This may have three parts: 'words', 'ans', 
 	 * and 'suffix'. 'ans' may represent (in 'String' 
 	 * form) a value, list, etc, and generally can 
@@ -1201,7 +1204,7 @@ public class QueryParser {
 	}
 	
 	/**
-	 * Returns String, as in 'queryParse', except the string 
+	 * @brief Returns String, as in 'queryParse', except the string 
 	 * represents the current value of the query quantity, rather 
 	 * than the symbolic value.  
 	 * 

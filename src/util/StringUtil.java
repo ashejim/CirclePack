@@ -10,12 +10,14 @@ import allMains.CPBase;
 import exceptions.ParserException;
 
 /**
+ * @brief various static classes for string manipulations, parsing
+ *
  * various static classes for string manipulations, parsing
  */
 public class StringUtil {
 
 	/**
-	 * Return a new String in which all occurances of substring
+	 * @brief Return a new String in which all occurances of substring
 	 * 'subOld' are replaced by substring 'subNew'.
 	 * @param origStr String
 	 * @param subOld String
@@ -45,7 +47,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * Given a string (normally a command string), search for and remove
+	 * @brief Given a string (normally a command string), search for and remove
 	 * the "-p.." flag if there is one (there should never be more than one),
 	 * return the desired pack number or -1
 	 * @return int packnum or -1 on failure
@@ -77,7 +79,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * If trimmed string starts with character c (one of '(', '{', '[', '<', or '"'), 
+	 * @brief If trimmed string starts with character c (one of '(', '{', '[', '<', or '"'), 
 	 * then return the string properly between it and its matching closing 
 	 * character. Return null if nesting associated with c is inconsistent.
 	 * @param startstr String
@@ -121,7 +123,7 @@ public class StringUtil {
 	
 	
 	/** 
-	 * Search str for occurrence of one or more strings separated
+	 * @brief Search str for occurrence of one or more strings separated
 	 * by ',' or whitespace; e.g. '(s1)', '(s1,s2)' or '(s1 s2)'. 
 	 * Return strings, but calling routine handles processing, 
 	 * checking number and appropriateness, often integers or doubles. 
@@ -145,7 +147,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * Parse integer range of form (n), (n,m), or (n m) in 'str'.
+	 * @brief Parse integer range of form (n), (n,m), or (n m) in 'str'.
 	 * Results lie in [min, max]. If only one integer, then set 
 	 * first to min (typically 0). 
 	 * @param str String
@@ -190,7 +192,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * Parse 'PackExtender' initials at the start of a command. These
+	 * @brief Parse 'PackExtender' initials at the start of a command. These
 	 * have the form '|bq|' (case is ignored). 
 	 * @param str, already trimmed
 	 * @return String[2], null if malformed
@@ -230,7 +232,7 @@ public class StringUtil {
 	}
 
 	/**
-	 * Called for commands starting with 'for' or 'FOR' (which
+	 * @brief Called for commands starting with 'for' or 'FOR' (which
 	 * is removed and str is trimmed before this call). 
 	 * This call picks off the specification string. (Processing 
 	 * in 'getForSpec' is called for separately.)
@@ -269,7 +271,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * Process a given 'for' specification string. Should be
+	 * @brief Process a given 'for' specification string. Should be
 	 * trimmed string ('for' or 'FOR' has been removed) with 
 	 * one of these forms:
 	 * (1) "([X:=]start,end,inc)" (preferred), inc!=0
@@ -356,7 +358,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * Identify and pull out variable name from string starting
+	 * @brief Identify and pull out variable name from string starting
 	 * at index k. Character at index k should be '_', following 
 	 * character must be letter, preceding character must not be
 	 * a letter, a number, or ';' or '_'. 
@@ -370,7 +372,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * Identify and pull out variable name from string starting
+	 * @brief Identify and pull out variable name from string starting
 	 * at index k. Character at index k should be '_', following 
 	 * character must be letter, preceding character must not be
 	 * a letter, a number, or ';' or '_'. 
@@ -407,7 +409,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * search for variable substrings, replace them by 
+	 * @brief search for variable substrings, replace them by 
 	 * their string values. Recurse. 
 	 * TODO: maybe I should resolve $..$ expressions here?
 	 * @param str String
@@ -447,7 +449,7 @@ public class StringUtil {
 	}
 
 	/**
-	 * Find first proper '_*' variable name specification,
+	 * @brief Find first proper '_*' variable name specification,
 	 * starting at index 0. Char following k must be letter. 
 	 * The "name" is the sequence of contiguous letter/digit 
 	 * characters immediately following '_'.
@@ -460,7 +462,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * Find first proper '_*' variable name specification,
+	 * @brief Find first proper '_*' variable name specification,
 	 * starting at index k. This means character preceding
 	 * k must be non-letter, non-digit (or k==0), and char following k
 	 * must be letter. The "name" is the sequence of contiguous 
@@ -489,7 +491,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * Get bracketed strings, eg, as in vlist[4], f
+	 * @brief Get bracketed strings, eg, as in vlist[4], f
 	 * list[n], etc. Return array of strings split by 
 	 * whitespaces; calling routine must check the 
 	 * returned strings --- int, string, etc. Normally,
@@ -513,7 +515,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * Get strings inside parens. Return array of strings split 
+	 * @brief Get strings inside parens. Return array of strings split 
 	 * by whitespaces; calling routine must check the returned 
 	 * strings --- int, string, etc. Return null if paired parens 
 	 * not found or contain only whitespace.
@@ -533,7 +535,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * Break a string into vector of 'flag segment' vectors, 
+	 * @brief Break a string into vector of 'flag segment' vectors, 
 	 * groups between successive command flags; thus all 
 	 * except possibly the first element will start with a 
 	 * flag.
@@ -546,7 +548,7 @@ public class StringUtil {
 	}
 	
 	/**
-	 * Break a vector of strings into 'flag segment' subvectors, groups 
+	 * @brief Break a vector of strings into 'flag segment' subvectors, groups 
 	 * between successive command flags; thus all except possibly the 
 	 * first element will start with a flag.
 	 * @param vec vector of strings
@@ -580,7 +582,7 @@ public class StringUtil {
 	}
 
 	/**
-	 * True if string is a flag; that is, starts with '-' and is not a number.
+	 * @brief True if string is a flag; that is, starts with '-' and is not a number.
 	 * NOTE: this doesn't catch some complex numbers, like '-i*25' or '-I'.
 	 * @param str
 	 * @return boolean
@@ -594,7 +596,7 @@ public class StringUtil {
 	}
 
 	/**
-	 * In combination with 'string2vec', this consolidates strings between 
+	 * @brief In combination with 'string2vec', this consolidates strings between 
 	 * paired symbols which were inadvertently split up in processing: 
 	 * "()", "{}", and "\"\"". It is not sophisticated; slightly recursive,
 	 * but can't handle nested situations. 
@@ -665,7 +667,7 @@ public class StringUtil {
 	}
 	
 	/** 
-	 * Utility to convert string into vector of substrings 
+	 * @brief Utility to convert string into vector of substrings 
 	 * (by whitespace). Return empty vector if nothing is 
 	 * found. Reassemble substrings occurring between 
 	 * matching parens, curly brackets, or double quotes
@@ -720,7 +722,7 @@ public class StringUtil {
 	}		  
 	  
 	  /**
-	   * Get initial string and convert to an integer. 
+	   * @brief Get initial string and convert to an integer. 
 	   * In future, may have alternative ways to indicate 
 	   * integer.  
 	   * @param str String
@@ -739,7 +741,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * Get initial string and convert to an integer. Throw DataException.
+	   * @brief Get initial string and convert to an integer. Throw DataException.
 	   * In future, may have alternative ways to indicate integer.  
 	   * @param str
 	   * @return
@@ -755,7 +757,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * Get initial string and convert to a double.
+	   * @brief Get initial string and convert to a double.
 	   * In future, may have alternative ways to indicate double.
 	   * @param str
 	   * @return double
@@ -773,7 +775,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * Get initial string and convert to a double.
+	   * @brief Get initial string and convert to a double.
 	   * In future, may have alternative ways to indicate double.
 	   * @param segs, Vector<Vector<String>>
 	   * @return double
@@ -790,7 +792,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * Given a 'flagSegs' type vector of vectors of strings, this
+	   * @brief Given a 'flagSegs' type vector of vectors of strings, this
 	   * returns just the first string. If it fails, return null.
 	   * @param segs
 	   * @return
@@ -836,7 +838,7 @@ public class StringUtil {
 	  }
 	  
 	/**
-	 * This finds and trims string strictly between 
+	 * @brief This finds and trims string strictly between 
 	 * outermost curly braces '{string}', null on 
 	 * syntax error, eg., mismatch, faulty nesting, 
 	 * etc. Returned string may be empty; calling routine 
@@ -870,7 +872,7 @@ public class StringUtil {
 	}
 	  
 	/**
-	 * This parses first occurring math expression 
+	 * @brief This parses first occurring math expression 
 	 * strictly between '$' symbols, '$string$'; 
 	 * null on error, may return empty string.
 	 * Returning string should be ready for math
@@ -919,7 +921,7 @@ public class StringUtil {
 		return null;
 	}
 	/**
-	 * Categorize a trimmed line as null or error (0), or first substring is 
+	 * @brief Categorize a trimmed line as null or error (0), or first substring is 
 	 * non-digit (1), integer (2), or float (3)
 	 * @param line String (trimmed, no line break)
 	 * @return int: 0 (null or error), 1 (non-digit), 2 (integer), 3 (double)
@@ -945,7 +947,7 @@ public class StringUtil {
 	}
 
 	  /** 
-	   * Reconstitute (with separating spaces) a string from a vector of
+	   * @brief Reconstitute (with separating spaces) a string from a vector of
 	   * vectors of strings. Return null if essentially empty.
 	   * @param segs Vector<Vector<String>>
 	   * @return String, trimmed, possibly empty
@@ -969,7 +971,7 @@ public class StringUtil {
 	  }
 	  
 	  /** 
-	   * Reconstitute a single string (with separating spaces)
+	   * @brief Reconstitute a single string (with separating spaces)
 	   * from a vector of strings. E.g., getting filenames with
 	   * blanks in them.
 	   * @param items
@@ -993,7 +995,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * For breaking incoming string into command segments. 
+	   * @brief For breaking incoming string into command segments. 
 	   * The returned strings must be non-empty and lie 
 	   * between ';'s, but we keep quoted substrings in tact. 
 	   * So, e.g., a quoted substring may have ';'s which 
@@ -1102,7 +1104,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * Break SpringBuilder into semicolon-separated non-empty segments. 
+	   * @brief Break SpringBuilder into semicolon-separated non-empty segments. 
 	   * For segments ending with ';', remove the ';' to trim, then add it
 	   * back in so we can identify such segments. May also begin with a ';',
 	   * which (after clearing redundant ';' and whitespace) we include at
@@ -1163,7 +1165,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * Analyze at string with respect to substrings 
+	   * @brief Analyze at string with respect to substrings 
 	   * delineated by double quotes, '"'. Note that 
 	   * we ignore escaped quotes, '\"', but accept 
 	   * '""' as delineating an empty string.
@@ -1231,7 +1233,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * Return index of next '"' quote character 
+	   * @brief Return index of next '"' quote character 
 	   * TODO: may be a problem if quote is escaped.
 	   * @param strbld StringBuilder
 	   * @param indx int
@@ -1246,7 +1248,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * Return the first string (delineated by whitespace) in 'inbuffer' 
+	   * @brief Return the first string (delineated by whitespace) in 'inbuffer' 
 	   * @param str String
 	   * @return initial String, null on error
 	   */
@@ -1259,7 +1261,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * Return the first string (delineated by whitespace) in 'inbuffer' 
+	   * @brief Return the first string (delineated by whitespace) in 'inbuffer' 
 	   * and delete it from 'inbuffer'.
 	   * @param inbuffer, StringBuilder, will be modified
 	   * @return initial string (segment of non-whitespace); null on error or
@@ -1289,7 +1291,7 @@ public class StringUtil {
 	  }
   
 	  /**
-	   * Return the next line from the file which is non-empty
+	   * @brief Return the next line from the file which is non-empty
 	   * and (if 'noComment' is true) does not start with '#'.
 	   * Return null if end of file is reached; ourNextLine
 	   * catches IOExceptions.
@@ -1308,7 +1310,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * Return the next non-empty trimmed line from file; 
+	   * @brief Return the next non-empty trimmed line from file; 
 	   * return null if end-of-file reached, catch IOExceptions.
 	   * @param reader BufferedReader
 	   * @return trimmed String or null
@@ -1328,7 +1330,7 @@ public class StringUtil {
 	  }
 
 	  /**
-	   * Strings of form '-q{p}' or '-q {p}' (old form) are
+	   * @brief Strings of form '-q{p}' or '-q {p}' (old form) are
 	   * parsed to return pack number. 
 	   * NOTES: 
 	   *   Calling routine might want to check if result is the same 
@@ -1357,7 +1359,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * Strings of form '-q{p}' indicate packings in various commands; 
+	   * @brief Strings of form '-q{p}' indicate packings in various commands; 
 	   * this methods parses these (depending on how many packings exist)
 	   * and returns the packNum or -1 on error.
 	   * NOTES: 
@@ -1381,7 +1383,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * Break a 'setBuilderParser' type string into segments by finding 
+	   * @brief Break a 'setBuilderParser' type string into segments by finding 
 	   * '&&' and '||' instances. These connectives are kept with the 
 	   * following segment (as are any '!' negation indicators.
 	   * @param str
@@ -1417,7 +1419,7 @@ public class StringUtil {
 	  }
 	  
 	  /** 
-	   * Return substring of contiguous digits in 'str' 
+	   * @brief Return substring of contiguous digits in 'str' 
 	   * starting at 'startIndx'. 'null' if no digits.
 	   * @param strb StringBuilder
 	   * @param startIndx
@@ -1438,7 +1440,7 @@ public class StringUtil {
 	  }
 	  
 	  /** 
-	   * Return substring of contiguous letters and/or 
+	   * @brief Return substring of contiguous letters and/or 
 	   * digits in 'str' starting at 'startIndx'. 'null' 
 	   * if no letters/digits.
 	   * @param strb StringBuilder
@@ -1460,7 +1462,7 @@ public class StringUtil {
 	  }
 	  
 	  /** 
-	   * Return substring of contiguous digits in 'str' starting
+	   * @brief Return substring of contiguous digits in 'str' starting
 	   * at 'startIndx'. 'null' if no digits.
 	   * @param str, source String
 	   * @param startIndx
@@ -1480,7 +1482,7 @@ public class StringUtil {
 	  }
 
 	  /**
-	   * Find/return an initial substring beginning/ending with '"'
+	   * @brief Find/return an initial substring beginning/ending with '"'
 	   * or with ''', but there may be escaped '"'s or '''s which we 
 	   * have to ignore as we look for the final '"' or '''. If a 
 	   * literal substring is found, it is deleted from the stringbuffer.
@@ -1514,7 +1516,7 @@ public class StringUtil {
 	  }
 
 	  /** Add "-dc" to packing name to indicate presence of DCEL
-	   * structure. If no name, return 'noname-dc'.
+	   * @brief structure. If no name, return 'noname-dc'.
 	   * @param name String
 	   * @return new String
 	   */
@@ -1529,7 +1531,7 @@ public class StringUtil {
 	  }
 	  
 	/**
-	   * Check if flag sequence has filename-type flags 
+	   * @brief Check if flag sequence has filename-type flags 
 	   * as last sequence; that is, last sequence starts 
 	   * with '-f', '-a', or '-s' for file, append, or script.
 	   * 

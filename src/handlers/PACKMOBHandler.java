@@ -13,6 +13,8 @@ import mytools.MyToolHandler;
 import util.PopupBuilder;
 
 /**
+ * @brief This handles the side pairing Mobius MyTool's associated
+ *
  * This handles the side pairing Mobius MyTool's associated 
  * with the currently active packing; in particular, 'toolVector' 
  * points to the 'packTools[]' vector containing the active packings
@@ -60,7 +62,7 @@ public class PACKMOBHandler extends MyToolHandler {
 	}
 
 	/**
-	 * Wipe out the side-pair tools for the indicated pack; generally this
+	 * @brief Wipe out the side-pair tools for the indicated pack; generally this
 	 * is to clear sidepairings when updated ones are ready to be installed.
 	 * @param packnum
 	 */

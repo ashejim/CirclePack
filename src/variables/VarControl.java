@@ -18,6 +18,8 @@ import util.CallPacket;
 import util.StringUtil;
 
 /**
+ * @brief The 'variables' package is for handling variables in
+ *
  * The 'variables' package is for handling variables in 
  * 'CirclePack'. Basically, any string can be treated as a 
  * named variable and associated with a string 'value'. 
@@ -66,7 +68,7 @@ public class VarControl {
 	}
 
 	/**
-	 * Get the 'String' associated with 'vkey'. (Note: 'vkey' may
+	 * @brief Get the 'String' associated with 'vkey'. (Note: 'vkey' may
 	 * contain leading '_'s, which we simply strip off.)
 	 * @param vkey String, variable name
 	 * @return String value or null on failure.
@@ -85,7 +87,7 @@ public class VarControl {
 	}
 
 	/**
-	 * In hash table, set 'vkey' string to value given in 'flagSegs'.
+	 * @brief In hash table, set 'vkey' string to value given in 'flagSegs'.
 	 * If 'vkey' already in the table, this replaces its value.
 	 * Routine case, the value is a string, usually 'reconstituted' 
 	 * flagSeqs. (Note that we may even want vkey to be associated 
@@ -198,7 +200,7 @@ public class VarControl {
 	}
 	
 	/**
-	 * Remove a CirclePack variable.
+	 * @brief Remove a CirclePack variable.
 	 * 
 	 * @param variableName name of variable to remove
 	 */
@@ -208,7 +210,7 @@ public class VarControl {
 	}
 	
 	/**
-	 * Returns a model of CirclePack variable state. In GUI
+	 * @brief Returns a model of CirclePack variable state. In GUI
 	 * mode, tables may use this model to display names and values 
 	 * of current variables.
 	 * @return AbstractTableModel representing state of CirclePack variables.
@@ -218,7 +220,7 @@ public class VarControl {
 	}
 	
 	/**
-	 * VariableControlTableModel encapsulates CirclePack variable 
+	 * @brief VariableControlTableModel encapsulates CirclePack variable 
 	 * state information. External classes must get this instance from 
 	 * 'VarControl'.
 	 * 
@@ -368,7 +370,7 @@ public class VarControl {
 		}
 
 		/**
-		 * Get the table row in which variable 'key'
+		 * @brief Get the table row in which variable 'key'
 		 * @param key String, should be trimmed
 		 * @return int row number
 		 */
@@ -382,7 +384,7 @@ public class VarControl {
 		}
 		
 		/**
-		 * Returns the value string of the specified CirclePack variable;
+		 * @brief Returns the value string of the specified CirclePack variable;
 		 * string rep of double if a slider variable
 		 * 
 		 * @param key the name of the CirclePack variable
@@ -408,7 +410,7 @@ public class VarControl {
 		}
 		
 		/**
-		 * Adds to or updates a CirclePack variable in the model. On
+		 * @brief Adds to or updates a CirclePack variable in the model. On
 		 * creation, 'value' may contain specs (e.g., for sliders).
 		 * 
 		 * @param key String, name 
@@ -508,7 +510,7 @@ public class VarControl {
 		}
 		
 		/**
-		 * Remove a CirclePack variable from the model.
+		 * @brief Remove a CirclePack variable from the model.
 		 * 
 		 * @param key the name of the CirclePack variable to remove
 		 * @return a <code>String</code> representation of the value 
@@ -538,7 +540,7 @@ public class VarControl {
 	
 	   
     /**
-     * Given a variable string, determine if it specifies
+     * @brief Given a variable string, determine if it specifies
      * a slider variable. The syntax (at this moment) is
      * "[SLIDER <string1>] <string2>", string1 being the slider
      * specification, string2 the rest. 

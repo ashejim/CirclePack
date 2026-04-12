@@ -8,6 +8,11 @@ import javax.swing.filechooser.FileFilter;
 
 //File filter for JFileChooser, set to JPG and HTML.
 public class JPGHTMLFilter extends FileFilter {
+	/**
+	 * @brief TODO: Document accept.
+	 * @param file
+	 * @return boolean
+	 */
 	public boolean accept(File file) {
 		//Display directories.
 		if (file.isDirectory()) {

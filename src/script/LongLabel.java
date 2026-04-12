@@ -7,7 +7,9 @@ import java.awt.Dimension;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-/** For small operation buttons in the script display window. 
+/**
+ * @brief /** For small operation buttons in the script display window.
+ * For small operation buttons in the script display window. 
  * Depending on type, get icon, tooltip text, action command.
  * Generally this is created, put in panel, and then forgotten.
  * (The calling routine sets the actionListener.)

@@ -14,6 +14,8 @@ import javax.imageio.ImageIO;
 import frames.SplashFrame;
 
 /**
+ * @brief This class provides an alternative main() function which will pop up a
+ *
  * This class provides an alternative main() function which will pop up a
  * splash screen, load the real main class in the background, then remove 
  * the splash screen and run the real main() function.
@@ -25,7 +27,7 @@ public class SplashMain {
 	private SplashFrame splashScreen;
 		
 	/**
-	 * Put up the splash screen.
+	 * @brief Put up the splash screen.
 	 * @throws InvocationTargetException 
 	 * @throws InterruptedException 
 	 * @throws IOException 
@@ -77,7 +79,7 @@ public class SplashMain {
 	}
 	
 	/**
-	 * main routine to be invoked with command line arguments (if any)
+	 * @brief main routine to be invoked with command line arguments (if any)
 	 * 
 	 * @param args, the command line arguments
 	 */

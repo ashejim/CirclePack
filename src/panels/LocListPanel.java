@@ -121,6 +121,10 @@ public class LocListPanel extends JPanel implements ActionListener {
 		}
 	}
 
+	/**
+	 * @brief TODO: Document actionPerformed.
+	 * @param aev
+	 */
 	public void actionPerformed(ActionEvent aev) {
 		String cmd=aev.getActionCommand();
 		Component cmpt=VFETabbing.getSelectedComponent();

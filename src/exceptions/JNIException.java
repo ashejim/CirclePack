@@ -1,9 +1,10 @@
 package exceptions;
 
 /**
+ * @brief Exceptions relating to the native calls to 'HeavyC' library.
+ *
  * Exceptions relating to the native calls to 'HeavyC' library.
  */
-
 public class JNIException extends RuntimeException {
 
 	private static final long 

@@ -1,0 +1,292 @@
+\doxysection{Tile\+Coloring.\+java}
+\hypertarget{_tile_coloring_8java_source}{}\label{_tile_coloring_8java_source}\index{src/ftnTheory/TileColoring.java@{src/ftnTheory/TileColoring.java}}
+\doxymbox{\hyperlink{_tile_coloring_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00001}00001\ \textcolor{keyword}{package\ }ftnTheory;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00003}00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00004}00004\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00005}00005\ \textcolor{keyword}{import}\ java.util.StringTokenizer;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00006}00006\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00008}00008\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00009}00009\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00010}00010\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00011}00011\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00012}00012\ \textcolor{keyword}{import}\ exceptions.InOutException;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00013}00013\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00014}00014\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00015}00015\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00016}00016\ \textcolor{keyword}{import}\ util.DispFlags;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00017}00017\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00019}\doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring}{00019}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_a86a722c64f1a6f0c9de904629487ba64}{TileColoring}}\ \textcolor{keyword}{extends}\ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_ae957a214f340a4a70b1fe0067f5b50ec}{PackExtender}}\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00021}00021\ \ \ \ \ \textcolor{comment}{//\ tile\ 'types';\ may\ want\ to\ add\ or\ change}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00022}00022\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ TRIANGLE=1;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00023}00023\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ QUADRANGLE=2;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00024}00024\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ PENTAGON=3;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00025}00025\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00026}00026\ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ packData;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00027}00027\ \ \ \ \ \textcolor{keywordtype}{int}\ color\_mode;\ \ \textcolor{comment}{//\ default\ to\ 0;\ }}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00028}00028\ \ \ \ \ \textcolor{keywordtype}{int}\ colorHit;\ \ \ \ \textcolor{comment}{//\ increment\ in\ intensity\ for\ each\ hit}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00029}00029\ \ \ \ \ \textcolor{keywordtype}{int}\ depth;\ \ \ \ \ \ \ \textcolor{comment}{//\ depth\ of\ tiles\ as\ given\ in\ history\ file}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00030}00030\ \ \ \ \ String\ histFile;\ \textcolor{comment}{//\ name\ of\ the\ history\ file}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00031}00031\ \ \ \ \ String\ postFile;\ \textcolor{comment}{//\ name\ of\ output\ file\ (default\ to\ 'CPDrawing.customPS')}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00032}00032\ \ \ \ \ Vector<TileInfo>\ tiles;\ \ \textcolor{comment}{//\ vector\ of\ 'TileInfo'\ information}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00033}00033\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00034}00034\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ ERROR=0;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00035}00035\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ INITIAL=1;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00036}00036\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ READING=2;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00037}00037\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ HAVE\_HISTORY=3;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00038}00038\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ COLORS\_SET=4;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00039}00039\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ POST\_OPEN=5;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00040}\doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_a4b2f8aa6ec93529bd13cea82f5ffc3c4}{00040}}\ \ \ \ \ \textcolor{keyword}{public}\ String\ []\doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_a4b2f8aa6ec93529bd13cea82f5ffc3c4}{stateStr}}=\{\textcolor{stringliteral}{"{}ERROR"{}},\textcolor{stringliteral}{"{}INITIAL"{}},\textcolor{stringliteral}{"{}READING"{}},\textcolor{stringliteral}{"{}HAVE\_HISTORY"{}},}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00041}00041\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}COLORS\_SET"{}},\textcolor{stringliteral}{"{}POST\_OPEN"{}}\};}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00042}00042\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{int}\ tcState;\ \ \textcolor{comment}{//\ processing\ state}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00043}00043\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00044}00044\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00045}\doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_a86a722c64f1a6f0c9de904629487ba64}{00045}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_a86a722c64f1a6f0c9de904629487ba64}{TileColoring}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00046}00046\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00047}00047\ \ \ \ \ \ \ \ \ packData=p;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00048}00048\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_ac277c866c6509acaa6863449325b9810}{extensionType}}=\textcolor{stringliteral}{"{}TILECOLORING"{}};}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00049}00049\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a09f89a7924aa9d5f3d7d412ecbb14045}{extensionAbbrev}}=\textcolor{stringliteral}{"{}TC"{}};}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00050}00050\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a7fbf8bec08903e29a71391a1b9cb5b0e}{toolTip}}=\textcolor{stringliteral}{"{}'TileColoring':\ for\ color\ coding\ subdivision\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}tilings\ of\ Cannon,\ Floyd,\ Parry\ by\ history"{}};}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00052}00052\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_ad0d29dc837a41ee7acbeefb3e5ba6a30}{registerXType}}();}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00053}00053\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00054}00054\ \ \ \ \ \ \ \ \ color\_mode=0;\ \textcolor{comment}{//\ default\ (currently,\ only\ mode)}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_af4d75598ac8dcac3a492794707363a12}{running}})\ \{\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ packData.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00057}00057\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00058}00058\ \ \ \ \ \ \ \ \ colorHit=30;\ \textcolor{comment}{//\ default}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00059}00059\ \ \ \ \ \ \ \ \ tcState=INITIAL;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00060}00060\ \ \ \ \ \ \ \ \ postFile=packData.cpDrawing.customPS;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00061}00061\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00062}00062\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00063}\doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_af68ea91237e0ebf3c005641410147ced}{00063}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_af68ea91237e0ebf3c005641410147ced}{cmdParser}}(String\ cmd,Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00064}00064\ \ \ \ \ \ \ \ \ Vector<String>\ items=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00065}00065\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00066}00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}hist"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ BufferedReader\ fp=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ str=items.get(0);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ script\_flag=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str.equals(\textcolor{stringliteral}{"{}-\/s"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ script\_flag=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items.remove(0);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ histFile=\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_a9a70ed5240258da18bb8ef98366541c6}{reconItem}}(items);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp=\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager}{CPFileManager}}.\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager_a3631af78d2b4a3c5bdb378fd07d73070}{openReadFP}}(histFile,script\_flag);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a58ac86f35923b82265f7b52df2fc8d31}{errorMsg}}(\textcolor{stringliteral}{"{}Failed\ to\ open\ 'history'\ file"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ tcState\ =\ INITIAL;\ \textcolor{comment}{//\ starting\ over}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ String\ line;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Must\ find\ 'HISTORIES:'}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(tcState==INITIAL\ \&\&\ (line=\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_ae8fe2c28a7f4f2f065c92b2e10de3369}{ourNextLine}}(fp))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringTokenizer\ tok\ =\ \textcolor{keyword}{new}\ StringTokenizer(line);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(tok.hasMoreTokens())\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ mainTok\ =\ tok.nextToken();}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(mainTok.equals(\textcolor{stringliteral}{"{}HISTORIES:"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tcState=READING;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tiles=\textcolor{keyword}{new}\ Vector<TileInfo>(10);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(tcState==READING\ \&\&\ (line=\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_ae8fe2c28a7f4f2f065c92b2e10de3369}{ourNextLine}}(fp))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringTokenizer\ tok\ =\ \textcolor{keyword}{new}\ StringTokenizer(line);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TileInfo\ newTile=\textcolor{keyword}{new}\ TileInfo();}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newTile.vert=Integer.parseInt(tok.nextToken());}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newTile.vert<1\ ||\ newTile.vert>packData.nodeCount)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}circle\ index\ out\ of\ range"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ type}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newTile.type=packData.countFaces(newTile.vert)-\/2;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ lineage=tok.nextToken();}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ depth=lineage.length();}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00112}00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newTile.history=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[depth];}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<depth;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ nextchar=lineage.substring(j,j+1);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newTile.history[j]=Integer.parseInt(nextchar);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tiles.add(newTile);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a58ac86f35923b82265f7b52df2fc8d31}{errorMsg}}(\textcolor{stringliteral}{"{}Exception\ in\ reading\ '"{}}+histFile+\textcolor{stringliteral}{"{}':\ "{}}+ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tcState=INITIAL;\ \textcolor{comment}{//\ ready\ to\ restart}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ tcState=HAVE\_HISTORY;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00127}00127\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00128}00128\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_col"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tcState\ <\ HAVE\_HISTORY)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a58ac86f35923b82265f7b52df2fc8d31}{errorMsg}}(\textcolor{stringliteral}{"{}can't\ set\ colors,\ TileColoring\ state\ is\ only\ "{}}+\doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_a4b2f8aa6ec93529bd13cea82f5ffc3c4}{stateStr}}[tcState]);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cycle\ through\ the\ tiles\ and\ set\ colors}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ Red,Green,Blue;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n=0;n<tiles.size();n++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Red=Green=Blue=0;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00138}00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TileInfo\ tc=tiles.get(n);\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00139}00139\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =======\ here's\ where\ 'mode'\ chooses\ strategy\ }}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (color\_mode==0)\ \{\ \textcolor{comment}{//\ equal\ weight\ }}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<depth;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ equal\ weight\ (could\ change\ weight\ depending\ on\ color)\ }}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tc.history[i]==TRIANGLE)\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Red++;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tc.history[i]==QUADRANGLE)\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Green++;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tc.history[i]==PENTAGON)\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Blue++;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tc.red=(Red*colorHit)\%256;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tc.green=(Green*colorHit)\%256;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tc.blue=(Blue*colorHit)\%256;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ for\ loop}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ tcState=COLORS\_SET;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00157}00157\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00158}00158\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}postfile"{}}))\ \{\ \textcolor{comment}{//\ get\ PostScript\ filename\ and\ open}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tcState<COLORS\_SET)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a58ac86f35923b82265f7b52df2fc8d31}{errorMsg}}(\textcolor{stringliteral}{"{}can't\ open\ post,\ TileColoring\ state\ is\ only\ "{}}+\doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_a4b2f8aa6ec93529bd13cea82f5ffc3c4}{stateStr}}[tcState]);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ postFile=\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_a9a70ed5240258da18bb8ef98366541c6}{reconItem}}(items);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!postFile.endsWith(\textcolor{stringliteral}{"{}.ps"{}}))}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ postFile=\textcolor{keyword}{new}\ String(postFile+\textcolor{stringliteral}{"{}.ps"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a58ac86f35923b82265f7b52df2fc8d31}{errorMsg}}(\textcolor{stringliteral}{"{}error\ in\ postscript\ file\ name"{}}+postFile);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00170}00170\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00171}00171\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00172}00172\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_hit"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00174}00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hit=Integer.parseInt((String)items.get(0));}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00176}00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hit<0\ ||\ hit>200)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00177}00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a58ac86f35923b82265f7b52df2fc8d31}{errorMsg}}(\textcolor{stringliteral}{"{}TileColoring\ increment\ must\ be\ between\ 0\ and\ 200"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00178}00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00179}00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00180}00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ colorHit=hit;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00181}00181\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00182}00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a58ac86f35923b82265f7b52df2fc8d31}{errorMsg}}(\textcolor{stringliteral}{"{}error\ in\ 'set\_hit'"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00183}00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00184}00184\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00185}00185\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00186}00186\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}draw"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00187}00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tcState<COLORS\_SET)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00188}00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a58ac86f35923b82265f7b52df2fc8d31}{errorMsg}}(\textcolor{stringliteral}{"{}colors\ not\ set\ yet,\ TileColoring\ state\ is\ only\ "{}}+\doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_a4b2f8aa6ec93529bd13cea82f5ffc3c4}{stateStr}}[tcState]);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00189}00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00190}00190\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00191}00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00192}00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\textcolor{stringliteral}{"{}set\_screen\ -\/a"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00193}00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_disp_flags}{DispFlags}}\ dflags=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_disp_flags}{DispFlags}}(\textcolor{stringliteral}{"{}ff"{}},packData.cpDrawing.fillOpacity);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00194}00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<tiles.size();i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00195}00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TileInfo\ td=tiles.get(i);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00196}00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=td.vert;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00197}00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=packData.countFaces(v);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00198}00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=packData.getFlower(v);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00199}00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=num+2*packData.getBdryFlag(v);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00200}00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []crnr=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[2*N];}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00201}00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00202}00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ Z=packData.getCenter(flower[j]);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00203}00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packData.hes>0)}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Z=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_a1db996bfa935fb2b1858f3845dee2bdf}{cpDrawing}}.sphView.toApparentSph(Z);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crnr[2*j]=Z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}};}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00206}00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crnr[2*j+1]=Z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}};}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00207}00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packData.isBdry(v))\ \{\ \textcolor{comment}{//\ need\ extra\ points}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ Z=packData.getCenter(flower[num]);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packData.hes>0)}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00211}00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Z=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_a1db996bfa935fb2b1858f3845dee2bdf}{cpDrawing}}.sphView.toApparentSph(Z);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crnr[2*num]=Z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}};}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00213}00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crnr[2*num+1]=Z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}};}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00214}00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00215}00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00216}00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ something\ wrong?\ this\ should\ be\ going\ to\ postscript.}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00217}00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dflags.\doxymbox{\hyperlink{classutil_1_1_disp_flags_afa6b88376907c30e4c1a5d61243c9dd5}{setColor}}(\textcolor{keyword}{new}\ Color(255-\/td.red,255-\/td.green,255-\/td.blue));}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00218}00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a1db996bfa935fb2b1858f3845dee2bdf}{cpDrawing}}.drawClosedPoly(N,crnr,dflags);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00219}00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00220}00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a4c6a5c839d23a773d31e4f0f9327cca9}{postManager}}.\doxymbox{\hyperlink{classposting_1_1_post_manager_a1de76563b8362455ed0f9fb728700217}{close\_psfile}}(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_a1db996bfa935fb2b1858f3845dee2bdf}{cpDrawing}});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00221}00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}TileColoring:\ PostScript\ image\ saved\ in\ "{}}+postFile);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00222}00222\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00223}00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_in_out_exception}{InOutException}}(\textcolor{stringliteral}{"{}problem\ in\ creating\ the\ PostScript\ file:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00225}00225\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcircle_pack_1_1_pack_control}{PackControl}}.\doxymbox{\hyperlink{classcircle_pack_1_1_pack_control_a6c4a0d875900ebf67b144791fcc10489}{activeFrame}}.\doxymbox{\hyperlink{classcanvasses_1_1_main_frame_abe623c7799443c21eb6333e26b252f70}{reDisplay}}();}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00226}00226\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00227}00227\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}post"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00228}00228\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tcState<COLORS\_SET)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00229}00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a58ac86f35923b82265f7b52df2fc8d31}{errorMsg}}(\textcolor{stringliteral}{"{}colors\ not\ set\ yet,\ TileColoring\ state\ is\ only\ "{}}+\doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_a4b2f8aa6ec93529bd13cea82f5ffc3c4}{stateStr}}[tcState]);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00230}00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00231}00231\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00232}00232\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00233}00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a4c6a5c839d23a773d31e4f0f9327cca9}{postManager}}.\doxymbox{\hyperlink{classposting_1_1_post_manager_aab1101bbf3aa0b94ea8004ef58307724}{open\_psfile}}(packData.cpDrawing,1,postFile,\textcolor{keyword}{null});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00234}00234\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00235}00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a58ac86f35923b82265f7b52df2fc8d31}{errorMsg}}(\textcolor{stringliteral}{"{}error\ in\ opening\ "{}}+postFile+\textcolor{stringliteral}{"{}\ for\ PostScript\ output"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00236}00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00237}00237\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00238}00238\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00239}00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\textcolor{stringliteral}{"{}set\_screen\ -\/a"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00240}00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<tiles.size();i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TileInfo\ td=tiles.get(i);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=td.vert;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00243}00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=packData.countFaces(v);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00244}00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=packData.getFlower(v);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00245}00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=num+2*packData.getBdryFlag(v);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00246}00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ []Z=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[N];}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00247}00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00248}00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Z[j]=packData.getCenter(flower[j]);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00249}00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packData.isBdry(v))\ \{\ \textcolor{comment}{//\ need\ extra\ points}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00250}00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Z[num]=packData.getCenter(flower[num]);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00251}00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Z[num+1]=packData.getCenter(v);\ \textcolor{comment}{//\ bdry\ edge\ }}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00252}00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00253}00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a4c6a5c839d23a773d31e4f0f9327cca9}{postManager}}.\doxymbox{\hyperlink{classposting_1_1_post_manager_a40c1aef6a2803eb6dced70b36c71cdf7}{pF}}.\doxymbox{\hyperlink{classposting_1_1_post_factory_ab7af9f7385ba253d672d33f30b994aad}{postFilledPoly}}(packData.hes,N,Z,}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00254}00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Color(255-\/td.red,255-\/td.green,255-\/td.blue));}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00255}00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00256}00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a4c6a5c839d23a773d31e4f0f9327cca9}{postManager}}.\doxymbox{\hyperlink{classposting_1_1_post_manager_a1de76563b8362455ed0f9fb728700217}{close\_psfile}}(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_a1db996bfa935fb2b1858f3845dee2bdf}{cpDrawing}});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00257}00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}TileColoring:\ PostScript\ image\ saved\ in\ "{}}+postFile);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00258}00258\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00259}00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_in_out_exception}{InOutException}}(\textcolor{stringliteral}{"{}problem\ in\ creating\ the\ PostScript\ file:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00260}00260\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00261}00261\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00262}00262\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00263}00263\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ super.cmdParser(cmd,\ flagSegs);}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00264}00264\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00265}00265\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00266}\doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_a7b1cda867683891d52170c84c2ca80da}{00266}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classftn_theory_1_1_tile_coloring_a7b1cda867683891d52170c84c2ca80da}{helpInfo}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00267}00267\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af514ac87b7c713fea6507bd99518cff6}{helpMsg}}(\textcolor{stringliteral}{"{}Commands\ for\ PackExtender\ "{}}+\doxymbox{\hyperlink{classpacking_1_1_pack_extender_ac277c866c6509acaa6863449325b9810}{extensionType}}+\textcolor{stringliteral}{"{}(TileColoring)\(\backslash\)n"{}}+}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00268}00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}mode\ <n>:\ \ \ \ \ \ \ \ set\ mode:\(\backslash\)n"{}}+}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00269}00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}set\_hit:\ \ \ \ \ \ \ \ \ set\ impact\ of\ each\ generation;\ default\ 30"{}}+}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00270}00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}history\ <name>:\ \ read\ file\ with\ tile\ lineages\(\backslash\)n"{}}+}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00271}00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}set\_color:\ \ \ \ \ \ \ set\ color\ in\ 'TileInfo'\ based\ on\ 'mode'\(\backslash\)n"{}}+}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00272}00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}postfile\ <name>:\ give\ the\ file\ for\ PostScript\ output\(\backslash\)n"{}}+}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00273}00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}post:\ \ \ \ \ \ \ \ \ \ \ \ create\ the\ PostScript\ file\(\backslash\)n"{}}+}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00274}00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}draw:\ \ \ \ \ \ \ \ \ \ \ \ display\ the\ tiling\ on\ screen"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00275}00275\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00276}00276\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00277}00277\ \}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00278}00278\ }
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00288}00288\ \textcolor{keyword}{class\ }TileInfo\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00289}00289\ \ \ \ \ \textcolor{keywordtype}{int}\ vert;\ \textcolor{comment}{//\ index\ of\ barycenter\ circle}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00290}00290\ \ \ \ \ \textcolor{keywordtype}{int}\ type;\ \textcolor{comment}{//\ numbered\ from\ 1:\ typically\ 1=triangle,\ 2=rectangle,\ etc.}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00291}00291\ \ \ \ \ \textcolor{keywordtype}{int}\ red;\ \ \textcolor{comment}{//\ from\ 0\ to\ 255}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00292}00292\ \ \ \ \ \textcolor{keywordtype}{int}\ green;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00293}00293\ \ \ \ \ \textcolor{keywordtype}{int}\ blue;}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00294}00294\ \ \ \ \ \textcolor{keywordtype}{int}\ []history;\ \textcolor{comment}{//\ integer\ tile\ types\ for\ successive\ subdivisions}}
+\DoxyCodeLine{\Hypertarget{_tile_coloring_8java_source_l00295}00295\ \}}
+
+\end{DoxyCode}

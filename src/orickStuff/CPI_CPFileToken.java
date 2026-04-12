@@ -2,6 +2,9 @@ package orickStuff;
 
 import java.io.StreamTokenizer;
 
+/**
+ * @brief C P I_ C P File Token.
+ */
 public class CPI_CPFileToken {
 	static int TT_NUMBER = StreamTokenizer.TT_NUMBER;
 	static int TT_WORD= StreamTokenizer.TT_WORD;

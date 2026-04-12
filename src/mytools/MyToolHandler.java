@@ -38,6 +38,8 @@ import panels.MyToolBar;
 import util.PopupBuilder;
 
 /**
+ * @brief This is an abstract class for various 'handlers' for loading,
+ *
  * This is an abstract class for various 'handlers' for loading, 
  * manipulating, saving of MyTool and MyToolBar stuff. 
  * The user's tools are eventually to be read and saved in files.
@@ -76,7 +78,7 @@ public abstract class MyToolHandler implements MouseListener {
 	}
 	
 	/**
-	 * The Menu that appears on tools is created/set in the listener.
+	 * @brief The Menu that appears on tools is created/set in the listener.
 	 * @param mpm
 	 */
 	public void setButtonMenu(MyPopupMenu mpm) {
@@ -84,7 +86,7 @@ public abstract class MyToolHandler implements MouseListener {
 	}
 
 	/**
-	 * This creates an edit tool appropriate to this type of toolbar
+	 * @brief This creates an edit tool appropriate to this type of toolbar
 	 * @param t_type
 	 */
 	public void setEditor(String t_type) { // default is MYTOOL CmdToolEditor
@@ -108,7 +110,7 @@ public abstract class MyToolHandler implements MouseListener {
 	}
 	
 	/**
-	 * open CmdToolFrame to edit existing tool
+	 * @brief open CmdToolFrame to edit existing tool
 	 * @param mytool
 	 */
 	public void editTool() {
@@ -261,7 +263,7 @@ public abstract class MyToolHandler implements MouseListener {
 	}
 	
 	/**
-	 * Remove a given tool from hashedTools by finding
+	 * @brief Remove a given tool from hashedTools by finding
 	 * its tool index.
 	 * @param mytool
 	 */
@@ -321,7 +323,7 @@ public abstract class MyToolHandler implements MouseListener {
 	}
 
 	/**
-	 * Insert a tool created elsewhere; assume toolIndx location set elsewhere
+	 * @brief Insert a tool created elsewhere; assume toolIndx location set elsewhere
 	 * @param newtool
 	 */
 	public void addTool(MyTool newtool) {
@@ -408,7 +410,7 @@ public abstract class MyToolHandler implements MouseListener {
 	}
 
 	/**
-	 * read the chosen file and append its tools to the
+	 * @brief read the chosen file and append its tools to the
 	 * toolbar of this handler or to the 'MyCanvasMode'
 	 * vectors of 'CursorCtrl'.
 	 * @param File filename with complete path
@@ -445,7 +447,7 @@ public abstract class MyToolHandler implements MouseListener {
 	}
 	
 	/**
-	 * Extract XML info to create the tool. This will check
+	 * @brief Extract XML info to create the tool. This will check
 	 * the tool type and create the tool only if it matches
 	 * the toolType for this handler.
 	 * @param tE

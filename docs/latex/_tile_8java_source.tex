@@ -1,0 +1,631 @@
+\doxysection{Tile.\+java}
+\hypertarget{_tile_8java_source}{}\label{_tile_8java_source}\index{src/tiling/Tile.java@{src/tiling/Tile.java}}
+\doxymbox{\hyperlink{_tile_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00001}00001\ \textcolor{keyword}{package\ }tiling;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00003}00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00004}00004\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00005}00005\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00006}00006\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00007}00007\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00008}00008\ \textcolor{keyword}{import}\ combinatorics.komplex.Face;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00009}00009\ \textcolor{keyword}{import}\ combinatorics.komplex.RedEdge;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00010}00010\ \textcolor{keyword}{import}\ dcel.CombDCEL;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00011}00011\ \textcolor{keyword}{import}\ dcel.PackDCEL;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00012}00012\ \textcolor{keyword}{import}\ dcel.RawManip;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00013}00013\ \textcolor{keyword}{import}\ deBugging.DebugHelp;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00014}00014\ \textcolor{keyword}{import}\ exceptions.CombException;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00015}00015\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00016}00016\ \textcolor{keyword}{import}\ komplex.EdgeSimple;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00017}00017\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00018}00018\ \textcolor{keyword}{import}\ listManip.VertexMap;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00019}00019\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00063}\doxymbox{\hyperlink{classtiling_1_1_tile}{00063}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}\ \textcolor{keyword}{extends}\ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_ab7bb426935b0713001505a5488dd175a}{Face}}\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00064}00064\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00065}\doxymbox{\hyperlink{classtiling_1_1_tile_a78603d57cdc9732cf5a0256526947fff}{00065}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_a78603d57cdc9732cf5a0256526947fff}{tileIndex}};\ \ \ \ \ \ \ \textcolor{comment}{//\ index\ generally\ independent\ of\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ associated\ packings\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00067}\doxymbox{\hyperlink{classtiling_1_1_tile_aa73eb91caafac97fcf28d2d5371b93d2}{00067}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_aa73eb91caafac97fcf28d2d5371b93d2}{tileType}};\ \ \ \ \ \ \ \ \textcolor{comment}{//\ -\/1=unset:\ give\ the\ 'type',\ e.g.,\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ for\ subdivision\ rules.}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00069}\doxymbox{\hyperlink{classtiling_1_1_tile_afb412b501be807a6fda8dc4182da0850}{00069}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classtiling_1_1_tile_data}{TileData}}\ \doxymbox{\hyperlink{classtiling_1_1_tile_afb412b501be807a6fda8dc4182da0850}{TDparent}};\ \textcolor{comment}{//\ 'TileData'\ structure\ to\ which\ this\ belongs}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00070}\doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{00070}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{baryVert}};\ \ \ \ \ \ \ \ \textcolor{comment}{//\ barycenter\ vertex\ in\ canonical\ packing}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00071}\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{00071}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[][]\ \doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}};\ \ \textcolor{comment}{//\ ccw\ list\ (t\_j,e\_j),\ where\ 't\_j'\ is\ the\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ index\ of\ the\ tile\ across\ edge\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ (vert[j],vert[j+1])\ (may\ be\ 0\ for\ no\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ nghb\ or\ this\ may\ be\ this\ same\ tile).\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ e\_j\ is\ the\ index\ of\ the\ first\ vertex}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ of\ the\ shared\ edge\ from\ perspective\ of\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ tile\ t\_j.}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00078}00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ In\ reading\ a\ tiling,\ the\ 't\_j'\ are\ filled\ \ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ first\ and\ may\ be\ set\ temporarily\ negative,\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ then\ the\ 'e\_j'\ are\ determined\ and\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ consistency\ checked.}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00082}00082\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00083}00083\ \ \ \ \ \textcolor{comment}{//\ this\ tile\ may\ be\ a\ tiling\ itself\ after\ subdivision}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00084}\doxymbox{\hyperlink{classtiling_1_1_tile_a63a7d0abb6c0a2a8c0365f3c1fb35603}{00084}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classtiling_1_1_tile_data}{TileData}}\ \doxymbox{\hyperlink{classtiling_1_1_tile_a63a7d0abb6c0a2a8c0365f3c1fb35603}{myTileData}};\ \textcolor{comment}{//\ null\ by\ default}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00085}00085\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00086}00086\ \ \ \ \ \textcolor{comment}{//\ for\ edge-\/tracing\ during\ displays,\ augment\ border\ vertex\ list;}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00087}\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{00087}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}};\ \textcolor{comment}{//\ -\/1\ on\ startup}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00088}00088\ \ \ \ \ \textcolor{comment}{//\ these\ are\ generally\ null\ by\ default}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00089}\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{00089}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[]\ \doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}};\ \ \ \ \textcolor{comment}{//\ null\ until\ created:\ augVert[0]\ always\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ equals\ vert[0]}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00091}\doxymbox{\hyperlink{classtiling_1_1_tile_a7b98e6b09039e6b52515551608c072ae}{00091}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[]\ \doxymbox{\hyperlink{classtiling_1_1_tile_a7b98e6b09039e6b52515551608c072ae}{wgIndices}};\ \ \textcolor{comment}{//\ null\ until\ created:\ each\ n-\/gon\ breaks\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ into\ 2n\ wg\ (white/grey)\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ triangular\ tiles\ stored\ in\ 'tileData.wgTiles'.}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ Each\ wg\ tile\ has\ 'mark'\ set:\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ 1=white,\ -\/1=grey,\ for\ orientation.\ vert[0]}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ (the\ 'principal'\ vertex)\ is\ the\ 0-\/corner,\ \ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Each\ wgTile\ is\ bary\_refined,\ so\ its\ a\ hex\ flower.}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00098}\doxymbox{\hyperlink{classtiling_1_1_tile_ad5eec4399c4f47163a99c6b315ec12d6}{00098}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_ad5eec4399c4f47163a99c6b315ec12d6}{utilFlag}};\ \ \ \ \ \textcolor{comment}{//\ utility\ for\ future\ use:\ e.g.,\ mark\ specific\ edge}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00099}00099\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00100}00100\ \ \ \ \ \textcolor{comment}{//\ Constructors}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00101}\doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{00101}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p,\doxymbox{\hyperlink{classtiling_1_1_tile_data}{TileData}}\ tdparent,\textcolor{keywordtype}{int}\ vCount)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ super(vCount);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00103}00103\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_afb412b501be807a6fda8dc4182da0850}{TDparent}}=tdparent;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00104}00104\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{baryVert}}=-\/1;\ \textcolor{comment}{//\ depends\ on\ packing}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00105}00105\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}}=-\/1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00106}00106\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00107}00107\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_a7b98e6b09039e6b52515551608c072ae}{wgIndices}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00108}00108\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_a63a7d0abb6c0a2a8c0365f3c1fb35603}{myTileData}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00109}00109\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00110}00110\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00111}00111\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00112}\doxymbox{\hyperlink{classtiling_1_1_tile_a3a091972cb4e12740ac006d7e63b93c7}{00112}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classtiling_1_1_tile_a3a091972cb4e12740ac006d7e63b93c7}{Tile}}(\doxymbox{\hyperlink{classtiling_1_1_tile_data}{TileData}}\ tdparent,\textcolor{keywordtype}{int}\ vCount)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(\textcolor{keyword}{null},tdparent,vCount);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00114}00114\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00115}00115\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00116}\doxymbox{\hyperlink{classtiling_1_1_tile_a8cea38dc2b1a0cdcfc0fdad3d37e3b77}{00116}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classtiling_1_1_tile_a8cea38dc2b1a0cdcfc0fdad3d37e3b77}{Tile}}(\textcolor{keywordtype}{int}\ vCount)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00117}00117\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(\textcolor{keyword}{null},\textcolor{keyword}{null},vCount);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00118}00118\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00119}00119\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00145}\doxymbox{\hyperlink{classtiling_1_1_tile_a6582fb62e0c73bf4c4f0d7f5b3cdf59d}{00145}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ \doxymbox{\hyperlink{classtiling_1_1_tile_a6582fb62e0c73bf4c4f0d7f5b3cdf59d}{singleCanonical}}(\textcolor{keywordtype}{int}\ mode)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00146}00146\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00147}00147\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode==1)\ \{\ \textcolor{comment}{//\ simple\ tiling}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}<3)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}unigons/digons\ not\ allowed\ in\ tile\ mode\ 1"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p=\doxymbox{\hyperlink{namespacepacking}{packing}}.\doxymbox{\hyperlink{classpacking_1_1_pack_creation}{PackCreation}}.\doxymbox{\hyperlink{classpacking_1_1_pack_creation_af1bd24fca1666865ca8d25f9d01a72d6}{seed}}(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}},0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a1f7440d7941b6bac339c8493c7b9a814}{tileData}}=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classtiling_1_1_tile_data}{TileData}}(1,1);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}\ tile=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}(p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a1f7440d7941b6bac339c8493c7b9a814}{tileData}},\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aa73eb91caafac97fcf28d2d5371b93d2}{tileType}}=\doxymbox{\hyperlink{classtiling_1_1_tile_aa73eb91caafac97fcf28d2d5371b93d2}{tileType}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}}=\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}}];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{baryVert}}=1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a4e6a36ef13997a55ad18ec84eb5d69d9}{vertexMap}}=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_vertex_map}{VertexMap}}();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(1,1);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ m=2+j;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[j]=tile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[j]=m;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(m,2);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a4e6a36ef13997a55ad18ec84eb5d69d9}{vertexMap}}.\doxymbox{\hyperlink{classlist_manip_1_1_vertex_map_a4cc0b071626b56e8a846ca7eac9cff1e}{add}}(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(j,m));}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a1f7440d7941b6bac339c8493c7b9a814}{tileData}}.\doxymbox{\hyperlink{classtiling_1_1_tile_data_a9197e0bc9751c1963e841642ab595c40}{myTiles}}[1]=tile;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00168}00168\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00169}00169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode==2)\ \{\ \textcolor{comment}{//\ edge\ barycenters\ added}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00170}00170\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}<2)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00171}00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}unigons\ not\ allowed\ in\ tile\ mode\ 2"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00172}00172\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p=\doxymbox{\hyperlink{namespacepacking}{packing}}.\doxymbox{\hyperlink{classpacking_1_1_pack_creation}{PackCreation}}.\doxymbox{\hyperlink{classpacking_1_1_pack_creation_af1bd24fca1666865ca8d25f9d01a72d6}{seed}}(2*\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}},0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a1f7440d7941b6bac339c8493c7b9a814}{tileData}}=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classtiling_1_1_tile_data}{TileData}}(1,2);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00174}00174\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}\ tile=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}(p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a1f7440d7941b6bac339c8493c7b9a814}{tileData}},\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aa73eb91caafac97fcf28d2d5371b93d2}{tileType}}=\doxymbox{\hyperlink{classtiling_1_1_tile_aa73eb91caafac97fcf28d2d5371b93d2}{tileType}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00176}00176\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}}=2*\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00177}00177\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}}];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00178}00178\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{baryVert}}=1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00179}00179\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a4e6a36ef13997a55ad18ec84eb5d69d9}{vertexMap}}=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_vertex_map}{VertexMap}}();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00180}00180\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(1,1);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00181}00181\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00182}00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ m=2+2*j;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00183}00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(m,2);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00184}00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(m+1,3);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00185}00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a4e6a36ef13997a55ad18ec84eb5d69d9}{vertexMap}}.\doxymbox{\hyperlink{classlist_manip_1_1_vertex_map_a4cc0b071626b56e8a846ca7eac9cff1e}{add}}(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(j,m));}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00186}00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[j]=m;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00187}00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[2*j]=m;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00188}00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[2*j+1]=m+1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00189}00189\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00190}00190\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a1f7440d7941b6bac339c8493c7b9a814}{tileData}}.\doxymbox{\hyperlink{classtiling_1_1_tile_data_a9197e0bc9751c1963e841642ab595c40}{myTiles}}[1]=tile;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00191}00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00192}00192\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00193}00193\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00194}00194\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ mode==3,\ more\ complicated\ combinatorics}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00195}00195\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00196}00196\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ this\ a\ uni-\/gon?\ It\ is\ not\ consistent\ with}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00197}00197\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ the\ construction\ of\ other\ tiles.}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00198}00198\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}==1)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00199}00199\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00200}00200\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ build\ bouquet}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00201}00201\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[][]\ bouquet=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[10][];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00202}00202\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a1[]=\ \{6,7,8,9,6\};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00203}00203\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[1]=a1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a2[]=\{3,7,6,9,5\};\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[2]=a2;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00206}00206\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a3[]=\ \{4,7,2\};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00207}00207\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[3]=\ a3;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a4[]=\{5,9,8,7,3\};\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[4]=\ a4;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a5[]=\{2,9,4\};\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00211}00211\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[5]=\ a5;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a6[]=\ \{1,9,2,7,1\};\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00213}00213\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[6]=a6;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00214}00214\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a7[]=\ \{1,6,2,3,4,8,1\};\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00215}00215\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[7]=a7;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00216}00216\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a8[]=\{1,7,4,9,1\};\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00217}00217\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[8]=\ a8;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00218}00218\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a9[]=\{1,8,4,5,2,6,1\};\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00219}00219\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[9]=\ a9;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00220}00220\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00221}00221\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l}{PackDCEL}}\ pdcel=\doxymbox{\hyperlink{classdcel_1_1_comb_d_c_e_l}{CombDCEL}}.\doxymbox{\hyperlink{classdcel_1_1_comb_d_c_e_l_abad00fae157c673d5eac99cc73b98a7e}{getRawDCEL}}(bouquet,1);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00222}00222\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}(\textcolor{keyword}{null});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00223}00223\ \ \ \ \ \ \ \ \ \ \ \ \ pdcel.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_a814ef02d6bd94799ee060cd2a0ba82d2}{fixDCEL}}(p);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_af2be6a899f15bc087c3a7b1bceb068b1}{setGamma}}(2);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00225}00225\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a4045282b7fcc73f7191b75ef7f788de0}{activeNode}}=1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00226}00226\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a075dfb5ae727288cbe434244c09bce67}{hes}}=0;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00227}00227\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00228}00228\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a87161193f4b5765ec788cac67ebfa273}{setRadius}}(6,2.5/4.0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00229}00229\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a87161193f4b5765ec788cac67ebfa273}{setRadius}}(7,2.5/6.0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00230}00230\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a87161193f4b5765ec788cac67ebfa273}{setRadius}}(8,2.5/4.0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00231}00231\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a87161193f4b5765ec788cac67ebfa273}{setRadius}}(9,2.5/6.0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00232}00232\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a87161193f4b5765ec788cac67ebfa273}{setRadius}}(2,2.5/4.0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00233}00233\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a87161193f4b5765ec788cac67ebfa273}{setRadius}}(3,2.5/4.0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00234}00234\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a87161193f4b5765ec788cac67ebfa273}{setRadius}}(4,2.5/4.0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00235}00235\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a87161193f4b5765ec788cac67ebfa273}{setRadius}}(5,2.5/4.0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00236}00236\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_ad4f2c3b5416b663bec4eb410926f4359}{set\_aim\_default}}();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00237}00237\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00238}00238\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ mark\ vertices\ and\ store\ info}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00239}00239\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(1,1);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00240}00240\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(2,2);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(4,3);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(7,\ -\/1);\ \textcolor{comment}{//\ hex\ refined\ face\ centers}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00243}00243\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(9,\ -\/1);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00244}00244\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a4e6a36ef13997a55ad18ec84eb5d69d9}{vertexMap}}=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_vertex_map}{VertexMap}}();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00245}00245\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a4e6a36ef13997a55ad18ec84eb5d69d9}{vertexMap}}.\doxymbox{\hyperlink{classlist_manip_1_1_vertex_map_a4cc0b071626b56e8a846ca7eac9cff1e}{add}}(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(0,2));\ \textcolor{comment}{//\ vert[0]\ -\/-\/>\ circle\ 2}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00246}00246\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00247}00247\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a1f7440d7941b6bac339c8493c7b9a814}{tileData}}=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classtiling_1_1_tile_data}{TileData}}(1,3);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00248}00248\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}\ tile=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}(p,p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a1f7440d7941b6bac339c8493c7b9a814}{tileData}},1);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00249}00249\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aa73eb91caafac97fcf28d2d5371b93d2}{tileType}}=\doxymbox{\hyperlink{classtiling_1_1_tile_aa73eb91caafac97fcf28d2d5371b93d2}{tileType}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00250}00250\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{baryVert}}=1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00251}00251\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[0]=2;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00252}00252\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}}=4;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00253}00253\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[4];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00254}00254\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[0]=2;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00255}00255\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[1]=3;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00256}00256\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[2]=4;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00257}00257\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[3]=5;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00258}00258\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a1f7440d7941b6bac339c8493c7b9a814}{tileData}}.\doxymbox{\hyperlink{classtiling_1_1_tile_data_a9197e0bc9751c1963e841642ab595c40}{myTiles}}[1]=tile;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00259}00259\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00260}00260\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00261}00261\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00262}00262\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ general\ n-\/gon\ case,\ n>=2}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00263}00263\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l}{PackDCEL}}\ pdcel=\doxymbox{\hyperlink{classdcel_1_1_raw_manip}{RawManip}}.\doxymbox{\hyperlink{classdcel_1_1_raw_manip_ac68e132853701498c8a9cb42fd4c3b05}{seed\_raw}}(2*\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00264}00264\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classdcel_1_1_comb_d_c_e_l}{CombDCEL}}.\doxymbox{\hyperlink{classdcel_1_1_comb_d_c_e_l_a7f71dee8627c17c11b99834b4c41d4f7}{redchain\_by\_edge}}(pdcel,\ \textcolor{keyword}{null},\ pdcel.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_ab87d97ec4724bfa460ac33f8f0a1f2a3}{alpha}},\ \textcolor{keyword}{false});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00265}00265\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classdcel_1_1_comb_d_c_e_l}{CombDCEL}}.\doxymbox{\hyperlink{classdcel_1_1_comb_d_c_e_l_af09405ad2f5418f8d1896eca20575f02}{fillInside}}(pdcel);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00266}00266\ \ \ \ \ \ \ \ \ ArrayList<Integer>\ barycents=\doxymbox{\hyperlink{classdcel_1_1_raw_manip}{RawManip}}.\doxymbox{\hyperlink{classdcel_1_1_raw_manip_a5ee9202be026a9319d1e630d3fbbc9db}{hexBaryRefine\_raw}}(pdcel,\ \textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00267}00267\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00268}00268\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}(\textcolor{keyword}{null});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00269}00269\ \ \ \ \ \ \ \ \ pdcel.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_a814ef02d6bd94799ee060cd2a0ba82d2}{fixDCEL}}(p);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00270}00270\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00271}00271\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ mark\ various\ vertices}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00272}00272\ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(1,1);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00273}00273\ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a4e6a36ef13997a55ad18ec84eb5d69d9}{vertexMap}}=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_vertex_map}{VertexMap}}();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00274}00274\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00275}00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ m=2+2*j;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00276}00276\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a4e6a36ef13997a55ad18ec84eb5d69d9}{vertexMap}}.\doxymbox{\hyperlink{classlist_manip_1_1_vertex_map_a4cc0b071626b56e8a846ca7eac9cff1e}{add}}(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(j,m));}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00277}00277\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(m,2);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00278}00278\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(m+1,3);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00279}00279\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00280}00280\ \ \ \ \ \ \ \ \ Iterator<Integer>\ bis=barycents.iterator();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00281}00281\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (bis.hasNext())\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00282}00282\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a3f5aecefb9336214110ba12ed80bf193}{setVertMark}}(bis.next(),-\/1);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00283}00283\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00284}00284\ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a1f7440d7941b6bac339c8493c7b9a814}{tileData}}=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classtiling_1_1_tile_data}{TileData}}(1,3);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00285}00285\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}\ tile=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}(p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a1f7440d7941b6bac339c8493c7b9a814}{tileData}},\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00286}00286\ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aa73eb91caafac97fcf28d2d5371b93d2}{tileType}}=\doxymbox{\hyperlink{classtiling_1_1_tile_aa73eb91caafac97fcf28d2d5371b93d2}{tileType}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00287}00287\ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_a78603d57cdc9732cf5a0256526947fff}{tileIndex}}=1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00288}00288\ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{baryVert}}=1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00289}00289\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00290}00290\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[j]=2+2*j;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00291}00291\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00292}00292\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00293}00293\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ redChain\ to\ start\ at\ vert\ 2}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00294}00294\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a177e9530106e3853d45fb1cf8fef09a0}{packDCEL}}.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_aaa556adc688c66809488f1dbb23491e0}{redChain}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge_afb5919d032e63d8e4dacc846b4e26abf}{myEdge}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ade75be0bbad40645e6551e920502846e}{vertIndx}}!=2)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00295}00295\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge}{RedEdge}}\ tmhe=p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a177e9530106e3853d45fb1cf8fef09a0}{packDCEL}}.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_aaa556adc688c66809488f1dbb23491e0}{redChain}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge_aacc9133372e7dbab994b20c024f60c68}{nextRed}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00296}00296\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (tmhe.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge_afb5919d032e63d8e4dacc846b4e26abf}{myEdge}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ade75be0bbad40645e6551e920502846e}{vertIndx}}!=2\ \&\&\ tmhe!=p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a177e9530106e3853d45fb1cf8fef09a0}{packDCEL}}.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_aaa556adc688c66809488f1dbb23491e0}{redChain}})\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00297}00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmhe=tmhe.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge_aacc9133372e7dbab994b20c024f60c68}{nextRed}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00298}00298\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00299}00299\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmhe.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge_afb5919d032e63d8e4dacc846b4e26abf}{myEdge}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ade75be0bbad40645e6551e920502846e}{vertIndx}}!=2)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00300}00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_comb_exception}{CombException}}(\textcolor{stringliteral}{"{}redChain\ doesn't\ contain\ vert\ 2"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00301}00301\ \ \ \ \ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a177e9530106e3853d45fb1cf8fef09a0}{packDCEL}}.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_aaa556adc688c66809488f1dbb23491e0}{redChain}}=tmhe;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00302}00302\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00303}00303\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00304}00304\ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}}=4*\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00305}00305\ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[tile.\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}}];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00306}00306\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00307}00307\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge}{RedEdge}}\ rtrace=p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a177e9530106e3853d45fb1cf8fef09a0}{packDCEL}}.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_aaa556adc688c66809488f1dbb23491e0}{redChain}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00308}00308\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00309}00309\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[tick++]=rtrace.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge_afb5919d032e63d8e4dacc846b4e26abf}{myEdge}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ade75be0bbad40645e6551e920502846e}{vertIndx}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00310}00310\ \ \ \ \ \ \ \ \ \ \ \ \ rtrace=rtrace.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge_aacc9133372e7dbab994b20c024f60c68}{nextRed}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00311}00311\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (rtrace!=p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a177e9530106e3853d45fb1cf8fef09a0}{packDCEL}}.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_aaa556adc688c66809488f1dbb23491e0}{redChain}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00312}00312\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00313}00313\ \ \ \ \ \ \ \ \ p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a1f7440d7941b6bac339c8493c7b9a814}{tileData}}.\doxymbox{\hyperlink{classtiling_1_1_tile_data_a9197e0bc9751c1963e841642ab595c40}{myTiles}}[1]=tile;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00314}00314\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tile.\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00315}00315\ \ \ \ \ \ \ \ \ \ \ \ \ tile.\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[tile.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}][2];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00316}00316\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00317}00317\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00318}00318\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00319}00319\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00326}\doxymbox{\hyperlink{classtiling_1_1_tile_addd9140668bbe12f62721eb6eadb2bec}{00326}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ \doxymbox{\hyperlink{classtiling_1_1_tile_addd9140668bbe12f62721eb6eadb2bec}{tileBorderLink}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00327}00327\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ bdry=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00328}00328\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00329}00329\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}};j++)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00330}00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bdry.\doxymbox{\hyperlink{classlist_manip_1_1_node_link_a99f53137ef68d03fab45e670ef27f1b0}{add}}(\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[j]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00331}00331\ \ \ \ \ \ \ \ \ \ \ \ \ bdry.\doxymbox{\hyperlink{classlist_manip_1_1_node_link_a99f53137ef68d03fab45e670ef27f1b0}{add}}(\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[0]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00332}00332\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ bdry;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00333}00333\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00334}00334\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};j++)\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00335}00335\ \ \ \ \ \ \ \ \ \ \ \ \ bdry.\doxymbox{\hyperlink{classlist_manip_1_1_node_link_a99f53137ef68d03fab45e670ef27f1b0}{add}}(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[j]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00336}00336\ \ \ \ \ \ \ \ \ bdry.\doxymbox{\hyperlink{classlist_manip_1_1_node_link_a99f53137ef68d03fab45e670ef27f1b0}{add}}(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[0]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00337}00337\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ bdry;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00338}00338\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00339}00339\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00354}\doxymbox{\hyperlink{classtiling_1_1_tile_a6d6f1b02a4663a3efc5cca74d9219437}{00354}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_a6d6f1b02a4663a3efc5cca74d9219437}{isTileEdge}}(\textcolor{keywordtype}{int}\ v,\textcolor{keywordtype}{int}\ w)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00355}00355\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00356}00356\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ special\ case}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00357}00357\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v==w)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00358}00358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}==1)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00359}00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00360}00360\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}==2)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00361}00361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}==\textcolor{keyword}{null}\ ||\ \doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}[1][0]!=0)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00362}00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00363}00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00364}00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00365}00365\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00366}00366\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00367}00367\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00368}00368\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ typical\ search}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00369}00369\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[0]==w\ \&\&\ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}-\/1]==v)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00370}00370\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}-\/1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00371}00371\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}-\/1);i++)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00372}00372\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[i]==v\ \&\&\ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[i+1]==w)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00373}00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ i;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00374}00374\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00375}00375\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00376}00376\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00387}\doxymbox{\hyperlink{classtiling_1_1_tile_a8e13271eaafdc07695b716cacde404c3}{00387}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_a8e13271eaafdc07695b716cacde404c3}{nghb\_tile}}(\textcolor{keywordtype}{int}\ indx,\textcolor{keywordtype}{int}\ dir)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00388}00388\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx<0)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00389}00389\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/2;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00390}00390\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00391}00391\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/3;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00392}00392\ \ \ \ \ \ \ \ \ indx=indx\%\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00393}00393\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx==0\ \&\&\ dir<0)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00394}00394\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.abs(\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}[\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}-\/1][0]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00395}00395\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dir<0)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00396}00396\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.abs(\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}[indx-\/1][0]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00397}00397\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00398}00398\ \ \ \ \ \ \ \ \ \ \ \ \ Math.abs(\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}[indx][0]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00399}00399\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00400}00400\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00408}\doxymbox{\hyperlink{classtiling_1_1_tile_aea6bdb1d80725a9f1c85840edc57df7a}{00408}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_aea6bdb1d80725a9f1c85840edc57df7a}{checkDepth}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00409}00409\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=0;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00410}00410\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00411}00411\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ 'TileData'?\ then\ depth\ is\ zero}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00412}00412\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classtiling_1_1_tile_a63a7d0abb6c0a2a8c0365f3c1fb35603}{myTileData}}==\textcolor{keyword}{null}\ ||\ \doxymbox{\hyperlink{classtiling_1_1_tile_a63a7d0abb6c0a2a8c0365f3c1fb35603}{myTileData}}.tileCount<=0)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00413}00413\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ n;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00414}00414\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ someneg=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00415}00415\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ min=\doxymbox{\hyperlink{classtiling_1_1_tile_a63a7d0abb6c0a2a8c0365f3c1fb35603}{myTileData}}.myTiles[1].checkDepth();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00416}00416\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (min<0)\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00417}00417\ \ \ \ \ \ \ \ \ \ \ \ \ someneg=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00418}00418\ \ \ \ \ \ \ \ \ min=Math.abs(min);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00419}00419\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ t=2;t<=\doxymbox{\hyperlink{classtiling_1_1_tile_a63a7d0abb6c0a2a8c0365f3c1fb35603}{myTileData}}.tileCount;t++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00420}00420\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ m=\doxymbox{\hyperlink{classtiling_1_1_tile_a63a7d0abb6c0a2a8c0365f3c1fb35603}{myTileData}}.myTiles[t].checkDepth();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00421}00421\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m<0)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00422}00422\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ someneg=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00423}00423\ \ \ \ \ \ \ \ \ \ \ \ \ m=Math.abs(m);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00424}00424\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m!=min)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00425}00425\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ someneg=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00426}00426\ \ \ \ \ \ \ \ \ \ \ \ \ min=(m<min)?m:min;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00427}00427\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00428}00428\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00429}00429\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ new\ depth\ is\ min+1}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00430}00430\ \ \ \ \ \ \ \ \ min++;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00431}00431\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (someneg)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00432}00432\ \ \ \ \ \ \ \ \ \ \ \ \ min\ *=\ -\/1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00433}00433\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ min;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00434}00434\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00435}00435\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00444}\doxymbox{\hyperlink{classtiling_1_1_tile_a245b9986b1cdfad72978fadf6c6937c5}{00444}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ \doxymbox{\hyperlink{classtiling_1_1_tile_a245b9986b1cdfad72978fadf6c6937c5}{getAugBdry}}(\textcolor{keywordtype}{int}\ indx)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00445}00445\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ first\ edge}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00446}00446\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ bdrylist=\doxymbox{\hyperlink{classtiling_1_1_tile_a9ec5657aadb961b93b8d33591aed7eae}{findAugEdge}}(0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00447}00447\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00448}00448\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ string\ together\ the\ middle\ edges}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00449}00449\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}-\/1);j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00450}00450\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ elist=\doxymbox{\hyperlink{classtiling_1_1_tile_a9ec5657aadb961b93b8d33591aed7eae}{findAugEdge}}(j);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00451}00451\ \ \ \ \ \ \ \ \ \ \ \ \ elist.remove(elist.size()-\/1);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00452}00452\ \ \ \ \ \ \ \ \ \ \ \ \ bdrylist.\doxymbox{\hyperlink{classlist_manip_1_1_node_link_af524ecbb8e998b66bcd62c077ca6b2ef}{abutMore}}(elist);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00453}00453\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00454}00454\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00455}00455\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ in\ the\ last\ edge,\ this\ should\ close\ it\ up}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00456}00456\ \ \ \ \ \ \ \ \ bdrylist.\doxymbox{\hyperlink{classlist_manip_1_1_node_link_af524ecbb8e998b66bcd62c077ca6b2ef}{abutMore}}(\doxymbox{\hyperlink{classtiling_1_1_tile_a9ec5657aadb961b93b8d33591aed7eae}{findAugEdge}}(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}-\/1));}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00457}00457\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00458}00458\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ bdrylist;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00459}00459\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00460}00460\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00474}\doxymbox{\hyperlink{classtiling_1_1_tile_a9ec5657aadb961b93b8d33591aed7eae}{00474}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ \doxymbox{\hyperlink{classtiling_1_1_tile_a9ec5657aadb961b93b8d33591aed7eae}{findAugEdge}}(\textcolor{keywordtype}{int}\ indx)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00475}00475\ \ \ \ \ \ \ \ \ indx=Math.abs(indx)\%\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00476}00476\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[indx];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00477}00477\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[(indx+1)\%\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00478}00478\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00479}00479\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ out=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00480}00480\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00481}00481\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ 'augVert'?\ just\ return\ v,w}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00482}00482\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00483}00483\ \ \ \ \ \ \ \ \ \ \ \ \ out.add(v);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00484}00484\ \ \ \ \ \ \ \ \ \ \ \ \ out.add(w);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00485}00485\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00486}00486\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00487}00487\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00488}00488\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Because\ vert\ indices\ can\ be\ repeated,\ we}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00489}00489\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ have\ to\ identify\ indices\ of\ edge\ starts\ from}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00490}00490\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ 0th\ edge\ up\ until\ we\ reach\ indx\ edge.}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00491}00491\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ starts=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}];\ \textcolor{comment}{//\ indices\ of\ edge\ starts}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00492}00492\ \ \ \ \ \ \ \ \ starts[0]=0;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00493}00493\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00494}00494\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (tick<indx)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00495}00495\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hit=\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[(tick+1)\%\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00496}00496\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=starts[tick]+1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00497}00497\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (k<\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}})\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00498}00498\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[k]==hit)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00499}00499\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00500}00500\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ starts[tick]=k;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00501}00501\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00502}00502\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00503}00503\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k++;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00504}00504\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00505}00505\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00506}00506\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j=starts[tick];\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00507}00507\ \ \ \ \ \ \ \ \ out.add(\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[j]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00508}00508\ \ \ \ \ \ \ \ \ j++;\textcolor{comment}{//\ next\ possible\ edge\ starting}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00509}00509\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ticker=(tick+1)\%\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};\ \textcolor{comment}{//\ last\ edge,\ have\ to\ wrap\ to\ 0}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00510}00510\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (j<\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}}\ \&\&\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00511}00511\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[j]!=\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[ticker])\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00512}00512\ \ \ \ \ \ \ \ \ \ \ \ \ out.add(\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[j]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00513}00513\ \ \ \ \ \ \ \ \ \ \ \ \ j++;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00514}00514\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00515}00515\ \ \ \ \ \ \ \ \ out.add(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[ticker]);\ \textcolor{comment}{//\ add\ the\ last\ one}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00516}00516\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00517}00517\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00518}00518\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00527}\doxymbox{\hyperlink{classtiling_1_1_tile_adab7b7889f405a3c427360263dec0a8e}{00527}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}\ \doxymbox{\hyperlink{classtiling_1_1_tile_adab7b7889f405a3c427360263dec0a8e}{clone}}(\doxymbox{\hyperlink{classtiling_1_1_tile_data}{TileData}}\ tdparent)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00528}00528\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}\ stile=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classtiling_1_1_tile_ad97c2c21721d0b9788621f2b4038855d}{Tile}}(tdparent,\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00529}00529\ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_a78603d57cdc9732cf5a0256526947fff}{tileIndex}}=\doxymbox{\hyperlink{classtiling_1_1_tile_a78603d57cdc9732cf5a0256526947fff}{tileIndex}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00530}00530\ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_aa73eb91caafac97fcf28d2d5371b93d2}{tileType}}=\doxymbox{\hyperlink{classtiling_1_1_tile_aa73eb91caafac97fcf28d2d5371b93d2}{tileType}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00531}00531\ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{baryVert}}=\doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{baryVert}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00532}00532\ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a5aad5d64a39c36eab93186d6b666fbb7}{color}}=\textcolor{keyword}{new}\ Color(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a5aad5d64a39c36eab93186d6b666fbb7}{color}}.getRed(),\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a5aad5d64a39c36eab93186d6b666fbb7}{color}}.getGreen(),\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a5aad5d64a39c36eab93186d6b666fbb7}{color}}.getBlue());}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00533}00533\ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a0429a7c60a6eb224aa03f3a8957c4fce}{indexFlag}}=\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a0429a7c60a6eb224aa03f3a8957c4fce}{indexFlag}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00534}00534\ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_ac6de574cc6e96622bd0220fd17ca3eab}{mark}}=\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_ac6de574cc6e96622bd0220fd17ca3eab}{mark}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00535}00535\ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00536}00536\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00537}00537\ \ \ \ \ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[j]=\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[j];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00538}00538\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00539}00539\ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00540}00540\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00541}00541\ \ \ \ \ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}}][2];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00542}00542\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00543}00543\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}[j][0]=\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}[j][0];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00544}00544\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}[j][1]=\doxymbox{\hyperlink{classtiling_1_1_tile_af3347a58093f085ae79875a8dba2debf}{tileFlower}}[j][1];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00545}00545\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00546}00546\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00547}00547\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}!=\textcolor{keyword}{null})\ \{\ \textcolor{comment}{//\ have\ augmented\ vertices}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00548}00548\ \ \ \ \ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}}=\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00549}00549\ \ \ \ \ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}}];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00550}00550\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}};j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00551}00551\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[j]=\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[j];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00552}00552\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00553}00553\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00554}00554\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classtiling_1_1_tile_a7b98e6b09039e6b52515551608c072ae}{wgIndices}}!=\textcolor{keyword}{null})\ \{\ \textcolor{comment}{//\ these\ are\ just\ indices\ into\ tileData.wgTiles}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00555}00555\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nb=\doxymbox{\hyperlink{classtiling_1_1_tile_a7b98e6b09039e6b52515551608c072ae}{wgIndices}}.length;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00556}00556\ \ \ \ \ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_a7b98e6b09039e6b52515551608c072ae}{wgIndices}}=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[nb];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00557}00557\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<nb;j++)\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00558}00558\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_a7b98e6b09039e6b52515551608c072ae}{wgIndices}}[j]=\doxymbox{\hyperlink{classtiling_1_1_tile_a7b98e6b09039e6b52515551608c072ae}{wgIndices}}[j];}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00559}00559\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00560}00560\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00561}00561\ \ \ \ \ \ \ \ \ stile.\doxymbox{\hyperlink{classtiling_1_1_tile_a63a7d0abb6c0a2a8c0365f3c1fb35603}{myTileData}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00562}00562\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ stile;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00563}00563\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00564}00564\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00571}\doxymbox{\hyperlink{classtiling_1_1_tile_a40d5fece9ca2be8e3235549221237a5f}{00571}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_a40d5fece9ca2be8e3235549221237a5f}{updateMyVerts}}(\doxymbox{\hyperlink{classlist_manip_1_1_vertex_map}{VertexMap}}\ vmap)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00572}00572\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vmap==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00573}00573\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00574}00574\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}};j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00575}00575\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=vmap.\doxymbox{\hyperlink{classlist_manip_1_1_vertex_map_ab03fdc0d5e1382de5bc550676526ed02}{findW}}(\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[j]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00576}00576\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (w!=0)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00577}00577\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[j]=w;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00578}00578\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00579}00579\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00580}00580\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=vmap.\doxymbox{\hyperlink{classlist_manip_1_1_vertex_map_ab03fdc0d5e1382de5bc550676526ed02}{findW}}(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[j]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00581}00581\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (w!=0)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00582}00582\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[j]=w;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00583}00583\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00584}00584\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{baryVert}}>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00585}00585\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=vmap.\doxymbox{\hyperlink{classlist_manip_1_1_vertex_map_ab03fdc0d5e1382de5bc550676526ed02}{findW}}(\doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{baryVert}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00586}00586\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (w!=0)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00587}00587\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{baryVert}}=w;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00588}00588\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00589}00589\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classtiling_1_1_tile_a63a7d0abb6c0a2a8c0365f3c1fb35603}{myTileData}}!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00590}00590\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ t=1;t<=\doxymbox{\hyperlink{classtiling_1_1_tile_a63a7d0abb6c0a2a8c0365f3c1fb35603}{myTileData}}.tileCount;t++)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00591}00591\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_a63a7d0abb6c0a2a8c0365f3c1fb35603}{myTileData}}.myTiles[t].updateMyVerts(vmap);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00592}00592\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00593}00593\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00594}00594\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00595}00595\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00600}\doxymbox{\hyperlink{classtiling_1_1_tile_a32b8f5fdfdca4b387a4c8120e11da984}{00600}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_a32b8f5fdfdca4b387a4c8120e11da984}{debugPrint}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00601}00601\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00602}00602\ \ \ \ \ \ \ \ \ StringBuilder\ strbld=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}tile:\ "{}}+\doxymbox{\hyperlink{classtiling_1_1_tile_a78603d57cdc9732cf5a0256526947fff}{tileIndex}}+\textcolor{stringliteral}{"{},\ baryVert\ "{}}+\doxymbox{\hyperlink{classtiling_1_1_tile_aed2f95d453d69a92938a20fdf89eaee9}{baryVert}}+\textcolor{stringliteral}{"{}\(\backslash\)nvert:\ "{}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00603}00603\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a4126f23895d19ec902e9501100d3e84b}{vertCount}};j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00604}00604\ \ \ \ \ \ \ \ \ \ \ \ \ strbld.append(\textcolor{stringliteral}{"{}\ "{}}+\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_face_a45c1c8f89779cd8912af2f411aeaf853}{vert}}[j]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00605}00605\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00606}00606\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00607}00607\ \ \ \ \ \ \ \ \ strbld.append(\textcolor{stringliteral}{"{}\(\backslash\)naugVert:\ "{}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00608}00608\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classtiling_1_1_tile_aca917ce27ec6981b995a0eeca7ca07f4}{augVertCount}};j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00609}00609\ \ \ \ \ \ \ \ \ \ \ \ \ strbld.append(\textcolor{stringliteral}{"{}\ "{}}+\doxymbox{\hyperlink{classtiling_1_1_tile_acccbdeaf3672a8617a831a98c9b126ed}{augVert}}[j]);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00610}00610\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00611}00611\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00612}00612\ \ \ \ \ \ \ \ \ System.out.println(strbld.toString());}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00613}00613\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00614}00614\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00615}00615\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00650}\doxymbox{\hyperlink{classtiling_1_1_tile_ae08ed2121507a84ca029ce699455180b}{00650}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Vector<EdgeSimple>\ \doxymbox{\hyperlink{classtiling_1_1_tile_ae08ed2121507a84ca029ce699455180b}{tile2tileMatch}}(\textcolor{keywordtype}{int}[][]\ t,}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00651}00651\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tindx,\textcolor{keywordtype}{int}[][]\ nt,\textcolor{keywordtype}{int}\ ntindx)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00652}00652\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00653}00653\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ hints\ for\ minimal\ consistency}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00654}00654\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ hints=\textcolor{keyword}{false};\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00655}00655\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00656}00656\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tnt=0;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00657}00657\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tfirstmiss=-\/1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00658}00658\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ j=0;j<t.length;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00659}00659\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (t[j][0]==ntindx)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00660}00660\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tnt++;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00661}00661\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ dx;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00662}00662\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((dx=t[j][1])>=0)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00663}00663\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!hints)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00664}00664\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hints=\textcolor{keyword}{true};\ \textcolor{comment}{//\ there's\ a\ matching\ hint}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00665}00665\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dx>=nt.length\ ||\ nt[t[j][1]][0]!=tindx\ ||}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00666}00666\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (nt[dx][1]>=0\ \&\&\ nt[dx][1]!=j))}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00667}00667\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}inconsistency\ between\ entries\ and\ hint\ "{}}+dx);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00668}00668\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00669}00669\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ can\ set\ t[j][1]\ based\ on\ index\ given\ in\ nt}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00670}00670\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (t[j][1]<0\ \&\&\ nt[dx][1]==j)\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00671}00671\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t[j][1]=dx;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00672}00672\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00673}00673\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00674}00674\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tfirstmiss<0)\ \textcolor{comment}{//\ find\ first\ miss}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00675}00675\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tfirstmiss=j;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00676}00676\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00677}00677\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00678}00678\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00679}00679\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ntt=0;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00680}00680\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ntfirstmiss=-\/1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00681}00681\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ j=0;j<nt.length;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00682}00682\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nt[j][0]==tindx)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00683}00683\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ntt++;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00684}00684\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ dx;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00685}00685\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((dx=nt[j][1])>=0)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00686}00686\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!hints)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00687}00687\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hints=\textcolor{keyword}{true};\ \textcolor{comment}{//\ there's\ some\ hint\ for\ matchin}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00688}00688\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dx>=t.length\ ||\ t[nt[j][1]][0]!=ntindx\ ||}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00689}00689\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (t[dx][1]>=0\ \&\&\ t[dx][1]!=j))}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00690}00690\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}inconsistency\ other\ way\ between\ entries\ and\ hints\ "{}}+dx);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00691}00691\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00692}00692\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ can\ set\ nt[j][1]\ based\ on\ index\ given\ in\ t}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00693}00693\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nt[j][1]<0\ \&\&\ t[dx][1]==j)\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00694}00694\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nt[j][1]=dx;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00695}00695\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00696}00696\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00697}00697\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ntfirstmiss<0)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00698}00698\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ntfirstmiss=j;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00699}00699\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00700}00700\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00701}00701\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ inconsistency?}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00702}00702\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tnt!=ntt)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00703}00703\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}match\ counts\ between\ lists\ are\ not\ equal"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00704}00704\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00705}00705\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ matches?}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00706}00706\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tnt==0)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00707}00707\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00708}00708\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00709}00709\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ most\ common\ situation}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00710}00710\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tnt==1)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00711}00711\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ thit=-\/1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00712}00712\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;(j<t.length\ \&\&\ thit<0);j++)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00713}00713\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (t[j][0]==ntindx)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00714}00714\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ thit=j;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00715}00715\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nthit=-\/1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00716}00716\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;(j<t.length\ \&\&\ nthit<0);j++)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00717}00717\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nt[j][0]==tindx)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00718}00718\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nthit=j;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00719}00719\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<EdgeSimple>\ ans=\textcolor{keyword}{new}\ Vector<EdgeSimple>();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00720}00720\ \ \ \ \ \ \ \ \ \ \ \ \ ans.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(thit,nthit));}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00721}00721\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00722}00722\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00723}00723\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00724}00724\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ complete\ string}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00725}00725\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((tnt==t.length\ ||\ ntt==nt.length)\ \&\&\ !hints)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00726}00726\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}all\ edges,\ but\ no\ hints\ to\ help\ match"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00727}00727\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00728}00728\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00729}00729\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ 'tstarts'\ of\ starts\ of\ contiguous\ matches\ to\ 'nt'\ within\ 't'}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00730}00730\ \ \ \ \ \ \ \ \ Vector<EdgeSimple>\ tstarts=\textcolor{keyword}{new}\ Vector<EdgeSimple>();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00731}00731\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<t.length;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00732}00732\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (t[i][0]==ntindx\ \&\&\ t[(i-\/1+t.length)\%t.length][0]!=ntindx)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00733}00733\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tstarts.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(i,0));}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00734}00734\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00735}00735\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00736}00736\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ and\ 'ntstarts'\ of\ starts\ of\ contiguous\ matches\ to\ 't'\ within\ 'nt'}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00737}00737\ \ \ \ \ \ \ \ \ Vector<EdgeSimple>\ ntstarts=\textcolor{keyword}{new}\ Vector<EdgeSimple>();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00738}00738\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<nt.length;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00739}00739\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nt[i][0]==tindx\ \&\&\ nt[(i-\/1+nt.length)\%nt.length][0]!=tindx)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00740}00740\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ntstarts.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(i,0));}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00741}00741\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00742}00742\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00743}00743\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ determine/store\ lengths\ of\ contiguous\ sets\ of\ matches}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00744}00744\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;k<tstarts.size();k++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00745}00745\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ st=tstarts.get(k).v;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00746}00746\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00747}00747\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (t[(st+tick)\%t.length][0]==ntindx)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00748}00748\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00749}00749\ \ \ \ \ \ \ \ \ \ \ \ \ tstarts.get(k).w=tick;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00750}00750\ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00751}00751\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;k<ntstarts.size();k++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00752}00752\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nst=ntstarts.get(k).v;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00753}00753\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=1;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00754}00754\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (nt[(nst+tick)\%nt.length][0]==tindx)}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00755}00755\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00756}00756\ \ \ \ \ \ \ \ \ \ \ \ \ ntstarts.get(k).w=tick;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00757}00757\ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00758}00758\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00759}00759\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tstarts.size()==0\ ||\ ntstarts.size()==0)\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00760}00760\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}screwed\ up\ one\ of\ 'tstarts'\ or\ 'ntstarts'"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00761}00761\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00762}00762\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Now\ have\ segs\ for\ 't'\ and\ 'nt':\ need\ to\ match\ as\ best\ we\ can}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00763}00763\ \ \ \ \ \ \ \ \ Vector<EdgeSimple>\ ans=\textcolor{keyword}{new}\ Vector<EdgeSimple>();}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00764}00764\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00765}00765\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ most\ typical:\ single\ segment\ on\ each\ side\ (necessarily\ the\ same\ length)}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00766}00766\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tstarts.size()==1\ \&\&\ ntstarts.size()==1)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00767}00767\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ ts1=tstarts.get(0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00768}00768\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ nts1=ntstarts.get(0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00769}00769\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00770}00770\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ number\ of\ entries}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00771}00771\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tcount=ts1.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00772}00772\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ntcount=nts1.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00773}00773\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tcount!=ntcount\ ||\ tcount<=0)\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00774}00774\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}some\ inconsistency\ in\ 'tstarts'\ and\ 'ntstarts'"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00775}00775\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<tcount;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00776}00776\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}((ts1.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a0820504dd0986ea34d72ab10f331b9ce}{v}}+j)\%(t.length),(nts1.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a0820504dd0986ea34d72ab10f331b9ce}{v}}+tcount-\/j-\/1+nt.length)\%(nt.length)));}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00777}00777\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00778}00778\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00779}00779\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00780}00780\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00781}00781\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Here\ we\ need\ more\ sophisticated\ matching\ strategies;\ }}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00782}00782\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ For\ now,\ pass\ back\ pairs\ <j,-\/3>\ so\ we\ don't\ look\ at\ this\ matching\ again}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00783}00783\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00784}00784\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ ts1=tstarts.get(0);}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00785}00785\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<ts1.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}};j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00786}00786\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}((ts1.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a0820504dd0986ea34d72ab10f331b9ce}{v}}+j)\%(t.length),-\/3));}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00787}00787\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00788}00788\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00789}00789\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00790}00790\ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00791}00791\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00792}00792\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00796}\doxymbox{\hyperlink{classtiling_1_1_tile_afec2ecfc79e8afe1d3d57f3e57b5f8b5}{00796}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classtiling_1_1_tile_afec2ecfc79e8afe1d3d57f3e57b5f8b5}{printAugVert}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00797}00797\ \ \ \ \ \ \ \ \ StringBuilder\ strbld=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}AugVerts\ for\ tile\ "{}}+this.tileIndex+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00798}00798\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=0;v<this.augVertCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00799}00799\ \ \ \ \ \ \ \ \ \ \ \ \ strbld.append(this.augVert[v]+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00800}00800\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00801}00801\ \ \ \ \ \ \ \ \ System.out.println(strbld.toString());}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00802}00802\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00803}00803\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00804}00804\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_8java_source_l00805}00805\ \}}
+
+\end{DoxyCode}

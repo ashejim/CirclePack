@@ -12,6 +12,8 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
 
 /**
+ * @brief For emacs-like key bindings on various input JComponents.
+ *
  * For emacs-like key bindings on various input JComponents.
  * TODO: cannot get correct action to set the 'mark'; see
  * attempt below.
@@ -57,7 +59,7 @@ public class EmacsBindings {
 	
 	/**
 	 * TODO: doesn't do what I want --- emacs type mark setting
-     * Set the 'mark' at the caret location. 
+     * @brief Set the 'mark' at the caret location. 
      * @see DefaultEditorKit#beginAction
      */
     static class MarkAction extends TextAction {

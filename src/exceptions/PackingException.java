@@ -1,5 +1,8 @@
 package exceptions;
 
+/**
+ * @brief Exception thrown for PackingException errors in CirclePack.
+ */
 public class PackingException extends RuntimeException {
 
 	private static final long 

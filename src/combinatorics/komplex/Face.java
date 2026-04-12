@@ -5,6 +5,8 @@ import java.awt.Color;
 import util.ColorUtil;
 
 /**
+ * @brief Legacy face data structure (pre-DCEL); retained for compatibility.
+ *
  * Structure for face information; this was designed for 
  * triangular faces, later modified for more general 
  * polygonal faces. Note that in CirclePack, face indices 
@@ -37,7 +39,7 @@ public class Face{
      }
        
      /**
-      * Find index of v in 'vert'.
+      * @brief Find index of v in 'vert'.
       * @param v int
       * @return index or -1 if v is not a vertex.
       */
@@ -49,7 +51,7 @@ public class Face{
      }
 
      /** 
-      * Return a new 'Face' object whose data duplicates this.
+      * @brief Return a new 'Face' object whose data duplicates this.
       * @return Face
       */
      public Face clone() {

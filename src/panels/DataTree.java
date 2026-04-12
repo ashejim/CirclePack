@@ -14,6 +14,8 @@ import images.CPIcon;
 import packing.PackData;
 
 /**
+ * @brief DataTree organizes the data on a packing in hashtables and
+ *
  * DataTree organizes the data on a packing in hashtables and 
  * a tree for display in the 'Pack Info' button.
  * @author kstephe2
@@ -53,7 +55,7 @@ public class DataTree extends JPanel {
 	}
 
 	/**
-	 * Initiates button, tree, and treescroll for "Pack Info" data.
+	 * @brief Initiates button, tree, and treescroll for "Pack Info" data.
 	 * Also used to update in 'updatePackingData'.
 	 * @param p PackData
 	 * @return JTree

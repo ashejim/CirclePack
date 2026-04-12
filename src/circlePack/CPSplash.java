@@ -6,7 +6,9 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.SplashScreen;
 
-/** creates a splash screen to occupy the user while CirclePack
+/**
+ * @brief /** creates a splash screen to occupy the user while CirclePack
+ * creates a splash screen to occupy the user while CirclePack
  * initiates.
  * @author kens
  *

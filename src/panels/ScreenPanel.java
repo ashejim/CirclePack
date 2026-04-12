@@ -18,6 +18,9 @@ import allMains.CPBase;
 import circlePack.PackControl;
 import packing.CPdrawing;
 
+/**
+ * @brief Screen Panel.
+ */
 public class ScreenPanel extends JPanel implements ChangeListener {
 
 	private static final long 
@@ -224,7 +227,7 @@ public class ScreenPanel extends JPanel implements ChangeListener {
 	}
 	
 	/**
-	 * Set line thickness in 'lineSlider', 1 to 12
+	 * @brief Set line thickness in 'lineSlider', 1 to 12
 	 * @param t, integer
 	 */
 	public void setLine(int t) {
@@ -233,7 +236,7 @@ public class ScreenPanel extends JPanel implements ChangeListener {
 	}
 	
 	/**
-	 * Get line thickness (as set in 'lineSlider')
+	 * @brief Get line thickness (as set in 'lineSlider')
 	 * @return integer (should be between 1 and 12)
 	 */
 	public int getLine() {

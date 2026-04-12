@@ -16,6 +16,8 @@ import canvasses.MainFrame;
 import complex.Complex;
 
 /**
+ * @brief Locator Panel displays the (x,y) or (theta,phi) coordinates
+ *
  * Locator Panel displays the (x,y) or (theta,phi) coordinates
  * of a cursor location.
  * @author kens
@@ -72,7 +74,7 @@ public class LocatorPanel extends JPanel {
 	}
 	
 	/**
-	 * Update the 
+	 * @brief Update the 
 	 * @param hes, hes>0, spherical
 	 * @param z, x,y or theta, phi
 	 */

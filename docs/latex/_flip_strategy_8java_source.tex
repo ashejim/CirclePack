@@ -1,0 +1,521 @@
+\doxysection{Flip\+Strategy.\+java}
+\hypertarget{_flip_strategy_8java_source}{}\label{_flip_strategy_8java_source}\index{src/ftnTheory/FlipStrategy.java@{src/ftnTheory/FlipStrategy.java}}
+\doxymbox{\hyperlink{_flip_strategy_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00001}00001\ \textcolor{keyword}{package\ }ftnTheory;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00003}00003\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00004}00004\ \textcolor{keyword}{import}\ java.util.Random;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00005}00005\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00007}00007\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00008}00008\ \textcolor{keyword}{import}\ dcel.RawManip;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00009}00009\ \textcolor{keyword}{import}\ exceptions.CombException;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00010}00010\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00011}00011\ \textcolor{keyword}{import}\ komplex.EdgeSimple;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00012}00012\ \textcolor{keyword}{import}\ listManip.EdgeLink;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00013}00013\ \textcolor{keyword}{import}\ listManip.HalfLink;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00014}00014\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00015}00015\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00016}00016\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00017}00017\ \textcolor{keyword}{import}\ util.CmdStruct;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00018}00018\ \textcolor{keyword}{import}\ util.ColorUtil;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00019}00019\ \textcolor{keyword}{import}\ util.FlipBot;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00020}00020\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00021}00021\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00034}\doxymbox{\hyperlink{classftn_theory_1_1_flip_strategy}{00034}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classftn_theory_1_1_flip_strategy_aa88153312c7878d8b4b09c102934392d}{FlipStrategy}}\ \textcolor{keyword}{extends}\ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_ae957a214f340a4a70b1fe0067f5b50ec}{PackExtender}}\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00035}00035\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00036}00036\ \ \ \ \ Vector<FlipBot>\ flipBots;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00037}00037\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00038}00038\ \ \ \ \ \textcolor{keywordtype}{int}\ northPole;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00039}00039\ \ \ \ \ \textcolor{keywordtype}{int}\ southPole;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00040}00040\ \ \ \ \ \textcolor{keywordtype}{int}\ NStoggle;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00041}00041\ \ \ \ \ Random\ rand;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00042}00042\ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ baseEdge;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00043}00043\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00044}00044\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00045}\doxymbox{\hyperlink{classftn_theory_1_1_flip_strategy_aa88153312c7878d8b4b09c102934392d}{00045}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classftn_theory_1_1_flip_strategy_aa88153312c7878d8b4b09c102934392d}{FlipStrategy}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00046}00046\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00047}00047\ \ \ \ \ \ \ \ \ rand\ =\ \textcolor{keyword}{new}\ Random();\ \textcolor{comment}{//\ random;\ DEBUG:\ add\ seed\ for\ debugging\ help}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00048}00048\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_ac277c866c6509acaa6863449325b9810}{extensionType}}=\textcolor{stringliteral}{"{}FLIPSTRATEGY"{}};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00049}00049\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a09f89a7924aa9d5f3d7d412ecbb14045}{extensionAbbrev}}=\textcolor{stringliteral}{"{}FS"{}};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00050}00050\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a7fbf8bec08903e29a71391a1b9cb5b0e}{toolTip}}=\textcolor{stringliteral}{"{}'FlipStrategy'\ is\ for\ trying\ automatic\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}edge\ flip\ choice\ strategies"{}};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00052}00052\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_ad0d29dc837a41ee7acbeefb3e5ba6a30}{registerXType}}();}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00053}00053\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount<5)\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00054}00054\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}packing\ must\ have\ >=\ 5\ vertices"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_af4d75598ac8dcac3a492794707363a12}{running}})\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00056}00056\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00057}00057\ \ \ \ \ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00058}00058\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00059}00059\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ flipbot\ use}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00060}00060\ \ \ \ \ \ \ \ \ flipBots=\textcolor{keyword}{new}\ Vector<FlipBot>(1);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00061}00061\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00062}00062\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ following\ if\ for\ 'flip\ algorithm'\ use}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00063}00063\ \ \ \ \ \ \ \ \ northPole=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00064}00064\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ if\ northPole\ is\ tangent\ to\ all\ the\ others}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(northPole)==\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount-\/1)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount;i++)}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00067}00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(i)==\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount-\/1)}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00068}00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ northPole=i;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00069}00069\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (northPole==\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount)}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}can't\ find\ north\ pole\ candidate"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ nodeCount\ index\ didn't\ work;\ swap\ one\ that\ does\ with\ it}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\textcolor{stringliteral}{"{}swap\ M\ "{}}+northPole)!=0)}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ northPole=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_comb_exception}{CombException}}(\textcolor{stringliteral}{"{}failed\ to\ swap\ M\ for\ "{}}+northPole);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00077}00077\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00078}00078\ \ \ \ \ \ \ \ \ southPole=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;(i<extenderPD.nodeCount\ \&\&\ southPole==0);i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(i,northPole)<0)\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ southPole=i;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00082}00082\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00083}00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (southPole==0)\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_data_exception}{DataException}}(\textcolor{stringliteral}{"{}can't\ find\ pole\ candidates"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00085}00085\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\textcolor{stringliteral}{"{}alpha\ "{}}+southPole);\ \textcolor{comment}{//\ make\ southPole\ the\ alpha\ vert}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00086}00086\ \ \ \ \ \ \ \ \ NStoggle=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00087}00087\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.vlist=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00088}00088\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.vlist=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00089}00089\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.vlist.add(northPole);\ \textcolor{comment}{//\ use\ 'max\_pack\ -\/r\ vlist[0]'\ }}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00090}00090\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.vlist.add(southPole);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00091}00091\ \ \ \ \ \ \ \ \ baseEdge=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00092}00092\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00093}00093\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00097}\doxymbox{\hyperlink{classftn_theory_1_1_flip_strategy_a7f4c5a87f0874109bde5e3644a8104cd}{00097}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classftn_theory_1_1_flip_strategy_a7f4c5a87f0874109bde5e3644a8104cd}{cmdParser}}(String\ cmd,\ Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ Vector<String>\ items\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00100}00100\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =====================\ setedge\ ================}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00101}00101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}setedg"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ baseedge=\doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}.\doxymbox{\hyperlink{classlist_manip_1_1_half_link_a07495b8a43bfc8cc0c79b1667cd6882b}{grab\_one\_edge}}(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}},\ flagSegs);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (baseedge==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ baseEdge=baseedge;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00107}00107\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00108}00108\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00109}00109\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =====================\ aflip\ =================}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00110}00110\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Given\ HalfEdge\ <v.w>,\ do\ two\ things:\ (1)\ advance\ in\ half-\/hex}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00111}00111\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ direction\ (pass\ two\ edges\ on\ left)\ for\ new\ 'baseEdge'\ and\ }}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00112}00112\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (2)\ flip\ the\ next\ clockwise\ edge,\ if\ possible.\ return\ value\ is}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0\ if\ neither\ is\ possible,\ -\/1\ if\ only\ advance\ is\ possible,\ and\ 1\ if}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00114}00114\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ both\ are\ possible.}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00115}00115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}aflip"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (baseEdge==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}[]\ ans=\doxymbox{\hyperlink{classdcel_1_1_raw_manip}{RawManip}}.\doxymbox{\hyperlink{classdcel_1_1_raw_manip_aed8f10c2f7fcf263b301615c314777ca}{flipAdvance\_raw}}(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.packDCEL,baseEdge);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ans==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ baseEdge=ans[0];\ \textcolor{comment}{//\ the\ new\ hedge}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ans[1]!=\textcolor{keyword}{null})\ \{\ \textcolor{comment}{//\ there\ was\ a\ flip}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.packDCEL.fixDCEL(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{comment}{//\ only\ advanced}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00129}00129\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00130}00130\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00131}00131\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =======================\ bot\ ==================}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00132}00132\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'bot'\ command\ requires\ \{name\};\ related\ to\ creating/controlling}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00133}00133\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ individual\ flipbots.}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00134}00134\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}bot"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_flip_bot}{FlipBot}}\ flipBot;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ name\ always\ first}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00138}00138\ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.remove(0);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ String\ name=items.remove(0);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_affec8dad5a974bd2fd18b3f7d3118a35}{isFlag}}(name))\ \{\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a613d86c090c2aa0d2b964147b28ba24c}{Oops}}(\textcolor{stringliteral}{"{}'FlipBot'\ command\ needs\ \{name\}\ first"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ existing\ flipbot?}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ flipBot=\doxymbox{\hyperlink{classftn_theory_1_1_flip_strategy_a314fb68119b55f86fcd70e025d27dd33}{getNamedBot}}(name);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ or\ do\ we\ create?}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flipBot==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.remove(0);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items.get(0).equals(\textcolor{stringliteral}{"{}-\/c"{}}))\ \{\ \textcolor{comment}{//\ create\ new\ one}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_flip_bot}{FlipBot}}(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}},name);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a26e15aede3908f891a98fedeb963b4b6}{setColor}}(flipBots.size());\ \textcolor{comment}{//\ set\ color\ based\ on\ index\ in\ vector}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBots.add(flipBot);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flipBot==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ flipBot\ exists,\ process\ remaining\ flags}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (flagSegs.size()>0\ \&\&\ (items=flagSegs.remove(0))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ flag=items.remove(0);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_affec8dad5a974bd2fd18b3f7d3118a35}{isFlag}}(flag))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a613d86c090c2aa0d2b964147b28ba24c}{Oops}}(\textcolor{stringliteral}{"{}'FlipStrategy'\ command\ missing\ a\ flag"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c=flag.charAt(1);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(c)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'f'}:\ \{\ \textcolor{comment}{//\ set\ flipStrategy}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00170}00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a079f1e6555fec64896b81258b7a2565e}{setFlipStrategy}}(items.get(0));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00171}00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00172}00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'m'}:\ \{\ \textcolor{comment}{//\ set\ moveStrategy}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00174}00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a7f422583cc0c1757a1e5bedde78f4614}{setMoveStrategy}}(items.get(0));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00176}00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00177}00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'v'}:\ \{\ \textcolor{comment}{//\ set\ vertex}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00178}00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=Integer.parseInt(items.get(0));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00179}00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a970eab256c8b5e22e63921e0f0f79876}{setHomeVert}}(v);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00180}00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00181}00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ do\ we\ need\ to\ set\ 'previousHome'?}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00182}00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pre=flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a4f1d31e03f479275b1ab806d2b98e7a7}{getPrevious}}();}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00183}00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pre<=0\ ||\ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a805cd1b0ab13bcc708e0542f5ca86d32}{getHomeVert}}(),pre)<0)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00184}00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_abf14e1848ab25f5492379f165505724d}{setPrevious}}(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.getLastPetal(v));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00185}00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00186}00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00187}00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00188}00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00189}00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'e'}:\ \{\ \textcolor{comment}{//\ setedge\ (previous,\ home)}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00190}00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ edge=\doxymbox{\hyperlink{classlist_manip_1_1_edge_link}{EdgeLink}}.\doxymbox{\hyperlink{classlist_manip_1_1_edge_link_a7be9b6fe5c9f5f18d9614ea537729404}{grab\_one\_edge}}(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}},\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_a9a70ed5240258da18bb8ef98366541c6}{reconItem}}(items));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00191}00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a970eab256c8b5e22e63921e0f0f79876}{setHomeVert}}(edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00192}00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_abf14e1848ab25f5492379f165505724d}{setPrevious}}(edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a0820504dd0986ea34d72ab10f331b9ce}{v}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00193}00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00194}00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00195}00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'d'}:\ \{\ \textcolor{comment}{//\ draw\ current\ edge\ (previousHome,homeVert)}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00196}00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ colindx=\doxymbox{\hyperlink{classutil_1_1_color_util}{ColorUtil}}.\doxymbox{\hyperlink{classutil_1_1_color_util_a04d5822ef0ecf2916570021cd298f72a}{col\_to\_table}}(flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a6a44e64ef80d596da9dfa44313d9f2ae}{getColor}}());}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00197}00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}},\textcolor{stringliteral}{"{}disp\ -\/ec"{}}+colindx+\textcolor{stringliteral}{"{}t8\ "{}}+flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a4f1d31e03f479275b1ab806d2b98e7a7}{getPrevious}}()+\textcolor{stringliteral}{"{}\ "{}}+flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a805cd1b0ab13bcc708e0542f5ca86d32}{getHomeVert}}()+\textcolor{stringliteral}{"{}\ -\/cc"{}}+colindx+\textcolor{stringliteral}{"{}t8\ "{}}+flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a805cd1b0ab13bcc708e0542f5ca86d32}{getHomeVert}}());}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00198}00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00199}00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00200}00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'l'}:\ \{\ \textcolor{comment}{//\ draw\ the\ last\ edge\ flipped}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00201}00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ colindx=\doxymbox{\hyperlink{classutil_1_1_color_util}{ColorUtil}}.\doxymbox{\hyperlink{classutil_1_1_color_util_a04d5822ef0ecf2916570021cd298f72a}{col\_to\_table}}(flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a6a44e64ef80d596da9dfa44313d9f2ae}{getColor}}());}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00202}00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ edge=flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_ac62ab982a86cd9f6fb0d6f0186b7db8b}{getLastFlipped}}();}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00203}00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (edge!=\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}},\textcolor{stringliteral}{"{}disp\ -\/ec"{}}+colindx+\textcolor{stringliteral}{"{}t4\ "{}}+edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a0820504dd0986ea34d72ab10f331b9ce}{v}}+\textcolor{stringliteral}{"{}\ "{}}+edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00206}00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00207}00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'t'}:\ \{\ \textcolor{comment}{//\ tick\ of\ the\ clock:\ i.e.\ go}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ mg=\textcolor{keyword}{new}\ StringBuilder(flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a4186d1ae4949760369dd5710a0276c63}{getName}}()+\textcolor{stringliteral}{"{}\ at\ "{}}+flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a805cd1b0ab13bcc708e0542f5ca86d32}{getHomeVert}}()+\textcolor{stringliteral}{"{}:\ "{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =============\ choose\ and\ try\ the\ flip}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00211}00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a71d13a96cf380e0d416e77b35e2787d3}{setOtherEnd}}(0);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ edge=flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_abb2bedd34759260ace91ed3ab88d1539}{chooseFlip}}();}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00213}00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ outEdge=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00214}00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00215}00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (edge!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00216}00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a71d13a96cf380e0d416e77b35e2787d3}{setOtherEnd}}(edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00217}00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ rslt=0;\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00218}00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ should\ be\ more\ efficient\ way}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00219}00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.getFlower(edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a0820504dd0986ea34d72ab10f331b9ce}{v}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00220}00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ lv=flower[\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a0820504dd0986ea34d72ab10f331b9ce}{v}},edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}})+1];}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00221}00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flower=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.getFlower(edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00222}00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ rv=flower[\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}},edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a0820504dd0986ea34d72ab10f331b9ce}{v}})+1];}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00223}00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outEdge=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(lv,rv);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rslt=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\textcolor{stringliteral}{"{}flip\ "{}}+edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a0820504dd0986ea34d72ab10f331b9ce}{v}}+\textcolor{stringliteral}{"{}\ "{}}+edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00225}00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rslt!=0)\ \{\ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00226}00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a22041f4f69d9ae3d48d1e31cd65d4299}{setLastFlipped}}(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(lv,rv));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00227}00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rslt=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\textcolor{stringliteral}{"{}max\_pack"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00228}00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rslt=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\textcolor{stringliteral}{"{}color\ -\/c\ d"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00229}00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ all\ the\ flipbots}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00230}00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<FlipBot>\ fbt=flipBots.iterator();}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00231}00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fbt.hasNext())\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00232}00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbt.next().update();}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00233}00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00234}00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mg.append(\textcolor{stringliteral}{"{}flipped\ edge\ with\ "{}}+edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}}+\textcolor{stringliteral}{"{};\ "{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00235}00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00236}00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00237}00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this.\doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}chosen\ edge\ flip\ ("{}}+edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a0820504dd0986ea34d72ab10f331b9ce}{v}}+\textcolor{stringliteral}{"{}\ "{}}+edge.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}}+\textcolor{stringliteral}{"{})\ failed"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00238}00238\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00239}00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00240}00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =============\ now\ choose\ the\ move}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ oldVert=flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a805cd1b0ab13bcc708e0542f5ca86d32}{getHomeVert}}();}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00243}00243\ \textcolor{comment}{//\ debug\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00244}00244\ \textcolor{comment}{//System.out.println(outEdge.toString());}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00245}00245\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00246}00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ newVert=flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a51cb79904d5ba4bcd2b296375246f3dc}{chooseMove}}(flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a805cd1b0ab13bcc708e0542f5ca86d32}{getHomeVert}}(),flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a4f1d31e03f479275b1ab806d2b98e7a7}{getPrevious}}(),outEdge);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00247}00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00248}00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ do\ the\ move}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00249}00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newVert>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00250}00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a970eab256c8b5e22e63921e0f0f79876}{setHomeVert}}(newVert);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00251}00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_abf14e1848ab25f5492379f165505724d}{setPrevious}}(oldVert);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00252}00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mg.append(flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a4186d1ae4949760369dd5710a0276c63}{getName}}()+\textcolor{stringliteral}{"{}\ now\ at\ v="{}}+flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a805cd1b0ab13bcc708e0542f5ca86d32}{getHomeVert}}());}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00253}00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00254}00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(mg.toString());}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00255}00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00256}00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00257}00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'s'}:\ \{\ \textcolor{comment}{//\ mark\ the\ homeVert}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00258}00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\textcolor{stringliteral}{"{}mark\ -\/c\ -\/cw\ "{}}+flipBot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a805cd1b0ab13bcc708e0542f5ca86d32}{getHomeVert}}());\ \textcolor{comment}{//\ clear\ marks,\ set\ mark\ }}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00259}00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00260}00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00261}00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00262}00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00263}00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00264}00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a613d86c090c2aa0d2b964147b28ba24c}{Oops}}(\textcolor{stringliteral}{"{}bot:\ processing\ problem:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00265}00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00266}00266\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00267}00267\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00268}00268\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00269}00269\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00270}00270\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00271}00271\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =======================\ setNS\ =========================}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00272}00272\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}setNS"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00273}00273\ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00274}00274\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}\ vlist=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_node_link}{NodeLink}}(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}},items);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00275}00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=1;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00276}00276\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ s=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00277}00277\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vlist==\textcolor{keyword}{null}\ ||\ vlist.size()<2\ ||\ (n=vlist.get(0))==(s=vlist.get(1))}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00278}00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(n,s)>=0)}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00279}00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a613d86c090c2aa0d2b964147b28ba24c}{Oops}}(\textcolor{stringliteral}{"{}supposed\ to\ give\ distinct\ non-\/neighbors\ n\ and\ s"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00280}00280\ \ \ \ \ \ \ \ \ \ \ \ \ northPole=n;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00281}00281\ \ \ \ \ \ \ \ \ \ \ \ \ southPole=s;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00282}00282\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00283}00283\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00284}00284\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00285}00285\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =========================\ randF\ ================}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00286}00286\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ execute\ number\ of\ random\ flips\ to\ randomize\ the\ packing}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00287}00287\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}randF"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00288}00288\ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00289}00289\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=Integer.parseInt((String)items.get(0));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00290}00290\ \ \ \ \ \ \ \ \ \ \ \ \ N=Math.abs(N);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00291}00291\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00292}00292\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<=N;i++)}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00293}00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count+=this.\doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\textcolor{stringliteral}{"{}flip\ -\/r"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00294}00294\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}Did\ "{}}+count+\textcolor{stringliteral}{"{}\ edge\ flips"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00295}00295\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00296}00296\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00297}00297\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00298}00298\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =========================\ status\ =============}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00299}00299\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ degree,\ utility\ function\ }}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00300}00300\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}status"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00301}00301\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00302}00302\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00303}00303\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ Ndegs=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00304}00304\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ Nfours=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00305}00305\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ petals=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.getPetals(northPole);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00306}00306\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<petals.length;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00307}00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=petals[j];}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00308}00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ knum=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(k);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00309}00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Ndegs+=knum;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00310}00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (knum==4)\ Nfours++;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00311}00311\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00312}00312\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ Sdegs=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00313}00313\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ Sfours=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00314}00314\ \ \ \ \ \ \ \ \ \ \ \ \ petals=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.getPetals(southPole);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00315}00315\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(southPole);j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00316}00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=petals[j];}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00317}00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ knum=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(k);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00318}00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Sdegs+=knum;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00319}00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (knum==4)\ Sfours++;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00320}00320\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00321}00321\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00322}00322\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ notPolish=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00323}00323\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ twicePolish=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00324}00324\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ twoPoleCount=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00325}00325\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00326}00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v!=northPole\ \&\&\ v!=southPole)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00327}00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(v,northPole)<0\ \&\&}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00328}00328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(v,southPole)<0)}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00329}00329\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ notPolish++;\ \textcolor{comment}{//\ doesn't\ nghb\ either\ pole}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00330}00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(v,northPole)>=0}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00331}00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(v,southPole)>=0)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00332}00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ twicePolish++;\ \textcolor{comment}{//\ nghbs\ both\ poles}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00333}00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ twoPoleCount\ +=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(v);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00334}00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00335}00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00336}00336\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00337}00337\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}\(\backslash\)nStatus:\ N=v"{}}+northPole+\textcolor{stringliteral}{"{},\ degree\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00338}00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(northPole)+\textcolor{stringliteral}{"{};\ S=v"{}}+southPole+}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00339}00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{},\ degree\ "{}}+\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(southPole)+\textcolor{stringliteral}{"{}\(\backslash\)n"{}}+}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00340}00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ \ Total\ petal\ degrees,\ N/S:\ "{}}+Ndegs+\textcolor{stringliteral}{"{}/"{}}+Sdegs+\textcolor{stringliteral}{"{}\(\backslash\)n"{}}+}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00341}00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ \ Degree\ 4\ neighbors,\ N/S:\ "{}}+Nfours+\textcolor{stringliteral}{"{}/"{}}+Sfours+\textcolor{stringliteral}{"{}\(\backslash\)n"{}}+}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00342}00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ \ Number\ neighboring\ neither/both\ poles:\ "{}}+notPolish+\textcolor{stringliteral}{"{}/"{}}+twicePolish+\textcolor{stringliteral}{"{}\(\backslash\)n"{}}+}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00343}00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ \ Total\ deg\ of\ verts\ nghb'ing\ both\ poles:\ "{}}+twoPoleCount);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00344}00344\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00345}00345\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00346}00346\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00347}00347\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========================\ doFlip\ ============}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00348}00348\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Attempt\ N\ random\ flips\ (default\ to\ N=1)\ of\ edges\ }}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00349}00349\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ between\ petals\ of\ a\ pole}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00350}00350\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}doFlip"{}})\ ||\ cmd.startsWith(\textcolor{stringliteral}{"{}doN"{}})\ ||}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00351}00351\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd.startsWith(\textcolor{stringliteral}{"{}doS"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00352}00352\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00353}00353\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ are\ we\ already\ done?}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00354}00354\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(northPole)==(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount-\/2)\ \&\&}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00355}00355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(southPole)==(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount-\/2))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00356}00356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}Finished:\ the\ combinatorics\ are\ in\ final\ form"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00357}00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00358}00358\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00359}00359\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00360}00360\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ default,\ one\ flip}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00361}00361\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=1;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00362}00362\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00363}00363\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ but\ check\ if\ the\ command\ is\ followed\ by\ a\ number}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00364}00364\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00365}00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00366}00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ N=Math.abs(Integer.parseInt((String)items.get(0)));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00367}00367\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00368}00368\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00369}00369\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ try\ N\ times,\ (or\ until\ both\ poles\ have\ nodeCount-\/2\ petals)}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00370}00370\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ flipCount=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00371}00371\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;(i<=N\ \&\&\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(northPole)!=(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount-\/2)\ ||}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00372}00372\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(southPole)!=(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount-\/2)));i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00373}00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00374}00374\ \textcolor{comment}{//System.out.println("{}i\ ="{}+i);\ \ \ \ \ \ }}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00375}00375\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pole=northPole;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00376}00376\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ unpole=southPole;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00377}00377\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}doS"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00378}00378\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pole=southPole;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00379}00379\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ unpole=northPole;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00380}00380\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00381}00381\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00382}00382\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ if\ "{}doFlips"{},\ toggle\ north/south\ (even)/(odd)}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00383}00383\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}doFli"{}})\ \&\&\ 2*(NStoggle/2)!=NStoggle)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00384}00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pole=southPole;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00385}00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ unpole=northPole;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00386}00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00387}00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00388}00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ start\ with\ random\ petal\ of\ pole}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00389}00389\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(pole);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00390}00390\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j=rand.nextInt(num);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00391}00391\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00392}00392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ I'm\ setting\ a\ saftey\ counter,\ so\ this\ 'while'}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00393}00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ statement\ can't\ go\ on\ forever}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00394}00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=num+1;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00395}00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00396}00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ go\ around\ petals:\ skip\ degree\ <=\ 3\ and}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00397}00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ degree\ 4's\ tangent\ to\ unpole}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00398}00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00399}00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ jjnum=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00400}00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.getFlower(pole);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00401}00401\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (count>0\ \&\&\ ((jjnum=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces((v=flower[j])))<4\ ||}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00402}00402\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (jjnum==4\ \&\&\ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(v,unpole)>=0)))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00403}00403\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ j=(j+1)\%num;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00404}00404\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count-\/-\/;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00405}00405\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00406}00406\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00407}00407\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ found\ one?\ }}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00408}00408\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00409}00409\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (count!=0)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00410}00410\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=flower[j];}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00411}00411\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println("{}v\ =\ "{}+v);}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00412}00412\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00413}00413\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00414}00414\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ process\ while\ we\ can\ keep\ flipping\ about\ v\ (interior)}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00415}00415\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ outerflip=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00416}00416\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ vnum;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00417}00417\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flower=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.getFlower(v);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00418}00418\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (outerflip\ \&\&\ v!=0\ \&\&\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00419}00419\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (vnum=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(v))>4\ \&\&}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00420}00420\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ !\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.isBdry(v))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00421}00421\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}target\ petal:\ v="{}}+v+\textcolor{stringliteral}{"{},\ pole="{}}+pole);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00422}00422\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outerflip=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00423}00423\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(v,pole)-\/1+vnum)\%vnum;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00424}00424\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=flower[k];}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00425}00425\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ m=(k-\/1+vnum)\%vnum;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00426}00426\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nextw=flower[m];}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00427}00427\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ try\ flipping\ first\ edge,\ if\ it\ doesn't\ connect\ poles}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00428}00428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextw!=unpole\ \&\&\ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\textcolor{stringliteral}{"{}flip\ "{}}+v+\textcolor{stringliteral}{"{}\ "{}}+w)!=0)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00429}00429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}\ \ first\ flip\ succeeded:\ <"{}}+v+\textcolor{stringliteral}{"{}\ "{}}+w+\textcolor{stringliteral}{"{}>"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00430}00430\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outerflip=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00431}00431\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00432}00432\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00433}00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00434}00434\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else,\ search\ clockwise\ around\ v\ for\ flippable}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00435}00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ edge\ whose\ other\ end\ is\ petal\ of\ pole\ and}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00436}00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ whose\ co-\/neighbors\ are\ not\ both\ petals\ of\ pole.}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00437}00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=vnum+1;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00438}00438\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (!outerflip\ \&\&\ tick>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00439}00439\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k=(k-\/1+vnum)\%vnum;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00440}00440\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=flower[k];}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00441}00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cnl=flower[(k+1)\%vnum];}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00442}00442\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cnr=flower[(k-\/1+vnum)\%vnum];}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00443}00443\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m=(k-\/1+vnum)\%vnum;}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00444}00444\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextw=flower[m];}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00445}00445\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (w!=unpole\ \&\&\ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(w,pole)>=0\ \&\&}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00446}00446\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (cnl!=pole\ ||\ cnl!=unpole\ ||\ cnr!=pole\ ||\ cnr!=unpole)\ \&\&\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00447}00447\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(cnl,pole)<0\ ||\ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nghb(cnr,pole)<0)\ \&\&}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00448}00448\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\textcolor{stringliteral}{"{}flip\ "{}}+v+\textcolor{stringliteral}{"{}\ "{}}+w)!=0)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00449}00449\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}\ \ another\ flip\ succeeded:\ <"{}}+v+\textcolor{stringliteral}{"{}\ "{}}+w+\textcolor{stringliteral}{"{}>"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00450}00450\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outerflip=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00451}00451\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00452}00452\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tick-\/-\/;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00453}00453\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00454}00454\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00455}00455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ it\ worked,\ fix\ up\ combinatorics}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00456}00456\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (outerflip)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00457}00457\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ these\ operations\ should\ have\ been\ done\ in\ 'flip'\ call}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00458}00458\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ packData.setCombinatorics();\ }}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00459}00459\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ packData.fillcurves();}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00460}00460\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flipCount++;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00461}00461\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00462}00462\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00463}00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Want\ to\ STOP\ looking\ at\ this\ v\ after\ one\ flip?????}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00464}00464\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outerflip=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00465}00465\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00466}00466\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00467}00467\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00468}00468\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ increment\ toggle\ so\ next\ attempt\ is\ with\ other\ pole}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00469}00469\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NStoggle++;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00470}00470\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00471}00471\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ 'for'\ loop}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00472}00472\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00473}00473\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ report\ in\ Message\ window}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00474}00474\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(northPole)==(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount-\/2)\ \&\&}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00475}00475\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(southPole)==(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount-\/2))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00476}00476\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flipCount>0)}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00477}00477\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}Did\ "{}}+flipCount+\textcolor{stringliteral}{"{}\ edge\ flips"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00478}00478\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}Finished:\ the\ combinatorics\ are\ in\ final\ form"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00479}00479\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00480}00480\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00481}00481\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00482}00482\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flipCount==0)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00483}00483\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a58ac86f35923b82265f7b52df2fc8d31}{errorMsg}}(\textcolor{stringliteral}{"{}no\ flips\ succeeded"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00484}00484\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00485}00485\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00486}00486\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00487}00487\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}Did\ "{}}+flipCount+\textcolor{stringliteral}{"{}\ edge\ flips"{}});}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00488}00488\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a56bf64c34ec87b5f50aa83a5a861ed4b}{msg}}(\textcolor{stringliteral}{"{}Northpole\ has\ degree\ "{}}+\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(northPole)+}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00489}00489\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{};\ SouthPole,\ degree\ "{}}+\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.countFaces(southPole));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00490}00490\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ flipCount;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00491}00491\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00492}00492\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ 'doFlip'}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00493}00493\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00494}00494\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ====================\ NS\_to\_v\ =============================}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00495}00495\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ N\ and\ S\ in\ vlist\ so\ they\ are\ available}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00496}00496\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}NS\_to\_v"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00497}00497\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af53960a70f5484208eefe9c7b0e36116}{cpCommand}}(\textcolor{stringliteral}{"{}set\_vlist\ "{}}+northPole+\textcolor{stringliteral}{"{}\ "{}}+southPole);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00498}00498\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00499}00499\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ super.cmdParser(cmd,\ flagSegs);}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00500}00500\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00501}00501\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00507}\doxymbox{\hyperlink{classftn_theory_1_1_flip_strategy_a314fb68119b55f86fcd70e025d27dd33}{00507}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classutil_1_1_flip_bot}{FlipBot}}\ \doxymbox{\hyperlink{classftn_theory_1_1_flip_strategy_a314fb68119b55f86fcd70e025d27dd33}{getNamedBot}}(String\ botName)\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00508}00508\ \ \ \ \ \ \ \ \ Iterator<FlipBot>\ fbit=flipBots.iterator();}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00509}00509\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fbit.hasNext())\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00510}00510\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_flip_bot}{FlipBot}}\ fbot=fbit.next();}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00511}00511\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fbot.\doxymbox{\hyperlink{classutil_1_1_flip_bot_a4186d1ae4949760369dd5710a0276c63}{getName}}().equalsIgnoreCase(botName))}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00512}00512\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fbot;}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00513}00513\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00514}00514\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00515}00515\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00516}00516\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00520}\doxymbox{\hyperlink{classftn_theory_1_1_flip_strategy_a2944eb603bd73ce991d4dc2685c342a9}{00520}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classftn_theory_1_1_flip_strategy_a2944eb603bd73ce991d4dc2685c342a9}{initCmdStruct}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00521}00521\ \ \ \ \ \ \ \ \ super.initCmdStruct();}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00522}00522\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af41fa6d58814a6f9137c21f89d25f85b}{cmdStruct}}.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_cmd_struct}{CmdStruct}}(\textcolor{stringliteral}{"{}setedge"{}},\textcolor{stringliteral}{"{}v\ w"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Set\ directed\ edge\ as\ 'base'"{}}));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00523}00523\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af41fa6d58814a6f9137c21f89d25f85b}{cmdStruct}}.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_cmd_struct}{CmdStruct}}(\textcolor{stringliteral}{"{}aflip"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}auto\ flip:\ project\ baseEdge\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00524}00524\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}one\ half\ hex\ step,\ then\ flip\ clw\ edge"{}}));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00525}00525\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af41fa6d58814a6f9137c21f89d25f85b}{cmdStruct}}.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_cmd_struct}{CmdStruct}}(\textcolor{stringliteral}{"{}setNS"{}},\textcolor{stringliteral}{"{}n\ s"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Set\ north/south\ poles"{}}));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00526}00526\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af41fa6d58814a6f9137c21f89d25f85b}{cmdStruct}}.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_cmd_struct}{CmdStruct}}(\textcolor{stringliteral}{"{}randFlips"{}},\textcolor{stringliteral}{"{}N"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Do\ N\ random\ edge\ flips"{}}));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00527}00527\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af41fa6d58814a6f9137c21f89d25f85b}{cmdStruct}}.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_cmd_struct}{CmdStruct}}(\textcolor{stringliteral}{"{}status"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}show\ status\ of\ combinatorics,\ degree,\ etc."{}}));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00528}00528\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af41fa6d58814a6f9137c21f89d25f85b}{cmdStruct}}.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_cmd_struct}{CmdStruct}}(\textcolor{stringliteral}{"{}doFlips\ (doN,\ doS)"{}},\textcolor{stringliteral}{"{}N"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Do\ N\ flips\ toward\ poles"{}}));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00529}00529\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af41fa6d58814a6f9137c21f89d25f85b}{cmdStruct}}.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_cmd_struct}{CmdStruct}}(\textcolor{stringliteral}{"{}NS\_to\_vlist"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00530}00530\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}clear\ vlist,\ put\ poles\ in\ it\ so\ you\ can\ work\ with\ them"{}}));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00531}00531\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af41fa6d58814a6f9137c21f89d25f85b}{cmdStruct}}.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_cmd_struct}{CmdStruct}}(\textcolor{stringliteral}{"{}bot"{}},\textcolor{stringliteral}{"{}<name>\ [-\/c]\ -\/f\ \{str\}\ -\/m\ \{str\}\ -\/v\ \{v\}\ -\/e\ \{v,w\}\ -\/d\ -\/t\ "{}},}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00532}00532\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{null},\textcolor{stringliteral}{"{}Set\ flipbot\ properties:\ -\/c\ for\ create,\ then\ other\ flags:\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00533}00533\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}flip/move\ strategies\ f/m,\ -\/v\ vert,\ -\/e\ edge,\ -\/d\ \{prev,home\}\ edge,\ -\/l\ last\ edge\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00534}00534\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}flipped,\ -\/t\ 'do\ it'"{}}));}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00535}00535\ }
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00536}00536\ \textcolor{comment}{//\ \ \ \ \ \ cmdStruct.add(new\ CmdStruct("{}"{}))}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00537}00537\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_flip_strategy_8java_source_l00538}00538\ \}}
+
+\end{DoxyCode}

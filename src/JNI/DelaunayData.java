@@ -13,7 +13,9 @@ import math.Point3D;
 
 import complex.Complex;
 
-/** 
+/**
+ * @brief Maintain data to pass to C/C++ Delaunay routines 'triangle' and 'qhull'.
+ * 
  * Maintain data to pass to C/C++ Delaunay routines 'triangle' and 'qhull'.
  * 
  * Note: it appears that C++ calls fail if they try to read arrays that are 'null'. 
@@ -83,7 +85,7 @@ public class DelaunayData {
 	}
 	
 	/**
-	 * Convert 'triLite' list of face vertices to Triangulation object.
+	 * @brief Convert 'triLite' list of face vertices to Triangulation object.
 	 * @return Triangulation or null on error
 	 */ 
 	public Triangulation getTriangulation() {

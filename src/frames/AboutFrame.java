@@ -19,6 +19,8 @@ import allMains.CPBase;
 import circlePack.PackControl;
 
 /**
+ * @brief The 'AboutFrame' contains text on the left and
+ *
  * The 'AboutFrame' contains text on the left and 
  * an image on the right; it automatically pops up 
  * when loading a script that is NOT in 'advanced' 

@@ -24,6 +24,8 @@ import allMains.CPBase;
 import allMains.CirclePack;
 
 /**
+ * @brief VariableControlPanel is a panel for manipulating CirclePack variables.
+ *
  * VariableControlPanel is a panel for manipulating CirclePack variables. It displays
  * the current state of CirclePack variables in a table and provides an interface to add
  * and remove variables.

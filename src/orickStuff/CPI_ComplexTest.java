@@ -2,6 +2,9 @@ package orickStuff;
 
 import allMains.CPBase;
 
+/**
+ * @brief C P I_ Complex Test.
+ */
 public class CPI_ComplexTest {
 
     /******* TO RUN  EXAMPLE:

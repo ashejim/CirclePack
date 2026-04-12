@@ -11,6 +11,8 @@ import util.SelectSpec;
 import util.StringUtil;
 
 /**
+ * @brief This is a parser for set-builder type expressions describing
+ *
  * This is a parser for set-builder type expressions describing 
  * sets of objects (circles, faces, tiles, or edges (??)) in 
  * CirclePack: e.g. {c:d.eq.5} lists verts of degree 5. 
@@ -111,7 +113,7 @@ public class SetBuilderParser {
 	}
 	
 	/**
-	 * This parses 'fullDeal' and then goes through 'right' to create all
+	 * @brief This parses 'fullDeal' and then goes through 'right' to create all
 	 * possible valid 'SelectSpec's. It handles many exceptions.
 	 * @throws ParserException
 	 */
@@ -198,7 +200,7 @@ public class SetBuilderParser {
 	}
 
 	/**
-	 * A "segment" is a string starting (possibly) with a 
+	 * @brief A "segment" is a string starting (possibly) with a 
 	 * connective '&&' or '||', then (possibly) a '!' indicating 
 	 * negation, then there must be a "specification", possibly 
 	 * delimited by parens, possibly "unary". The processed 
@@ -302,7 +304,7 @@ public class SetBuilderParser {
 	}
 
 	/**
-	 * The connectives '&&' and '||' are stored as 'SelectSpec's.
+	 * @brief The connectives '&&' and '||' are stored as 'SelectSpec's.
 	 * @param str
 	 * @return
 	 */
@@ -317,7 +319,7 @@ public class SetBuilderParser {
 	}
 	
 	/** Return the vector of (seemingly good) specifications. 
-	 * Calling routine needs to check its 'status' and its 
+	 * @brief Calling routine needs to check its 'status' and its 
 	 * 'packData' (which may have changed).
 	 * @return Vector<SelectSpec>
 	 */ 

@@ -29,6 +29,8 @@ import packing.PackData;
 import util.PopupBuilder;
 
 /**
+ * @brief This frame displays Mobius transformation icons for the active pack
+ *
  * This frame displays Mobius transformation icons for the active pack
  * (its "side pairings") and general purpose Mobius transformations.
  * @author kens
@@ -104,7 +106,7 @@ public class MobiusFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Put side-pair icons (for the active pack) on the sidepair toolbar.
+	 * @brief Put side-pair icons (for the active pack) on the sidepair toolbar.
 	 * @return 0 if 'sidePairs' (or 'redChain' or 'firstRedEdge') is missing
 	 */
 	public int loadSidePairs() {

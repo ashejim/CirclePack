@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 /**
+ * @brief Specialized 'ClassLoader' so user can load self-written
+ *
  * Specialized 'ClassLoader' so user can load self-written 
  * 'PackExtender's.
  * @author Chris Brumgard

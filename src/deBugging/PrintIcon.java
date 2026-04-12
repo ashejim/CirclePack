@@ -10,6 +10,9 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
+/**
+ * @brief Print Icon.
+ */
 public class PrintIcon {
 	
 	public static void printImageIcon(ImageIcon IIcon,String name) {

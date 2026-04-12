@@ -17,6 +17,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
+ * @brief Independent java code that creates the 'CmdDetails.
+ *
  * Independent java code that creates the 'CmdDetails.html'
  * and 'CmdIndex.html' files that appear with the 'Help'
  * from from 'txt' files.

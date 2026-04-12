@@ -1,0 +1,113 @@
+\doxysection{Path\+Distance.\+java}
+\hypertarget{_path_distance_8java_source}{}\label{_path_distance_8java_source}\index{src/util/PathDistance.java@{src/util/PathDistance.java}}
+\doxymbox{\hyperlink{_path_distance_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00001}00001\ \textcolor{keyword}{package\ }util;}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00003}00003\ \textcolor{keyword}{import}\ java.awt.geom.Line2D;}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00004}00004\ \textcolor{keyword}{import}\ java.awt.geom.Path2D;}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00005}00005\ \textcolor{keyword}{import}\ java.awt.geom.PathIterator;}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00006}00006\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00007}00007\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00009}00009\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00010}00010\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00011}00011\ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00021}\doxymbox{\hyperlink{classutil_1_1_path_distance}{00021}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classutil_1_1_path_distance_a81d3efab339baa1007dfbff82fe18a3c}{PathDistance}}\ \{\ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00022}00022\ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00023}00023\ \ \ \ \ Path2D.Double\ myPath;}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00024}00024\ \ \ \ \ ArrayList<Line2D.Double>\ polySegments;}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00025}00025\ \ \ \ \ \textcolor{keywordtype}{double}\ thresh2;\ \textcolor{comment}{//\ square\ of\ the\ threshold\ (saves\ root,\ sign\ problems,\ etc.)}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00026}00026\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00027}00027\ \ \ \ \ \textcolor{comment}{//\ constructor(s)}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00028}\doxymbox{\hyperlink{classutil_1_1_path_distance_a81d3efab339baa1007dfbff82fe18a3c}{00028}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classutil_1_1_path_distance_a81d3efab339baa1007dfbff82fe18a3c}{PathDistance}}(Path2D.Double\ thePath,\textcolor{keywordtype}{double}\ thd)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00029}00029\ \ \ \ \ \ \ \ \ myPath=thePath;}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00030}00030\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPath==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00031}00031\ \ \ \ \ \ \ \ \ \ \ \ \ myPath=\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a23c728f5a90fcc5cafd5a75ddeae6ccb}{ClosedPath}};}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00032}00032\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00033}00033\ \ \ \ \ \ \ \ \ thresh2=thd*thd;}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00034}00034\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classutil_1_1_path_distance_a79c7d2af3f8c068b908aafa9433eb800}{initData}}();}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00035}00035\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00036}00036\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00037}\doxymbox{\hyperlink{classutil_1_1_path_distance_a6a3f235ee9bf2f130b50f7f622d14be3}{00037}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classutil_1_1_path_distance_a6a3f235ee9bf2f130b50f7f622d14be3}{PathDistance}}(\textcolor{keywordtype}{double}\ thd)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00038}00038\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(\textcolor{keyword}{null},thd);}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00039}00039\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00040}00040\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00041}\doxymbox{\hyperlink{classutil_1_1_path_distance_a3d85b408d3730495523e6a6c7c0290ad}{00041}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classutil_1_1_path_distance_a3d85b408d3730495523e6a6c7c0290ad}{PathDistance}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00042}00042\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(\textcolor{keyword}{null},.01);}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00043}00043\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00044}00044\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00048}\doxymbox{\hyperlink{classutil_1_1_path_distance_a79c7d2af3f8c068b908aafa9433eb800}{00048}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classutil_1_1_path_distance_a79c7d2af3f8c068b908aafa9433eb800}{initData}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00049}00049\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPath==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00050}00050\ \ \ \ \ \ \ \ \ \ \ \ \ polySegments=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00051}00051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00052}00052\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00053}00053\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00054}00054\ \ \ \ \ \ \ \ \ polySegments\ =\ \textcolor{keyword}{new}\ ArrayList<Line2D.Double>();}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00055}00055\ \ \ \ \ \ \ \ \ ArrayList<double[]>\ polyPoints\ =\ \textcolor{keyword}{new}\ ArrayList<double[]>();}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00056}00056\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ coords\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[6];}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00057}00057\ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (PathIterator\ pi\ =\ myPath.getPathIterator(\textcolor{keyword}{null});\ !pi.isDone();\ pi.next())\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ type\ will\ be\ SEG\_LINETO,\ SEG\_MOVETO,\ or\ SEG\_CLOSE}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Because\ our\ path\ is\ composed\ of\ straight\ lines}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ type\ =\ pi.currentSegment(coords);}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00062}00062\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ We\ record\ a\ double\ array\ of\ \{segment\ type,\ x\ coord,\ y\ coord\}}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ pathIteratorCoords\ =\ \{type,\ coords[0],\ coords[1]\};}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ polyPoints.add(pathIteratorCoords);}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00065}00065\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00067}00067\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ start\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];\ \textcolor{comment}{//\ To\ record\ where\ each\ polygon\ starts}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00068}00068\ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00069}00069\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ polyPoints.size();\ i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00070}00070\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ we're\ not\ on\ the\ last\ point,\ return\ a\ line\ from\ this\ point\ to\ the\ next}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ currentElement\ =\ polyPoints.get(i);}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00072}00072\ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00073}00073\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ We\ need\ a\ default\ value\ in\ case\ we've\ reached\ the\ end\ of\ the\ ArrayList}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00074}00074\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ nextElement\ =\ \{-\/1,\ -\/1,\ -\/1\};}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00075}00075\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ <\ polyPoints.size()\ -\/\ 1)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00076}00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextElement\ =\ polyPoints.get(i\ +\ 1);}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00077}00077\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00078}00078\ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Make\ the\ lines}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currentElement[0]\ ==\ PathIterator.SEG\_MOVETO)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start\ =\ currentElement;\ \textcolor{comment}{//\ Record\ where\ the\ polygon\ started\ to\ close\ it\ later}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00083}00083\ \ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextElement[0]\ ==\ PathIterator.SEG\_LINETO)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ polySegments.add(}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Line2D.Double(}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currentElement[1],\ currentElement[2],}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextElement[1],\ nextElement[2]}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (nextElement[0]\ ==\ PathIterator.SEG\_CLOSE)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ polySegments.add(}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Line2D.Double(}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currentElement[1],\ currentElement[2],}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start[1],\ start[2]}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00100}00100\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00101}00101\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00108}\doxymbox{\hyperlink{classutil_1_1_path_distance_a00e44a7aabb4fb1b7ec78c0ae5133bed}{00108}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ \doxymbox{\hyperlink{classutil_1_1_path_distance_a00e44a7aabb4fb1b7ec78c0ae5133bed}{distance}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00109}00109\ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00110}00110\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Line2D.Double>\ pS=polySegments.iterator();}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00112}00112\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (pS.hasNext())\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Line2D.Double\ line=pS.next();}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Line2D.Double.ptSegDistSq(line.getX1(),line.getY1(),line.getX2(),}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ line.getY2(),z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}},z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}})<thresh2)}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00119}00119\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00121}00121\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00122}00122\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00123}00123\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00124}00124\ \}}
+\DoxyCodeLine{\Hypertarget{_path_distance_8java_source_l00125}00125\ }
+
+\end{DoxyCode}

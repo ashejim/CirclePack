@@ -1,5 +1,8 @@
 package util;
 
+/**
+ * @brief Des Face.
+ */
 public class DesFace {
 	int orient;	/* half-plane, +1 upper, -1 lower */
 	int[] verts[];	/* vertices, always listed 0, 1, infty */

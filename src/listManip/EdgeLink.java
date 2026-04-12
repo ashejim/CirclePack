@@ -28,6 +28,8 @@ import util.StringUtil;
  */
 
 /**
+ * @brief Linked list for edges of circle packings.
+ *
  * Linked list for edges of circle packings. 
  * @author kens
  *
@@ -65,7 +67,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * not necessarily extended edges
+	 * @brief not necessarily extended edges
 	 * @param p PackData
 	 * @param datastr String
 	 */
@@ -74,7 +76,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Allow extended edges
+	 * @brief Allow extended edges
 	 * @param p PackData
 	 * @param items Vector<String>
 	 * @param xtd, boolean, yes for extended
@@ -92,7 +94,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 
 	/**
-	 * not necessarily extended edges
+	 * @brief not necessarily extended edges
 	 * @param p PackData
 	 * @param items
 	 */
@@ -101,7 +103,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Not associated with any PackData
+	 * @brief Not associated with any PackData
 	 * @param datastr String
 	 */
 	public EdgeLink(String datastr) {
@@ -109,7 +111,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Convert 'HalfLink' to 'EdgeLink'
+	 * @brief Convert 'HalfLink' to 'EdgeLink'
 	 * @param hlink HalfLink
 	 */
 	public EdgeLink(HalfLink hlink) {
@@ -122,7 +124,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Convert 'GraphLink' to 'EdgeLink'
+	 * @brief Convert 'GraphLink' to 'EdgeLink'
 	 * @param glink GraphLink
 	 */
 	public EdgeLink(GraphLink glink) {
@@ -143,7 +145,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Initiate empty list
+	 * @brief Initiate empty list
 	 * @param p
 	 */
 	public EdgeLink(PackData p) {
@@ -151,7 +153,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/** 
-	 * Enforce legality of vertex indices if 'packData' is not null. 'edge.v' 
+	 * @brief Enforce legality of vertex indices if 'packData' is not null. 'edge.v' 
 	 * and 'edge.w' must be positive.
 	 * @param edge EdgeSimple
 	 * @return boolean, true if added
@@ -180,7 +182,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/** 
-	 * Enforce legality of vertex indices if and only 'packData' is not null
+	 * @brief Enforce legality of vertex indices if and only 'packData' is not null
 	 * @param v int
 	 * @param w int
 	 * @return boolean, true if added
@@ -194,7 +196,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Remove occurances of 'edge' if in same order
+	 * @brief Remove occurances of 'edge' if in same order
 	 * @param edge EdgeSimple
 	 * @return int count
 	 */
@@ -211,7 +213,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Remove redundant edges in the given list (with the 
+	 * @brief Remove redundant edges in the given list (with the 
 	 * same order).
 	 * @param edgelist EdgeLink, can be null
 	 * @return int count
@@ -227,7 +229,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Remove repeat occurances of 'edge', irrespective 
+	 * @brief Remove repeat occurances of 'edge', irrespective 
 	 * of order of entries.
 	 * @param edge EdgeSimple
 	 * @return int count
@@ -246,7 +248,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Remove repeat edges in the given list, either 
+	 * @brief Remove repeat edges in the given list, either 
 	 * order.
 	 * @param edgelist EdgeLink, can be null
 	 * @return int count
@@ -278,7 +280,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 
 	/**
-	 * Add links to this list (if it is associated with PackData); 
+	 * @brief Add links to this list (if it is associated with PackData); 
 	 * flag also permits 'extended' edges.
 	 * @param datastr String
 	 * @param xtd boolean, true==>allow 'extended' edges
@@ -291,7 +293,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Add links to this list (if it is associated with PackData)
+	 * @brief Add links to this list (if it is associated with PackData)
 	 * @param items Vector<String>
 	 * @param xtd boolean, true==>allow 'hex_extended' edges
 	 * @return int count
@@ -1059,7 +1061,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Make a distinct copy of this linked list, 
+	 * @brief Make a distinct copy of this linked list, 
 	 * checking against the current edgelist's 
 	 * packData setting. If 'unordered' is true,
 	 * then only put one of <v,w> or <w,v> in
@@ -1082,7 +1084,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Abut an 'EdgeLink' to the end of this one.
+	 * @brief Abut an 'EdgeLink' to the end of this one.
 	 * @param moreEL
 	 * @return count of new edges (some may be improper, some redundant)
 	 */
@@ -1101,7 +1103,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Abut a 'HalfLink' to the end of this one.
+	 * @brief Abut a 'HalfLink' to the end of this one.
 	 * @param hlink HalfLink
 	 * @return count
 	 */
@@ -1119,7 +1121,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Given v, return w if this list contains (v,w) (use first occurrence).
+	 * @brief Given v, return w if this list contains (v,w) (use first occurrence).
 	 * Return -1 if not found.
 	 * @param v
 	 * @return w or -1
@@ -1135,7 +1137,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Given w, return v if this list contains (v,w) (use first occurrence).
+	 * @brief Given w, return v if this list contains (v,w) (use first occurrence).
 	 * Return -1 if not found.
 	 * @param w
 	 * @return v or -1
@@ -1151,7 +1153,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Given NodeLink and EdgeLink, return NodeLink of entries v so (v,w)
+	 * @brief Given NodeLink and EdgeLink, return NodeLink of entries v so (v,w)
 	 * is in EdgeLink for some w in NodeLink (without repeats)
 	 * @param el, EdgeLink
 	 * @param nl, NodeLink
@@ -1177,7 +1179,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 
 	/**
-	 * Given NodeLink and EdgeLink, return NodeLink of entries w so (v,w)
+	 * @brief Given NodeLink and EdgeLink, return NodeLink of entries w so (v,w)
 	 * is in EdgeLink for some v in NodeLink (without repeats)
 	 * @param el, EdgeLink
 	 * @param nl, NodeLink 
@@ -1203,7 +1205,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 
 	/**
-	 * Is <v,w> an edge in the list? if 'unordered' is
+	 * @brief Is <v,w> an edge in the list? if 'unordered' is
 	 * true, then also check for <w,v>.
 	 * @param v int
 	 * @param w int
@@ -1222,7 +1224,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Is <v,w> in the list?
+	 * @brief Is <v,w> in the list?
 	 * @param v int
 	 * @param w int
 	 * @return first index or -1 if not found
@@ -1274,7 +1276,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 */
 	
 	/**
-	 * Rotate EdgeLink so it starts with 'indx'.
+	 * @brief Rotate EdgeLink so it starts with 'indx'.
 	 * @param link @see EdgeLink
 	 * @param indx new starting index
 	 * @return @see EdgeLink, null if empty or on error.
@@ -1298,7 +1300,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}	
 	
 	/**
-	 * Return a new 'EdgeLink' with same order, 
+	 * @brief Return a new 'EdgeLink' with same order, 
 	 * but edges are each reversed. E.g., converting
 	 * 'oldNew' list to 'newOld' list.
 	 * @return new 'EdgeLink', possibly empty.
@@ -1316,7 +1318,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Return a new 'EdgeLink' whose order is the reverse of this,
+	 * @brief Return a new 'EdgeLink' whose order is the reverse of this,
 	 * and whose edges are reverse of this.
 	 * @return new 'EdgeLink', possibly empty
 	 */
@@ -1333,7 +1335,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 
 	/**
-	 * Given 'VertexMap' with <old, new>, translate 'elink' 
+	 * @brief Given 'VertexMap' with <old, new>, translate 'elink' 
 	 * from old to the new indices.
 
 	 * CAREFUL: convention is that 'vmap' is {new,old} for
@@ -1360,7 +1362,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 
 	/**
-	 * Pick first edge off a string. Return null on failure.
+	 * @brief Pick first edge off a string. Return null on failure.
 	 * @param p PackData
 	 * @param str String
 	 * @return EdgeSimple, null if none found
@@ -1379,7 +1381,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 		
 	/**
-	 * Pick first edge off a string. Return null on failure.
+	 * @brief Pick first edge off a string. Return null on failure.
 	 * @param p PackData
 	 * @param flagsegs Vector<Vector<String>>
 	 * @return EdgeSimple, null if none found
@@ -1391,7 +1393,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Given a vertex list, convert it (to the extent possible) to 
+	 * @brief Given a vertex list, convert it (to the extent possible) to 
 	 * an edge list. If 'extended' flag true, do "hex-extended" 
 	 * edges, which pass through interior vertices so same number 
 	 * of edges are on each side. See 'axis_extend' call. 
@@ -1456,7 +1458,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
     }
     
     /**
-     * Find index of <v,w> or <w,v> in the list
+     * @brief Find index of <v,w> or <w,v> in the list
      * @param edgelist EdgeLink
      * @param v int
      * @param w int
@@ -1477,7 +1479,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
     }
     
     /**
-     * traditional my be able to remove
+     * @brief traditional my be able to remove
      * Return random entry from edgelist; caution, does not adjust
      * for repeat entries.
      * @param edgelist
@@ -1492,7 +1494,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
     }
 	 
 	 /**
-	  * Set 'packData' (which helps determine eligibility of entries)
+	  * @brief Set 'packData' (which helps determine eligibility of entries)
 	  * @param p PackData
 	  */
 	 public void setPackData(PackData p) {
@@ -1512,7 +1514,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	 }
 	 
 	/**
-	 * Create a list of entries as a string
+	 * @brief Create a list of entries as a string
 	 * @return String, null on error
 	 */
 	public String toString() {

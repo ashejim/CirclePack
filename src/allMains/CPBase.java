@@ -42,6 +42,8 @@ import util.CallPacket;
 import variables.VarControl;
 
 /**
+ * @brief This is abstract class intended to serve as the head for
+ *
  * This is abstract class intended to serve as the head for 
  * programs that do circle packing. It allows some generic 
  * flexibility (i.e., 'msg()'), sets up the key general 
@@ -196,7 +198,7 @@ public abstract class CPBase {
 
 
 	/**
-	 * For finding correct path to 'Resources' directory in jar file
+	 * @brief For finding correct path to 'Resources' directory in jar file
 	 * @param path, String
 	 * @return URL
 	 */
@@ -294,7 +296,7 @@ public abstract class CPBase {
     }
 
 	/**
-	 * Set the screendump image format: choices are "jpg", "png",
+	 * @brief Set the screendump image format: choices are "jpg", "png",
 	 * "gif", "bmp", "wbmp".
 	 * @param img
 	 * @return 1 on success
@@ -316,7 +318,7 @@ public abstract class CPBase {
 	}
 	
 	/**
-	 * Put user function text in 'FtnSpecification' if it
+	 * @brief Put user function text in 'FtnSpecification' if it
 	 * parses correctly.
 	 * @param ftnstr
 	 * @return boolean, false for function parsing error
@@ -333,7 +335,7 @@ public abstract class CPBase {
 	}
 
     /**
-	 * Put user function text in 'ParamSpecification' if it
+	 * @brief Put user function text in 'ParamSpecification' if it
 	 * parses correctly.
      * @param paramstr
      * @return boolean, false on parsing error
@@ -351,7 +353,7 @@ public abstract class CPBase {
 	}
 
     /**
-     * The parser treats 'z' as denoting a complex variable. 
+     * @brief The parser treats 'z' as denoting a complex variable. 
      * This tells parser to set z to a specific value and evaluate 
      * the function.
      * @param z, Complex

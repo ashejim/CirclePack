@@ -9,6 +9,8 @@ import javax.swing.filechooser.FileView;
 import javax.swing.plaf.metal.MetalIconFactory;
 
 /**
+ * @brief a FileView class that provides a 22x22 image of each GIF, JPG, or PNG
+ *
  * a FileView class that provides a 22x22 image of each GIF, JPG, or PNG 
  * file for its icon. This could be SLOW for large images, as we
  *simply load the real image and then scale it.
@@ -78,6 +80,13 @@ public class ThumbNailFileView extends FileView {
     public int getIconHeight() { return 22; }
     public int getIconWidth() { return 22; }
     
+    /**
+     * @brief TODO: Document paintIcon.
+     * @param c
+     * @param g
+     * @param x
+     * @param y
+     */
     public void paintIcon(Component c, Graphics g, int x, int y) {
       g.drawImage(getImage(), x, y, c);
     }

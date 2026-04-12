@@ -12,6 +12,8 @@ import java.awt.geom.Point2D;
 import allMains.CPBase;
 
 /**
+ * @brief ===== active canvas cursor mode ====
+ *
  * ===== active canvas cursor mode ====
  * This is for using pencil icon to draw paths, but allowing
  * for multiple closed components; see PATHmode for single components.
@@ -54,8 +56,18 @@ public class MULTImode extends MyCanvasMode {
 		}
 	}
 	
+	/**
+	 * @brief TODO: Document pressed3.
+	 * @param aW
+	 * @param e
+	 */
 	public void pressed3(ActiveWrapper aW,MouseEvent e) {} // override
 
+	/**
+	 * @brief TODO: Document clicked1.
+	 * @param aW
+	 * @param e
+	 */
 	public void clicked1(ActiveWrapper aW,MouseEvent e) {} // override
 
 	// close path and display 
@@ -78,8 +90,19 @@ public class MULTImode extends MyCanvasMode {
 		aW.setDefaultMode();
 	}
 		
+	/**
+	 * @brief TODO: Document released3.
+	 * @param aW
+	 * @param e
+	 */
 	public void released3(ActiveWrapper aW,MouseEvent e) {} // override
 	
+	/**
+	 * @brief TODO: Document dragged.
+	 * @param aW
+	 * @param point
+	 * @return int
+	 */
 	public int dragged(ActiveWrapper aW,Point point) { // override
 		CPdrawing cpS=aW.getCPDrawing();
 		Point2D.Double pt2D=(Point2D.Double)cpS.pt2RealPt(point,

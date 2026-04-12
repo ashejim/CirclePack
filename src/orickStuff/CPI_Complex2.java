@@ -1,5 +1,8 @@
 package orickStuff;
 
+/**
+ * @brief C P I_ Complex2.
+ */
 public class CPI_Complex2 {
 	double re, im;
 
@@ -184,7 +187,7 @@ public class CPI_Complex2 {
 	};
 
 	/**
-	 * Apply z --> (z-lambda)/(1-lambda*z)
+	 * @brief Apply z --> (z-lambda)/(1-lambda*z)
 	 * @param lambda double
 	 * @return this
 	 */
@@ -200,7 +203,7 @@ public class CPI_Complex2 {
 	};
 
 	/**
-	 * Apply z->(z-a)/(1-conj(a)*z)
+	 * @brief Apply z->(z-a)/(1-conj(a)*z)
 	 * @param a CPI_Complex2
 	 * @return
 	 */

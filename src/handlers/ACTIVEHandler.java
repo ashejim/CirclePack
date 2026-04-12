@@ -15,6 +15,8 @@ import canvasses.ActiveWrapper;
 import canvasses.MyCanvasMode;
 
 /**
+ * @brief Active canvasses are those which show packings and allow
+ *
  * Active canvasses are those which show packings and allow 
  * user interaction --- toolbars, menus, canvas modes, etc. 
  * Currently there are three: the main canvas and the two 

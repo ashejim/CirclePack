@@ -3,6 +3,8 @@ package util;
 import packing.PackData;
 
 /**
+ * @brief An object for carrying results both ways in command string
+ *
  * An object for carrying results both ways in command string 
  * execution calls.
  * 

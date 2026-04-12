@@ -5,7 +5,7 @@ import circlePack.PackControl;
 import packing.CPdrawing;
 
 /**
- * PostOptions simply holds the default PostScript options for a given circle 
+ * @brief PostOptions simply holds the default PostScript options for a given circle 
  * packing and supplies it to 'post' commands when specific flags are lacking. 
  * The boolean data elements here correspond with checkboxes in the PSPanel, 
  * 'tailored' is  the user-specified text string in PSPanel (for advanced users).
@@ -77,7 +77,7 @@ import packing.CPdrawing;
 		}
 		
 		/**
-		 * returns the state of the various booleans
+		 * @brief returns the state of the various booleans
 		 * @return
 		 */
 		public Boolean[] getSavedStates() {
@@ -102,7 +102,7 @@ import packing.CPdrawing;
 		}
 		
 		/**
-		 * Store the string of post flags from the PSPanel;
+		 * @brief Store the string of post flags from the PSPanel;
 		 * e.g., when active pack changes, have to save what was
 		 * appearing here so it can be reestablished.
 		 * @param flagstr
@@ -112,7 +112,7 @@ import packing.CPdrawing;
 		}
 
 		/**
-		 * Converts the current circle options into strings to be concatenated 
+		 * @brief Converts the current circle options into strings to be concatenated 
 		 * with 'post' calls. Can return null if there is nothing checked for posting. 
 		 * @return String
 		 */

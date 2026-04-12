@@ -39,7 +39,9 @@ import util.StringUtil;
 import util.TriAspect;
 import widgets.RadiiSliders;
 
-/** 
+/**
+ * @brief PackExtender for exploring and computing discrete Schwarzian derivative maps.
+ * 
  * This is code for exploring discrete Schwarzian derivatives.
  * One goal is to handle packings on the sphere, another is to
  * study projective structures on more general Riemann surfaces. 
@@ -1841,7 +1843,7 @@ public class SchwarzMap extends PackExtender {
 	} // end of 'cmdParser'
 
 	/**
-	 * Return the schwarzian coefficient and tangency point 
+	 * @brief Return the schwarzian coefficient and tangency point 
 	 * for edge <v,w>
 	 * @param v int
 	 * @param w int
@@ -1863,7 +1865,7 @@ public class SchwarzMap extends PackExtender {
 	}
 	
 	/**
-	 * Store schwarzian for oriented edge <v,w> and <w,v> in
+	 * @brief Store schwarzian for oriented edge <v,w> and <w,v> in
 	 * their face TriAspect's. Note that faces f/g are 
 	 * left/right of <v,w>, resp. 
 	 * @param v int
@@ -1893,7 +1895,7 @@ public class SchwarzMap extends PackExtender {
 	}
 	
 	/**
-	 * If 'domainTri' and 'rangeTri' have data, then for 
+	 * @brief If 'domainTri' and 'rangeTri' have data, then for 
 	 * each face, use the tangency points to compute the 
 	 * Mobius map. So faceMobs[f] maps domain face f to 
 	 * range face f. 

@@ -3,6 +3,8 @@ package util;
 import javax.swing.JLabel;
 
 /**
+ * @brief In applet/application, the following code will run and stop this thread.
+ *
  *
  * @author jimrolf
  * In applet/application, the following code will run and stop this thread.

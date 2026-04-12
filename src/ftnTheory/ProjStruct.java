@@ -39,6 +39,8 @@ import util.TriAspect;
 import util.TriData;
 
 /**
+ * @brief Projective structures on triangulated surfaces (such as
+ *
  * Projective structures on triangulated surfaces (such as
  * affine structures on tori) require face-based data 
  * structures. Though these are partially available in 
@@ -692,7 +694,7 @@ public class ProjStruct extends PackExtender {
 	}
 	
 	/**
-	 * Compute skew and its derivative at 'v' face-by-face using 'labels'
+	 * @brief Compute skew and its derivative at 'v' face-by-face using 'labels'
 	 * with labels at v multiplied by factor t>0. Also, return
 	 * the derivative w.r.t. t.
 	 * @param p @see PackData
@@ -715,7 +717,7 @@ public class ProjStruct extends PackExtender {
 	}
 	
 	/** 
-	 * Return weak consistency error for interior 'v'.
+	 * @brief Return weak consistency error for interior 'v'.
 	 * This is product of leftlength/rightlength for all 
 	 * faces in star(v).
 	 * @param p @see PackData
@@ -739,7 +741,7 @@ public class ProjStruct extends PackExtender {
 	}	
 
 	/**
-	 * Compute weak, strong consistency, and angle sum errors, both in l^2
+	 * @brief Compute weak, strong consistency, and angle sum errors, both in l^2
 	 * and sup norm.
 	 * @return double[6]: 
 	 *   [0]=weak l^2;[1]=weak max (among vertices);
@@ -792,7 +794,7 @@ public class ProjStruct extends PackExtender {
 	}
 
 	/**
-	 * Return angle sum error at 'v' based on TriAspect 'labels'.
+	 * @brief Return angle sum error at 'v' based on TriAspect 'labels'.
 	 * @param v int, vertex index in packing
 	 * @return double, abs(error); 0 if 'aim' <=0
 	 */
@@ -804,7 +806,7 @@ public class ProjStruct extends PackExtender {
 	}
 	
 	/**
-	 * For debugging.
+	 * @brief For debugging.
 	 * @param p PackData
 	 * @param fnum int
 	 * @param asp TriAspect[]
@@ -824,7 +826,7 @@ public class ProjStruct extends PackExtender {
 	}
 	
 	/**
-	 * Compute angle sum at 'v' face-by-face using 'labels'
+	 * @brief Compute angle sum at 'v' face-by-face using 'labels'
 	 * with labels at v multiplied by factor t>0. Also, return
 	 * the derivative w.r.t. t.
 	 * @param p @see PackData
@@ -847,7 +849,7 @@ public class ProjStruct extends PackExtender {
 	}
 
 	/**
-	 * Return 'edge' consistency error computed from 'labels'. 
+	 * @brief Return 'edge' consistency error computed from 'labels'. 
 	 * For interior edge, this is t*t', where t is the ratio 
 	 * of 'labels' for 'edge' in lefthand face, t' is that of
 	 * righthand face. 
@@ -875,7 +877,7 @@ public class ProjStruct extends PackExtender {
 	
 
 	/**
-	 * For setting prescribed parameters for affine torus
+	 * @brief For setting prescribed parameters for affine torus
 	 * construction.
 	 * @param p PackData
 	 * @param A double
@@ -931,7 +933,7 @@ public class ProjStruct extends PackExtender {
 	}
 	
 	/**
-	 * Compute angle sum at 'v' face-by-face using 'labels'
+	 * @brief Compute angle sum at 'v' face-by-face using 'labels'
 	 * stored in 'triData' with current label at v multiplied 
 	 * by factor t>0. Also, return the derivative w.r.t. t.
 	 * TODO: also use packData inv distances.
@@ -955,7 +957,7 @@ public class ProjStruct extends PackExtender {
 	}
 	
 	/**
-	 * Change label for v by multiplicative 'factor' in 
+	 * @brief Change label for v by multiplicative 'factor' in 
 	 * all faces containing 'v' 
 	 * @param p PackData 
 	 * @param v int
@@ -974,7 +976,7 @@ public class ProjStruct extends PackExtender {
 		return 1;
 	}
 	/**
-	 * Change side lengths at v by 'factor' in every face containing v.
+	 * @brief Change side lengths at v by 'factor' in every face containing v.
 	 * @param p PackData 
 	 * @param v vertex
 	 * @param factor double
@@ -995,7 +997,7 @@ public class ProjStruct extends PackExtender {
 	
 	
 	/** 
-	 * Eucl iterative routines copied from 'oldReliable', but
+	 * @brief Eucl iterative routines copied from 'oldReliable', but
 	 * now applied to 'labels' face-by-face. For each vertex, 
 	 * a factor t>0 is computed and the label at 'v' is 
 	 * multiplied by t in every face containing v. There are 
@@ -1160,7 +1162,7 @@ public class ProjStruct extends PackExtender {
 
 
 	/** 
-	 * Eucl riffle of side lengths to get aims: for each vertex v, 
+	 * @brief Eucl riffle of side lengths to get aims: for each vertex v, 
 	 * find factor f>0 so that multiplying all 'sides' from v by f 
 	 * in all faces containing v gives the 'aim' anglesum at v. 
 	 * Currently, do all vertices with aim>0, whether bdry or 
@@ -1251,7 +1253,7 @@ public class ProjStruct extends PackExtender {
 	}
 
 	/** 
-	 * Find adjustment to 'sides' in faces at 'v' to move
+	 * @brief Find adjustment to 'sides' in faces at 'v' to move
 	 * anglesum closer to aim; use secant method, with limit
 	 * on max increase or decrease (so repeated calls may be 
 	 * needed). Calling routine responsible for actually 
@@ -1320,7 +1322,7 @@ public class ProjStruct extends PackExtender {
 	}
 	
 	/**
-	 * Compute angle sum at v face-by-face using the TriAspect
+	 * @brief Compute angle sum at v face-by-face using the TriAspect
 	 * 'sides' data, with sides ending at v multiplied by 'factor'.
 	 * @param p PackData
 	 * @param v int
@@ -1344,7 +1346,7 @@ public class ProjStruct extends PackExtender {
 	}
 	
 	/**
-	 * Compute "effective" radii (Gerald Orick's term) from centers
+	 * @brief Compute "effective" radii (Gerald Orick's term) from centers
 	 * and store as packing radii: NOTE: use centers because 'labels'
 	 * are in homogeneous coordinates; this doesn't have much meaning
 	 * under side-pairing in multiply-connected situations.
@@ -1390,7 +1392,7 @@ public class ProjStruct extends PackExtender {
 	}
 	
 	/**
-	 * create the 'aspects' array for 'p', putting current
+	 * @brief create the 'aspects' array for 'p', putting current
 	 * radii/centers from packData into 'TriData.labels'
 	 * and 'TriAspect.center' slots.
 	 * @param p PackData
@@ -1418,7 +1420,7 @@ public class ProjStruct extends PackExtender {
 	}
 
 	/**
-	 * Given an interior edge <v,w> find log of ratio of
+	 * @brief Given an interior edge <v,w> find log of ratio of
 	 * its t values: If f,g are the left/right faces,
 	 * t_f is labels[w]/labels[v] in f, t_g is 
 	 * labels[v]/labels[w] in g.
@@ -1443,7 +1445,7 @@ public class ProjStruct extends PackExtender {
 	}
 
 	/**
-  	 * Return upper/lower bounds on factor by which sides 
+  	 * @brief Return upper/lower bounds on factor by which sides 
   	 * in 'asps' can be adjusted at v while preserving the 
   	 * triangle inequality for all faces containing v.
   	 * @param p PackData
@@ -1476,7 +1478,7 @@ public class ProjStruct extends PackExtender {
   	}
  	  
 	/**
-	 * Change label for v in all faces containing 'v' 
+	 * @brief Change label for v in all faces containing 'v' 
 	 * by multiplicative 'factor'.
 	 * 
 	 * TODO: Is this OBE? do I want to change radius in packing?
@@ -1499,7 +1501,7 @@ public class ProjStruct extends PackExtender {
 	}
 
 	/**
-	 * Given a linked list of faces, find successive locations
+	 * @brief Given a linked list of faces, find successive locations
 	 * and draw the faces, and/or circles. Idea is to have
 	 * 'last_face' already in place at front of list, then layout
 	 * a closed face chain ending with 'last_face'; this can
@@ -1546,7 +1548,7 @@ public class ProjStruct extends PackExtender {
 	}
 	
 	/**
-	 * Draw a linked list of faces
+	 * @brief Draw a linked list of faces
 	 * @param p PackData
 	 * @param aspList LinkedList<TriAspect>, precomputed list
 	 * @param drawFirst; if true, draw the first face

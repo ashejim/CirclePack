@@ -7,6 +7,8 @@ import allMains.CirclePack;
 import util.StringUtil;
 
 /**
+ * @brief For processing and storage of information on CirclePack variables
+ *
  * For processing and storage of information on CirclePack variables 
  * of the "slider" type. This goes in the "Pack Info -> Variables" tab
  * in the lower panel. They are specified, when setting variables, by
@@ -38,7 +40,7 @@ public class SliderPacket {
 	}
 
 	/**
-	 * Processing the 'specification' string that came as "[SLIDER {spec}]".
+	 * @brief Processing the 'specification' string that came as "[SLIDER {spec}]".
 	 * (The 'value' is specified separately, maintained by 'SliderPanel'.)
 	 * @param stString String, spec string
 	 */
@@ -87,7 +89,7 @@ public class SliderPacket {
 	}
 
 	/** 
-	 * name maintained in 'SliderPanel' class
+	 * @brief name maintained in 'SliderPanel' class
 	 * @return String
 	 */
 	public String getVarName() {

@@ -1,5 +1,8 @@
 package orickStuff;
 
+/**
+ * @brief C P I_ Ball3 View.
+ */
 public class CPI_Ball3View {
     static CPI_Vector3 X = new CPI_Vector3(1.0, 0.0, 0.0);
     static CPI_Vector3 Y = new CPI_Vector3(0.0, 1.0, 0.0);

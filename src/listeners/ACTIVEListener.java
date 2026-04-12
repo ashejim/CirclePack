@@ -13,6 +13,8 @@ import circlePack.PackControl;
 import exceptions.InOutException;
 
 /**
+ * @brief Listener for the 'ActiveWrapper's, the canvasses with
+ *
  * Listener for the 'ActiveWrapper's, the canvasses with
  * lots of user interaction.
  * @author kens

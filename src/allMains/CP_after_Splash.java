@@ -5,6 +5,8 @@ import java.awt.EventQueue;
 import circlePack.PackControl;
 
 /**
+ * @brief The 'main' here is called by 'SplashMain' after it displays
+ *
  * The 'main' here is called by 'SplashMain' after it displays
  * the splash screen. This class processes any command line 
  * arguments. 'CirclePack' is initiated in a static call, but

@@ -9,6 +9,8 @@ import mytools.MyPopupMenu;
 import mytools.MyToolHandler;
 
 /**
+ * @brief This is the listener for the personal "myTools" tool bar.
+ *
  * This is the listener for the personal "myTools" tool bar. See
  * MyToolListener for more details.
  */

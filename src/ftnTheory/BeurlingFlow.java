@@ -11,6 +11,8 @@ import packing.PackData;
 import packing.PackExtender;
 import util.CmdStruct;
 /**
+ * @brief Routine for experimenting with the Beurling-Riemann Mapping
+ *
  * Routine for experimenting with the Beurling-Riemann Mapping 
  * Theorem. (An earlier version was 'Beurling_flow.java'.)
  * The goal is to use an ambient function Phi, continuous and
@@ -133,7 +135,7 @@ public class BeurlingFlow extends PackExtender {
 	}
 	
 	/**
-	 * evaluate the Beurling function 'h(z)' for given z. Default (0)
+	 * @brief evaluate the Beurling function 'h(z)' for given z. Default (0)
 	 * to use 'Function' tab. Others are put in explicitly.
 	 * @param z
 	 * @return
@@ -164,7 +166,7 @@ public class BeurlingFlow extends PackExtender {
 	}
 	
 	/**
-	 * Here's the guts: adjust the radii of 'packData' to move
+	 * @brief Here's the guts: adjust the radii of 'packData' to move
 	 * toward the Beurling map. defaults: t=1, xpnt=1,option=0
 	 * @param t, double, relaxation parameter, usually in [0,1]
 	 * @param xpnt, double, exponent: replaces h(z) by h^{xpnt}(z).

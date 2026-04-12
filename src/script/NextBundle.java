@@ -8,6 +8,8 @@ import mytools.MyTool;
 import allMains.CPBase;
 
 /**
+ * @brief Panel containing a "next" button as 'MyTool' and a
+ *
  * Panel containing a "next" button as 'MyTool' and a
  * button for returning to top of script. This can be
  * used various places, scriptbar, 'MainFrame', 'PairFrame',

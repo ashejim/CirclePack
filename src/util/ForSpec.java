@@ -3,6 +3,8 @@ package util;
 import allMains.CPBase;
 
 /**
+ * @brief Utility class to store "for" loop specifications.
+ *
  * Utility class to store "for" loop specifications.
  * @author kens
  *

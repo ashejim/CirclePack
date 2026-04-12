@@ -11,6 +11,8 @@ import javax.swing.JTextField;
 import complex.Complex;
 
 /**
+ * @brief Utility panel with name and number field for complex number input
+ *
  * Utility panel with name and number field for complex number input
  * and display in scientific notation
  */
@@ -95,7 +97,7 @@ public class zNumField extends JPanel {
 	}
 
 	/**
-	 * Set parts to "0" or "-0" if too small
+	 * @brief Set parts to "0" or "-0" if too small
 	 * @param z Complex
 	 */
 	public void setValue(complex.Complex z) {

@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
+ * @brief A JTextField for entering/displaying formated real
+ *
  * A JTextField for entering/displaying formated real 
  * values. Can specify 3 to 15 digit length (default 8) 
  * and specify a title that goes above the field. 
@@ -95,7 +97,7 @@ public class xNumField extends JPanel {
 	}
 
 	/**
-	 * Enter double in scientific notation; if < e-14, set
+	 * @brief Enter double in scientific notation; if < e-14, set
 	 * to "0" or "-0"; 
 	 * @param x double
 	 */

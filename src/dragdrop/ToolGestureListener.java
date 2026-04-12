@@ -8,6 +8,8 @@ import mytools.MyTool;
 
 
 /**
+ * @brief This starts the drag by recognizing a gesture (i.
+ *
  * This starts the drag by recognizing a gesture (i.e., with mouse)
  * that a drag operation has been initiated. It packages up the
  * command (the 'transferable') and notifies the drag/drop system.

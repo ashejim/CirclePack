@@ -43,6 +43,8 @@ import util.StringUtil;
 import util.ViewBox;
 
 /**
+ * @brief Tilings are combinatorial, locally planar patterns
+ *
  * Tilings are combinatorial, locally planar patterns 
  * of tiles, the tiles being n-gons for n>=1. This 
  * extender is for generating, manipulating and displaying 
@@ -1707,7 +1709,7 @@ public class ConformalTiling extends PackExtender {
 	}
 
 	/**
-	 * Create a maximal packing for the fully realized 
+	 * @brief Create a maximal packing for the fully realized 
 	 * (i.e., builtMode=3) version of the given 'TileData'.
 	 * (This can be used, eg., as 'canonicalPack'.) 
 	 * This means that the tiles are barycentrically 
@@ -1754,7 +1756,7 @@ public class ConformalTiling extends PackExtender {
 	}
 
 	/**
-	 * Given TileData, create a corresponding minimal packing,
+	 * @brief Given TileData, create a corresponding minimal packing,
 	 * then split every tile edge with two new vertices. The 
 	 * vertex 'mark's in the new packing are set to {1,2,3,4} 
 	 * for {tile baryVert,original tile vert, newvert1, newvert2}, 
@@ -1818,7 +1820,7 @@ public class ConformalTiling extends PackExtender {
 	}
 	
 	/**
-	 * Create a new barycentric packing using 'TileData', 
+	 * @brief Create a new barycentric packing using 'TileData', 
 	 * but then reset its 'tileData' to reflect the dual 
 	 * tiling. This way, the packing is unchanged. 
 	 * 
@@ -1852,7 +1854,7 @@ public class ConformalTiling extends PackExtender {
 	}
 	
 	/**
-	 * Create a packing with the quad tiling associated to given
+	 * @brief Create a packing with the quad tiling associated to given
 	 * TileData. Note: this has 'half' tiles along the boundary, ones
 	 * whose baryVert's are bdry vertices. Thus, the packing returned
 	 * here is slightly different than that that would be created for
@@ -1875,7 +1877,7 @@ public class ConformalTiling extends PackExtender {
 	}
 	
 	/**
-	 * Create the barycentric packing for a new tiling, namely
+	 * @brief Create the barycentric packing for a new tiling, namely
 	 * that obtained from the current tiling by breaking each
 	 * n-gon tile T into n pentagons with twist pattern. Use the 
 	 * original vertices of T along with two vertices for each
@@ -1949,7 +1951,7 @@ public class ConformalTiling extends PackExtender {
 	}
 	
 	/**
-	 * Create the barycentric packing for a new tiling, namely
+	 * @brief Create the barycentric packing for a new tiling, namely
 	 * that obtained from the current tiling by breaking each
 	 * n-gon tile into n 5-gons in the corners and a central n-gon
 	 * @param td TileData
@@ -2015,7 +2017,7 @@ public class ConformalTiling extends PackExtender {
 	}
 
 	/**
-	 * Create a packing from the current 'canonicalPack' 
+	 * @brief Create a packing from the current 'canonicalPack' 
 	 * for the tiling which subdivides the edges of the 
 	 * original tiles. Thus a tile with n edges leads to 
 	 * 2n triangular tiles in this new tiling. Return a
@@ -2076,7 +2078,7 @@ public class ConformalTiling extends PackExtender {
 	}
 
 	/**
-	 * The 'delta' subdivision divides an n tile into
+	 * @brief The 'delta' subdivision divides an n tile into
 	 * a central n tile and 2n triangles.
 	 * @param td TileData
 	 * @return PackData
@@ -2153,7 +2155,7 @@ public class ConformalTiling extends PackExtender {
 	}
 
 	/**
-	 * The 'star' of a tiling breaks each tile with n edges
+	 * @brief The 'star' of a tiling breaks each tile with n edges
 	 * into n triangle tiles with new edges to the vertices. 
 	 * @param td TileData
 	 * @return PackData
@@ -2193,7 +2195,7 @@ public class ConformalTiling extends PackExtender {
 	}
 
 	/**
-	 * The 'hex' decomposition of a tiling adds a vertex to each
+	 * @brief The 'hex' decomposition of a tiling adds a vertex to each
 	 * edge and connects the next edge. So an n-tile ends up as
 	 * a central n-tile and n triangle tiles, generalizing 'hex_refine'.
 	 * @param td TileData
@@ -2253,7 +2255,7 @@ public class ConformalTiling extends PackExtender {
 	}
 
 	/**
-	 * Using data from the parent packing, compute the interior
+	 * @brief Using data from the parent packing, compute the interior
 	 * angle sum at vertex of given index in tile's augmented vertices.
 	 * @param tile Tile
 	 * @param av int, index of vertex
@@ -2293,7 +2295,7 @@ public class ConformalTiling extends PackExtender {
 	}
 	
 	/**
-	 * Get the canonicalPack if it exists
+	 * @brief Get the canonicalPack if it exists
 	 * @return
 	 */
 	public PackData getCanonicalPack() {
@@ -2301,7 +2303,7 @@ public class ConformalTiling extends PackExtender {
 	}
 	
 	/**
-	 * For drawing euclidean tiles; centers set in 'store_eucl', recurse
+	 * @brief For drawing euclidean tiles; centers set in 'store_eucl', recurse
 	 * while there are subtiles.
 	 * @param 
 	 */
@@ -2329,7 +2331,7 @@ public class ConformalTiling extends PackExtender {
 	}
 
 	/**
-	 * recursively set eucl tile vert locations for subdivision 
+	 * @brief recursively set eucl tile vert locations for subdivision 
 	 * rule to given depth; tile rules must have optional 
 	 * position data from *.r rules file. The new centers are 
 	 * in 'p' and vertices 'mark' is set to depth
@@ -2382,7 +2384,7 @@ public class ConformalTiling extends PackExtender {
 	}
    	
 	/**
-	 * This creates a new 'TileData' for given 'depth' 
+	 * @brief This creates a new 'TileData' for given 'depth' 
 	 * with tiles reindexed from 1. The given 'tData' 
 	 * is depth 0.
 	 * @param tData TileData, 
@@ -2415,7 +2417,7 @@ public class ConformalTiling extends PackExtender {
 	}
 
 	/**
-	 * Return vector of tiles at 'depth' obtained 
+	 * @brief Return vector of tiles at 'depth' obtained 
 	 * recursively starting with given 'tile'.
 	 * @param tile Tile 
 	 * @param int depth; large value gives maximal depth
@@ -2441,7 +2443,7 @@ public class ConformalTiling extends PackExtender {
 	}
 	
 	/** 
-	 * Return vector of indices of tiles in packData.tileData which together
+	 * @brief Return vector of indices of tiles in packData.tileData which together
 	 * with all ancestors in tiling hierarchy are marked (or all are unmarked). 
 	 * If no hierarchy, just check for tiles. Else, first determine depth of
 	 * packData.tileData, then serch to that depth using 'accumMarked'.
@@ -2489,7 +2491,7 @@ public class ConformalTiling extends PackExtender {
 	}
 	
 	/**
-	 * Return vector of tiles at 'depth' which are marked and whose parent 
+	 * @brief Return vector of tiles at 'depth' which are marked and whose parent 
 	 * tiles in tiling hierarchy are all marked as well. Recursive.
 	 * @param tile Tile
 	 * @param depth int
@@ -2520,7 +2522,7 @@ public class ConformalTiling extends PackExtender {
 	}
 	
 	/**
-	 * Given a packing, check if it has 'TileData' with 'tileCount'
+	 * @brief Given a packing, check if it has 'TileData' with 'tileCount'
 	 * equal to some depth of tilingdata in the existing hierarchy. If
 	 * not, return -1;
 	 * @param p
@@ -2542,7 +2544,7 @@ public class ConformalTiling extends PackExtender {
 	}
 	
 	/**
-	 * Return vector of 'VertAim' objects (w,ang) where w is augmented vert
+	 * @brief Return vector of 'VertAim' objects (w,ang) where w is augmented vert
 	 * (or else regular vert) of tile 'tnum' and ang the sum of angles at w 
 	 * in the faces of that tile. 
 	 * 
@@ -2597,7 +2599,7 @@ public class ConformalTiling extends PackExtender {
 	}
 	
 	/**
-	 * When getting copy of saved packing, must trace, make copies, and relink
+	 * @brief When getting copy of saved packing, must trace, make copies, and relink
 	 * the various 'TileData'. This involves resetting 'MyTileData' and
 	 * 'TDParent', setting 'TileData.packData', etc. This must be reset
 	 * by calling routine.
@@ -2713,6 +2715,8 @@ public class ConformalTiling extends PackExtender {
 }
 
 /**
+ * @brief local class to hold {vert,aim} pairs from 'feedback' command
+ *
  * local class to hold {vert,aim} pairs from 'feedback' command
  * @author kens
  *

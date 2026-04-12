@@ -9,10 +9,13 @@ import geometry.EuclMath;
 import geometry.HyperbolicMath;
 import packing.PackData;
 
+/**
+ * @brief Exponential functionality for circle packing experiments.
+ */
 public class Exponential {
 
 	/** 
-	 * Compute radii of spiral pack with parameters a,b > 0. Unit circle 
+	 * @brief Compute radii of spiral pack with parameters a,b > 0. Unit circle 
 	 * at 0, tangent circle, radius a, on x-axis, circle, rad b, in first 
 	 * quad. Underlying Rule: product of radii at ends of edge equals product 
 	 * of radii for vertices on two sides of that edge. This generates 
@@ -142,7 +145,7 @@ public class Exponential {
 	}
 
 	/** 
-	 * A circle C=C(r,z) whose disc is in the puncture plane has aspect 
+	 * @brief A circle C=C(r,z) whose disc is in the puncture plane has aspect 
 	 * ratio AR(C)= r/|z|. Any triple of eucl circles generates a Doyle 
 	 * spiral which winds around some point p in the plane. This computes 
 	 * the spiral point 'p' and the two doyle parameters 'a', and 'b'

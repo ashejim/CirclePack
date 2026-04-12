@@ -8,13 +8,15 @@ import math.Point3D;
 import util.ColorUtil;
 
 /**
+ * @brief Static methods for various colorizing actions.
+ *
  * Static methods for various colorizing actions.
  * @author kens 2/2020
  */
 public class ColorCoding {
 
 	/** 
-	 * Color gradations of area of faces, index 1-19 (blues) in pack p.
+	 * @brief Color gradations of area of faces, index 1-19 (blues) in pack p.
 	 * @param p PackData, face colors are changed in p 
 	 * @return int, 1 okay, 0 ????
 	 */
@@ -44,7 +46,7 @@ public class ColorCoding {
 	  }
 	
 	/** 
-	 * Compare ratio of eucl areas of faces from p and q. Color faces
+	 * @brief Compare ratio of eucl areas of faces from p and q. Color faces
 	 * of p using 2-color ramp, lower indices indicating q larger, 
 	 * uppers indicating p larger.
 	 * @param p Packdata, colors changed
@@ -83,7 +85,7 @@ public class ColorCoding {
 	} 
 
 	/**
-	 * Compare ratio of hyperbolic areas of faces from p and q. 
+	 * @brief Compare ratio of hyperbolic areas of faces from p and q. 
 	 * In 2-color ramp, lower indices for q larger, uppers for p 
 	 * larger.
 	 * @param p Packdata, colors changed
@@ -127,7 +129,7 @@ public class ColorCoding {
 	  } 
 	  
 	  /**
-	   * Record eucl areas of 3-space faces based on 'p.xyz' data 
+	   * @brief Record eucl areas of 3-space faces based on 'p.xyz' data 
 	   * in 'p.utilDouble'. 
 	   * @param p PackData, 'p.utilDouble' is changed
 	   * @return count; 0 if 'p.xyz' data not available, -1 on error

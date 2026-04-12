@@ -12,6 +12,8 @@ import circlePack.PackControl;
 import frames.PairedFrame;
 
 /**
+ * @brief An 'ActiveWrapper' for canvases in the "PairedFrame".
+ *
  * An 'ActiveWrapper' for canvases in the "PairedFrame".
  * We override many mouse operations.
  * @author kens
@@ -34,7 +36,7 @@ public class PairWrapper extends ActiveWrapper {
 	}
 	
 	/**
-	 * Is the map pair connection on?
+	 * @brief Is the map pair connection on?
 	 * @return, boolean
 	 */
 	private boolean areConnected() {

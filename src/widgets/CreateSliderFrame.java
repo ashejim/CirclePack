@@ -12,6 +12,8 @@ import packing.PackData;
 import util.StringUtil;
 
 /**
+ * @brief Create a slider of given type frame for packing p.
+ *
  * Create a slider of given type frame for packing p. Processing
  * takes extra work because optional command strings may occur as
  * quoted strings.
@@ -21,7 +23,7 @@ import util.StringUtil;
 public class CreateSliderFrame {
 
 	/**
-	 * Create with specified objects, default to all
+	 * @brief Create with specified objects, default to all
 	 * @param p PackData
 	 * @param type int; 0=radii, 1=schwarzians
 	 * @param items Vector<String>, may be null or empty
@@ -64,7 +66,7 @@ public class CreateSliderFrame {
 	}
 
 	/** Note: because there may be command strings in quotes
-	 * and these may contain semicolons and flags and 'Obj',
+	 * @brief and these may contain semicolons and flags and 'Obj',
 	 * we have to process flagSegs by hand.
 	 * TODO: Because of semicolons, command parser may have
 	 * incorrectly broken up the command strings. Have to

@@ -1,6 +1,8 @@
 package exceptions;
 
 /**
+ * @brief For errors in creating paths, graphic objects, postscript objects, etc.
+ *
  * For errors in creating paths, graphic objects, postscript objects, etc.
  * @author kens
  *

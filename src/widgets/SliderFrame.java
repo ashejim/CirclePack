@@ -33,6 +33,8 @@ import util.ResultPacket;
 import util.xNumField;
 
 /**
+ * @brief Frame for multiple sliders.
+ *
  * Frame for multiple sliders.
  * Has a control panel for buttons, e.g., "Update", 'Help"
  * and a 'sliderPanel' that holds multiple horizontal slides in
@@ -40,7 +42,6 @@ import util.xNumField;
  * @author kstephe2, 5/2020
  *
  */
-
 public abstract class SliderFrame extends JFrame implements ActionListener {
 	
 	private static final long 
@@ -321,7 +322,7 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Set the "Help" popup information
+	 * @brief Set the "Help" popup information
 	 * @param strbld StringBuilder
 	 */
 	public void setHelpText(StringBuilder strbld) {
@@ -329,7 +330,7 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Only for SCHFLOWER, print or clear error in 'addField'
+	 * @brief Only for SCHFLOWER, print or clear error in 'addField'
 	 * @param errstr String
 	 */
 	public void setErrorText(String errstr) {
@@ -341,7 +342,7 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Execute a command
+	 * @brief Execute a command
 	 * @param cmdstr String
 	 * @return int
 	 */
@@ -379,7 +380,7 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Reset the minimum value common to all sliders; should
+	 * @brief Reset the minimum value common to all sliders; should
 	 * not trigger change commands
 	 * @param minval double
 	 */
@@ -395,7 +396,7 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Reset the maximum value common to all sliders; should
+	 * @brief Reset the maximum value common to all sliders; should
 	 * not trigger change commands
 	 * @param minval double
 	 */
@@ -423,7 +424,7 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Set variable "Obj" to given string value
+	 * @brief Set variable "Obj" to given string value
 	 * @param obj
 	 */
 	public void setObjVariable(String obj) {

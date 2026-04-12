@@ -35,6 +35,8 @@ import mytools.MyTool;
 import util.StringUtil;
 
 /**
+ * @brief Create consoles which handle user entry of CirclePack commands:
+ *
  * Create consoles which handle user entry of CirclePack commands:
  *  (1) Package commands to send to 'commandStrParser',
  *  (2) Maintain a "Command:" line for user entry of commands, 
@@ -132,7 +134,7 @@ public class MyConsole extends CmdSource implements KeyListener { // ActionListe
 	}
 
 	/**
-	 * Create the panel with a command line, and possibly progress indicator,
+	 * @brief Create the panel with a command line, and possibly progress indicator,
 	 * command return count, and one line message window.
 	 * @param wide int
 	 */
@@ -295,7 +297,7 @@ public class MyConsole extends CmdSource implements KeyListener { // ActionListe
 	public void keyTyped(KeyEvent evt) {}
 
 	/** 
-	 * try tab-completion on substring starting 
+	 * @brief try tab-completion on substring starting 
 	 * at last ';'. For strings starting with '|', 
 	 * modify the first 5 characters, e.g., '|CA| '.
 	 * @param command string; containing command to complete
@@ -364,7 +366,7 @@ public class MyConsole extends CmdSource implements KeyListener { // ActionListe
 	  }
 	
 	  /**
-	   * Add to the command completion hash table
+	   * @brief Add to the command completion hash table
 	   * 'commandMap'
 	   * @param str
 	   */
@@ -415,7 +417,7 @@ public class MyConsole extends CmdSource implements KeyListener { // ActionListe
 	  }
 	  
 	  /**
-	   * set background color of 'cmdline'
+	   * @brief set background color of 'cmdline'
 	   * @param color Color
 	   */
 	  public void setBackgroundColor(Color color) {
@@ -431,7 +433,7 @@ public class MyConsole extends CmdSource implements KeyListener { // ActionListe
 	  }
 			
 	  /**
-	   * if there's a numberShow window, show how many commands were executed.
+	   * @brief if there's a numberShow window, show how many commands were executed.
 	   * @param count int
 	   */
 	  public void showCmdCount(int count) {
@@ -440,7 +442,7 @@ public class MyConsole extends CmdSource implements KeyListener { // ActionListe
 	  }
 
 	  /**
-	   * If there's a consoleMsgs line, show messages.
+	   * @brief If there's a consoleMsgs line, show messages.
 	   * @param msg String
 	   */
 	  public void dispConsoleMsg(String msg) {

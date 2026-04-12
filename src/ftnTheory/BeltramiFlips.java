@@ -20,6 +20,8 @@ import packing.PackExtender;
 import util.CmdStruct;
 
 /**
+ * @brief Suppose that it is shown that the maps associated with
+ *
  * Suppose that it is shown that the maps associated with
  * circle packings of random Delaunay triangulations of a region 
  * do in fact converge to a conformal mapping. We might leverage
@@ -152,7 +154,7 @@ public class BeltramiFlips extends PackExtender {
 	}
 	
 	/**
-	 * Compute and enter illegality values in 'edgeData', then
+	 * @brief Compute and enter illegality values in 'edgeData', then
 	 * sort. 
 	 * Caution: edges can be invalidated when flips are done
 	 * @return, double[2]: number of positive illegalities, L2 norm
@@ -205,7 +207,7 @@ public class BeltramiFlips extends PackExtender {
 	}
 	
 	/**
-	 * Consider N random edge flips.
+	 * @brief Consider N random edge flips.
 	 * @param N
 	 */
 	public int gogo(int N) {
@@ -237,7 +239,7 @@ public class BeltramiFlips extends PackExtender {
 	}
 
 	/**
-	 * Consider N flips in sorted 'edgeData' order
+	 * @brief Consider N flips in sorted 'edgeData' order
 	 * @param N
 	 */
 	public int goOrder(int N) {
@@ -260,7 +262,7 @@ public class BeltramiFlips extends PackExtender {
 	}
 	
 	/**
-	 * Compute 'legality' value; namely, for quad {v,r,w.l}
+	 * @brief Compute 'legality' value; namely, for quad {v,r,w.l}
 	 * for edge {v,w}, return 
 	 * x = log[(ang(l)+ang(r))/(ang(v)+ang(w))].
 	 * If x > 0, then edge can and should be flipped and x
@@ -276,7 +278,7 @@ public class BeltramiFlips extends PackExtender {
 	}
 	
 	/**
-	 * Get the 4 angles for the quad determined by edge {v,w} 
+	 * @brief Get the 4 angles for the quad determined by edge {v,w} 
 	 * after locations are adjusted by affine map associated 
 	 * to Beltrami coeff. NOTE: use coeff attached to the 
 	 * centroid of the four vertices. 
@@ -318,7 +320,7 @@ public class BeltramiFlips extends PackExtender {
 	}
 	
 	/**
-	 * If edge {v,w} can and should be flipped, then flip it.
+	 * @brief If edge {v,w} can and should be flipped, then flip it.
 	 * @param v
 	 * @param w
 	 * @return 0 if bdry edge, failed to flip, or flip not warranted
@@ -342,7 +344,7 @@ public class BeltramiFlips extends PackExtender {
 	}
 	
 	/**
-	 * Compute the affine map associated with Beltrami coeff z.
+	 * @brief Compute the affine map associated with Beltrami coeff z.
 	 * If z=u+iv, then for [ a b;c d] have a=(1+u)/2, d=(1-u)/2, 
 	 * and b=c=v/2. (In theory, want |z|<1 to preserve orientation, 
 	 * but that is irrelevant as to whether flip is legal. However,
@@ -366,7 +368,7 @@ public class BeltramiFlips extends PackExtender {
 	}
 	
 	/**
-	 * Specify Beltrami coefficient at point z. Currently,
+	 * @brief Specify Beltrami coefficient at point z. Currently,
 	 * testing various hard coded examples. Typically, want
 	 * to specify function in "Function Panel", though it
 	 * will often involve real/imaginary parts.

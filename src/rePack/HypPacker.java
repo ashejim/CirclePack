@@ -7,6 +7,23 @@ import packing.PackData;
 import util.TriData;
 
 /**
+ * @brief Hyperbolic circle-packing repacker using DCEL data structures.
+ *
+ * Implements Thurston's iterative radius-adjustment algorithm for
+ * the Poincaré disc model of the hyperbolic plane.  Radii are stored
+ * internally as "x-radii" (x = 1 − e^{−2h} for hyperbolic radius h),
+ * which are more numerically stable than hyperbolic radii near 0.
+ * During repacking, x-radii are temporarily converted to Euclidean
+ * labels for the UNM computation, then converted back.
+ *
+ * The iteration logic mirrors {@link EuclPacker#continueRiffle} with
+ * the same UNM prediction and superstep acceleration, but with
+ * hyperbolic angle-sum formulas.
+ *
+ * @see EuclPacker  Euclidean counterpart.
+ * @see RePacker    Abstract base class.
+ * @author Ken Stephenson
+ *
  * First attempt to modify methods to accommodate DCEL data. Begin
  * with oldReliable. Other routines remain here but are not used (1/2021)
  * @author kstephe2 1/2021
@@ -33,7 +50,7 @@ public class HypPacker extends RePacker {
     }
     
     /**
-     * Load relevant data: NOTE!! that x-radii are converted to 
+     * @brief Load relevant data: NOTE!! that x-radii are converted to 
      * (s-radii)^2 for computations (converted back in 'reapRadii').
      * @return int - LOADED or FAILURE
      */
@@ -400,7 +417,7 @@ public class HypPacker extends RePacker {
 	}
 	
 	/**
-	 * Generic call; computes both radii and centers (use 'repack' 
+	 * @brief Generic call; computes both radii and centers (use 'repack' 
 	 * for radii only). 
 	 * @param cycles, int, limit on recompute cycles; no effect in Orick's method
 	 * @return int; may be number of cycles used.
@@ -431,7 +448,7 @@ public class HypPacker extends RePacker {
 	}
 	
 	/**
-	 * Call to Orick's code in GOpacker using 'SolverFunction' C code.
+	 * @brief Call to Orick's code in GOpacker using 'SolverFunction' C code.
 	 * For maximal packing in disc computes centers and radii in concert. 
 	 * @return 1 on success, exceptions thrown on error
 	 */
@@ -447,7 +464,7 @@ public class HypPacker extends RePacker {
 	}
 	
 	/**
-     * Original repack algorithm. Used, e.g., with 
+     * @brief Original repack algorithm. Used, e.g., with 
      * overlap packings, where the more sophisticated Java routines and
      * C methods of Orick may fail.
      * This manipulates radii in 'pdcel.triData' structure, so user must 
@@ -515,7 +532,7 @@ public class HypPacker extends RePacker {
     }
 
     /**
-     * Copied from '*_radcalc'. This uses data in
+     * @brief Copied from '*_radcalc'. This uses data in
      * 'TriData' structure, so it knows the geometry.
      * @param v int
      * @param r double
@@ -573,7 +590,7 @@ public class HypPacker extends RePacker {
     }
     
     /**
-     * Static up/down (or down/up) Perron version of oldReliable.
+     * @brief Static up/down (or down/up) Perron version of oldReliable.
      * Not intended for speed, rather to try to ensure monotone 
      * behavior of radii. We use the uniform neighbor model (which 
      * theoretically avoids overshooting); this also allows us to

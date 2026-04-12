@@ -12,6 +12,8 @@ import packing.PackData;
 import util.UtilPacket;
 
 /**
+ * @brief Geometry-independent dispatch layer for mathematical routines.
+ *
  * General calls to math routines; these call the relevant routine in
  * the appropriate geometry. I try to get similar names and arguments 
  * in every geometry. Only towards the end of this file are routines
@@ -22,7 +24,7 @@ import util.UtilPacket;
 public class CommonMath {
 	
 	/** 
-	 * Given radii, inv. distances, and geometry, place a triple of 
+	 * @brief Given radii, inv. distances, and geometry, place a triple of 
 	 * circles; first is at origin, next in standard orientation 
 	 * (namely, in eucl, on positive x-axis), last determined by 
 	 * law of cosines.
@@ -43,7 +45,7 @@ public class CommonMath {
 	}
 	
 	/**
-	 * Given a and g, apply a Mobius transformatin
+	 * @brief Given a and g, apply a Mobius transformatin
 	 * that places a at the origin and g on the 
 	 * positive imaginary axis.
 	 * @param p PackData
@@ -70,7 +72,7 @@ public class CommonMath {
 	}
 
 	/** 
-	 * Use radii, invdist, geometry, to place triple of circles; 
+	 * @brief Use radii, invdist, geometry, to place triple of circles; 
 	 * first is at origin, next on positive x-axis, last based
 	 * on law of cosines and 'invDist'. Calling routine typically
 	 * applies a Mobius to move to desired location. Recall invDist 
@@ -132,7 +134,7 @@ public class CommonMath {
 	}
 	
 	/**
-	 * Given oriented edge, compute data for opposite vertex
+	 * @brief Given oriented edge, compute data for opposite vertex
 	 * from naive data (i.e., data held in vertices at end 
 	 * of 'hedge' and edge itself, disregarding red edge data).
 	 * @param hedge HalfEdge
@@ -161,7 +163,7 @@ public class CommonMath {
 	}
 	
 	/**
-	 * Compute third circle given two centers, radii, inv distances;
+	 * @brief Compute third circle given two centers, radii, inv distances;
 	 * note 'ivdj' is for edge (j,j+1).
 	 * @param z0 Complex
 	 * @param z1 Complex
@@ -185,7 +187,7 @@ public class CommonMath {
 	}
 	
 	/**
-	 * Compute third circle give two centers, radii. This is the
+	 * @brief Compute third circle give two centers, radii. This is the
 	 * tangency case.
 	 * @param z0 Complex
 	 * @param z1 Complex
@@ -206,7 +208,7 @@ public class CommonMath {
 	} 
 	
 	/**
-	 * Get triangle incircle from corners (this is incircle of triangle, not 
+	 * @brief Get triangle incircle from corners (this is incircle of triangle, not 
 	 * dependent on the circles.
 	 * TODO: hyp computations don't seem right yet.
 	 * @param z0
@@ -225,7 +227,7 @@ public class CommonMath {
 	}
 	
 	/**
-	 * Given three points forming a cclw triangle, is
+	 * @brief Given three points forming a cclw triangle, is
 	 * given 'pt' on or inside the triangle? Spherical
 	 * points in (theta,phi) form.
 	 * @param pt Complex
@@ -245,7 +247,7 @@ public class CommonMath {
 	}
 	
 	/**
-	 * Give indication of relative error between centers/rad 
+	 * @brief Give indication of relative error between centers/rad 
 	 * of two circles in same geometry. Result is error as
 	 * fraction of average of the two radii. 
 	 * @param cs1 CircleSimple
@@ -261,7 +263,7 @@ public class CommonMath {
 	}
 	
 	/** 
-	 * Compute the distance between two points. Note that in the spherical
+	 * @brief Compute the distance between two points. Note that in the spherical
 	 * case, centers are expected to be (theta,phi) form.
 	 * @param z Complex
 	 * @param w Complex
@@ -278,7 +280,7 @@ public class CommonMath {
 	}
 	
 	/**
-	 * Compute inversive distance between two circles
+	 * @brief Compute inversive distance between two circles
 	 * @param z1 Complex
 	 * @param z2 Complex
 	 * @param r1 double
@@ -299,7 +301,7 @@ public class CommonMath {
 	}
 	
 	/**
-	 * Compute the length between circles given radii r1 and r2 
+	 * @brief Compute the length between circles given radii r1 and r2 
 	 * and inversive distance 'ivd'.
 	 * @param r1 double
 	 * @param r2 double
@@ -317,7 +319,7 @@ public class CommonMath {
 	}
 
 	/**
-	 * Compute angle at v0 in mutually tangent triple of circles with
+	 * @brief Compute angle at v0 in mutually tangent triple of circles with
 	 * given radii. Assume tangency. x-radii in hyp case.
 	 * @param rad0 double. 
 	 * @param rad1 double
@@ -343,7 +345,7 @@ public class CommonMath {
 	}
 
 	/**
-	 * Compute angle at r0 in triple of circles with
+	 * @brief Compute angle at r0 in triple of circles with
 	 * given radii (x-radii in hyp case) and inversive
 	 * distances (ivdj is for edge <j,j+1>.)
 	 * @param r0 double
@@ -375,7 +377,7 @@ public class CommonMath {
 	}
 
 	/**
-	 * Compute angle sum at 'v' given radius 'rad'. Note: if 'rad'
+	 * @brief Compute angle sum at 'v' given radius 'rad'. Note: if 'rad'
 	 * is <= 0, then computation uses current stored radius.
 	 * @param p PackData
 	 * @param v int
@@ -393,7 +395,7 @@ public class CommonMath {
 	}
 
 	/**
-	 *  Return center of incircle of triangle formed by
+	 * @brief  Return center of incircle of triangle formed by
 	 *  given points in given geometry. (For hyperbolic, we
 	 *  use the euclidean incircle, not very satisfactory.)
 	 *  @param p0 Complex
@@ -415,7 +417,7 @@ public class CommonMath {
 	}
 	
 	/**
-	 * Given three circles, find the incircle of the triangular
+	 * @brief Given three circles, find the incircle of the triangular
 	 * face they form. 
 	 * @param cs0 CircleSimple
 	 * @param cs1 CircleSimple
@@ -538,7 +540,7 @@ public class CommonMath {
 	}
 	
 	/**
-	 * Given 2 circles, find generalized tangency point. 
+	 * @brief Given 2 circles, find generalized tangency point. 
 	 * Actually, this is intermediate point with position 
 	 * weighted by the two radii (depending on geometry).
 	 * @param z1 Complex
@@ -560,7 +562,9 @@ public class CommonMath {
 	
 } // end of class
 
-/** 
+/**
+ * @brief For holding data on a face.
+ * 
  * For holding data on a face. Calling routine must know the
  * order of the data, the geometry, etc.
  * @author kstephe2

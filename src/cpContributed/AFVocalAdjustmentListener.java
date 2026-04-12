@@ -5,7 +5,9 @@ import java.awt.event.AdjustmentListener;
 import java.util.Date;
 import javax.swing.JScrollBar;
 
-/** 
+/**
+ * @brief AFVocalAdjustmentListener is an adjustment listener used to debug JScrollBar
+ * 
  * AFVocalAdjustmentListener is an adjustment listener used to debug JScrollBar
  * behavior. Each time an AdjustmentEvent is fired (i.e., the JScrollBar changes),
  * this listener will output status information for the JScrollBar and the

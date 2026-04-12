@@ -2,7 +2,7 @@ package microLattice;
 
 /**
  * TODO: I haven't yet replace the internal class 'Node' of 'MicroGrid'
- * with this type of 'LatNode'. 7/2020
+ * @brief with this type of 'LatNode'. 7/2020
  *  
  * A 'latNode' is a node used in 'MicroGrid'; it represents combinatoric
  * information on a node in the basic microgrid. Its location in the
@@ -21,6 +21,9 @@ import java.awt.Color;
 import allMains.CPBase;
 import complex.Complex;
 
+/**
+ * @brief Lat Node.
+ */
 public class LatNode {
 	public int myVert;		// index in 'packData'
 	public int level;       // microgrid level to which this belongs
@@ -41,7 +44,7 @@ public class LatNode {
 	}
 		
 	/** 
-	 * Find real world location given scaling
+	 * @brief Find real world location given scaling
 	 * @param microScaling double
 	 * @return Complex
 	 */

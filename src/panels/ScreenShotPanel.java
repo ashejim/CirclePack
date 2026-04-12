@@ -39,6 +39,8 @@ import exceptions.InOutException;
 import frames.AboutFrame;
 
 /**
+ * @brief Class for organizing screenshots; thumbnails, name,
+ *
  * Class for organizing screenshots; thumbnails, name, 
  * vectors of images in /tmp, etc. Image format is 
  * 'CPBase.IMG', which is typically 'jpg'.
@@ -92,7 +94,7 @@ public class ScreenShotPanel extends JPanel implements ActionListener, ImageObse
 	}
 
 	/**
-	 * Store the screen as a CPBase.IMG file (default jpg).
+	 * @brief Store the screen as a CPBase.IMG file (default jpg).
 	 * @param p PackData (null in case we want pair 
 	 * 		double screen)
 	 * @return boolean
@@ -206,7 +208,7 @@ public class ScreenShotPanel extends JPanel implements ActionListener, ImageObse
 	}
 
 	/**
-	 * Sets the JTextField to given directory
+	 * @brief Sets the JTextField to given directory
 	 * @param dir
 	 */
 	public void setDirectory(String dir) {
@@ -215,7 +217,7 @@ public class ScreenShotPanel extends JPanel implements ActionListener, ImageObse
 	}
 	
 	/**
-	 * Set the name base for the files
+	 * @brief Set the name base for the files
 	 * @param nf String
 	 */
 	public void setNameField(String nf) {

@@ -12,7 +12,9 @@ import exceptions.ParserException;
 import input.CommandStrParser;
 import math.Mobius;
 
-/** 
+/**
+ * @brief Routines for computing and storing data on a packing
+ * 
  * Routines for computing and storing data on a packing
  * that is a 1-torus. We assume that the radii have been
  * computed. On creation of a TorusData object,
@@ -128,7 +130,7 @@ public class TorusData {
 	}
 	
 	/**
-	 * Compute the Mobius transformation putting this torus 
+	 * @brief Compute the Mobius transformation putting this torus 
 	 * in standard position. This may change the packing data
 	 * by new layout, if necessary.
 	 * @param p PackData
@@ -182,7 +184,7 @@ public class TorusData {
 	}
 	
 	/**
-	 * Is this packing a topological torus?
+	 * @brief Is this packing a topological torus?
 	 * @param p PackData
 	 * @return boolean
 	 */
@@ -193,7 +195,7 @@ public class TorusData {
 	}
 
 	/**
-	 * Is this an affine torus, based on comparing
+	 * @brief Is this an affine torus, based on comparing
 	 * 'radii' for opposite 'redEdge's. (A regular
 	 * torus would have the same radius for a red vertex
 	 * in all its locations.) 
@@ -235,7 +237,7 @@ public class TorusData {
 	}
 
 	/**
-	 * Get array of corner locations in cclw order, indexed from 1.
+	 * @brief Get array of corner locations in cclw order, indexed from 1.
 	 * @param p PackData
 	 * @return ArrayList<Complex>, first entry null
 	 */
@@ -256,7 +258,7 @@ public class TorusData {
 	}
 	
 	/** 
-	 * Given a complex 'teich' Teichmuller parameter in the
+	 * @brief Given a complex 'teich' Teichmuller parameter in the
 	 * upper half plane, return its representative point 'tau'
 	 * in moduli space (the set z, Im(z)>0 so that Re(z) in 
 	 * (-1/2,1/2] and |z| \ge 1, z.y>0)

@@ -13,9 +13,10 @@ import math.Point3D;
 import packing.PackData;
 
 /**
- * Static methods for mathematical operations in hyperbolic geometry.
+ * @brief Static methods for mathematical operations in hyperbolic geometry
+ *        (Poincaré disc model).
  *
- * Our model of the hyperbolic plane is the unit disc with the Poincare
+ * Our model of the hyperbolic plane is the unit disc with the Poincaré
  * metric; namely ds=2|dz|/(1-z^2), so curvature is -1.
  * 
  * Note on radii: h is "hyperbolic" radius, value the user sets/sees,
@@ -81,7 +82,7 @@ public class HyperbolicMath{
 	public static final double OKERR = .000000001; 
 
 	/**
-	 * Gives the euclidean representation of a hyperbolic circle for display
+	 * @brief Gives the euclidean representation of a hyperbolic circle for display
 	 * purposes.
 	 * 
 	 * @param cs CircleSimple
@@ -92,7 +93,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Gives the euclidean representation of a hyperbolic 
+	 * @brief Gives the euclidean representation of a hyperbolic 
 	 * circle for display purposes.
 	 * 
 	 * @param h_center Complex
@@ -146,7 +147,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Converts circle data from eucl to hyp with x-rad. 
+	 * @brief Converts circle data from eucl to hyp with x-rad. 
 	 * For horocycle, x-rad is negative of eucl radius. 
 	 * Circles outside disc are scaled to become horocycles
 	 * and returned 'flag' is -1.
@@ -190,7 +191,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * temp (??) routine to convert s-radius to x-radius
+	 * @brief temp (??) routine to convert s-radius to x-radius
 	 * 
 	 * @param s double
 	 * @return double
@@ -202,7 +203,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * convert x-radius to s-radius. If x<=0, just return x; 
+	 * @brief convert x-radius to s-radius. If x<=0, just return x; 
 	 * might be intentionally negative.
 	 * 
 	 * @param x double
@@ -217,7 +218,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Converts 'x-radius' (the way hyp radii are generally stored) 
+	 * @brief Converts 'x-radius' (the way hyp radii are generally stored) 
 	 * to the 'h-radius', actual hyp radius (the user-friendly form). 
 	 *     x=1-exp(-2h) (@see PackData.getRadius).
 	 * 
@@ -239,7 +240,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Return the eucl rad for horocycle which overlaps a 
+	 * @brief Return the eucl rad for horocycle which overlaps a 
 	 * circle centered at origin and having x-radius x1. at 
 	 * origin having s-radius >0 given the cosine of the
 	 * overlap angle.
@@ -258,7 +259,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Given ordered triple of x-radii, compute cosine(angle) 
+	 * @brief Given ordered triple of x-radii, compute cosine(angle) 
 	 * at first circle in triangle formed by mutually tangent 
 	 * circles.
 	 *  
@@ -297,7 +298,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Given three x-radii for tangent circles, compute
+	 * @brief Given three x-radii for tangent circles, compute
 	 * up.value=cos(angle at e1).
 	 * @param x0 double
 	 * @param x1 double
@@ -309,7 +310,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Given three x-radii and inv distances, compute 
+	 * @brief Given three x-radii and inv distances, compute 
 	 * up.value=cos(angle at x0). (ivdj = inv_dist of edge <j,j+1>)
 	 * @param x0   double
 	 * @param x1   double
@@ -455,7 +456,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Find third circle in triple when first two are
+	 * @brief Find third circle in triple when first two are
 	 * horocycles with given centers (on unit circle),
 	 * three radii (neg eucl for horocycles), along 
 	 * with all inv distances. Want arc (z1,z0) to be
@@ -621,7 +622,7 @@ public class HyperbolicMath{
 
 	/**
 	 * TODO: some confusion on what this does and whether 
-	 * there's an error. All three circles are horocycles, so 
+	 * @brief there's an error. All three circles are horocycles, so 
 	 * centers z0, z1 should be on unit circle. Idea is to 
 	 * compute data for third circle. Third center should be 
 	 * centered on unit circle, so radius returned should be the 
@@ -761,7 +762,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Compute area of the hyperbolic triangle formed by circles 
+	 * @brief Compute area of the hyperbolic triangle formed by circles 
 	 * with given x-radii and inversive distances.
 	 * 
 	 * @param riP RadIvdPacket
@@ -786,7 +787,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Find "incircle", hyp center/radius of circle inscribed 
+	 * @brief Find "incircle", hyp center/radius of circle inscribed 
 	 * in trianglular face with given corners. ASSUME the three 
 	 * are mutually tangent; we convert to eucl circles and 
 	 * apply eucl algorithm. TODO: should also handle non-tangency cases
@@ -811,7 +812,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Get inscribed circle for any hyp triangle.
+	 * @brief Get inscribed circle for any hyp triangle.
 	 * 
 	 * @param z0 Complex
 	 * @param z1 Complex
@@ -895,7 +896,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Given two circles which are supposed to be tangent, 
+	 * @brief Given two circles which are supposed to be tangent, 
 	 * find the tangency point on the geodesic between them. 
 	 * Actually, return pt with distances from z1, z2
 	 * having proportions of euclidean radii rho1, rho2.
@@ -914,7 +915,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Find the hyp center of third circle when given
+	 * @brief Find the hyp center of third circle when given
 	 * hyp centers/x-radii of first two (already in place), 
 	 * x-radius of third, and inv distances ivd1/ivd2 of
 	 * third and first two. 
@@ -1078,7 +1079,7 @@ public class HyperbolicMath{
 	}
 	
 	/**
-	 * Given 2 hyp centers/x-radii and x-radius of third, return third as
+	 * @brief Given 2 hyp centers/x-radii and x-radius of third, return third as
 	 * CircleSimple. (Note: third circle has radius the negative of 
 	 * euclidean radius if it is a horocycle). ivdj=inv dist of edge 
 	 * <j,j+1>. No consistency check on first two circles 
@@ -1249,7 +1250,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Compute a the hyperbolic circle tangent to two given circles.
+	 * @brief Compute a the hyperbolic circle tangent to two given circles.
 	 * @param z0
 	 * @param z1
 	 * @param x0
@@ -1263,7 +1264,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Compute the hyperbolic distance in Poincare metric from z to w. 
+	 * @brief Compute the hyperbolic distance in Poincare metric from z to w. 
 	 * General formula inside disc is log((a+d)/(a-d)), where 
 	 * d = | z - w |, a = | 1 - zwb	 * |, with zwb = z*cconj(w).
 	 * 
@@ -1288,7 +1289,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Return cosh(len), 'len' = hyp length of edge between 
+	 * @brief Return cosh(len), 'len' = hyp length of edge between 
 	 * centers of circles with x-radii x1, x2, and inv distance 
 	 * 'ivd'. Return -1 if one or both radii negative (horocycle, 
 	 * so distance is infinite).
@@ -1322,7 +1323,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Return hyp length of edge between heyp centers of 
+	 * @brief Return hyp length of edge between heyp centers of 
 	 * circles with x-radii x1, x2, and inversive distance 'ivd'. 
 	 * Return -1 if length is infinite.
 	 * @param x1 double
@@ -1343,7 +1344,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * This version of 'acosh' (arccosh) takes x >= 1 and returns 
+	 * @brief This version of 'acosh' (arccosh) takes x >= 1 and returns 
 	 * the branch with acosh(x)>=0
 	 * 
 	 * @param x double
@@ -1354,7 +1355,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Given x-radius for hyp circle, return inversive distance 
+	 * @brief Given x-radius for hyp circle, return inversive distance 
 	 * to unit circle. Recall x=1-exp(-2h) where h is the hyperbolic 
 	 * radius. Inv dist is coth(h)=cosh(h)/sinh(h)
 	 * 
@@ -1368,7 +1369,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Normalizes hyperbolic packing by putting 'a' at origin and 
+	 * @brief Normalizes hyperbolic packing by putting 'a' at origin and 
 	 * (if g is not essentially equal to a) rotating so 'g' is on 
 	 * positive y-axis.
 	 * 
@@ -1418,7 +1419,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Given horocycle (center z, eucl radius rad) and Mobius 
+	 * @brief Given horocycle (center z, eucl radius rad) and Mobius 
 	 * transformation of the disc, return eucl radius of the 
 	 * image horocycle.
 	 * 
@@ -1442,7 +1443,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Find is point z is in the hyp triangle with corners p0,p1,p2. 
+	 * @brief Find is point z is in the hyp triangle with corners p0,p1,p2. 
 	 * Convert to Klein model so we can use eucl computation. Data 
 	 * is given in usual hyp form (i.e., Poincare model).
 	 * 
@@ -1462,7 +1463,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Given 'dist' in [0,1], return half-angle theta of arc of 
+	 * @brief Given 'dist' in [0,1], return half-angle theta of arc of 
 	 * unit circle subtended by geodesics having minimum eucl 
 	 * distance 'dist' from the origin.
 	 * 
@@ -1476,7 +1477,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Find angle-based barycentric coordinates for z wrt an 
+	 * @brief Find angle-based barycentric coordinates for z wrt an 
 	 * ideal hyperbolic triangle with ideal vertices z0, z1, z2 
 	 * (counterclockwise). Since angles are conformally invariant, 
 	 * compute by moving z to origin, find angles between the
@@ -1536,7 +1537,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Given points z1,z2,z3 and z in the unit disc, find 
+	 * @brief Given points z1,z2,z3 and z in the unit disc, find 
 	 * barycentric coords of z relative to hyperbolic triangle 
 	 * {z1,z2,z3}. For conversion the other way, see
 	 * BaryPoint.bp2Complex.
@@ -1637,7 +1638,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Given corners, convert 'BaryPoint' to complex value
+	 * @brief Given corners, convert 'BaryPoint' to complex value
 	 * 
 	 * @param bp BaryPoint
 	 * @param z0 Complex
@@ -1678,7 +1679,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Given two points in {z>=1.0} (typically on the hyperboloid), 
+	 * @brief Given two points in {z>=1.0} (typically on the hyperboloid), 
 	 * find outer normal to plane containing them and (0,0,1).
 	 * 
 	 * @param p1 Point3D
@@ -1714,7 +1715,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Converts a point w of the unit disc to a point on the 
+	 * @brief Converts a point w of the unit disc to a point on the 
 	 * upper sheet of the hyperboloid t^2-(x1^2+x2^2) = 1. 
 	 * To cover all possibilities, if w is on or outside the 
 	 * unit circle we return point with z-coord set to -|w|.
@@ -1732,7 +1733,7 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Convert 3D 'pt' on or above hyperboloid to unit disc.
+	 * @brief Convert 3D 'pt' on or above hyperboloid to unit disc.
 	 * 
 	 * @param pt Point3D
 	 * @return Complex

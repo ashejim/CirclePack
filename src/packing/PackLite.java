@@ -17,6 +17,8 @@ import listManip.HalfLink;
 import listManip.VertexMap;
 
 /**
+ * @brief PackLite simply holds packing data in compressed and highly
+ *
  * PackLite simply holds packing data in compressed and highly
  * structured form which avoids key words. Originally this was
  * intended for efficient communication between processors, 
@@ -131,7 +133,7 @@ public class PackLite {
 	}
 
 	/**
-	 * Populate from PackData 'p'.
+	 * @brief Populate from PackData 'p'.
 	 * 
 	 * @param p PackData
 	 * @return vertCount or 0 on error
@@ -141,7 +143,7 @@ public class PackLite {
 	}
 
 	/**
-	 * Create PackLite from PackData p with 'alp' as 
+	 * @brief Create PackLite from PackData p with 'alp' as 
 	 * suggested alpha vertex. The packing must be simply
 	 * connected. If a sphere, we puncture a face far
 	 * from alpha to create a faux bdry. We re-index 
@@ -341,7 +343,7 @@ public class PackLite {
 	}
 
 	/**
-	 * Convert 'this' into a packing. Note that if 'this' was
+	 * @brief Convert 'this' into a packing. Note that if 'this' was
 	 * created from 'parent', it may not reconstitute exactly.
 	 * E.g, if a sphere, we get the faux bdry, or if pruned,
 	 * it may be missing some vertices. In any case, 
@@ -440,7 +442,7 @@ public class PackLite {
 	}
 
 	/**
-	 * Place appropriate data (eg. radii) from 'this' in p. There are minimal
+	 * @brief Place appropriate data (eg. radii) from 'this' in p. There are minimal
 	 * compatibility checks, mainly 'nodeCount'.
 	 * 
 	 * @param p

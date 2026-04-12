@@ -3,6 +3,8 @@ package widgets;
 import javax.swing.JSlider;
 
 /**
+ * @brief This extension of JSlider holds an index and uses
+ *
  * This extension of JSlider holds an index and uses 
  * doubles for min, max, and value. 
  * ken, 6/2020
@@ -40,7 +42,7 @@ public class IndexedJSlider extends JSlider {
 	}
 	
 	/**
-	 * Have to convert to integer, but restrict to slider range
+	 * @brief Have to convert to integer, but restrict to slider range
 	 * @param x double
 	 * @return int
 	 */
@@ -53,7 +55,7 @@ public class IndexedJSlider extends JSlider {
 	}
 	
 	/**
-	 * For JSlider, have to convert value to integer
+	 * @brief For JSlider, have to convert value to integer
 	 * @param x double
 	 */
 	public void setMyValue(double x) {

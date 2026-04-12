@@ -37,6 +37,10 @@ public class JScrollPaneVertical extends JScrollPane {
 		private static final long 
 			serialVersionUID = 1L;
 
+		/**
+		 * @brief TODO: Document layoutContainer.
+		 * @param parent
+		 */
 		public void layoutContainer(Container parent) {
 			if (view != null) {
 				view.setPreferredSize(getViewport().getSize());

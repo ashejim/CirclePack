@@ -41,6 +41,8 @@ import util.StringUtil;
 import workshops.LayoutShop;
 
 /**
+ * @brief This static code parses the vector of display flag segments
+ *
  * This static code parses the vector of display flag segments 
  * for canvasses and carries out the specified display actions.
  * 
@@ -55,7 +57,7 @@ import workshops.LayoutShop;
 public class DisplayParser {
 	
 	/**
-	 * Display objects from packing p on its own 
+	 * @brief Display objects from packing p on its own 
 	 * 'CPDrawing' based on flag segments 
 	 * given in 'flagSegs' 
 	 * @param p PackData
@@ -67,7 +69,7 @@ public class DisplayParser {
 	}
 	
 	/**
-	 * Display objects from packing p on designated 
+	 * @brief Display objects from packing p on designated 
 	 * 'CPDrawing' based on flag segments given in 
 	 * 'flagSegs' 
 	 * @param p PackData

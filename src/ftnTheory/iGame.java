@@ -18,6 +18,9 @@ import packing.PackExtender;
 import util.CmdStruct;
 import util.ColorUtil;
 
+/**
+ * @brief i Game functionality for circle packing experiments.
+ */
 public class iGame extends PackExtender {
 	public int []corner;
 	public double GameAspect; // width/height of display screen 
@@ -101,7 +104,7 @@ public class iGame extends PackExtender {
 	}
 
 	/**
-	 * Carry out actions to repack and layout with current corners.
+	 * @brief Carry out actions to repack and layout with current corners.
 	 * @return 1
 	 */
 	public int fixUp() {
@@ -116,7 +119,7 @@ public class iGame extends PackExtender {
 	}
 	
 	/**
-	 * Choose a random interior vertex: distinct from player 
+	 * @brief Choose a random interior vertex: distinct from player 
 	 * if playerNum>=0.
 	 * @return player index or -1 on failure
 	 */
@@ -134,7 +137,7 @@ public class iGame extends PackExtender {
 	}
 	
 	/**
-	 * If player shares edge with target, player eats target,
+	 * @brief If player shares edge with target, player eats target,
 	 * that is, we collapse the edge. The new vertex has the
 	 * smaller index, we remove larger index, so have to update 
 	 * various data.
@@ -175,7 +178,7 @@ public class iGame extends PackExtender {
 	}
 	
 	/**
-	 * Modify the complex so edge <v,u> is collapsed.
+	 * @brief Modify the complex so edge <v,u> is collapsed.
 	 * @param v int
 	 * @param u int
 	 * @return int, 0 on error
@@ -192,7 +195,7 @@ public class iGame extends PackExtender {
 	}
 	
 	/**
-	 * Redisplay the screen depending on mode. 'guy' is the
+	 * @brief Redisplay the screen depending on mode. 'guy' is the
 	 * index of the player, or if guy=-1, use currentPlayer.
 	 * @return -1 on error
 	 */

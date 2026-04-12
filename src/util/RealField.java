@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
+ * @brief RealField is a panel-contained text field for
+ *
  * RealField is a panel-contained text field for 
  * displaying real values and optionally includes a 
  * text label title. It is intended as a re-sizable 
@@ -44,7 +46,7 @@ public class RealField extends JPanel {
 	}
 	
 	/**
-	 * Create a titled instance.
+	 * @brief Create a titled instance.
 	 * 
 	 * @param title the title of the instance; <code>null</code> for no title
 	 */
@@ -88,7 +90,7 @@ public class RealField extends JPanel {
 	}
 	
 	/** 
-	 * Set the real value to be displayed by this instance.
+	 * @brief Set the real value to be displayed by this instance.
 	 * @param value the new <code>double</code> value
 	 */
 	public void setValue(double value) {
@@ -97,7 +99,7 @@ public class RealField extends JPanel {
 	}
 	
 	/**
-	 * Get the real value currently displayed by this instance; variable '_{varname}'
+	 * @brief Get the real value currently displayed by this instance; variable '_{varname}'
 	 * are interpreted first.
 	 * 
 	 * @return <code>double</code> 
@@ -107,7 +109,7 @@ public class RealField extends JPanel {
 	}
 	
 	/**
-	 * Returns the uninterpreted string
+	 * @brief Returns the uninterpreted string
 	 * @return String
 	 */
 	public String getText() {
@@ -115,7 +117,7 @@ public class RealField extends JPanel {
 	}
 	
 	/**
-	 * Set whether or not the associated text field is editable.
+	 * @brief Set whether or not the associated text field is editable.
 	 * 
 	 * @param editable whether or not the text field is editable
 	 */
@@ -124,7 +126,7 @@ public class RealField extends JPanel {
 	}
 
 	/**
-	 * Determine whether or not the associated text field is editable.
+	 * @brief Determine whether or not the associated text field is editable.
 	 * 
 	 * @return a <code>boolean</code> value representing whether or not the text field is editable
 	 */
@@ -133,7 +135,7 @@ public class RealField extends JPanel {
 	}
 	
 	/**
-	 * Set the action command of the associated text field.
+	 * @brief Set the action command of the associated text field.
 	 * 
 	 * @param actionCommand the action command to set
 	 */
@@ -142,7 +144,7 @@ public class RealField extends JPanel {
 	}
 	
 	/**
-	 * Add an action listener to the associated text field.
+	 * @brief Add an action listener to the associated text field.
 	 * 
 	 * @param actionListener the ActionListener to add
 	 */

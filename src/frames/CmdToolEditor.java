@@ -17,6 +17,8 @@ import mytools.MyToolHandler;
 import util.GlobResources;
 
 /**
+ * @brief CmdToolFrame is a popup frame to allow the user to create
+ *
  * CmdToolFrame is a popup frame to allow the user to create
  * tools to add to MyTools. Each tool involves a string of
  * commands for CirclePack, an icon, and a tooltip. These can be

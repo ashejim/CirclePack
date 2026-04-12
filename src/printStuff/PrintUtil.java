@@ -8,6 +8,8 @@ import java.io.File;
 import allMains.CirclePack;
 
 /**
+ * @brief For sending files to a printer.
+ *
  * For sending files to a printer. Hope for platform independence.
  * May need user to configure a print command in "Configuration"
  * window.
@@ -16,7 +18,7 @@ import allMains.CirclePack;
  */
 public class PrintUtil {
 	/**
-	 * Send a jpg File to the printer.
+	 * @brief Send a jpg File to the printer.
 	 * @param jpgfile, File
 	 */
 	public static void PrintJPG(File jpgfile) {

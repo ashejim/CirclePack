@@ -20,6 +20,11 @@ public class BinaryExpression implements Word {
     return arg1 + symbol + arg2;
   }
   
+  /**
+   * @brief TODO: Document evaluate.
+   * @param ev
+   * @return Complex
+   */
   public Complex evaluate(Evaluator ev) {
     Complex d;
     Complex d1=ev.evaluate(arg1);

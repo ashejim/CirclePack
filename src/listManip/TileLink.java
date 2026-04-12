@@ -18,6 +18,9 @@ import util.SelectSpec;
 import util.StringUtil;
 import util.UtilPacket;
 
+/**
+ * @brief Tile Link.
+ */
 public class TileLink extends LinkedList<Integer> {
 	
 	private static final long serialVersionUID = 1L;
@@ -58,7 +61,7 @@ public class TileLink extends LinkedList<Integer> {
 	}
 
 	/**
-	 * Initiate empty list
+	 * @brief Initiate empty list
 	 * @param td TileData
 	 */
 	public TileLink(TileData td) {
@@ -67,7 +70,7 @@ public class TileLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Add any positive integer (regardless of whether it seems to be
+	 * @brief Add any positive integer (regardless of whether it seems to be
 	 * a valid tile index).
 	 * @param v int
 	 * @return boolean
@@ -86,7 +89,7 @@ public class TileLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Add links to this list (if it is associated with TileData). Note
+	 * @brief Add links to this list (if it is associated with TileData). Note
 	 * that argument should not be empty since 'a' would have been
 	 * added as default.
 	 * @param datastr String
@@ -98,7 +101,7 @@ public class TileLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Add links to this list (if it is associated with TileData). 
+	 * @brief Add links to this list (if it is associated with TileData). 
 	 * Note that argument should not be empty since "a" would have been
 	 * added as default.
 	 * @param items Vector<String>
@@ -495,7 +498,7 @@ public class TileLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Pick first tile of list described in string.
+	 * @brief Pick first tile of list described in string.
 	 * @param p PackData
 	 * @param str String
 	 * @return 0 on failure
@@ -508,7 +511,7 @@ public class TileLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Pick first tile index from first string of first vector of vector
+	 * @brief Pick first tile index from first string of first vector of vector
 	 * of string vectors. 
 	 * @param p PackData
 	 * @param flagsegs Vector<Vector<String>>
@@ -521,7 +524,7 @@ public class TileLink extends LinkedList<Integer> {
 	}
 
 	/**
-	 * Is 't' an entry?
+	 * @brief Is 't' an entry?
 	 * @param t int
 	 * @return int, index of t or -1 on error or not found
 	 */
@@ -533,7 +536,7 @@ public class TileLink extends LinkedList<Integer> {
 	}
 
 	/**
-	 * Make up list by looking through SetBuilder specs 
+	 * @brief Make up list by looking through SetBuilder specs 
 	 * (from {..} set-builder notation). Use 'tmpFlag' to 
 	 * collect information before creating the TileLink for return.
 	 * @param p PackData

@@ -28,6 +28,9 @@ import allMains.CirclePack;
 import circlePack.PackControl;
 import util.PathUtil;
 
+/**
+ * @brief Ftn Frame.
+ */
 public class FtnFrame extends JFrame {
 
 	private static final long 
@@ -173,7 +176,7 @@ public class FtnFrame extends JFrame {
 	}
  
     /**
-     * User functions are stored in 'CPBase.FtnSpecification'.
+     * @brief User functions are stored in 'CPBase.FtnSpecification'.
      * Can be changed with command 'set_ftn_text', which also
      * checks validity. This call does not evaluate it -- 
      * e.g., there may be variables yet to be set.
@@ -191,7 +194,7 @@ public class FtnFrame extends JFrame {
     }
     
     /**
-     * User parameter function stored in 'CPBase.ParamSpecification'.
+     * @brief User parameter function stored in 'CPBase.ParamSpecification'.
      * Can be changed with command 'set_path_text', which also
      * checks validity. This call does not evaluate it -- 
      * e.g., there may be variables yet to be set.
@@ -228,7 +231,7 @@ public class FtnFrame extends JFrame {
 	}
 	
 	/**
-     * When ENTER key is hit, this processes the expression in the 
+     * @brief When ENTER key is hit, this processes the expression in the 
      * paramField, changing background to yellow if it's in error.
      * @param e
      */
@@ -252,7 +255,7 @@ public class FtnFrame extends JFrame {
 	}
 	
 	/**
-     * When ENTER key is hit, this processes the expression in the 
+     * @brief When ENTER key is hit, this processes the expression in the 
      * ftnField, changing background to yellow if it's in error.
      * @param e
      */

@@ -31,11 +31,14 @@ import util.PathUtil;
 import util.StringUtil;
 import util.UtilPacket;
 
+/**
+ * @brief Random Triangulation.
+ */
 public class RandomTriangulation {
 	public static boolean setSeed=false; // for debugging, set seed=(long)1
 	
 	/**
-	 * Distribute M random ordered points along (a polygonal approximation 
+	 * @brief Distribute M random ordered points along (a polygonal approximation 
 	 * to) the given Path2D.Double, return a Complex vector of the points, 
 	 * or null on error.
 	 * 
@@ -112,7 +115,7 @@ public class RandomTriangulation {
 	}
 
 	/**
-	 * This code generates random triangulations of various regions/types. 
+	 * @brief This code generates random triangulations of various regions/types. 
 	 * Currently allow rectangles, 1-tori, regions bounded by curves, or
 	 * determined by geometry. 
 	 *
@@ -431,7 +434,7 @@ public class RandomTriangulation {
 	}
 
 	/**
-	 * Given a polygon (non-closed list of corners), use a Poisson 
+	 * @brief Given a polygon (non-closed list of corners), use a Poisson 
 	 * Point process to choose N points inside, and use these along 
 	 * with the given vertices defining the polygon (no additional 
 	 * vertices added along the boundary) to form a Delaunay 
@@ -509,7 +512,7 @@ public class RandomTriangulation {
 	}
 	
 	/**
-	 * Call for a random packing in the unit disc with N vertices; use
+	 * @brief Call for a random packing in the unit disc with N vertices; use
 	 * sqrt(N) random points on the regular sqrt(N)-gon with vertices
 	 * on the unit circle as bdry points. Difference here is that triangles
 	 * with bdry points are removed after the triangulation is created.
@@ -596,7 +599,7 @@ public class RandomTriangulation {
 	}
 	
 	/**
-	 * Alternate type of random triangulation of a Jordan region: (Jan 2017)
+	 * @brief Alternate type of random triangulation of a Jordan region: (Jan 2017)
 	 * Idea is to randomly triangulate a larger square about the target region,
 	 * then do a "zigzag" cookie, which means that we basically keep only
 	 * those faces whose centroids are in the region.
@@ -637,7 +640,7 @@ public class RandomTriangulation {
 	}
 	
     /**
-     * Reads a file giving points on the sphere, the plane, or in
+     * @brief Reads a file giving points on the sphere, the plane, or in
      * the unit square [0 1]x[0 1]. We must infer the form of the data:
      * 
      * (1) format for plane (2D) or sphere (3D):

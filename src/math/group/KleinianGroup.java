@@ -7,6 +7,11 @@ import complex.Complex;
 public class KleinianGroup extends GeneratorTypeGroup { // implements listeners.MobiusListener {
   private Vector<Complex> fixedPoints = new Vector<Complex>();
   private Vector<Complex> limitPoints = new Vector<Complex>();
+  /**
+   * @brief Kleinian group: a finitely generated discrete subgroup of PSL(2, ℂ).
+   * @param m
+   * @param s
+   */
   public void addMobius(Mobius m, String s) {
     // what if s is already there
     addGeneratorWithInverse(m,s);
@@ -14,10 +19,17 @@ public class KleinianGroup extends GeneratorTypeGroup { // implements listeners.
   public void setMobius(Mobius m) {
     addGeneratorWithInverse(m,"A");
   }
+  /**
+   * @brief TODO: Document addFixedPoints.
+   * @param m
+   */
   public void addFixedPoints(Mobius m) {
     fixedPoints.add(m.getFixedPoint1());
     fixedPoints.add(m.getFixedPoint2());
   }
+  /**
+   * @brief TODO: Document computeLimitPoints.
+   */
   public void computeLimitPoints() {
     if(generatorKeys.size()==0)
       return;
@@ -34,6 +46,9 @@ public class KleinianGroup extends GeneratorTypeGroup { // implements listeners.
         limitPoints.add(Mob.apply((Complex)(fixedPoints.elementAt(j))));
     }
   }
+  /**
+   * @brief TODO: Document computeFixedPoints.
+   */
   public void computeFixedPoints() {
     fixedPoints.removeAllElements();
     for (int k = 0; k < groupValues.size(); k++)
@@ -45,9 +60,17 @@ public class KleinianGroup extends GeneratorTypeGroup { // implements listeners.
   public Complex getLimitPoint(int i) {
     return (Complex)limitPoints.elementAt(i);
   }
+  /**
+   * @brief TODO: Document fixedPointsSize.
+   * @return int
+   */
   public int fixedPointsSize() {
     return fixedPoints.size();
   }
+  /**
+   * @brief TODO: Document limitPointsSize.
+   * @return int
+   */
   public int limitPointsSize() {
     return limitPoints.size();
   }

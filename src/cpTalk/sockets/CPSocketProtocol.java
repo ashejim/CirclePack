@@ -11,6 +11,8 @@ import packing.PackData;
 import packing.ReadWrite;
 
 /**
+ * @brief This processes incoming strings to CirclePack from a socket.
+ *
  * This processes incoming strings to CirclePack from a socket. 
  * To begin, we will assume these are strings of commands to be 
  * processed in the usual way. 

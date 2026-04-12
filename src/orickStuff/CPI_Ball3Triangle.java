@@ -1,5 +1,8 @@
 package orickStuff;
 
+/**
+ * @brief C P I_ Ball3 Triangle.
+ */
 public class CPI_Ball3Triangle {
 	CPI_Vector3 p[];
 
@@ -47,7 +50,7 @@ public class CPI_Ball3Triangle {
 	}
 
 	/**
-	 * return the unit normal vector to the triangle
+	 * @brief return the unit normal vector to the triangle
 	 * @return
 	 */
 	CPI_Vector3 normal() {
@@ -60,7 +63,7 @@ public class CPI_Ball3Triangle {
 	}
 
 	/** 
-	 * mobius(a) moves a to the origin; apply this 
+	 * @brief mobius(a) moves a to the origin; apply this 
 	 * to each vertex of the triangle
 	 * @param a CPI_Vector3
 	 * @return

@@ -9,6 +9,8 @@ import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 
 /**
+ * @brief This is the base panel containing all the 'stackBox' objects which
+ *
  * This is the base panel containing all the 'stackBox' objects which
  * display script elements. There are basically only three objects
  * directly added to this in 'PackControl.initScriptArea': the 'scriptSBox'

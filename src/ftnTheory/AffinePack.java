@@ -32,6 +32,8 @@ import util.StringUtil;
 import util.TriAspect;
 
 /**
+ * @brief This extender was started to study affine structures
+ *
  * This extender was started to study affine structures
  * on tori, but with advent of DCEL structures most of
  * functionality has been moved to 'ProjStruct'; e.g. see
@@ -1533,7 +1535,7 @@ public class AffinePack extends PackExtender {
 	}
 	
 	/** 
-	 * edgeAdjust
+	 * @brief edgeAdjust
 	 * @param p ackData
 	 * @param edge EdgeSimple
 	 * @param t double, in (0,1)
@@ -1930,7 +1932,7 @@ public class AffinePack extends PackExtender {
 	}*/
 	
 	/**
-	 * Find 'edge' consistency error using TriAspect 'labels'.
+	 * @brief Find 'edge' consistency error using TriAspect 'labels'.
 	 * Suppose edge e = (u,v), f_left and f_right are left/right faces,
 	 * and labels ru, Ru are near/far labels for f_left, while 
 	 * rv, Rv are near/far labels for f_right, then we return
@@ -1958,7 +1960,7 @@ public class AffinePack extends PackExtender {
 	}
 
 	/** 
-	 * Return weak consistency error for interior 'v'.
+	 * @brief Return weak consistency error for interior 'v'.
 	 * This is product of leftlength/rightlength for all 
 	 * faces in star(v).
 	 * @param p, PackData
@@ -1981,7 +1983,7 @@ public class AffinePack extends PackExtender {
 	}
 
 	/**
-	 * Return the 'worst' edge consistency error among all edges:
+	 * @brief Return the 'worst' edge consistency error among all edges:
 	 * namely, for edge e, find x=edge ratio error on e, then 
 	 * compute |log(x)|. Return 'EdgeSimple' e for which this is
 	 * largest. 
@@ -2012,7 +2014,7 @@ public class AffinePack extends PackExtender {
 	}
 	
 	/**
-	 * Run trials over a grid and put the results in a buffer.
+	 * @brief Run trials over a grid and put the results in a buffer.
 	 * Output lines: A B t T c a.x a.y b.x b.y z's
 	 *   inputs A,B, modulus t, Teichmuller T, affine coefficient c,
 	 *   complex a b, corner points, complex z[0], z[1], z[2], z[3]

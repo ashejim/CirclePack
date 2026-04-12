@@ -3,6 +3,8 @@ import complex.Complex;
 
 
 /**
+ * @brief Per-vertex real-valued data (radii, centers, aims, angle sums) for a circle packing..
+ *
  * Structure for various 'real' data associated with circles of a packing.
  * @author kens
  *

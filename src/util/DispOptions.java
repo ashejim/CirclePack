@@ -5,6 +5,8 @@ import circlePack.PackControl;
 import packing.CPdrawing;
 
 /**
+ * @brief DispOptions simply holds the default display options for a given circle
+ *
  * DispOptions simply holds the default display options for a given circle 
  * packing and supplies it to 'disp' commands when specific flags are lacking. 
  * ('disp' and 'disp -wr' calls in 'PackControl.nakedDisp'). The boolean data 
@@ -49,7 +51,7 @@ public class DispOptions {
 	}
 
 	/**
-	 * Set individual display options
+	 * @brief Set individual display options
 	 * @param name = one of: circles, cirfill, circolor,
 	 * faces, facefill, facecolor, cirlabels, facelabels,
 	 * or usetext
@@ -68,7 +70,7 @@ public class DispOptions {
 	}
 	
 	/**
-	 * Returns a vector with the states of the various display
+	 * @brief Returns a vector with the states of the various display
 	 * boolean switches.
 	 * @return
 	 */
@@ -87,7 +89,7 @@ public class DispOptions {
 	}
 	
 	/**
-	 * Store the string of display flags from the DisplayPanel;
+	 * @brief Store the string of display flags from the DisplayPanel;
 	 * e.g., when active pack changes, have to save what was
 	 * appearing here so it can be reestablished.
 	 * @param flagstr
@@ -97,7 +99,7 @@ public class DispOptions {
 	}
 
 	/**
-	 * Determines the current display options and converts into strings 
+	 * @brief Determines the current display options and converts into strings 
 	 * to be concatenated with 'disp' calls. Starts with 'tailored'
 	 * specification, else looks for options that have been checked
 	 * for display. Can return null.
@@ -150,7 +152,7 @@ public class DispOptions {
 	}
 	
 	/**
-	 * Pick of bits from cf and ff to set display options for
+	 * @brief Pick of bits from cf and ff to set display options for
 	 * circles and faces, respectively.
 	 * @param cf
 	 * @param ff

@@ -10,6 +10,8 @@ import circlePack.PackControl;
 
 
 /**
+ * @brief Animated flapping owl to serve as activity indicator
+ *
  * Animated flapping owl to serve as activity indicator
  */
 public class ActiveOwl implements Runnable {

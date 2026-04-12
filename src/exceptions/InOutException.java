@@ -1,6 +1,8 @@
 package exceptions;
 
 /**
+ * @brief Exceptions for actions involving open/closing, writing/reading from
+ *
  * Exceptions for actions involving open/closing, writing/reading from 
  * various files; often thrown after an IOException is caught.
  * @author kens

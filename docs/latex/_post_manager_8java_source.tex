@@ -1,0 +1,257 @@
+\doxysection{Post\+Manager.\+java}
+\hypertarget{_post_manager_8java_source}{}\label{_post_manager_8java_source}\index{src/posting/PostManager.java@{src/posting/PostManager.java}}
+\doxymbox{\hyperlink{_post_manager_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00001}00001\ \textcolor{keyword}{package\ }posting;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00003}00003\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00004}00004\ \textcolor{keyword}{import}\ input.CommandStrParser;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00005}00005\ \textcolor{keyword}{import}\ packing.CPdrawing;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00006}00006\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00007}00007\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00008}00008\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00009}00009\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00010}00010\ \textcolor{keyword}{import}\ java.io.FileReader;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00011}00011\ \textcolor{keyword}{import}\ java.io.FileWriter;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00012}00012\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00013}00013\ \textcolor{keyword}{import}\ java.util.Date;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00014}00014\ \textcolor{keyword}{import}\ java.util.Random;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00015}00015\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00016}00016\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00017}00017\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00018}00018\ \textcolor{keyword}{import}\ exceptions.InOutException;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00019}00019\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00044}\doxymbox{\hyperlink{classposting_1_1_post_manager}{00044}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classposting_1_1_post_manager_ab924db90528cf711532b7bed0c9ce139}{PostManager}}\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00046}\doxymbox{\hyperlink{classposting_1_1_post_manager_a2d5932c6340ac199d3ee7f2239eb6ca6}{00046}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classposting_1_1_post_manager_a2d5932c6340ac199d3ee7f2239eb6ca6}{PS\_UNIT\_LINEWIDTH}}=1.0;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00047}00047\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00048}\doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{00048}}\ \ \ \ \ \textcolor{keyword}{public}\ String\ \doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{postFilename}};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00049}\doxymbox{\hyperlink{classposting_1_1_post_manager_a2516cdae0b43f039d2b2ab250ff44435}{00049}}\ \ \ \ \ \textcolor{keyword}{public}\ File\ \doxymbox{\hyperlink{classposting_1_1_post_manager_a2516cdae0b43f039d2b2ab250ff44435}{psUltimateFile}};\ \ \textcolor{comment}{//\ The\ finished\ postscript\ file\ \ }}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00050}00050\ \ \ \ \ BufferedWriter\ fp;\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00051}\doxymbox{\hyperlink{classposting_1_1_post_manager_a40c1aef6a2803eb6dced70b36c71cdf7}{00051}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classposting_1_1_post_factory}{PostFactory}}\ \doxymbox{\hyperlink{classposting_1_1_post_manager_a40c1aef6a2803eb6dced70b36c71cdf7}{pF}};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00052}00052\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ id;\ \textcolor{comment}{//\ unique\ identifier\ for\ temp\ files.}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00053}00053\ \ \ \ \ \textcolor{keywordtype}{double}\ ps\_linewidth;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00054}\doxymbox{\hyperlink{classposting_1_1_post_manager_a23c42de931903d9c735faca306caa07d}{00054}}\ \ \ \ \ \textcolor{keyword}{public}\ StringBuilder\ \doxymbox{\hyperlink{classposting_1_1_post_manager_a23c42de931903d9c735faca306caa07d}{textBuffer}};\ \textcolor{comment}{//\ accum\ text\ for\ bottom\ of\ postscript\ file}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00055}\doxymbox{\hyperlink{classposting_1_1_post_manager_a9c9df018f018f9a59bd19751b10b1362}{00055}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classposting_1_1_post_manager_a9c9df018f018f9a59bd19751b10b1362}{textLineCount}};\ \textcolor{comment}{//\ counts\ lines\ of\ text\ at\ bottom\ of\ file\ }}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00056}00056\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00057}00057\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00058}\doxymbox{\hyperlink{classposting_1_1_post_manager_ab924db90528cf711532b7bed0c9ce139}{00058}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classposting_1_1_post_manager_ab924db90528cf711532b7bed0c9ce139}{PostManager}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00059}00059\ \ \ \ \ \ \ \ \ ps\_linewidth=\doxymbox{\hyperlink{classposting_1_1_post_manager_a2d5932c6340ac199d3ee7f2239eb6ca6}{PS\_UNIT\_LINEWIDTH}};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{id}\ =\ \textcolor{keyword}{new}\ Random().nextInt(32000);}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00061}00061\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a2516cdae0b43f039d2b2ab250ff44435}{psUltimateFile}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00062}00062\ \ \ \ \ \ \ \ \ fp=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00063}00063\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a40c1aef6a2803eb6dced70b36c71cdf7}{pF}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00064}00064\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a23c42de931903d9c735faca306caa07d}{textBuffer}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00065}00065\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a9c9df018f018f9a59bd19751b10b1362}{textLineCount}}=0;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00066}00066\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00067}00067\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00082}\doxymbox{\hyperlink{classposting_1_1_post_manager_aab1101bbf3aa0b94ea8004ef58307724}{00082}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classposting_1_1_post_manager_aab1101bbf3aa0b94ea8004ef58307724}{open\_psfile}}(\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing}{CPdrawing}}\ cpDrawing,\textcolor{keywordtype}{int}\ mode,String\ psFilename,String\ targStr)\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00083}00083\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00084}00084\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ choose\ ultimate\ file\ name\ for\ use\ when\ creating\ the\ final\ postscript}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00085}00085\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (psFilename==\textcolor{keyword}{null})\ \{\ \textcolor{comment}{//\ none\ given?\ use\ default}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cpDrawing.\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing_a5bd7e056a2c7fda47e5ecda368ef621b}{customPS}}==\textcolor{keyword}{null})\ \doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{postFilename}}=\textcolor{keyword}{new}\ String(\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing}{CPdrawing}}.\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing_a856852be560d55bd0924f506e14fc6be}{customGlobal}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{postFilename}}=\textcolor{keyword}{new}\ String(cpDrawing.\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing_a5bd7e056a2c7fda47e5ecda368ef621b}{customPS}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00088}00088\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00089}00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{postFilename}}=psFilename;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00090}00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{postFilename}}.endsWith(\textcolor{stringliteral}{"{}.ps"{}}))\ \textcolor{comment}{//\ user\ may\ forget\ .ps}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{postFilename}}=\textcolor{keyword}{new}\ String(\doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{postFilename}}+\textcolor{stringliteral}{"{}.ps"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00092}00092\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a2516cdae0b43f039d2b2ab250ff44435}{psUltimateFile}}=\textcolor{keyword}{new}\ File(\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager}{CPFileManager}}.\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager_a27ef309a548b62b9a30b8d809b02fc50}{ImageDirectory}},\doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{postFilename}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00093}00093\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00094}00094\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ temporarily,\ the\ main\ contents\ are\ put\ in\ 'bodyFile'}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00095}00095\ \ \ \ \ \ \ \ \ File\ bodyFile\ =\ \textcolor{keyword}{new}\ File(\ System.getProperty(\textcolor{stringliteral}{"{}java.io.tmpdir"{}}),}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ String(File.separator+\textcolor{keywordtype}{id}+\textcolor{stringliteral}{"{}\_"{}}+\doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{postFilename}}));}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00097}00097\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ close\ (losing\ contents)\ and\ reopen\ 'fp'\ to\ 'bodyFile'}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode==1)\ \{\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classposting_1_1_post_manager_ab901fc5499373252248eb4ffe9f3a999}{isOpen}}())\ \{\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.close();}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_in_out_exception}{InOutException}}(\textcolor{stringliteral}{"{}trying\ to\ close\ PS\ file:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ reopen\ //\ TODO:\ Do\ we\ want\ to\ be\ sure\ to\ overwrite\ here\ if\ file\ exists?}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp\ =\ \textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(bodyFile));\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00112}00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_in_out_exception}{InOutException}}(\textcolor{stringliteral}{"{}failed\ to\ open\ tmp\ 'bodyFile':\ "{}}+ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00115}00115\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00116}00116\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fp==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_in_out_exception}{InOutException}}(\textcolor{stringliteral}{"{}failed\ to\ open\ tmp\ 'bodyFile'"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00118}00118\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00119}00119\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00120}00120\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ open\ 'postFactory'\ to\ accept\ input\ to\ 'bodyFile'}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00121}00121\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a40c1aef6a2803eb6dced70b36c71cdf7}{pF}}=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classposting_1_1_post_factory}{PostFactory}}();}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00122}00122\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a40c1aef6a2803eb6dced70b36c71cdf7}{pF}}.fp=fp;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00123}00123\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classinput_1_1_command_str_parser}{CommandStrParser}}.\doxymbox{\hyperlink{classinput_1_1_command_str_parser_aa7b5b64dbf5aa6e7140294b16dbaba58}{pF}}=\doxymbox{\hyperlink{classposting_1_1_post_manager_a40c1aef6a2803eb6dced70b36c71cdf7}{pF}};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00124}00124\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a23c42de931903d9c735faca306caa07d}{textBuffer}}=\textcolor{keyword}{null};\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00125}00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00126}00126\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00127}00127\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00138}\doxymbox{\hyperlink{classposting_1_1_post_manager_a1de76563b8362455ed0f9fb728700217}{00138}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classposting_1_1_post_manager_a1de76563b8362455ed0f9fb728700217}{close\_psfile}}(\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing}{CPdrawing}}\ cpd)\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00139}00139\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!\doxymbox{\hyperlink{classposting_1_1_post_manager_ab901fc5499373252248eb4ffe9f3a999}{isOpen}}())\ \textcolor{comment}{//\ writer\ to\ 'bodyFile'\ is\ not\ open\ }}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00141}00141\ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ fp.flush();}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ fp.close();\ \textcolor{comment}{//\ close\ 'bodyFile'\ (temp\ storage\ of\ main\ postscript)}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00144}00144\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_in_out_exception}{InOutException}}(\textcolor{stringliteral}{"{}problem\ closing\ postscript:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00146}00146\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00147}00147\ \ \ \ \ \ \ fp=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00148}00148\ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a40c1aef6a2803eb6dced70b36c71cdf7}{pF}}=\textcolor{keyword}{null};\ \textcolor{comment}{//\ close\ 'PostFactory'}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00149}00149\ \ \ \ \ \ \ \doxymbox{\hyperlink{classinput_1_1_command_str_parser}{CommandStrParser}}.\doxymbox{\hyperlink{classinput_1_1_command_str_parser_aa7b5b64dbf5aa6e7140294b16dbaba58}{pF}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00151}00151\ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ finalPS=\textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(\doxymbox{\hyperlink{classposting_1_1_post_manager_a2516cdae0b43f039d2b2ab250ff44435}{psUltimateFile}}));}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ preamble\ text}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a7dcfba5e44d1df7b4cd643884cd3cb3a}{preAmble}}(finalPS,cpd);}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ main\ body}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ File\ bodyFile\ =\ \textcolor{keyword}{new}\ File(\ System.getProperty(\textcolor{stringliteral}{"{}java.io.tmpdir"{}}),}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ String(File.separator+\textcolor{keywordtype}{id}+\textcolor{stringliteral}{"{}\_"{}}+\doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{postFilename}}));}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ BufferedReader\ bodyFP=\textcolor{keyword}{new}\ BufferedReader(\textcolor{keyword}{new}\ FileReader(bodyFile));}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ c;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((c=bodyFP.read())>=0)\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ finalPS.write(c);}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ bodyFP.close();}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ trailer\ to\ close}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classcircle_pack_1_1_pack_control}{PackControl}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a4c6a5c839d23a773d31e4f0f9327cca9}{postManager}}.\doxymbox{\hyperlink{classposting_1_1_post_manager_a23c42de931903d9c735faca306caa07d}{textBuffer}}==\textcolor{keyword}{null}\ ||}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcircle_pack_1_1_pack_control}{PackControl}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a4c6a5c839d23a773d31e4f0f9327cca9}{postManager}}.\doxymbox{\hyperlink{classposting_1_1_post_manager_a23c42de931903d9c735faca306caa07d}{textBuffer}}.length()==0)\ \textcolor{comment}{//\ no\ bottom\ text}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ finalPS.write(\textcolor{stringliteral}{"{}\(\backslash\)ngrestore\(\backslash\)nend\(\backslash\)nshowpage\(\backslash\)n"{}});\ \textcolor{comment}{//\ page\ wrapup}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00170}00170\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00171}00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ finalPS.write(\textcolor{stringliteral}{"{}\(\backslash\)ngrestore\(\backslash\)n"{}});\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00172}00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ finalPS.write(\doxymbox{\hyperlink{classcircle_pack_1_1_pack_control}{PackControl}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a4c6a5c839d23a773d31e4f0f9327cca9}{postManager}}.\doxymbox{\hyperlink{classposting_1_1_post_manager_a23c42de931903d9c735faca306caa07d}{textBuffer}}.toString());}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ finalPS.write(\textcolor{stringliteral}{"{}\(\backslash\)nend\(\backslash\)nshowpage\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00174}00174\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ finalPS.flush();}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00176}00176\ \ \ \ \ \ \ \ \ \ \ finalPS.close();}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00177}00177\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00178}00178\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classexceptions_1_1_in_out_exception}{InOutException}}(\textcolor{stringliteral}{"{}closing\ postscript\ file:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00179}00179\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00180}00180\ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{postFilename}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00181}00181\ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a23c42de931903d9c735faca306caa07d}{textBuffer}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00182}00182\ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a9c9df018f018f9a59bd19751b10b1362}{textLineCount}}=0;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00183}00183\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00184}00184\ \ \ \ \ \}\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00185}00185\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00186}\doxymbox{\hyperlink{classposting_1_1_post_manager_a7dcfba5e44d1df7b4cd643884cd3cb3a}{00186}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classposting_1_1_post_manager_a7dcfba5e44d1df7b4cd643884cd3cb3a}{preAmble}}(BufferedWriter\ bw,\ \doxymbox{\hyperlink{classpacking_1_1_c_pdrawing}{CPdrawing}}\ cpDrawing)\ \textcolor{keywordflow}{throws}\ IOException\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00187}00187\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/-\/-\/-\/\ preamble:\ standard\ eps-\/type\ header\ info\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ */}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00188}00188\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\%!PS-\/Adobe-\/2.0\ EPSF-\/2.0\(\backslash\)n\%\%Title:\ "{}}+\doxymbox{\hyperlink{classposting_1_1_post_manager_ab83d2b8d419753e752b04b46028bbabb}{postFilename}}+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00189}00189\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\%\%Creator:\ "{}}+\doxymbox{\hyperlink{classcircle_pack_1_1_pack_control}{PackControl}}.\doxymbox{\hyperlink{classcircle_pack_1_1_pack_control_ad48e2ecb4cfbccc49898cfa47e2294ba}{CPVersion}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00190}00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\(\backslash\)n\%\%CreationDate:\ "{}}+\textcolor{keyword}{new}\ Date().toString()+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00191}00191\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\%\%For:\ "{}}+System.getProperty(\textcolor{stringliteral}{"{}user.name"{}})+\textcolor{stringliteral}{"{}\(\backslash\)n\%\%Orientation:\ Portrait\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00192}00192\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a10eb918151eca58094f49abd7035b66a}{post\_size\_settings}}(bw,cpDrawing,1);\ \textcolor{comment}{//\ BoundingBox}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00193}00193\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\%\%Pages:\ 1\(\backslash\)n\%\%BeginSetup\(\backslash\)n\%\%EndSetup\(\backslash\)n\%\%"{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00194}00194\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Magnification:\ 1.0000\(\backslash\)n\%\%EndComments\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00195}00195\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)n\%\ CirclePack\ dictionary\ ================\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00196}00196\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00197}00197\ \ \ \ \ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/-\/-\/-\/\ define\ CPdict\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ */}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00198}00198\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}/CPdict\ 256\ dict\ def\(\backslash\)nCPdict\ begin"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00199}00199\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00200}00200\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)n\%\ -\/-\/-\/\ Standard\ abbreviations\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00201}00201\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)t/cp\ \{closepath\}\ bind\ def\(\backslash\)n\(\backslash\)t/ef\ \{eofill\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00202}00202\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/gr\ \{grestore\}\ bind\ def\(\backslash\)n\(\backslash\)t/gs\ \{gsave\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00203}00203\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/sa\ \{save\}\ bind\ def\(\backslash\)n\(\backslash\)t/rs\ \{restore\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/l\ \{lineto\}\ bind\ def\(\backslash\)n\(\backslash\)t/m\ \{moveto\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/rm\ \{rmoveto\}\ bind\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00206}00206\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)t/n\ \{newpath\}\ bind\ def\(\backslash\)n\(\backslash\)t/s\ \{stroke\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00207}00207\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/sh\ \{show\}\ bind\ def\(\backslash\)n\(\backslash\)t/slc\ \{setlinecap\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/slj\ \{setlinejoin\}\ bind\ def\(\backslash\)n\(\backslash\)t/slw\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\{setlinewidth\}\ bind\ def\(\backslash\)n\(\backslash\)t/srgb\ \{setrgbcolor\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/rot\ \{rotate\}\ bind\ def\(\backslash\)n\(\backslash\)t/sc\ \{scale\}\ bind\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00211}00211\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)t/sd\ \{setdash\}\ bind\ def\(\backslash\)n\(\backslash\)t/ff\ \{findfont\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/sf\ \{setfont\}\ bind\ def\(\backslash\)n\(\backslash\)t/scf\ \{scalefont\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00213}00213\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/sw\ \{stringwidth\}\ bind\ def\(\backslash\)n\(\backslash\)t/tr\ \{translate\}\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00214}00214\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}bind\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00215}00215\ \ \ \ \ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/-\/-\/-\/\ Unique\ to\ CirclePack\ abbreviations,\ etc.\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ */}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00216}00216\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)n\%\ -\/-\/-\/\ Special\ abbreviations\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00217}00217\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /sg\ \{setgray\}\ bind\ def\(\backslash\)n\ \ \ /a\ \{arc\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00218}00218\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\ \ \ /an\ \{arcn\}\ bind\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00219}00219\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /c\ \{\ 0\ 360\ a\ s\}\ bind\ def\(\backslash\)t\(\backslash\)t\(\backslash\)t\%\ circle\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00220}00220\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /cc\ \{0\ 360\ a\ gs\ srgb\ s\ gr\ n\}\ bind\ def\(\backslash\)t\(\backslash\)t\%\ color\ circle\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00221}00221\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /d\ \{\ 0\ 360\ a\ gs\ sg\ fill\ gr\ s\}\ bind\ def\(\backslash\)t\%\ disc\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00222}00222\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /cd\ \{0\ 360\ a\ gs\ srgb\ fill\ gr\ s\}\ bind\ def\(\backslash\)t\%\ color\ disc\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00223}00223\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /mark\ \{gs\ 0\ 360\ a\ srgb\ fill\ gr\ n\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)t\%default\ mark\ symbol\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00225}00225\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /wht\ \{1.0\}\ bind\ def\(\backslash\)t\(\backslash\)t\(\backslash\)t\(\backslash\)t\%\ gray\ levels\(\backslash\)n\ \ \ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00226}00226\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}/gry\ \{0.8\}\ bind\ def\(\backslash\)n\ \ /drk\ \{0.5\}\ bind\ def\(\backslash\)n\ \ \ /blck\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00227}00227\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\{0.0\}\ bind\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00228}00228\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /ourlinewidth\ \{.002\ mul\ setlinewidth\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00229}00229\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00230}00230\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /getlinewidth\ \{currentlinewidth\ 500.0\ mul\}\ bind\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00231}00231\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00232}00232\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)nend\(\backslash\)n\%\%\ end\ CirclePack\ dictionary\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00233}00233\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}=================\(\backslash\)n\%\%EndProlog\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00234}00234\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00235}00235\ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ begin\ first\ page\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ */}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00236}00236\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00237}00237\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)n\%\%Page:\ "{}}+1+\textcolor{stringliteral}{"{}\ "{}}+1+\textcolor{stringliteral}{"{}\(\backslash\)nCPdict\ begin\(\backslash\)ngsave\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00238}00238\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ 72\ 72\ sc\ \%\ inches\(\backslash\)n\ \ \ "{}}+4.25+\textcolor{stringliteral}{"{}\ "{}}+5.5+\textcolor{stringliteral}{"{}\ tr\(\backslash\)n"{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00239}00239\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ \ 1\ slc\ \ 1\ slj\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00240}00240\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classposting_1_1_post_manager_a10eb918151eca58094f49abd7035b66a}{post\_size\_settings}}(bw,cpDrawing,6);\ \textcolor{comment}{//\ BoundingBox,\ size\ info,\ clip\ window}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00241}00241\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cpDrawing.getGeom()!=0)\ \textcolor{comment}{//\ sph/hyp\ case:\ draw\ sphere/disc\ first}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}n\ 0\ 0\ 1\ c\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00243}00243\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00244}00244\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00250}\doxymbox{\hyperlink{classposting_1_1_post_manager_a10eb918151eca58094f49abd7035b66a}{00250}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classposting_1_1_post_manager_a10eb918151eca58094f49abd7035b66a}{post\_size\_settings}}(BufferedWriter\ bw,\doxymbox{\hyperlink{classpacking_1_1_c_pdrawing}{CPdrawing}}\ cpDrawing,\textcolor{keywordtype}{int}\ mode)\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00251}00251\ \ \ \ \ \textcolor{keywordflow}{throws}\ IOException\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00252}00252\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ size=(double)\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a50383994b64decc4445ac3cc62287759}{DEFAULT\_PS\_PAGE\_SIZE}};}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00253}00253\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}((mode\ \&\ 1)==1)\ \{\ \textcolor{comment}{//\ BoundingBox\ }}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00254}00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bblx=(int)(72*(4.25-\/size/2))-\/10;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00255}00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bbly=(int)(72*(5.5-\/size/2))-\/10;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00256}00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classposting_1_1_post_manager_a23c42de931903d9c735faca306caa07d}{textBuffer}}!=\textcolor{keyword}{null})\ \textcolor{comment}{//\ need\ to\ lower\ bottom\ for\ text\ }}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00257}00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bbly\ -\/=\ \doxymbox{\hyperlink{classposting_1_1_post_manager_a9c9df018f018f9a59bd19751b10b1362}{textLineCount}}*18;\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00258}00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bbrx=(int)(72*(4.25+size/2))+10;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00259}00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bbry=(int)(72*(5.5+size/2))+10;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00260}00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\%\%BoundingBox:\ "{}}+bblx+\textcolor{stringliteral}{"{}\ "{}}+bbly+\textcolor{stringliteral}{"{}\ "{}}+bbrx+\textcolor{stringliteral}{"{}\ "{}}+bbry+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00261}00261\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00262}00262\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((mode\ \&\ 2)==2)\ \{\ \textcolor{comment}{//\ basic\ size\ info\ }}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00263}00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\%\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ pack\ size\ settings\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00264}00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ factor=\ size/(cpDrawing.XWidth);}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00265}00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/-\/-\/-\/\ scaling/translation\ for\ screen\ */}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00266}00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ "{}}+factor+\textcolor{stringliteral}{"{}\ "{}}+(\textcolor{keywordtype}{double})((1.01)*factor)+\textcolor{stringliteral}{"{}\ sc\ \(\backslash\)n\ \ \ \ \ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00267}00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{double})(-\/(cpDrawing.realBox.lz.x+cpDrawing.realBox.rz.x)/2.0)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00268}00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{double})(-\/(cpDrawing.realBox.lz.y+cpDrawing.realBox.rz.y)/2.0)+\textcolor{stringliteral}{"{}\ tr\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00269}00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ \ -\/-\/-\/-\/-\/-\/-\/-\/\ define\ 'ourlinewidth'\ at\ 1\ point\ */}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00270}00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /ourlinewidth\(\backslash\)n\ \ \ \ \ \ \{\ 72\ div\ "{}}+factor+\textcolor{stringliteral}{"{}\ div\ "{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00271}00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ps\_linewidth+\textcolor{stringliteral}{"{}\ mul\ setlinewidth\}\ \ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00272}00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ \ -\/-\/-\/-\/-\/-\/-\/-\/\ pre-\/defined\ thickness\ factors\ */}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00273}00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /onetk\(\backslash\)n\ \ \ \ \ \ \{1\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00274}00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /twotk\(\backslash\)n\ \ \ \ \ \ \{2\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00275}00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /threetk\(\backslash\)n\ \ \ \ \ \ \{3\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00276}00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /fourtk\(\backslash\)n\ \ \ \ \ \ \{4\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00277}00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /fivetk\(\backslash\)n\ \ \ \ \ \ \{5\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00278}00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /sixtk\(\backslash\)n\ \ \ \ \ \ \{6\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00279}00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /seventk\(\backslash\)n\ \ \ \ \ \ \{7\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00280}00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /eighttk\(\backslash\)n\ \ \ \ \ \ \{8\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00281}00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /ninetk\(\backslash\)n\ \ \ \ \ \ \{9\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00282}00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /tentk\(\backslash\)n\ \ \ \ \ \ \{10\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00283}00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ "{}}+(\textcolor{keywordtype}{double})ps\_linewidth+\textcolor{stringliteral}{"{}\ ourlinewidth\(\backslash\)n\ \ \ \ \ 0\ sg\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00284}00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}/Times-\/Roman\ ff\ "{}}+(\textcolor{keywordtype}{double})(.15/factor)+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00285}00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ scf\ sf\(\backslash\)n\%\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\(\backslash\)n"{}});\ \textcolor{comment}{//\ scale\ font}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00286}00286\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00287}00287\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((mode\ \&\ 4)==4)\ \textcolor{comment}{/*\ clip\ window\ */}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00288}00288\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00289}00289\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/\ now\ scaled\ based\ on\ screens\ size\ and\ desired\ output\ size\ */}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00290}00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ lx=cpDrawing.realBox.lz.x;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00291}00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ly=cpDrawing.realBox.lz.y;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00292}00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rx=cpDrawing.realBox.rz.x;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00293}00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ry=cpDrawing.realBox.rz.y;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00294}00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}n\(\backslash\)n"{}}+lx+\textcolor{stringliteral}{"{}\ "{}}+ry+\textcolor{stringliteral}{"{}\ m\(\backslash\)n"{}}+lx+\textcolor{stringliteral}{"{}\ "{}}+ly+\textcolor{stringliteral}{"{}\ l\(\backslash\)n"{}}+rx+\textcolor{stringliteral}{"{}\ "{}}+ly+\textcolor{stringliteral}{"{}\ l\(\backslash\)n"{}}+}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00295}00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rx+\textcolor{stringliteral}{"{}\ "{}}+ry+\textcolor{stringliteral}{"{}\ l\(\backslash\)ncp\(\backslash\)n\%gs\ s\ gr\(\backslash\)nclip\(\backslash\)nn\(\backslash\)n"{}});\ \textcolor{comment}{//\ clip\ box}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00296}00296\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00297}00297\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00298}00298\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00299}00299\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00305}\doxymbox{\hyperlink{classposting_1_1_post_manager_ab901fc5499373252248eb4ffe9f3a999}{00305}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ \doxymbox{\hyperlink{classposting_1_1_post_manager_ab901fc5499373252248eb4ffe9f3a999}{isOpen}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00306}00306\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\doxymbox{\hyperlink{classposting_1_1_post_manager_a40c1aef6a2803eb6dced70b36c71cdf7}{pF}}!=\textcolor{keyword}{null}\ \&\&\ fp!=\textcolor{keyword}{null});}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00307}00307\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00308}00308\ }
+\DoxyCodeLine{\Hypertarget{_post_manager_8java_source_l00309}00309\ \}}
+
+\end{DoxyCode}

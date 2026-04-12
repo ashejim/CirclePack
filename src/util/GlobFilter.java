@@ -5,6 +5,8 @@ import java.io.FilenameFilter;
 import java.util.List;
 
 /**
+ * @brief Object to filter file names by a list of glob patterns.
+ *
  * Object to filter file names by a list of glob patterns.
  * 
  * @author Bradford Smith

@@ -13,15 +13,23 @@ import math.Point3D;
 import packing.PackData;
 import util.RadIvdPacket;
 /**
- * Static methods for mathematical operations in euclidean geometry.
+ * @brief Static methods for mathematical operations in Euclidean geometry.
+ *
+ * Provides the Euclidean-specific implementations of circle-packing
+ * computations: angle sums from radii, face layouts, tangent-point
+ * calculations, overlap angles, and related geometric utilities.
+ * The Euclidean metric is simply the standard flat metric on ℝ².
+ *
+ * @see HyperbolicMath  Hyperbolic (Poincaré disc) counterpart.
+ * @see SphericalMath   Spherical counterpart.
+ * @see CommonMath      Geometry-independent dispatch layer.
  */
-
 public class EuclMath{
 
 	public static final double OKERR=.000000001; // TODO: set more rationally
 
 	/**
-	 * Find eucl center/rad for circle thru 3 points in eucl plane.
+	 * @brief Find eucl center/rad for circle thru 3 points in eucl plane.
 	 * Find intersection of perp bisector of two sides for 'cent',
 	 * then compute radius.
 	 * @param z1 Complex
@@ -48,7 +56,7 @@ public class EuclMath{
 	}
     
   /**
-	 * Given three eucl radii and edge inv distances, compute 
+	 * @brief Given three eucl radii and edge inv distances, compute 
 	 * cosine of the angle at r0. Note: ivdj is the inversive 
 	 * distance for the edge with origin at rj, so edge 
 	 * opposite is index (j+1)%3.
@@ -87,7 +95,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * Using law of cosines, compute cos(angle at e0) in
+	 * @brief Using law of cosines, compute cos(angle at e0) in
 	 * tangent triple with eucl radii r0,r1,r2 and all
 	 * inv distances = 1.0;
 	 * @param r0 double
@@ -101,7 +109,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * Use law of cosines, compute cos(angle at c1) in eucl
+	 * @brief Use law of cosines, compute cos(angle at c1) in eucl
 	 * triangle with given corners.
 	 * @param z0 Complex, first corner, etc.
 	 * @param z1
@@ -118,7 +126,7 @@ public class EuclMath{
 	
 	
 	/**
-	 * Using law of cosines, compute cos(angle at p1) in eucl 3D 
+	 * @brief Using law of cosines, compute cos(angle at p1) in eucl 3D 
 	 * triangle with given corners in space.
 	 * @param p0 Point3D
 	 * @param p1 Point3D
@@ -134,7 +142,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * Given face data in 'RadIvdPacket', return euclidean area
+	 * @brief Given face data in 'RadIvdPacket', return euclidean area
 	 * @param rip RadIvdPacket
 	 * @return double
 	 */
@@ -144,7 +152,7 @@ public class EuclMath{
 	}
 	
 	 /**
-	 * Given three eucl radii and edge inv distances, compute
+	 * @brief Given three eucl radii and edge inv distances, compute
 	 * face area using Heron's Formula. 'tj' is for the edge
 	 * <j,j+1>.
 	 * @param r0 double
@@ -164,7 +172,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * Does half-line from p1 through p2 intersect triangle <a,b,c>?
+	 * @brief Does half-line from p1 through p2 intersect triangle <a,b,c>?
 	 * @param p1 Complex
 	 * @param p2 Complex
 	 * @param a Complex
@@ -193,7 +201,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * Is point in eucl triangle <a,b,c>
+	 * @brief Is point in eucl triangle <a,b,c>
 	 * @param p1 Complex
 	 * @param a Complex
 	 * @param b Complex
@@ -212,7 +220,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * Find the eucl BaryPoint for given point relative to given
+	 * @brief Find the eucl BaryPoint for given point relative to given
 	 * oriented triple. Note that the point need not be in the
 	 * triangle.
 	 * @param z Complex, given point
@@ -242,7 +250,7 @@ public class EuclMath{
 	}
 
 	/**, 
-	 * if line from p1 in direction of p2 hits (oriented)
+	 * @brief if line from p1 in direction of p2 hits (oriented)
 	 * triangle {a,b,c}, return first entry point, else
 	 * return null. (Return Complex because {a,b,c} may 
 	 * have been rotated.)
@@ -320,7 +328,7 @@ public class EuclMath{
 	}
 
 	/**
-	 * Return point where halfline from p1 in direction of p2 hits
+	 * @brief Return point where halfline from p1 in direction of p2 hits
 	 * directed segment [a,b] from its right side. Return null 
 	 * if it doesn't hit. Assume p1 != p2.
 	 * @param p1 Complex
@@ -367,7 +375,7 @@ public class EuclMath{
 	}
 
 	/**
-	 * Compute barycenter of euclidean triangle from corners.
+	 * @brief Compute barycenter of euclidean triangle from corners.
 	 * @param p0 Complex
 	 * @param p1 Complex
 	 * @param p2 Complex
@@ -382,7 +390,7 @@ public class EuclMath{
 	}
 
 	/**
-	 * Return 'CircleSimple' with rad/cent of inscribed circle
+	 * @brief Return 'CircleSimple' with rad/cent of inscribed circle
 	 * for triangular face with given corners. Incenter has 
 	 * barycentric coords a/p, b/p, c/p, where a, b, c are 
 	 * opposite edge lengths, p is perimeter.
@@ -406,7 +414,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * Return 'inradius' s (radius of inscribed circle) for eucl triangle
+	 * @brief Return 'inradius' s (radius of inscribed circle) for eucl triangle
 	 * given radii. Given edge lengths a, b, c, use 
 	 *    (1/2)*s*(a+b+c)=area=sqrt((a+b+c)*(a+b-c)*(a+c-b)*(b+c-a))/4.0
 	 * Formula is actually easier with radii (if this is tangency circle
@@ -421,7 +429,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * Given two circles that are supposed to be tangent, find the 
+	 * @brief Given two circles that are supposed to be tangent, find the 
 	 * tangency point on the geodesic between them. Actually, return
 	 * pt with distances from z1, z2 having proportions r1, r2.
 	 * @param z1 Complex
@@ -436,7 +444,7 @@ public class EuclMath{
 	}
 
 	/**
-	 * Given centers/radii of two circles and rad of third, and 
+	 * @brief Given centers/radii of two circles and rad of third, and 
 	 * inv distances oj of edge <j,j+1>, find eucl center of circle 3.
 	 * Use lengths of a, b, c of sides, with a the length between
 	 * known centers. Get angle theta between sides a and c by law of
@@ -480,7 +488,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * Given two centers and three euclidean radii, compute third center. 
+	 * @brief Given two centers and three euclidean radii, compute third center. 
 	 * This is for tangency case. The 'CircleSimple' class is
 	 * simply for transferring data back.
 	 * @param z1 Complex
@@ -496,7 +504,7 @@ public class EuclMath{
 	}
 	
 	/** 
-	 * Compute inversive distance (or cos(overlap)) between two eucl 
+	 * @brief Compute inversive distance (or cos(overlap)) between two eucl 
 	 * circles. Return negative value if overlap more than PI/2. 
 	 * @param z1 Complex
 	 * @param z2 Complex
@@ -513,7 +521,7 @@ public class EuclMath{
 	}
 
 	/** 
-	 * Compute quasiconformal dilatation of barycentric map between euclidean 
+	 * @brief Compute quasiconformal dilatation of barycentric map between euclidean 
 	 * triangles with edge lengths <A,B,C> in domain and <a,b,c> (corresponding) 
 	 * in range.
 	 * @param A double
@@ -549,7 +557,7 @@ public class EuclMath{
 	
 
 	/** 
-	 * Compute the real dilatation of affine transformation 
+	 * @brief Compute the real dilatation of affine transformation 
 	 * for 2x2 real matra [a b;c d]. 
 	 * @param a double
 	 * @param b double
@@ -569,7 +577,7 @@ public class EuclMath{
 	}
 	
 	/** 
-	 * distance in three space from (x,y,z) to (X,Y,Z)
+	 * @brief distance in three space from (x,y,z) to (X,Y,Z)
 	 * @param xyz Point3D
 	 * @param XYZ Point3D
 	 * @return double 
@@ -581,7 +589,7 @@ public class EuclMath{
 	}
 
 	/** 
-	 * Euclidean circles determining 2 faces, with radii r1...r4
+	 * @brief Euclidean circles determining 2 faces, with radii r1...r4
 	 * counterclockwise, r1, r3 at ends of common edge and with 
 	 * overlaps, 'ivd_common' for common edge, 'ivdj' for edge 
 	 * <r_j, r_{j+1}>. Compute cross-ratio of circle centers.
@@ -621,7 +629,7 @@ public class EuclMath{
 	} 
 
 	/**
-	 * Return the eucl distance from z to w
+	 * @brief Return the eucl distance from z to w
 	 * @param z Complex
 	 * @param w Complex
 	 * @return double
@@ -631,7 +639,7 @@ public class EuclMath{
 	}
 
 	/** 
-	 * Return eucl length l of edge between centers of eucl
+	 * @brief Return eucl length l of edge between centers of eucl
 	 * circles of radii r1, r2, and inv dist 'ivd'. 
 	 * Then l*l=r1*r1+r2*r2+2*r1*r2*ivd;
 	 * @param r1 double
@@ -644,7 +652,7 @@ public class EuclMath{
 	}
 	
 	/** 
-	 * Find the distance of the point z to the eucl line through z1, z2.
+	 * @brief Find the distance of the point z to the eucl line through z1, z2.
 	 * @param z Complex
 	 * @param z1 Complex
 	 * @param z2 Complex
@@ -661,7 +669,7 @@ public class EuclMath{
 	} 
 	
 	/**
-	 * Find distance from z to a path. (See 'PathUtil.gpDistance'
+	 * @brief Find distance from z to a path. (See 'PathUtil.gpDistance'
 	 * for (signed) distance to Path2D.Double.)
 	 * @param z Complex z
 	 * @param plist Vector<Complex>
@@ -685,7 +693,7 @@ public class EuclMath{
 	} 
 	
 	/**
-	 * Eucl distance from 'z' to euclidean segment [z1,z2]; 
+	 * @brief Eucl distance from 'z' to euclidean segment [z1,z2]; 
 	 * compare distance to line and to ends.
 	 * @param z Complex
 	 * @param z1 Complex
@@ -709,7 +717,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * Return the point on segment [z1,z2] which is closest to z; may
+	 * @brief Return the point on segment [z1,z2] which is closest to z; may
 	 * be a projection to interior point or may be an end point.
 	 * @param pt Point3D
 	 * @param z1 Point3D
@@ -730,7 +738,7 @@ public class EuclMath{
 	}	
 
 	/**
-	 * Return the point on segment [z1,z2] which is closest to z
+	 * @brief Return the point on segment [z1,z2] which is closest to z
 	 * @param pt Complex
 	 * @param z1 Complex
 	 * @param z2 Complex
@@ -747,7 +755,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * The 'effective' eucl radii of a eucl triangulation is computed
+	 * @brief The 'effective' eucl radii of a eucl triangulation is computed
 	 * by methods of Gerald Orick. We might add more options later.
 	 * Note: this just uses the centers, so it applies even if the
 	 * radii don't form a packing. 'radii' must be created in calling
@@ -787,7 +795,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * return the 3D point in triangle 'p0','p1','p2' using barycentric
+	 * @brief return the 3D point in triangle 'p0','p1','p2' using barycentric
 	 * coordinates of 'bp'. Can be used for plane points (third coord 0), 
 	 * but mainly intended for working with barycentric coords in hyp 
 	 * and sph geometry.
@@ -806,7 +814,7 @@ public class EuclMath{
 	}
 	
 	/** 
-	 * Normalizes eucl data of pack p by putting point a at origin 
+	 * @brief Normalizes eucl data of pack p by putting point a at origin 
 	 * and g (if not too close to a) on the positive y-axis.
 	 * @param p PackDCEL
 	 * @param a Complex (usually, a=alpha center)
@@ -834,7 +842,7 @@ public class EuclMath{
 	} 
 	
 	/** 
-	 * In eucl geometry, tangency triple, compute derivative
+	 * @brief In eucl geometry, tangency triple, compute derivative
 	 * for angle at x w.r.t radius x.
 	 * @param x radius
 	 * @param y radius
@@ -848,7 +856,7 @@ public class EuclMath{
 	}
 		
 	/** 
-	 * In eucl geometry, tangency triple, compute derivative
+	 * @brief In eucl geometry, tangency triple, compute derivative
 	 * for angle at x w.r.t radius y.
 	 * @param x radius
 	 * @param y radius
@@ -862,7 +870,7 @@ public class EuclMath{
 	} 
 
 	/** 
-	 * In eucl geometry, tangency triple, compute derivative
+	 * @brief In eucl geometry, tangency triple, compute derivative
 	 * for angle at x w.r.t radius z.
 	 * @param x radius
 	 * @param y radius
@@ -886,7 +894,7 @@ public class EuclMath{
 	}
 	
 	/**
-	 * Data here is for a quad with eucl corners {vz, rz, wz,lz},
+	 * @brief Data here is for a quad with eucl corners {vz, rz, wz,lz},
 	 * with {vz,vw} being an edge. Return the 4 angles of the quad
 	 * @param vz Complex
 	 * @param rz Complex

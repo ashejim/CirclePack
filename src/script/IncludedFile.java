@@ -4,7 +4,9 @@ import input.CPFileManager;
 
 import java.io.File;
 
-/** 
+/**
+ * @brief Class containing info on files included in CPdata portion of scripts.
+ * 
  * Class containing info on files included in CPdata portion of scripts.
  * A linked list of these is maintained as 'ScriptManager.includeFiles'.
  * @author kens
@@ -32,7 +34,7 @@ public class IncludedFile {
 	}
 	
 	/**
-	 * Return 'dataType' based on tmpFile extension; careful, no binary
+	 * @brief Return 'dataType' based on tmpFile extension; careful, no binary
 	 * files can yet be included in a CirclePack script file. I pass the
 	 * original name just to catch 'AboutImage' (it is in file name, but
 	 * complicated by the pid).
@@ -68,7 +70,7 @@ public class IncludedFile {
 	}
 	
 	/**
-	 * Return string describing the type of this data file; e.g. for
+	 * @brief Return string describing the type of this data file; e.g. for
 	 * attaching tool tip to 'fileButton'
 	 * @return
 	 */

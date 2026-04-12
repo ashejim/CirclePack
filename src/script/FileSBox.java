@@ -41,6 +41,8 @@ import exceptions.DataException;
 import exceptions.ParserException;
 
 /**
+ * @brief StackBox for FILE nodes, i.
+ *
  * StackBox for FILE nodes, i.e., nodes in the script window 
  * associated with included files.
  * @author kens
@@ -381,7 +383,7 @@ public class FileSBox extends StackBox {
 	public void deleteChildNodes() {}
 
 	/**
-	 * Create menus for 'FileBox's, either edit or display mode.
+	 * @brief Create menus for 'FileBox's, either edit or display mode.
 	 * @param editmode, boolean: true, then for edit mode
 	 * @return JPopupMenu
 	 */

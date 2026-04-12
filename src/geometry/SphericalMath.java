@@ -11,6 +11,19 @@ import util.RadIvdPacket;
 import util.UtilPacket;
 
 /** 
+ * @brief Static methods for mathematical operations in spherical geometry.
+ *
+ * Provides the spherical-geometry implementations of circle-packing
+ * computations on the unit Riemann sphere x² + y² + z² = 1.
+ * Spherical points are stored as Complex numbers in (theta, phi) form,
+ * where theta is the azimuthal angle from the positive x-axis and phi
+ * is the polar angle down from the north pole.  Radii are spherical
+ * (measured in radians, range [0, π]).
+ *
+ * @see HyperbolicMath  Hyperbolic (Poincaré disc) counterpart.
+ * @see EuclMath        Euclidean counterpart.
+ * @see CommonMath      Geometry-independent dispatch layer.
+ *
  * Static routines for computations in spherical geometry
  * 
  * The unit (Riemann) sphere is x^2 + y^2 + z^2 = 1 in 3-space. 
@@ -45,7 +58,7 @@ public class SphericalMath{
   public static final int INITIAL_CAPACITY = 100;
   
   /**
-   * Find inversive distance on sphere between circles.
+   * @brief Find inversive distance on sphere between circles.
    * @param z1 Complex, (theta,phi) center
    * @param z2 Complex, (theta,phi) center
    * @param r1 double, sph rad
@@ -58,7 +71,7 @@ public class SphericalMath{
   }
   
   /** 
-	 * Return sph length of edge with spherical radii r1, r2, 
+	 * @brief Return sph length of edge with spherical radii r1, r2, 
 	 * and inv dist 'ivd'. For two circles, 
 	 * 'ivd'=(-cos(phi)+cos(r1)*cos(r2))/(sin(r1)*sin(r2)),
 	 * where phi is the angle between the unit position vectors 
@@ -95,7 +108,7 @@ public class SphericalMath{
   } 
   
   /** 
-   * Return area (spherical excess) of Spherical triangle with given 
+   * @brief Return area (spherical excess) of Spherical triangle with given 
    * radii and inversive distances; from L'Huilier's Formula.
    * @param r0 double
    * @param r1 double
@@ -114,7 +127,7 @@ public class SphericalMath{
   }
   
   /**
-   * Return area (spherical excess) of Spherical triangle with given
+   * @brief Return area (spherical excess) of Spherical triangle with given
    * corners in (theta,phi) form; from L'Huilier's Formula.
    * @param p1 Complex
    * @param p2 Complex
@@ -129,7 +142,7 @@ public class SphericalMath{
   }
   
   /**
-   * Return area (spherical excess) of Spherical triangle with given
+   * @brief Return area (spherical excess) of Spherical triangle with given
    * face 'RadIvdPacket' data.
    * @param rip RadIvdPacket
    * @return
@@ -140,7 +153,7 @@ public class SphericalMath{
   }
   
   /**
-   * Usual normalization, 'a' at origin, 'b' on positive imaginary axis
+   * @brief Usual normalization, 'a' at origin, 'b' on positive imaginary axis
    * @param pdcel PackDCEL
    * @param a complex, (theta,phi)
    * @param g complex, (theta,phi)
@@ -167,7 +180,7 @@ public class SphericalMath{
   }
   
   /**
-   * Return area (spherical excess) of Spherical triangle with given
+   * @brief Return area (spherical excess) of Spherical triangle with given
    * edge lengths. From L'Huilier's Formula.
    * @param l1 double
    * @param l2 double
@@ -181,7 +194,7 @@ public class SphericalMath{
   }
 	
   /**
-   * Find the maximum value that the radius of vert can have 
+   * @brief Find the maximum value that the radius of vert can have 
    * based on the current radii of neighbors. (Because no triple
    * can have radii summing to more than PI.)
    * @param p PackData
@@ -203,7 +216,7 @@ public class SphericalMath{
 	}
 	
   /**
-   * Find "incircle", sph center/radius of circle inscribed in 
+   * @brief Find "incircle", sph center/radius of circle inscribed in 
    * triangular face with given cclw oriented corners. Build 
    * faux circles to find the 3D eucl circle through the points 
    * of tangency. 
@@ -235,7 +248,7 @@ public class SphericalMath{
 	}
 	
 	/** 
-	 * Given three points on the sph, find the sph center/rad
+	 * @brief Given three points on the sph, find the sph center/rad
 	 * for the circle containing them; choose center to get
 	 * proper orientation {A, B, C}.
 	 * @param A Complex; sph points (theta,phi)
@@ -260,7 +273,7 @@ public class SphericalMath{
 	}
 	
   /**
-   * Spherical distance between two spherical (i.e., (theta,phi)) points
+   * @brief Spherical distance between two spherical (i.e., (theta,phi)) points
    * @param z Complex
    * @param w Complex
    * @return double
@@ -282,7 +295,7 @@ public class SphericalMath{
   }
   
   /** 
-   * Stereographic projection of complex number to complex spherical 
+   * @brief Stereographic projection of complex number to complex spherical 
    * point, form (theta,phi). IMPORTANT: note that we project so zero 
    * goes to North pole, infinity to South.
    * @param z Complex
@@ -318,7 +331,7 @@ public class SphericalMath{
   }
 
   /**
-   * Converts a (theta,phi) point on sphere to unit vector (x,y,z) 
+   * @brief Converts a (theta,phi) point on sphere to unit vector (x,y,z) 
    * of doubles. If phi=0.0, then get (0,0,1); if phi=Pi, get (0,0,-1);
    * @param sph_z Complex, spherical coords (theta,phi)
    * @return double[3]
@@ -344,7 +357,7 @@ public class SphericalMath{
   }
   
   /**
-   * compute the eucl distance in 3D between to (theta,phi)
+   * @brief compute the eucl distance in 3D between to (theta,phi)
    * points on the sphere.
    * @param z Complex
    * @param w Complex
@@ -359,7 +372,7 @@ public class SphericalMath{
   }
   
   /**
-   * Return new Complex (theta,phi) representing projection of given Point3D
+   * @brief Return new Complex (theta,phi) representing projection of given Point3D
    * to the unit sphere; recall, origin goes to NORTH pole.
    * @param p3d Point3D
    * @return sph coords (theta,phi) 
@@ -369,7 +382,7 @@ public class SphericalMath{
   } 
   
   /**
-   * Return new Complex (theta,phi) representing projection of 
+   * @brief Return new Complex (theta,phi) representing projection of 
    * given 3D vector (x,y,z) to the unit sphere; recall, origin 
    * goes to NORTH pole.
    * @param x double
@@ -388,7 +401,7 @@ public class SphericalMath{
   } 
   
 /**
- * Given sph point z=(theta,phi)), return new Complex (y,z) on visual plane. 
+ * @brief Given sph point z=(theta,phi)), return new Complex (y,z) on visual plane. 
  *  return null if on back. 
  * @param z=(theta,phi)
  * @return new Complex (y,z) on visual plane
@@ -398,7 +411,7 @@ public static Complex sphToVisualPlane(Complex z) {
 }
 
 /**
- *  Given (theta,phi), return new Complex (y,z) on visual plane. 
+ * @brief  Given (theta,phi), return new Complex (y,z) on visual plane. 
  *  return null if on back.
  *  @param theta,phi spherical point
  *  @return new Complex (y,z) on visual plane 
@@ -408,7 +421,7 @@ public static Complex sphToVisualPlane(double theta,double phi) {
 }
 
 /**
- * Dot product of 3-vectors
+ * @brief Dot product of 3-vectors
  * @param V double[3]
  * @param W double[3]
  * @return double
@@ -418,7 +431,7 @@ public static double dot_prod(double V[], double W[]){
   }
 
 /**
- * Length of real 3-vector.
+ * @brief Length of real 3-vector.
  * @param X
  * @return
  */
@@ -451,7 +464,7 @@ public static double vec_norm(double X[]){
   }
   
   /**
-   * Cross product of 2 3-vectors, XxY
+   * @brief Cross product of 2 3-vectors, XxY
    * @param X double[3]
    * @param Y double[3]
    * @return double[3]
@@ -465,7 +478,7 @@ public static double vec_norm(double X[]){
   }
   
   /**
-   * Given two sph circles which are (supposed to be) 
+   * @brief Given two sph circles which are (supposed to be) 
    * tangent, find the tangency point on the geodesic 
    * between them. Actually, returns pt with distances 
    * from z1, z2 having proportions r1, r2.
@@ -503,7 +516,7 @@ public static double vec_norm(double X[]){
   }
 
   /** 
-   * Find center of third circle in ordered triple. Note: 
+   * @brief Find center of third circle in ordered triple. Note: 
    * orientation is counterclockwise looking at sphere from outside.
    * ivdj is inv distance for edge <j,j+1>. 
    * TODO: inv distances not yet used; there just to parallel other geoms.
@@ -549,7 +562,7 @@ public static double vec_norm(double X[]){
   }
   
   /** 
-   * Find center of third circle in ordered triple in tangency
+   * @brief Find center of third circle in ordered triple in tangency
    * case. 
    * @param z0 Complex, (theta, phi)
    * @param z1 Complex
@@ -564,7 +577,7 @@ public static double vec_norm(double X[]){
   }
   
   /**
-   * Given z, w on sphere, return the sph point 
+   * @brief Given z, w on sphere, return the sph point 
    * which is distance 'dist' (in radians) from 
    * z in direction of w. 
    * @param ctr1 (theta,phi)
@@ -594,7 +607,7 @@ public static double vec_norm(double X[]){
   }
 
   /**
-   * Given sph point z, and T, unit vector tangent at z, compute
+   * @brief Given sph point z, and T, unit vector tangent at z, compute
    * the sph point which is distance 'dist' (in radians) from 
    * z in direction T. 
    * @param z Complex, (theta,phi)
@@ -614,7 +627,7 @@ public static double vec_norm(double X[]){
   }
 
   /** 
-   * Given 2 points on sphere, return unit length 3-vector in 
+   * @brief Given 2 points on sphere, return unit length 3-vector in 
    * tangent space of first pt, pointing toward second. Result is
    * always a unit vector perp to the vector to the first point. 
    * Ambiguities: 
@@ -664,7 +677,7 @@ public static double vec_norm(double X[]){
   } 
 
   /**
-   * Returns new Complex giving stereographic projection (recall, we
+   * @brief Returns new Complex giving stereographic projection (recall, we
    * project from the south pole) of spherical point z to complex 
    * point w in plane. Key is |w| = sin(phi)/(1+cos(phi)).
    * 
@@ -694,7 +707,7 @@ public static double vec_norm(double X[]){
   }
   
   /** 
-   * Project circles from sph to plane. (Recall, our 
+   * @brief Project circles from sph to plane. (Recall, our 
    * 'stereographic projection' is from south pole.)
    * Circles properly enclosing infinity (south pole) 
    * gets fake eucl data: start with antipodal point 
@@ -775,7 +788,7 @@ public static double vec_norm(double X[]){
   }
   		
   /** 
-   * Converts circle data to the sphere in a new 'CircleSimple'.
+   * @brief Converts circle data to the sphere in a new 'CircleSimple'.
    * Caution: projection is NOT the standard "stereographic"; see
    * comments at the beginning of this file.
    * Note that r<0 means the circle bounds the outside disc, which 
@@ -837,7 +850,7 @@ public static double vec_norm(double X[]){
   }
   
   /** 
-   * True if sph_pt (i.e., (theta,phi)) lies in triangle with 
+   * @brief True if sph_pt (i.e., (theta,phi)) lies in triangle with 
    * given spherical points as corners for a CONVEX triangle. 
    * TODO: handle non-convex triangles
    * @param sph_pt (theta,phi)
@@ -891,7 +904,7 @@ public static double vec_norm(double X[]){
   }
   
   /** 
-   * Given a complex point (y,z) on the viewing screen, find the
+   * @brief Given a complex point (y,z) on the viewing screen, find the
    * corresponding spherical point (theta,phi) on the front. Return 
    * in UtilPacket. 'rtnFlag' is 0 on failure (visual point is not 
    * within unit disc). '(value,errval)' is sph point (re, im).
@@ -912,7 +925,7 @@ public static double vec_norm(double X[]){
   }
   
   /** 
-   * Given points on sphere, return new Complex barycenter (theta,phi)
+   * @brief Given points on sphere, return new Complex barycenter (theta,phi)
    * of triangle they form; inside determined by orientation.
    * @param z1 (theta,phi)
    * @param z2 (theta,phi)
@@ -952,7 +965,7 @@ public static double vec_norm(double X[]){
   } 
   
   /**
-	 * Given points z1,z2,z3 and z on the sphere (theta,phi), find barycentric 
+	 * @brief Given points z1,z2,z3 and z on the sphere (theta,phi), find barycentric 
 	 * coords of z relative to spherical triangle {z1,z2,z3}. For conversion the
 	 * other way, see BaryPoint.bp2Complex.
 	 * @param z Complex, (theta,phi)
@@ -967,7 +980,7 @@ public static double vec_norm(double X[]){
 	}
 	
 	/**
-	 * Given a spherical point (theta, phi), return a new Complex 
+	 * @brief Given a spherical point (theta, phi), return a new Complex 
 	 * antipodal point in (theta,phi) form
 	 * @param s_pt (theta,phi)
 	 * @return new Complex
@@ -988,7 +1001,7 @@ public static double vec_norm(double X[]){
 	}
 	
 	/**
-	 * Find centroid in 3-space of points in the plane 
+	 * @brief Find centroid in 3-space of points in the plane 
 	 * stereo projected to the sphere after application 
 	 * of a transformation z --> a*z+b+c*i. If 'sPole' 
 	 * is true, assume one more point located at infinity.
@@ -1023,7 +1036,7 @@ public static double vec_norm(double X[]){
 	}
 			
 	/**
-	 * Given a list of sph points, (theta,phi), find their 3-space 
+	 * @brief Given a list of sph points, (theta,phi), find their 3-space 
 	 * centroid
 	 * @param pts Complex[] (theta,phi) form
 	 * @return Point3D, null on error
@@ -1046,7 +1059,7 @@ public static double vec_norm(double X[]){
 	}
 	
 	/**
-	 * Stereographic projection: (u,v) --> (x,y,z) on unit sphere
+	 * @brief Stereographic projection: (u,v) --> (x,y,z) on unit sphere
 	 *     z=(1-(u*u+v*v))/(1+(u*u=v*v));    x=u(1+z);    y=v(1+z).
 	 * @param z
 	 * @return Point3D

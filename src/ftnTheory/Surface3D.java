@@ -29,6 +29,12 @@ public class Surface3D extends PackExtender {
 	}
 	
 	
+	/**
+	 * @brief TODO: Document cmdParser.
+	 * @param cmd
+	 * @param flagSegs
+	 * @return int
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 		int count=0;
@@ -67,6 +73,9 @@ public class Surface3D extends PackExtender {
 		return count;
 	}
 	
+	/**
+	 * @brief TODO: Document initCmdStruct.
+	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();
 		cmdStruct.add(new CmdStruct("bary_field","filename",null,

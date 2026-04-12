@@ -20,6 +20,8 @@ import listeners.ACTIVEListener;
 import util.ModeMenuItem;
 
 /**
+ * @brief The class maintains the vectors of cursors and active modes
+ *
  * The class maintains the vectors of cursors and active modes
  * from which any of the 'ActiveWrapper's can chose. On startup, 
  * the default mode, hand mode, viewbox mode, and a few others
@@ -48,7 +50,7 @@ public class CursorCtrl {
 	}
 	
 	/**
-	 * Read the cursor modes from a file
+	 * @brief Read the cursor modes from a file
 	 * @param modeFile (not yet used)
 	 */
 	public CursorCtrl(File modeFile) {
@@ -102,7 +104,7 @@ public class CursorCtrl {
 	}
 	
 	/**
-	 * Not all systems support cursors of arbitrary size. The
+	 * @brief Not all systems support cursors of arbitrary size. The
 	 * desired image may have to be scaled to fit in the allowed
 	 * footprint or, when the system's cursor size is too large
 	 * (e.g. Windows 32x32), make a transparent area and position

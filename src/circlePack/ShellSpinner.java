@@ -1,6 +1,8 @@
 package circlePack;
 
 /**
+ * @brief Some type of progress indicator when running in standalone
+ *
  * Some type of progress indicator when running in standalone
  * @author kens
  *

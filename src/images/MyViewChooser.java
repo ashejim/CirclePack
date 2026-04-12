@@ -10,7 +10,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-/** 
+/**
+ * @brief An example that uses custom file views to show thumbnails of
+ * 
  * An example that uses custom file views to show thumbnails of 
  * graphic files rather than the regular file icon.  
  * (see ThumbnailFileView.java)

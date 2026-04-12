@@ -12,6 +12,8 @@ import listManip.NodeLink;
 import packing.PackData;
 
 /**
+ * @brief Utility class holding fundamental geometric data needed for
+ *
  * Utility class holding fundamental geometric data needed for
  * repacking and other computations, localized to (triangular 
  * only) face of some parent complex. Typically used for temporary
@@ -99,7 +101,7 @@ public class TriData {
 	}
 	
 	/**
-	 * Upload radii to parent packing. Note: record only for edges
+	 * @brief Upload radii to parent packing. Note: record only for edges
 	 * associated with this face, since the same vertex may get 
 	 * different radii for other faces (e.g., as recorded in 
 	 * appropriate 'RedEdge's). 
@@ -130,7 +132,7 @@ public class TriData {
 	}
 
 	/**
-	 * are there any non-trivial inversive distances for 
+	 * @brief are there any non-trivial inversive distances for 
 	 * this face?
 	 * @return boolean
 	 */
@@ -141,7 +143,7 @@ public class TriData {
 	}
 	
 	/**
-	 * Caution: invDist[j] is for edge (j,j+1)
+	 * @brief Caution: invDist[j] is for edge (j,j+1)
 	 * @param j int
 	 * @return double, 1.0 if 'invDist' is null
 	 */
@@ -154,7 +156,7 @@ public class TriData {
 	}
 	
 	/**
-	 * Caution: invDist[j] is for edge (j,j+1).
+	 * @brief Caution: invDist[j] is for edge (j,j+1).
 	 * Note: this call may have no effect if 'sch' is 1.0.
 	 * @param j int
 	 * @param ivd double
@@ -170,7 +172,7 @@ public class TriData {
 	}
 	
 	/** 
-	 * Find local index (0,1, or 2) for vertex v in this 
+	 * @brief Find local index (0,1, or 2) for vertex v in this 
 	 * triangle; return -1 if v is not among its vertices.
 	 * @param v int
 	 * @return int, local index or -1 on failure
@@ -183,7 +185,7 @@ public class TriData {
 	}
 
 	/** 
-	 * Find local index (0,1, or 2) for vertex v which
+	 * @brief Find local index (0,1, or 2) for vertex v which
 	 * is origin of 'edge' in this face; return -1 
 	 * if not an edge of this face.
 	 * @param edge HalfEdge
@@ -200,7 +202,7 @@ public class TriData {
 	}
 	
 	/**
-	 * Return angle at vert[j] using current data. If 
+	 * @brief Return angle at vert[j] using current data. If 
 	 * 'invDist' exists, then invDist[j] is for edge (j,j+1)
 	 * @param j int
 	 * @return double
@@ -216,7 +218,7 @@ public class TriData {
 
 	
 	/**
-	 * Return angle at v=vert[j] using current data, but radius 
+	 * @brief Return angle at v=vert[j] using current data, but radius 
 	 * 'rad' at v itself. If 'invDist' exists, then invDist[j] is 
 	 * for edge (j,j+1)
 	 * @param j int
@@ -236,7 +238,7 @@ public class TriData {
 	}
 	
 	/**
-	 * Return angle at v=vert[j] using 'radii', except radius 
+	 * @brief Return angle at v=vert[j] using 'radii', except radius 
 	 * at v itself is its current radius multiplied by 'factor'. 
 	 * @param j int
 	 * @param factor double
@@ -253,7 +255,7 @@ public class TriData {
 	}
 
 	/**
-     * We may want to move local 'radii' or 'labels' (typically 
+     * @brief We may want to move local 'radii' or 'labels' (typically 
      * labels are only for eucl case) stored in 'PackDCEL.triData'
      * to the radii of the parent packing. Modes are: 
      *   1: use local 'radii', 

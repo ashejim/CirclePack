@@ -1,6 +1,8 @@
 package util;
 
 /**
+ * @brief Utility class to hold radius and edge inversive distance
+ *
  * Utility class to hold radius and edge inversive distance
  * data for a face, irrespective of geometry.
  * 

@@ -10,6 +10,8 @@ import math.Mobius;
 import util.ColorUtil;
 
 /**
+ * @brief Side-pairing data for boundary edges in multiply-connected DCEL structures. 'SideDescription'.
+ *
  * This is for DCEL structures; compare to 'SideDescription'.
  * A "side" of a complex is a segment of faces in 'redChain'. 
  * A "side-pairing" occurs only when a complex is not simply 
@@ -64,7 +66,7 @@ public class SideData {
     }
     
     /**
-     * Count of edges along this side.
+     * @brief Count of edges along this side.
      * @return int
      */
     public int sideCount() {
@@ -78,7 +80,7 @@ public class SideData {
     }
     
     /**
-     * Update side-pair 'mob' based on latest 'center' data in 
+     * @brief Update side-pair 'mob' based on latest 'center' data in 
      * relevant red edges. Return 0 on error, check 'mobErr' 
      * for accuracy. Note: this mob maps the matched edge TO
      * this edge.
@@ -148,7 +150,7 @@ public class SideData {
     }
     
     /**
-     * Search 'PairLink' to find the 'SideData' for the 
+     * @brief Search 'PairLink' to find the 'SideData' for the 
      * "side" of the complex which contains 'RedEdge' redge
      * return null on failure. 
      * @param pairLink PairLink
@@ -172,7 +174,7 @@ public class SideData {
     }
 
     /**
-     * Return the index of the vertex that starts this side
+     * @brief Return the index of the vertex that starts this side
      * @return int
      */
     public int sideFirstVert() {
@@ -180,7 +182,7 @@ public class SideData {
     }
     
     /**
-     * Return 'HalfLink' with successive 'myEdge's 
+     * @brief Return 'HalfLink' with successive 'myEdge's 
      * from 'this' cclw side.
      * @return HalfLink, null on failure
      */
@@ -198,7 +200,7 @@ public class SideData {
     }
 
 	/**
-	 * clone: CAUTION: pointers are likely in conflict or outdated.
+	 * @brief clone: CAUTION: pointers are likely in conflict or outdated.
 	 * @return new SideData
 	 */
     public SideData clone() {

@@ -1,6 +1,8 @@
 package exceptions;
 
 /**
+ * @brief For exceptions send by Native code using 'triangle' and 'qhull'
+ *
  * For exceptions send by Native code using 'triangle' and 'qhull'
  * to generate Delaunay triangulations.
  * @author kens

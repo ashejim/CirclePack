@@ -8,6 +8,8 @@ import packing.PackData;
 import packing.PackExtender;
 
 /**
+ * @brief This extender is intended for constructing combinatorial
+ *
  * This extender is intended for constructing combinatorial 
  * tilings specified via matching rules. (It should also be 
  * useful in the future for reimplementing the dessin d'enfant 

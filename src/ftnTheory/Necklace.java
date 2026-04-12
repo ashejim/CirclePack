@@ -23,6 +23,8 @@ import util.ColorUtil;
 import util.StringUtil;
 
 /**
+ * @brief Pack extender to experiment with Scott Sheffield 'necklace'
+ *
  * Pack extender to experiment with Scott Sheffield 'necklace'
  * construction. Working with Joan Lind to investigate the
  * random triangulation construction as described by Steffen
@@ -329,7 +331,7 @@ System.err.println("starting bottomHemi:");
 
 	
 	/**
-	 * This is intended as recursive constructor. Given 'list' of
+	 * @brief This is intended as recursive constructor. Given 'list' of
 	 * indices (starting as 1....n), choose a random edge and 
 	 * random opposite vert from 'list', add a single labeled
 	 * triangle, break list into p and q pieces, p+q=n-1, each of size at 

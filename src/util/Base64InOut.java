@@ -12,6 +12,8 @@ import org.apache.commons.codec.binary.Base64;
 import exceptions.InOutException;
 
 /**
+ * @brief Binary files (currently, just image files) need to be
+ *
  * Binary files (currently, just image files) need to be 
  * stored in base64 encoded form in scripts. This class has 
  * routines for en/decoding files.
@@ -21,7 +23,7 @@ import exceptions.InOutException;
 public class Base64InOut {
 	
 	/**
-	 * encode a file (presumably binary, e.g. 'jpg' or 'png') 
+	 * @brief encode a file (presumably binary, e.g. 'jpg' or 'png') 
 	 * in base64 for inclusion in script. File name is unchanged. 
 	 * @param file (File created/checked by calling routine)
 	 */
@@ -43,7 +45,7 @@ public class Base64InOut {
 	}
 	
 	/**
-	 * decodes a file from base64 (presumably to binary, 
+	 * @brief decodes a file from base64 (presumably to binary, 
 	 * e.g. 'jpg' or 'png'). File name is unchanged.  
 	 * @param file (File created/checked by calling routine)
 	 */
@@ -69,7 +71,7 @@ public class Base64InOut {
 	} 
 	
 	/** Returns the contents of the file in a byte array.
-	 * (from 'Example Depot' on the web)
+	 * @brief (from 'Example Depot' on the web)
 	 * @param file
 	 * @return
 	 * @throws IOException

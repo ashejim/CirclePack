@@ -4,6 +4,8 @@ import complex.Complex;
 import packing.CPdrawing;
 
 /**
+ * @brief This holds real world info on what a canvas is viewing, using
+ *
  * This holds real world info on what a canvas is viewing, using 
  * lz=(lx,ly), rz=(rx,ry) as lower left and upper right corners.
  * Note: after changes, calling routine responsible: 'update', 'repaint'.
@@ -32,7 +34,7 @@ public class ViewBox {
 		rz=new Complex(1.1,1.1);
 	}
 	/**
-	 * Set the real world view box from lz to rz. 
+	 * @brief Set the real world view box from lz to rz. 
 	 * Note: square views only (for now)
 	 * @param lz Complex
 	 * @param rz Complex
@@ -55,7 +57,7 @@ public class ViewBox {
 	}
 	
 	/**
-	 * Set view width/height to 'wh', retaining center. 
+	 * @brief Set view width/height to 'wh', retaining center. 
 	 * @param f
 	 * @return
 	 */
@@ -65,7 +67,7 @@ public class ViewBox {
 	}
 	
 	/**
-	 * Scale view by factor f, retaining center. 
+	 * @brief Scale view by factor f, retaining center. 
 	 * @param f
 	 * @return
 	 */
@@ -85,7 +87,7 @@ public class ViewBox {
 	}
 	
 	/**
-	 * center screen on z
+	 * @brief center screen on z
 	 * @param z
 	 * @return
 	 */
@@ -102,7 +104,7 @@ public class ViewBox {
 	}
 	
 	/**
-	 * Translate the view by complex z and 'update' screen
+	 * @brief Translate the view by complex z and 'update' screen
 	 * @return
 	 */
 	public int transView(Complex z) {
@@ -113,7 +115,7 @@ public class ViewBox {
 	}
 
 	/**
-	 * Translate the view by doubles x,y and 'update' screen
+	 * @brief Translate the view by doubles x,y and 'update' screen
 	 * @return 
 	 */
 	public int transView(double x,double y) {
@@ -127,7 +129,7 @@ public class ViewBox {
 	
 	
 	/**
-	 * Returns width. (Currently same as height)
+	 * @brief Returns width. (Currently same as height)
 	 * @return
 	 */
 	public double getWidth() {
@@ -135,7 +137,7 @@ public class ViewBox {
 	}
 
 	/**
-	 * Returns height. (Currently same as width)
+	 * @brief Returns height. (Currently same as width)
 	 * @return
 	 */
 	public double getHeight() {

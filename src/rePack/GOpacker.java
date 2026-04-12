@@ -21,6 +21,8 @@ import packing.PackData;
 import packing.PackLite;
 
 /**
+ * @brief Linearized circle-packing algorithm (Collins–Orick–Stephenson GOpack method). we don't have
+ *
  * NOTE: We no longer call this code because we don't have
  * access to sparse matrix computations. 
  * 
@@ -150,7 +152,7 @@ public class GOpacker extends RePacker {
 	}
 	
 	/**
-	 * Special 'load' version for GOPacker to tailor the associated 
+	 * @brief Special 'load' version for GOPacker to tailor the associated 
 	 * persistent 'PackLite', with info on what to repack: default 
 	 * repacks interior based on boundary, but we may instead send
 	 * NodeLink of vertices, e.g., use poison vertices to prescribe 
@@ -192,7 +194,7 @@ public class GOpacker extends RePacker {
 	}
 	
 	/**
-	 * Set the mode
+	 * @brief Set the mode
 	 * @param mode
 	 */
 	public void setMode(int md) {
@@ -230,7 +232,7 @@ public class GOpacker extends RePacker {
 	}
 	
 	/**
-     * Initiate a 'SolverData' class with persistent data that
+     * @brief Initiate a 'SolverData' class with persistent data that
      * is to be sent to the native code. 
      * 
      * Also set persistent 'righthand side' data elements 
@@ -315,7 +317,7 @@ public class GOpacker extends RePacker {
 	}
 
 	/**
-	 * This is only for eucl packings: 'restart' sets 'myPLite.radii' 
+	 * @brief This is only for eucl packings: 'restart' sets 'myPLite.radii' 
 	 * based on parent radii. 
 	 * If you want to pick up computation where it stopped, then
 	 * call 'continueRiffle' instead.
@@ -341,7 +343,7 @@ public class GOpacker extends RePacker {
 	}
 
 	/**
-	 * Continue riffling using 'myPLite.radii'.
+	 * @brief Continue riffling using 'myPLite.radii'.
 	 * @param passNum int, may be 0, if < 0, use 'passLimit'
 	 * @return int, number of passes completed
 	 */
@@ -408,7 +410,7 @@ public class GOpacker extends RePacker {
 	}
 	
 	/**
-	 * depending on mode
+	 * @brief depending on mode
 	 * @return
 	 */
 	public int layoutBdry() {
@@ -442,7 +444,7 @@ public class GOpacker extends RePacker {
 	}
 
 	/**
-	 * Once radii and bdry centers are set, this carries out
+	 * @brief Once radii and bdry centers are set, this carries out
 	 * the Tutte-type layout: it updates the matrix non-zero entries and
 	 * the right-hand side entries, asks the native code to solve the system,
 	 * and stores the new interior centers in myPLite.
@@ -464,7 +466,7 @@ public class GOpacker extends RePacker {
 	}
 	
 	/**
-	 * This calls native code to solve the linear system associated
+	 * @brief This calls native code to solve the linear system associated
 	 * with the given SolverData.
 	 * @param sD
 	 * @return int status (perhaps sD.status)
@@ -640,7 +642,7 @@ public class GOpacker extends RePacker {
 	}
 	
     /**
-     * The center real/imag parts were computed and stored in 'SolverData.Zx/Zy'
+     * @brief The center real/imag parts were computed and stored in 'SolverData.Zx/Zy'
      * by the native solver code. Transfer these to myPLite.centers.
      * @return int count
      */
@@ -655,7 +657,7 @@ public class GOpacker extends RePacker {
     }
     
     /**
-     * Use 'centers' to reset 'radii' to "effective" radii. 
+     * @brief Use 'centers' to reset 'radii' to "effective" radii. 
      * TODO: there are other options and probably improvements here.
      * 
      * I am moderating the adjustments of bdry radii, since they seem to
@@ -749,7 +751,7 @@ public class GOpacker extends RePacker {
     }
 
     /**
-     * Return the L2 and sup error in the angle sums at interiors.
+     * @brief Return the L2 and sup error in the angle sums at interiors.
      * The layout is in 'centers' as computed via Tutte-type embedding, 
      * so its interior angle sums should all be 2*pi.
      * However, we see the discrepancy when they are computed from radii.
@@ -823,7 +825,7 @@ public class GOpacker extends RePacker {
      ****************************************************** */
     
     /** 
-     * Position bdry circles around interior of unit circle. Data is euclidean;
+     * @brief Position bdry circles around interior of unit circle. Data is euclidean;
      * find circle radius R by Newton method, scale all 'radii' to fit the unit
      * circle, set only bdry 'centers'.
      * @return double, computed R
@@ -905,7 +907,7 @@ public class GOpacker extends RePacker {
     }
     
     /** 
-     * Position bdry circles as chain of circle orthogonal to unit circle. 
+     * @brief Position bdry circles as chain of circle orthogonal to unit circle. 
      * Data is euclidean; find circle radius R by Newton method, scale all 
      * 'radii' to fit the unit circle, set only bdry 'centers'.
      * @return double, computed R
@@ -982,7 +984,7 @@ public class GOpacker extends RePacker {
     }
     
     /**
-     * For packings of polygons, this places the centers in the
+     * @brief For packings of polygons, this places the centers in the
      * appropriate normalized positions.
      * TODO: for now, just taking care of rectangles
      * @return int, count of vertices places (should be bdryCount)
@@ -1082,7 +1084,7 @@ public class GOpacker extends RePacker {
     }
 
     /**
-     * For packings of polygons, this places the centers in the
+     * @brief For packings of polygons, this places the centers in the
      * appropriate normalized positions.
      * TODO: for now, just taking care of rectangles
      * @return int, count of vertices places (should be bdryCount)
@@ -1143,7 +1145,7 @@ public class GOpacker extends RePacker {
     }
  
     /**
-     * Given the corners, set up the 'sides', cclw lists of vertices 
+     * @brief Given the corners, set up the 'sides', cclw lists of vertices 
      * forming the sides, including first and last vertex.
      * @param crnrs[] int, corner vertices, local indices
      * @return
@@ -1221,7 +1223,7 @@ public class GOpacker extends RePacker {
     }
  
     /**
-     * Reset corner info for polygonal packings. This nulls out old info,
+     * @brief Reset corner info for polygonal packings. This nulls out old info,
      * but new is set up elsewhere when the code sees that 'parentCorners' 
      * is not null but 'corners' and 'sides' are.
      * @param pCorners int[] of parent corner vertices or null
@@ -1265,7 +1267,7 @@ public class GOpacker extends RePacker {
     }
     
     /**
-     * Spherical packings involve three fixed bdry circles; this
+     * @brief Spherical packings involve three fixed bdry circles; this
      * sets their radii/centers. The three circles are radius 2*sqrt(3)-3,
      * form tangent triple, and are tangent to the unit circle, first at z=i.
      * @return 0 if bdry does not have 3 vertices
@@ -1288,7 +1290,7 @@ public class GOpacker extends RePacker {
     }
     
     /**
-     * Return string message on the RePacker status. 
+     * @brief Return string message on the RePacker status. 
      * @return String
      */
     public String getStatus() {
@@ -1305,7 +1307,7 @@ public class GOpacker extends RePacker {
     }
     
     /**
-     * Get the original parent's nodeCount as saved on startup
+     * @brief Get the original parent's nodeCount as saved on startup
      * @return origNodeCount
      */
     public int getOrigNodeCount() {
@@ -1313,7 +1315,7 @@ public class GOpacker extends RePacker {
     }
     
     /**
-     * Specifically for sph max packing; if the boundary exists and
+     * @brief Specifically for sph max packing; if the boundary exists and
      * has three vertices, return their parent indices. Else, return
      * null.
      * @return int[3] or null
@@ -1330,6 +1332,8 @@ public class GOpacker extends RePacker {
 }
 
 /**
+ * @brief Internal class: Triple of integers {v, w, j}, wherein vertex w is a
+ *
  * Internal class: Triple of integers {v, w, j}, wherein vertex w is a 
  * neighbor of vertex v having index j in the flower of v. We want to
  * keep an array of these which we can sort into ascending order on w

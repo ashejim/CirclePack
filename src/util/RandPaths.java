@@ -5,6 +5,8 @@ import java.util.Random;
 import complex.Complex;
 
 /**
+ * @brief Class with static routines to create random paths of various
+ *
  * Class with static routines to create random paths of various
  * types. It was started (8/09) to generate random points on the
  * unit circles.
@@ -14,7 +16,7 @@ import complex.Complex;
 public class RandPaths {
 
 	/**
-	 * Create array of N random points on the unit circle with 
+	 * @brief Create array of N random points on the unit circle with 
 	 * arguments increasing in [0,2Pi]. If 'homeo' is given, then
 	 * points are chosend randomly with respect to interpolation 
 	 * of this homeomorphism.
@@ -73,7 +75,7 @@ public class RandPaths {
 	}
 	
 	/**
-	 * Create array of N random points on the unit circle with 
+	 * @brief Create array of N random points on the unit circle with 
 	 * arguments increasing in [0,2Pi].
 	 * @param N
 	 * @param anchored, boolean: true, then first point is z=1.

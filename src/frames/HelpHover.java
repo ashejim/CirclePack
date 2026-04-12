@@ -48,6 +48,8 @@ import allMains.CirclePack;
 import circlePack.PackControl;
 
 /**
+ * @brief Constructs a hover version of the Help frame,
+ *
  * Constructs a hover version of the Help frame,
  * which holds various help info in tabbed panes. 
  * In the future, should add search and other 
@@ -360,7 +362,7 @@ public class HelpHover extends HoverPanel implements HyperlinkListener {
 	}
 
 	/**
-	 * Opens given helpfile and puts contents (or error msg)
+	 * @brief Opens given helpfile and puts contents (or error msg)
 	 * in given text area.
 	 * @param filename String
 	 * @param textArea
@@ -392,7 +394,7 @@ public class HelpHover extends HoverPanel implements HyperlinkListener {
 	}
 
 	/**
-	 * Given a word, this looks for it in "CmdDetail"; 
+	 * @brief Given a word, this looks for it in "CmdDetail"; 
 	 * if found, we select the "CmdDetail" tab and 
 	 * mark/position the word.
 	 * @param word
@@ -439,7 +441,7 @@ public class HelpHover extends HoverPanel implements HyperlinkListener {
 	}
 
 	/**
-	 * Select 'CmdDetail' tab and position it at 
+	 * @brief Select 'CmdDetail' tab and position it at 
 	 * the command 'cmd'. Note: 'CmdDetail' index
 	 * is now 0.
 	 * @param str
@@ -454,7 +456,7 @@ public class HelpHover extends HoverPanel implements HyperlinkListener {
 	}
 
 	/**
-	 * Search 'extendText' to see if given extender class is
+	 * @brief Search 'extendText' to see if given extender class is
 	 * already included. If not, add html formated description
 	 * strings to 'extendText' and install in 'extenderArea'.
 	 * @param xname, the 'PackExtender' class name
@@ -468,7 +470,7 @@ public class HelpHover extends HoverPanel implements HyperlinkListener {
 	}
 
 	/**
-	 * Read an info file in XML format, process it and add 
+	 * @brief Read an info file in XML format, process it and add 
 	 * text to open 'textbuf'.
 	 * @param filename, assumed in 'Resources/doc/'
 	 * @param keyword, what type of element we're after
@@ -588,7 +590,7 @@ public class HelpHover extends HoverPanel implements HyperlinkListener {
 	}
 
 	/**
-	 * Get the target string from a node; null on failure
+	 * @brief Get the target string from a node; null on failure
 	 * @param map
 	 * @param target, name of attribute sought
 	 * @return, string value, null on failure

@@ -35,6 +35,8 @@ import util.StringUtil;
 import util.UtilPacket;
 
 /**
+ * @brief Linked list for vertices associated (generally) with a
+ *
  * Linked list for vertices associated (generally) with a 
  * particular circle packing.
  * @author kens
@@ -83,7 +85,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Not associated with any PackData
+	 * @brief Not associated with any PackData
 	 * @param datastr String
 	 */
 	public NodeLink(String datastr) {
@@ -91,7 +93,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * vertices of 'HalfLink' in order 
+	 * @brief vertices of 'HalfLink' in order 
 	 * @param hlink
 	 */
 	public NodeLink(HalfLink hlink) {
@@ -102,7 +104,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Initiate empty list
+	 * @brief Initiate empty list
 	 * @param p
 	 */
 	public NodeLink(PackData p) {
@@ -124,7 +126,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Add links to this list (if it is associated 
+	 * @brief Add links to this list (if it is associated 
 	 * with PackData). Note that argument should not 
 	 * be empty since 'a" would have been added 
 	 * as default.
@@ -137,7 +139,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Add links to this list (if it is associated with PackData). Note
+	 * @brief Add links to this list (if it is associated with PackData). Note
 	 * that argument should not be empty since "a" would have been
 	 * added as default.
 	 * @param items Vector<String>
@@ -1211,7 +1213,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Create a list of entries as a string
+	 * @brief Create a list of entries as a string
 	 * @return String, null on error
 	 */
 	public String toString() {
@@ -1226,7 +1228,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Make a distinct copy of this linked list; no check
+	 * @brief Make a distinct copy of this linked list; no check
 	 * of validity of the entries.
 	 * @return NodeLink
 	 */
@@ -1240,7 +1242,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Abut a copy of given @see NodeLink to the end of this one. 
+	 * @brief Abut a copy of given @see NodeLink to the end of this one. 
 	 * @param moreNL @see NodeLin
 	 * @return count of new vertices (some may be improper, some redundant)
 	 */
@@ -1259,7 +1261,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * add end vertices from 'HalfLink'
+	 * @brief add end vertices from 'HalfLink'
 	 * @param hlink HalfLink
 	 * @return count
 	 */
@@ -1282,7 +1284,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Pick first vertex of list described in string.
+	 * @brief Pick first vertex of list described in string.
 	 * @param p PackData
 	 * @param str String
 	 * @return 0 on failure
@@ -1295,7 +1297,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Pick first vertex number off first string of first vector of vector
+	 * @brief Pick first vertex number off first string of first vector of vector
 	 * of string vectors. 
 	 * @param p PackData
 	 * @param flagsegs Vector<Vector<String>>
@@ -1312,7 +1314,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Is 'v' an entry?
+	 * @brief Is 'v' an entry?
 	 * @param v
 	 * @return int, index of v or -1 on error or not found
 	 */
@@ -1324,7 +1326,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Find first instance successive entries <v,w>
+	 * @brief Find first instance successive entries <v,w>
 	 * @param v
 	 * @param w
 	 * @return index of v: -1 on error or not found; 
@@ -1340,7 +1342,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Count my elements (without repeats)
+	 * @brief Count my elements (without repeats)
 	 * @return int count; -1 on error
 	 */
 	public static int countMe(NodeLink nl) {
@@ -1369,7 +1371,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * If @see NodeLink is a closed vert list and 'indx' points to
+	 * @brief If @see NodeLink is a closed vert list and 'indx' points to
 	 * entry v, then rotate, returning a new closed NodeLink starting 
 	 * and ending with v.
 	 * @param link @see NodeLink
@@ -1395,7 +1397,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 
 	/**
-	 * Return a new 'NodeLink' whose order is the reverse of this
+	 * @brief Return a new 'NodeLink' whose order is the reverse of this
 	 * @return new 'NodeLink', null if this is empty.
 	 */
 	public NodeLink reverseMe() {
@@ -1409,7 +1411,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Create new NodeLink in which 'od's with 'nw's are interchanged;
+	 * @brief Create new NodeLink in which 'od's with 'nw's are interchanged;
 	 * order of list is unchanged.
 	 * @param od int, old index
 	 * @param nw int, new index
@@ -1434,7 +1436,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Given 'VertexMap' with <old, new>, translate this 
+	 * @brief Given 'VertexMap' with <old, new>, translate this 
 	 * 'NodeLink' from old to the new indices.
 	 * @param oldnew VertexMap
 	 * @return new NodeLink (with null PackData)
@@ -1452,7 +1454,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-     * Return random entry from vertlist; caution, does not adjust
+     * @brief Return random entry from vertlist; caution, does not adjust
      * for repeat entries.
      * @param vertlist VertList
      * @return -1 on error
@@ -1465,7 +1467,7 @@ public class NodeLink extends LinkedList<Integer> {
     }
 
 	 /**
-	  * Does the given list of vertices separate the complex? If
+	  * @brief Does the given list of vertices separate the complex? If
 	  * the return is 0, then answer is NO.
 	  * 
 	  * TODO: this should go somewhere else, perhaps PackData.java?
@@ -1505,7 +1507,7 @@ public class NodeLink extends LinkedList<Integer> {
 	 }
 	 
 	 /** 
-	  * find vertices incident to 'EdgeSimple's
+	  * @brief find vertices incident to 'EdgeSimple's
 	  * @param elink EdgeLink
 	  * @return new NodeLink
 	  */
@@ -1521,7 +1523,7 @@ public class NodeLink extends LinkedList<Integer> {
 	 }
 	 
 	 /** 
-	  * find vertices incident to 'HalfEdge's
+	  * @brief find vertices incident to 'HalfEdge's
 	  * @param hlink HalfLink
 	  * @return new NodeLink
 	  */
@@ -1539,7 +1541,7 @@ public class NodeLink extends LinkedList<Integer> {
 	 }
 	 
 	 /**
-	  * Create a new NodeLink that eliminates duplication.
+	  * @brief Create a new NodeLink that eliminates duplication.
 	  * @param nl, NodeLink
 	  * @return new NodeLink
 	  */
@@ -1555,7 +1557,7 @@ public class NodeLink extends LinkedList<Integer> {
 	 }
 	 
 	 /**
-	  * Set 'packData' (which helps determine eligibility of entries)
+	  * @brief Set 'packData' (which helps determine eligibility of entries)
 	  * @param p PackData
 	  */
 	 public void setPackData(PackData p) {
@@ -1563,7 +1565,7 @@ public class NodeLink extends LinkedList<Integer> {
 	 }
 	 
 	 /**
-	  * Return fresh NodeLink with entries translated from 'nlink'
+	  * @brief Return fresh NodeLink with entries translated from 'nlink'
 	  * using 'vmap'.
 	  *  
 	  * CAREFUL: convention is that 'vmap' is {new,old} for
@@ -1603,7 +1605,7 @@ public class NodeLink extends LinkedList<Integer> {
 	 }
 	 
 	/**
-	 * Make up list by looking through SetBuilder specs 
+	 * @brief Make up list by looking through SetBuilder specs 
 	 * (from {..} set-builder notation). Use 'tmpUtil' to 
 	 * collect information before creating the NodeLink for 
 	 * return.
@@ -1682,7 +1684,7 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * print the vertex list for debugging.
+	 * @brief print the vertex list for debugging.
 	 * @return int count
 	 */
 	public int printMe() {

@@ -76,6 +76,9 @@ public class SphWidget extends JFrame
 		setLocation(new Point(200,100));
 	}
 	
+	/**
+	 * @brief TODO: Document initGUI.
+	 */
 	public void initGUI() {
 		this.setLayout(null);
 		
@@ -256,11 +259,19 @@ public class SphWidget extends JFrame
 		}
 	}
 	
+	/**
+	 * @brief TODO: Document displayRad.
+	 * @param vert
+	 */
 	public void displayRad(int vert) {
 		radiusField.setText(String.format("%.6e",
 				(double)(packData.getRadius(vert)/Math.PI)));
 	}
 	
+	/**
+	 * @brief TODO: Document displayAngSum.
+	 * @param vert
+	 */
 	public void displayAngSum(int vert) {
 		angsumField.setText(String.format("%.6e",
 				(double)(packData.getCurv(vert)/Math.PI)));
@@ -277,6 +288,9 @@ public class SphWidget extends JFrame
 		angError.setText(String.format("%.6e",(double)(accum/Math.PI)));
 	}
 	
+	/**
+	 * @brief TODO: Document displayArea.
+	 */
 	public void displayArea() {
 		double area=packData.carrierArea();
 		double aimSum=0.0;
@@ -287,12 +301,19 @@ public class SphWidget extends JFrame
 				(double)(area-4*Math.PI-aimSum/Math.PI)));
 	}
 	
+	/**
+	 * @brief TODO: Document displayAngError.
+	 */
 	public void displayAngError() {
 		angError.setText(String.format("%.6e",
 				(double)(packData.angSumError()/Math.PI)));
 	}
 	
 	
+	/**
+	 * @brief TODO: Document lightupFlower.
+	 * @param vertnum
+	 */
 	public void lightupFlower(int vertnum) {
 		for (int j=1;j<=packData.nodeCount;j++) {
 			radBars[j].setBarGray();
@@ -318,6 +339,10 @@ public class SphWidget extends JFrame
 		lock[vert]=true;
 	}
 	
+	/**
+	 * @brief TODO: Document unLock.
+	 * @param vert
+	 */
 	public void unLock(int vert) {
 		lock[vert]=false;
 	}
@@ -435,6 +460,8 @@ public class SphWidget extends JFrame
 		
 	}
 	/**
+ * @brief internal convenience class
+ *
 	 * internal convenience class
 	 */
 	public class numberField extends JTextField {

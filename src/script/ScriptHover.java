@@ -16,6 +16,8 @@ import handlers.SCRIPTHandler;
 import images.CPIcon;
 
 /**
+ * @brief Hover/locked from for the script.
+ *
  * Hover/locked from for the script.
  * @author kens
  *
@@ -108,7 +110,7 @@ public class ScriptHover extends HoverPanel {
 	}
 	
 	/**
-	 * Set title on the Script Frame.
+	 * @brief Set title on the Script Frame.
 	 * @param title 
 	 * @param hasChanged: true, add star to indicated editing
 	 */
@@ -166,6 +168,8 @@ public class ScriptHover extends HoverPanel {
 	}
 	
 	/**
+ * @brief Reset 'myWidth's of 'StackBox's when script window is resized
+ *
 	 * Reset 'myWidth's of 'StackBox's when script window is resized
 	 * @param wide
 	 */

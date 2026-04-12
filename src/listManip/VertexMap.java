@@ -7,6 +7,8 @@ import packing.PackData;
 
 
 /**
+ * @brief Convention is that entries are {old,new}, that is, pairing
+ *
  * Convention is that entries are {old,new}, that is, pairing
  * an old index with its new index; for mapping, {domain,range},
  * so index in range identified with index in domain.
@@ -37,7 +39,7 @@ public class VertexMap extends EdgeLink {
 	}
 	
 	/**
-	 * Make a distinct copy of this linked list; no check
+	 * @brief Make a distinct copy of this linked list; no check
 	 * of validity of the indices.
 	 * @return NodeLink
 	 */
@@ -51,7 +53,7 @@ public class VertexMap extends EdgeLink {
 	}
 	
 	/**
-	 * In many situations, we do repeated adjustments in DCEL and
+	 * @brief In many situations, we do repeated adjustments in DCEL and
 	 * need to connect a final new index with its original from 
 	 * several steps back. Start with null VertexMap, and each stage
 	 * compose with VertexMap from that stage. Return the composition: 
@@ -98,7 +100,7 @@ public class VertexMap extends EdgeLink {
 	}
 	
 	/**
-	 * Given w, return v if this list contains (v,w) (use first occurrence).
+	 * @brief Given w, return v if this list contains (v,w) (use first occurrence).
 	 * @param w second entry
 	 * @return v, 0 if not found
 	 */
@@ -113,7 +115,7 @@ public class VertexMap extends EdgeLink {
 	}
 	
 	/**
-	 * Given v, return w if this list contains (v,w) (use first occurrence).
+	 * @brief Given v, return w if this list contains (v,w) (use first occurrence).
 	 * @param v first entry
 	 * @return w, 0 if not found
 	 */

@@ -25,6 +25,8 @@ import circlePack.PackControl;
 import dragdrop.EditDropListener;
 
 /**
+ * @brief StackBox for TEXT nodes
+ *
  * StackBox for TEXT nodes
  * @author kens
  *
@@ -272,7 +274,7 @@ public class TextSBox extends StackBox {
 	public void deleteChildNodes() {}
 
 	/**
-	 * Create menus for 'TextSBox's, either edit or display mode.
+	 * @brief Create menus for 'TextSBox's, either edit or display mode.
 	 * @param editmode, boolean: true, then for edit mode
 	 * @return JPopupMenu
 	 */

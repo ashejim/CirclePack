@@ -8,6 +8,8 @@ import dcel.PackDCEL;
 import input.CPFileManager;
 
 /**
+ * @brief Debugging aids:
+ *
  * Debugging aids: 
  * 
  * * "print" involves writing to standard out, often useful while in
@@ -28,7 +30,7 @@ public class LayoutBugs {
 	static int rankStamp=1; // progressive number to distinguish file instances
 
 	/**
-	 * Log triples <v,u,w> of dcel faces and ideal faces. Results 
+	 * @brief Log triples <v,u,w> of dcel faces and ideal faces. Results 
 	 * in 'DCEL_faces_*_log.txt'.
 	 * @param dcel PackDCEL
 	 * @return count, -1 on error

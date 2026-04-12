@@ -23,6 +23,8 @@ import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
 /**
+ * @brief Test Client for CirclePack sockets.
+ *
  * Test Client for CirclePack sockets.
  * @author kstephe2
  *
@@ -79,6 +81,9 @@ System.err.println("socket server started, host/port ="+host+" "+port);
 		createAndShowFrame();
 		
 		Thread socketListener=new Thread(new Runnable() {
+			/**
+			 * @brief TODO: Document run.
+			 */
 			public void run() {
 		        try {
 		            do {
@@ -122,6 +127,10 @@ System.err.println("socket server started, host/port ="+host+" "+port);
 		this.setVisible(true);
     }
     
+	/**
+	 * @brief TODO: Document panelStuff.
+	 * @return JPanel
+	 */
 	public JPanel panelStuff() {
 		JPanel panel=new JPanel();
 		display=new JTextArea();

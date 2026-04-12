@@ -13,6 +13,8 @@ import listManip.PathLink;
 import complex.Complex;
 
 /**
+ * @brief Here a "path" means a polygonal path in one of the geometries,
+ *
  * Here a "path" means a polygonal path in one of the geometries,
  * parameterized by arc length. It may be closed or open. Stored
  * using []complex for the path's vertex locations and []double for 
@@ -83,7 +85,7 @@ public class PathInterpolator {
 	}
 
 	/**
-	 * Geometry dependent distance between complex numbers
+	 * @brief Geometry dependent distance between complex numbers
 	 * @param z
 	 * @param w
 	 */
@@ -105,7 +107,7 @@ public class PathInterpolator {
 	}
 	
 	/**
-	 * Determine the arclength parameters for the nodes of the path.
+	 * @brief Determine the arclength parameters for the nodes of the path.
 	 * @return Vector<Double> of length N
 	 */
 	public Vector<Double> setParameters() {
@@ -124,7 +126,7 @@ public class PathInterpolator {
 	}
 	
 	/**
-	 * Find parameter t for s+inc; i.e., if closed, t=(s+inc)mod(length).
+	 * @brief Find parameter t for s+inc; i.e., if closed, t=(s+inc)mod(length).
 	 * If not closed and s+inc > length, then return -1.0.
 	 * @param s, double
 	 * @param inc, double
@@ -139,7 +141,7 @@ public class PathInterpolator {
 	}
 	
 	/**
-	 * Given arclength parameter s, find the point Z on the curve.
+	 * @brief Given arclength parameter s, find the point Z on the curve.
 	 * If closed and s > length or s < 0, then continue around path,
 	 * else exception.
 	 * TODO: not ready for hyperbolic case
@@ -175,7 +177,7 @@ public class PathInterpolator {
 	}
 	
 	/**
-	 * See below: between 'minDist' and 'minDist' + 10%.
+	 * @brief See below: between 'minDist' and 'minDist' + 10%.
 	 * @param s
 	 * @param minDist
 	 * @return
@@ -185,7 +187,7 @@ public class PathInterpolator {
 	}
 	
 	/**
-	 * Given a parameter s, find the smallest parameter t > s (mod(length) 
+	 * @brief Given a parameter s, find the smallest parameter t > s (mod(length) 
 	 * if path is closed) so that the distance of the point for t from 
 	 * that for s is in ['minDist','maxDist']. Return -1 on failure.
 	 * @param s, double, base parameter location

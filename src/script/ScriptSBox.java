@@ -30,6 +30,8 @@ import circlePack.PackControl;
 import dragdrop.EditDropListener;
 
 /**
+ * @brief StackBox for the persistent CPscript node, i.
+ *
  * StackBox for the persistent CPscript node, i.e., the 
  * first node (with the script title) containing the text
  * and command nodes. 
@@ -394,7 +396,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
-	 * Set checkbox for level: true=advanced, false=min
+	 * @brief Set checkbox for level: true=advanced, false=min
 	 * @param bool
 	 */
 	public void setLevelCk(boolean bool) {
@@ -402,7 +404,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
-	 * Set checkbox for map mode: true=paired, false = single
+	 * @brief Set checkbox for map mode: true=paired, false = single
 	 * @param bool
 	 */
 	public void setMapCk(boolean bool) {
@@ -441,7 +443,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
     }
     
     /**
-     * Create menus for 'ScriptBox's, either edit or display mode.
+     * @brief Create menus for 'ScriptBox's, either edit or display mode.
      * @param editmode, boolean: true, then for edit mode
      * @return JPopupMenu
      */

@@ -1,6 +1,8 @@
 package exceptions;
 
 /**
+ * @brief For catching exceptions when attempting to convert strings
+ *
  * For catching exceptions when attempting to convert strings
  * to values. Should be caught locally where the parsing is
  * taking place.

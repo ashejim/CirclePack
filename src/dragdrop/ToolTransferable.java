@@ -8,6 +8,8 @@ import mytools.MyTool;
 
 
 /**
+ * @brief For MyTool drag/drop operation.
+ *
  * For MyTool drag/drop operation. This sets up the transferable
  * data, which currently is just the command string of the MyTool.
  * @author kens

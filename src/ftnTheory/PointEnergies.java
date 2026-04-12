@@ -7,6 +7,8 @@ import packing.PackData;
 import complex.Complex;
 
 /**
+ * @brief A class for computing various energies of point distributions,
+ *
  * A class for computing various energies of point distributions, 
  * a principal one being the 'coulomb' energy of points on the 
  * sphere. The class is created when a '?energy' of 'energy' 
@@ -78,7 +80,7 @@ public class PointEnergies {
 	} 
 
 	/**
-	 * Compute the minimum distance between centers of the packing.
+	 * @brief Compute the minimum distance between centers of the packing.
 	 * @param packData
 	 * @return
 	 */

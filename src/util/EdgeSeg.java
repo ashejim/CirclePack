@@ -4,6 +4,8 @@ import listManip.VertexMap;
 import packing.PackData;
 
 /**
+ * @brief Store and maintain information on a chain (segment) of
+ *
  * Store and maintain information on a chain (segment) of 
  * edges. (Used, e.g., in 'RationalMap.java'.) Just need 
  * the first and last vertices, which should be boundary 
@@ -30,7 +32,7 @@ public class EdgeSeg {
 	}
 	
 	/**
-	 * Set the final length. (Done in calling routine because this
+	 * @brief Set the final length. (Done in calling routine because this
 	 * requires 'PackData')
 	 * @param len
 	 */
@@ -39,7 +41,7 @@ public class EdgeSeg {
 	}
 	
 	/** 
-	 * Make a copy with given 'sheetNumber'. Generally done when 
+	 * @brief Make a copy with given 'sheetNumber'. Generally done when 
 	 * a new copy of 'slitPack' is attached to the growing 'domainPack' 
 	 * and corresponding edge segments are listed in 'masterESlist'.
 	 * @param sheet, desired sheet number
@@ -53,7 +55,7 @@ public class EdgeSeg {
 	}
 	
 	/** 
-	 * Check if this edge segment seems to be valid for p. If it 
+	 * @brief Check if this edge segment seems to be valid for p. If it 
 	 * has length, this compares and returns -count if count!=length.
 	 * If length not set, this sets it. 
 	 * NOTE: <startV,endV> is a CLOCKWISE (negatively oriented) bdry segment.
@@ -82,7 +84,7 @@ public class EdgeSeg {
 	}
 	
 	/**
-	 * Convert indices using given vertex map.
+	 * @brief Convert indices using given vertex map.
 	 * @param vmap, VertexMap <orig, new>
 	 * @return boolean, true if okay, false if problem.
 	 */

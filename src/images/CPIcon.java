@@ -17,6 +17,8 @@ import allMains.CirclePack;
 import exceptions.ParserException;
 
 /**
+ * @brief An icon object for CirclePack; connects file name
+ *
  * An icon object for CirclePack; connects file name 
  * with ImageIcon.
  * @author kens
@@ -75,7 +77,7 @@ public class CPIcon {
 	}
 	
 	/**
-	 * This returns modified image with embellishments:
+	 * @brief This returns modified image with embellishments:
 	 *  1. letter for mnemonic
 	 *  2. Abbreviation for 'PackExtender's (not yet implemented)
 	 *  3. blue drop for dropable with #XY (or #xy)
@@ -183,7 +185,7 @@ public class CPIcon {
 	}
 	
 	/**
-	 * Applies 'embellishIcon' to 'baseIcon', puts in 'imageIcon'
+	 * @brief Applies 'embellishIcon' to 'baseIcon', puts in 'imageIcon'
 	 * @param key (for key execution)
 	 * @param xy_tear
 	 * @param hot_arrow
@@ -197,7 +199,7 @@ public class CPIcon {
 	}
 
 	/**
-	 * Return icon as in 'embellishIcon', but start with 'baseIcon'
+	 * @brief Return icon as in 'embellishIcon', but start with 'baseIcon'
 	 * @param key (key execution)
 	 * @param xy_tear
 	 * @param hot_arrow
@@ -212,7 +214,7 @@ public class CPIcon {
 
 	
 	/**
-	 * Circle packing version of 'ImageIcon'; need to look in right place for icons
+	 * @brief Circle packing version of 'ImageIcon'; need to look in right place for icons
 	 * so that we can 'jar' up the code.
 	 * @param iconname should start without a leading '/'
 	 * @return ImageIcon, null on error

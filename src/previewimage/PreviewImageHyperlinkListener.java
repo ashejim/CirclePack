@@ -18,6 +18,8 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 /**
+ * @brief that displays XMD script preview images in tool tips when hyperlinks to XMD
+ *
  * <code>PreviewImageHyperlinkListener</code> is a <code>HyperlinkListener</code>
  * that displays XMD script preview images in tool tips when hyperlinks to XMD
  * scripts are moused over. Typically, an instance of this class would be added as

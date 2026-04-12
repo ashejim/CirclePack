@@ -9,6 +9,8 @@ import packing.PackData;
 import exceptions.ParserException;
 
 /**
+ * @brief This object encapsulates a string which may be evaluated as
+ *
  * This object encapsulates a string which may be evaluated as
  * true or false.
  * This processes whole strings, substrings, and connectives for 
@@ -31,7 +33,7 @@ public class BoolParser {
 	static final double TOLER=.0000000001;
 
 	/**
-	 * Process a string to determine if it is true or false. 
+	 * @brief Process a string to determine if it is true or false. 
 	 * * Break the string into 'content' and 'connective' pieces.
 	 * * Process each 'content' piece and replace by "true" or "false";
 	 *   this involves recursion of this routine.
@@ -130,7 +132,7 @@ public class BoolParser {
 	}
 	
 	/**
-	 * Break given string (trimmed) into Vector of 'connective' and 
+	 * @brief Break given string (trimmed) into Vector of 'connective' and 
 	 * 'content' strings. Content strings may have four forms, '(..)',
 	 * '!(..)', or same but without parens. Note that with parens, there
 	 * may be connectives between that are caught during our recursion.
@@ -203,7 +205,7 @@ public class BoolParser {
 	}
 	
 	/**
-	 * Given a 'content' string (no connectives), determine truth,
+	 * @brief Given a 'content' string (no connectives), determine truth,
 	 * return null on error. 'content' may be unary, or has 'left',
 	 * 'condition', 'right'
 	 * @param p PackData, may need to run commands or inquiries
@@ -368,7 +370,7 @@ public class BoolParser {
 	}
 	
 	/**
-	 * If trimmed string is a connective, return its type, else
+	 * @brief If trimmed string is a connective, return its type, else
 	 * return NULL type.
 	 * @param constr String
 	 * @return Connective {AND,OR,NOT,NULL}
@@ -384,7 +386,7 @@ public class BoolParser {
 	}
 	
 	/**
-	 * If trimmed string is a condition, return its type, else
+	 * @brief If trimmed string is a condition, return its type, else
 	 * return NULL type.
 	 * @param condstr String
 	 * @return Condition {LT,LE,GT,GE,EQ,NE,NULL}
@@ -402,7 +404,7 @@ public class BoolParser {
 	}
 	
 	/**
-	 * Return Boolean=true/false depending on whether trimmed string is "true" or
+	 * @brief Return Boolean=true/false depending on whether trimmed string is "true" or
 	 * "false".
 	 * @param str String
 	 * @return Boolean, null on error
@@ -418,7 +420,7 @@ public class BoolParser {
 	
 
 	/**
-	 * find indices i, k defining next 'connective' in given string
+	 * @brief find indices i, k defining next 'connective' in given string
 	 * @param sb StringBuilder
 	 * @return int[2], null on error
 	 */
@@ -452,7 +454,7 @@ public class BoolParser {
 	}
 
 	/**
-	 * Find indices i, k defining next 'condition' in given string; 
+	 * @brief Find indices i, k defining next 'condition' in given string; 
 	 * eg. such as ".eq.".
 	 * @param sb StringBuilder
 	 * @return int[2], null on error

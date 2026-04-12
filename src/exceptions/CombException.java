@@ -1,10 +1,11 @@
 package exceptions;
 
 /**
+ * @brief Exceptions relating to the combinatorics of "complexes" behind
+ *
  * Exceptions relating to the combinatorics of "complexes" behind
  * circle packing.
  */
-
 public class CombException extends RuntimeException {
 
 	private static final long 

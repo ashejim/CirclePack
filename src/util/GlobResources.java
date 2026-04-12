@@ -19,15 +19,17 @@ import java.util.regex.Pattern;
 import allMains.CPBase;
 
 /**
+ * @brief Getting resources based on glob patterns in names.
+ *
  * Getting resources based on glob patterns in names.
  * 
  * @author Bradford Smith
  * 
-*/ 
+*/
 public class GlobResources {
 
 	/**
-	 * Return a 'Set' with base file names of all resources in given
+	 * @brief Return a 'Set' with base file names of all resources in given
 	 * directory that match given glob patterns.
 	 * NOTE: The glob patterns used here are very simple.  Only '*' (match
 	 * any number of characters) and '?' (match exactly one character)
@@ -54,7 +56,7 @@ public class GlobResources {
 	}
 
 	/**
-	 * Convert a list of glob pattern strings into 
+	 * @brief Convert a list of glob pattern strings into 
 	 * a list of regular expression pattern strings.
 	 * 
 	 * @param globs glob patterns to convert
@@ -69,7 +71,7 @@ public class GlobResources {
 	}
 
 	/**
-	 * Convert a glob pattern into a regular expression.
+	 * @brief Convert a glob pattern into a regular expression.
 	 * 
 	 * NOTE: The only special characters recognized 
 	 * are '*' for "match any sequence of characters" 
@@ -113,7 +115,7 @@ public class GlobResources {
 	}
 
 	/**
-	 * Return a list of the base file names that match the given patterns and
+	 * @brief Return a list of the base file names that match the given patterns and
 	 * can be found in the directory indicated by the given jar URL.
 	 * 
 	 * @param url jar protocol URL (e.g. "jar:file:/foo/bar.jar!/baz/boff/")
@@ -153,7 +155,7 @@ public class GlobResources {
 	}
 
 	/**
-	 * Return a list of the base file names that 
+	 * @brief Return a list of the base file names that 
 	 * match the given patterns and can be found 
 	 * in the directory indicated by the given file URL.
 	 * 

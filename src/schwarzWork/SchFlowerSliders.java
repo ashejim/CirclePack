@@ -18,6 +18,8 @@ import widgets.ActiveSlider;
 import widgets.SliderFrame;
 
 /**
+ * @brief A Frame for sliders controlling specified
+ *
  * A Frame for sliders controlling specified 
  * intrinsic schwarzians s for flowers -- see 
  * "flower" command in 'SchwarzMap.java'. 
@@ -93,7 +95,7 @@ public class SchFlowerSliders extends SliderFrame {
 	}
 	
 	/**
-	 * Get schwarzian directly from packData
+	 * @brief Get schwarzian directly from packData
 	 * @param indx int, indexing starting at 0
 	 * @return double
 	 */
@@ -140,7 +142,7 @@ public class SchFlowerSliders extends SliderFrame {
 	public int removeObject(String objstr) {return 0;}
 	
 	/**
-	 * Get schwarzian for given edge from packData
+	 * @brief Get schwarzian for given edge from packData
 	 * and set slider without causing change event
 	 * @param indx integer
 	 * @return

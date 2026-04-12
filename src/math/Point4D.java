@@ -1,13 +1,18 @@
 package math;
 
 /**
- * Represents 4D point (t,x,y,z), intended for points in Lorentz space;
- * see 'LorentzMath'. 
- * 
- * Circles are represented by points (t,x,y,z) satisfying t^2-x^2-y^2-z^2 = -1.
- * This corresponds to the spherical circle 
- *    {(a,b,c):a^2+b^2+c^2=1, ax+by+cz=t} 
- * @author 
+ * @brief A point in 4-D Lorentz (Minkowski) space (t, x, y, z).
+ *
+ * In the Lorentz model of hyperbolic geometry, circles on the unit
+ * sphere are represented by points satisfying the Lorentz condition
+ * t² − x² − y² − z² = −1.  The corresponding spherical circle is
+ * {(a,b,c) : a²+b²+c²=1, ax+by+cz = t}.
+ *
+ * The Lorentz inner product is ⟨u,v⟩ = u_t·v_t − u_x·v_x − u_y·v_y − u_z·v_z
+ * (signature (1,3)), so the "norm" can be positive, negative, or zero.
+ *
+ * @see geometry.LorentzMath  Computational routines using the Lorentz model.
+ * @author Ken Stephenson
  */
 public class Point4D {
   public double t,x,y,z;
@@ -22,7 +27,7 @@ public class Point4D {
   }
   
   /**
-   * Lorentz product u.v
+   * @brief Lorentz product u.v
    * @param u Point4D
    * @param v Point4D
    * @return double
@@ -32,7 +37,7 @@ public class Point4D {
   }
 
   /**
-   * vector sum 
+   * @brief vector sum 
    * @param u Point4D
    * @param v Point4D
    * @return new Point4D
@@ -42,7 +47,7 @@ public class Point4D {
   }
   
   /**
-   * scalar multiple 
+   * @brief scalar multiple 
    * @param u Point4D
    * @param c Point4D
    * @return new Point4D
@@ -52,7 +57,7 @@ public class Point4D {
   }
   
   /**
-   * scalar multiple by d
+   * @brief scalar multiple by d
    * @param d double
    * @return new Point4D
    */
@@ -61,7 +66,7 @@ public class Point4D {
   }
 
   /**
-   * scalar multiple by 1/d
+   * @brief scalar multiple by 1/d
    * @param d double
    * @return new Point3D
    */
@@ -70,7 +75,7 @@ public class Point4D {
   }
 
   /**
-   * Lorentz form has signature (1,3), so is indefinite; norm
+   * @brief Lorentz form has signature (1,3), so is indefinite; norm
    * can be positive, negative, or zero
    * @return
    */

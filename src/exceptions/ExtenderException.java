@@ -1,6 +1,8 @@
 package exceptions;
 
 /**
+ * @brief Exceptions thrown by 'PackExtender's using 'Oops'.
+ *
  * Exceptions thrown by 'PackExtender's using 'Oops'.
  * Intended to be more transparent for users writing
  * extenders.

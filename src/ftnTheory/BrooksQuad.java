@@ -17,7 +17,9 @@ import util.CmdStruct;
 import util.ColorUtil;
 import util.StringUtil;
 
-/** 
+/**
+ * @brief "Brooks" packings are patterns of circles inside quadrilateral interstices.
+ * 
  * "Brooks" packings are patterns of circles inside quadrilateral interstices.
  * A "quad" interstice is one formed by 4 successively tangent circles with
  * mutually disjoint interiors, labeled T,L,B,R for 'top', 'left', 'bottom',
@@ -37,7 +39,6 @@ import util.StringUtil;
  *  (1) insert new circle in location as in Brooks' original scheme; 
  *  (2) insert new circle in alternating fashion: verticals alternate
  *     left/right, horizontals, up/down. */
-
 public class BrooksQuad extends PackExtender {
 	public static final int  MAX_LIST=4000; 
 	public boolean Brooks_mode; // if true: Brooks mode, false: alternating mode

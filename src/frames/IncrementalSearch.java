@@ -33,9 +33,17 @@ public class IncrementalSearch implements DocumentListener, ActionListener, Chan
     public void insertUpdate(DocumentEvent evt) {
         runNewSearch(evt.getDocument());
     }
+    /**
+     * @brief TODO: Document removeUpdate.
+     * @param evt
+     */
     public void removeUpdate(DocumentEvent evt) {
         runNewSearch(evt.getDocument());
     }
+    /**
+     * @brief TODO: Document changedUpdate.
+     * @param evt
+     */
     public void changedUpdate(DocumentEvent evt) {
         runNewSearch(evt.getDocument());
     }
@@ -70,6 +78,10 @@ public class IncrementalSearch implements DocumentListener, ActionListener, Chan
 //        else runNewSearch(query_field.getDocument());
     }
     
+    /**
+     * @brief TODO: Document stateChanged.
+     * @param event
+     */
     public void stateChanged(ChangeEvent event) {
     	if ((JTabbedPane)event.getSource()!=tabbedPane) return;
     	JScrollPane jsp=(JScrollPane)tabbedPane.getSelectedComponent();
@@ -81,6 +93,10 @@ public class IncrementalSearch implements DocumentListener, ActionListener, Chan
     	runNewSearch(query_field.getDocument());
     }
             
+    /**
+     * @brief TODO: Document p.
+     * @param str
+     */
     public static void p(String str) {
         System.out.println(str);
     }

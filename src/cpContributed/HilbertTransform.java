@@ -86,6 +86,12 @@ public class HilbertTransform extends PackExtender
 		}
 	}
 	
+	/**
+	 * @brief TODO: Document cmdParser.
+	 * @param cmd
+	 * @param flagSegs
+	 * @return int
+	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs)
 	{
 		String str;
@@ -252,6 +258,9 @@ public class HilbertTransform extends PackExtender
 		return super.cmdParser(cmd, flagSegs);
 	}
 	
+	/**
+	 * @brief TODO: Document initCmdStruct.
+	 */
 	public void initCmdStruct() 
 	{
 		// description of the commands in the help window
@@ -264,6 +273,9 @@ public class HilbertTransform extends PackExtender
 				"Show the function and its Hilbert transform in a new window."));
 	}
 		
+	/**
+	 * @brief TODO: Document StartUpMsg.
+	 */
 	public void StartUpMsg() 
 	{
 		// display in the message box if the user types help
@@ -355,6 +367,10 @@ public class HilbertTransform extends PackExtender
 			}
 		}
 		
+		/**
+		 * @brief TODO: Document paint.
+		 * @param g
+		 */
 		public void paint(Graphics g)
 		{
 			Dimension scrsz = Toolkit.getDefaultToolkit().getScreenSize();
@@ -407,22 +423,50 @@ public class HilbertTransform extends PackExtender
 			}
 		}
 
+		/**
+		 * @brief TODO: Document windowActivated.
+		 * @param e
+		 */
 		public void windowActivated(WindowEvent e) {}
 
+		/**
+		 * @brief TODO: Document windowClosed.
+		 * @param e
+		 */
 		public void windowClosed(WindowEvent e) {}
 
+		/**
+		 * @brief TODO: Document windowClosing.
+		 * @param e
+		 */
 		public void windowClosing(WindowEvent e) 
 		{
 			setVisible(false);
 			dispose();
 		}
 
+		/**
+		 * @brief TODO: Document windowDeactivated.
+		 * @param e
+		 */
 		public void windowDeactivated(WindowEvent e){}
 
+		/**
+		 * @brief TODO: Document windowDeiconified.
+		 * @param e
+		 */
 		public void windowDeiconified(WindowEvent e) {}
 
+		/**
+		 * @brief TODO: Document windowIconified.
+		 * @param e
+		 */
 		public void windowIconified(WindowEvent e) {}
 
+		/**
+		 * @brief TODO: Document windowOpened.
+		 * @param e
+		 */
 		public void windowOpened(WindowEvent e) {}
 	}
 }

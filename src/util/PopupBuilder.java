@@ -17,6 +17,8 @@ import canvasses.ActiveWrapper;
 import exceptions.ParserException;
 
 /**
+ * @brief A utility class for constructing popup menus from
+ *
  * A utility class for constructing popup menus from
  * xml data elements in 'myTool' files. Currently (3/09)
  * the only elements are <menu> <item> <cmd>.
@@ -143,6 +145,8 @@ public class PopupBuilder extends JPopupMenu {
 }
 
 /**
+ * @brief Local class for holding number (the 'ActionCommand')
+ *
  * Local class for holding number (the 'ActionCommand')
  * and the string of CirclePack commands.
  * @author kens

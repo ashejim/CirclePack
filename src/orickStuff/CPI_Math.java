@@ -1,6 +1,9 @@
 package orickStuff;
 
 
+/**
+ * @brief C P I_ Math.
+ */
 public class CPI_Math {
 
     static CPI_Complex2 randBox() { CPI_Complex2 z = new CPI_Complex2(Math.random(), Math.random()); return z;}

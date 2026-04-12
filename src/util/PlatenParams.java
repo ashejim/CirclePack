@@ -1,6 +1,8 @@
 package util;
 
-/** 
+/**
+ * @brief Utility class for holding and manipulating the various parameters
+ * 
  * Utility class for holding and manipulating the various parameters
  * associated with 'MicroGrids'.
  * @author kstephe2
@@ -66,7 +68,7 @@ public class PlatenParams {
 	}
 
 	/**
-	 * should 'set_minR' first, then 'maxR' should have
+	 * @brief should 'set_minR' first, then 'maxR' should have
 	 * some constraints: maxR>1.1*minR
 	 * @param mxR
 	 */

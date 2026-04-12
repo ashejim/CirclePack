@@ -1,0 +1,692 @@
+\doxysection{Spherical\+Math.\+java}
+\hypertarget{_spherical_math_8java_source}{}\label{_spherical_math_8java_source}\index{src/geometry/SphericalMath.java@{src/geometry/SphericalMath.java}}
+\doxymbox{\hyperlink{_spherical_math_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00001}00001\ \textcolor{keyword}{package\ }geometry;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00002}00002\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00003}00003\ \textcolor{keyword}{import}\ baryStuff.BaryPoint;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00004}00004\ \textcolor{keyword}{import}\ combinatorics.komplex.RedEdge;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00005}00005\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00006}00006\ \textcolor{keyword}{import}\ dcel.PackDCEL;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00007}00007\ \textcolor{keyword}{import}\ math.Mobius;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00008}00008\ \textcolor{keyword}{import}\ math.Point3D;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00009}00009\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00010}00010\ \textcolor{keyword}{import}\ util.RadIvdPacket;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00011}00011\ \textcolor{keyword}{import}\ util.UtilPacket;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00012}00012\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00056}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math}{00056}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classgeometry_1_1_spherical_math}{SphericalMath}}\{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00057}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{00057}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}}\ =\ .0000000000001;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00058}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_abdd2942a770f5e2a77ebb29c5f4b7280}{00058}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_abdd2942a770f5e2a77ebb29c5f4b7280}{INITIAL\_CAPACITY}}\ =\ 100;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00059}00059\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00068}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac804a24d48114a9907fb988d4d216ad4}{00068}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac804a24d48114a9907fb988d4d216ad4}{s\_inv\_dist}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z1,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z2,\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00069}00069\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{s\_dist}}(z1,z2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00070}00070\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (Math.cos(d)-\/Math.cos(r1)*Math.cos(r2))/(Math.sin(r1)*Math.sin(r2));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00071}00071\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00072}00072\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00085}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad9298f12abe9aa942c142d86917fe9cd}{00085}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad9298f12abe9aa942c142d86917fe9cd}{s\_ivd\_length}}(\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\textcolor{keywordtype}{double}\ ivd)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00086}00086\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cosphi=Math.cos(r1)*Math.cos(r2)-\/ivd*Math.sin(r1)*Math.sin(r2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00087}00087\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.acos(cosphi);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00088}00088\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00089}00089\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00096}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a5f70493cb638373883d5f7826431f0d0}{00096}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a5f70493cb638373883d5f7826431f0d0}{s\_comp\_cos}}(\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\textcolor{keywordtype}{double}\ r3)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00097}00097\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ denom;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00098}00098\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sumr;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00099}00099\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00100}00100\ \ \ \ \ \ \ sumr=r1+r2+r3;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00101}00101\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(Math.PI-\/sumr)<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ \{\ \textcolor{comment}{//\ three\ centers\ lie\ on\ great\ circle}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00103}00103\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00104}00104\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((denom=Math.sin(r1+r2)*Math.sin(r1+r3))<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ denom;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00106}00106\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00107}00107\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (Math.cos(r2+r3)-\/(Math.cos(r1+r2)*Math.cos(r1+r3)))/denom;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00108}00108\ \ \ \}\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00109}00109\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00121}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a5a81833b817a3a9eb3dc93a99d911c96}{00121}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a5a81833b817a3a9eb3dc93a99d911c96}{s\_area}}(\textcolor{keywordtype}{double}\ r0,\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ivd0,\textcolor{keywordtype}{double}\ ivd1,\textcolor{keywordtype}{double}\ ivd2)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00123}00123\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l0=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad9298f12abe9aa942c142d86917fe9cd}{s\_ivd\_length}}(r0,r1,ivd0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00124}00124\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l1=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad9298f12abe9aa942c142d86917fe9cd}{s\_ivd\_length}}(r1,r2,ivd1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00125}00125\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l2=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad9298f12abe9aa942c142d86917fe9cd}{s\_ivd\_length}}(r2,r0,ivd2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00126}00126\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa5b0d73afb66bc20ee8402b9911c6608}{s\_face\_area}}(l0,l1,l2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00127}00127\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00128}00128\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00137}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a52a41243f07e64c84baa3f2134adf73c}{00137}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a52a41243f07e64c84baa3f2134adf73c}{s\_tri\_area}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ p1,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ p2,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ p3)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00138}00138\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l1=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{s\_dist}}(p1,p2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00139}00139\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l2=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{s\_dist}}(p2,p3);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00140}00140\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l3=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{s\_dist}}(p3,p1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00141}00141\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa5b0d73afb66bc20ee8402b9911c6608}{s\_face\_area}}(l1,l2,l3);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00142}00142\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00143}00143\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00150}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa5b0d73afb66bc20ee8402b9911c6608}{00150}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa5b0d73afb66bc20ee8402b9911c6608}{s\_face\_area}}(\doxymbox{\hyperlink{classutil_1_1_rad_ivd_packet}{RadIvdPacket}}\ rip)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00151}00151\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a5a81833b817a3a9eb3dc93a99d911c96}{s\_area}}(rip.\doxymbox{\hyperlink{classutil_1_1_rad_ivd_packet_aae65b1f3a51af453f9f585093bb37745}{rad}}[0],rip.\doxymbox{\hyperlink{classutil_1_1_rad_ivd_packet_aae65b1f3a51af453f9f585093bb37745}{rad}}[1],rip.\doxymbox{\hyperlink{classutil_1_1_rad_ivd_packet_aae65b1f3a51af453f9f585093bb37745}{rad}}[2],}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rip.\doxymbox{\hyperlink{classutil_1_1_rad_ivd_packet_aca9b4764a20ee1299c1e75646509edac}{ivd}}[0],rip.\doxymbox{\hyperlink{classutil_1_1_rad_ivd_packet_aca9b4764a20ee1299c1e75646509edac}{ivd}}[1],rip.\doxymbox{\hyperlink{classutil_1_1_rad_ivd_packet_aca9b4764a20ee1299c1e75646509edac}{ivd}}[2]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00153}00153\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00154}00154\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00162}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac251976b12fc88c412ca3548e85e0143}{00162}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classmath_1_1_mobius}{Mobius}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac251976b12fc88c412ca3548e85e0143}{s\_norm\_pack}}(\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l}{PackDCEL}}\ pdcel,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ a,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ g)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00163}00163\ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_mobius}{Mobius}}\ mob=\doxymbox{\hyperlink{classmath_1_1_mobius}{Mobius}}.\doxymbox{\hyperlink{classmath_1_1_mobius_a4eeb964bd254f43e921c8f9e0996e447}{mobNormSphere}}(a,\ g);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00164}00164\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classmath_1_1_mobius}{Mobius}}.\doxymbox{\hyperlink{classmath_1_1_mobius_a5d70413cac93a7f0d4283ab055691bdd}{frobeniusNorm}}(mob)>.0001)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ directly\ adjust\ in\ 'Vertex'}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=pdcel.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_a7e83075bb335c434091f8046a2e0de2f}{vertCount}};v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z=pdcel.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_ae1a67384d92394e4ff044871e7870115}{vertices}}[v].\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_a5b8177facc1fc5bf351eeb7dd6f242de}{center}};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcel.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_ae1a67384d92394e4ff044871e7870115}{vertices}}[v].\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_a5b8177facc1fc5bf351eeb7dd6f242de}{center}}=mob.\doxymbox{\hyperlink{classmath_1_1_mobius_a584d4bc919cb227456fa33dca91d8a3d}{apply\_2\_s\_pt}}(z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00170}00170\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ directly\ adjust\ in\ red\ chain}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00171}00171\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pdcel.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_aaa556adc688c66809488f1dbb23491e0}{redChain}}!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00172}00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge}{RedEdge}}\ rtrace=pdcel.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_aaa556adc688c66809488f1dbb23491e0}{redChain}};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00174}00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rtrace.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge_acea0eaed3321b1f860d75e4a2234650c}{setCenter}}(mob.\doxymbox{\hyperlink{classmath_1_1_mobius_a584d4bc919cb227456fa33dca91d8a3d}{apply\_2\_s\_pt}}(rtrace.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge_a68fde233ba8920146d960c39e283f266}{getCenter}}()));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rtrace=rtrace.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_red_edge_aacc9133372e7dbab994b20c024f60c68}{nextRed}};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00176}00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}(rtrace!=pdcel.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_aaa556adc688c66809488f1dbb23491e0}{redChain}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00177}00177\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00178}00178\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00179}00179\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ mob;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00180}00180\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00181}00181\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00190}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1860d71ea852fac83a2deab2fa696135}{00190}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1860d71ea852fac83a2deab2fa696135}{s\_face\_area}}(\textcolor{keywordtype}{double}\ l1,\textcolor{keywordtype}{double}\ l2,\textcolor{keywordtype}{double}\ l3)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00191}00191\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ s=(l1+l2+l3)*0.5;\ \textcolor{comment}{//\ semi-\/perimeter}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00192}00192\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t=Math.sqrt(Math.tan(s*0.5)*Math.tan(0.5*(s-\/l1))*Math.tan(0.5*(s-\/l2))*Math.tan(0.5*(s-\/l3)));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00193}00193\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 4.0*Math.atan(t);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00194}00194\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00195}00195\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00204}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0a2c5b8b3a29e2ac1cfbce6e4877c0b3}{00204}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0a2c5b8b3a29e2ac1cfbce6e4877c0b3}{sph\_rad\_max}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p,\textcolor{keywordtype}{int}\ v)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00205}00205\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v<1\ ||\ v>p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_afa6d5bf19fbd263378a38450e7985ebc}{nodeCount}})\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00206}00206\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0.0;\ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00207}00207\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ mx=0.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00208}00208\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_aa068e76b4eaf6d57fd8de185c340d3f3}{countFaces}}(v);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00209}00209\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a177e9530106e3853d45fb1cf8fef09a0}{packDCEL}}.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_ae1a67384d92394e4ff044871e7870115}{vertices}}[v].\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_a7918014932705f81d3c003f0dcb35062}{getFlower}}(\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00210}00210\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00211}00211\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sum\ =p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_afbcfd6afc223a740d3ef10aa35452819}{getRadius}}(flower[j])}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_afbcfd6afc223a740d3ef10aa35452819}{getRadius}}(flower[j+1]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00213}00213\ \ \ \ \ \ \ \ \ \ \ \ \ mx\ =\ (sum>mx)\ ?\ sum\ :\ mx;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00214}00214\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00215}00215\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.PI-\/mx;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00216}00216\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00217}00217\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00228}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a5ed86a0928c9d955859aed9c8ba9a179}{00228}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a5ed86a0928c9d955859aed9c8ba9a179}{sph\_tri\_incircle}}(}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00229}00229\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z0,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z1,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z2)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00230}00230\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00231}00231\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ edge\ lengths}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00232}00232\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{s\_dist}}(z2,z1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00233}00233\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ b=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{s\_dist}}(z0,z2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00234}00234\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{s\_dist}}(z0,z1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00235}00235\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00236}00236\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ putative\ radii\ (based\ just\ on\ edge\ lengths)}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00237}00237\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r0=(b+c-\/a)/2.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00238}00238\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r1=(a+c-\/b)/2.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00239}00239\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2=(a+b-\/c)/2.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00240}00240\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00241}00241\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ pts\ of\ tangency\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00242}00242\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ t01=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0d4932564bb52d5d1f0f53bd64193fe1}{sph\_tangency}}(z0,z1,r0,r1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00243}00243\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ t12=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0d4932564bb52d5d1f0f53bd64193fe1}{sph\_tangency}}(z1,z2,r1,r2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00244}00244\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ t20=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0d4932564bb52d5d1f0f53bd64193fe1}{sph\_tangency}}(z2,z0,r2,r0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00245}00245\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00246}00246\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ cs=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a455b5e29aeba46f419426a2c05d59844}{circle\_3\_sph}}(t01,t12,t20);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00247}00247\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cs;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00248}00248\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00249}00249\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00259}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a455b5e29aeba46f419426a2c05d59844}{00259}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a455b5e29aeba46f419426a2c05d59844}{circle\_3\_sph}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ A,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ B,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ C)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00260}00260\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 3D\ points}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00261}00261\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ a=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(A);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00262}00262\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ b=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(B);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00263}00263\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ c=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(C);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00264}00264\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00265}00265\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cross\ product\ for\ normal\ to\ plane\ containing\ the\ points}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00266}00266\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ AB\ =\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(b.\doxymbox{\hyperlink{classmath_1_1_point3_d_a76f2141fd0f489a6178af64799a4af9e}{x}}-\/a.\doxymbox{\hyperlink{classmath_1_1_point3_d_a76f2141fd0f489a6178af64799a4af9e}{x}},b.\doxymbox{\hyperlink{classmath_1_1_point3_d_a95da161fb44a307eed73f43b4199ab03}{y}}-\/a.\doxymbox{\hyperlink{classmath_1_1_point3_d_a95da161fb44a307eed73f43b4199ab03}{y}},b.\doxymbox{\hyperlink{classmath_1_1_point3_d_ab71f0d665e8471bafcc1fc014ce286a7}{z}}-\/a.\doxymbox{\hyperlink{classmath_1_1_point3_d_ab71f0d665e8471bafcc1fc014ce286a7}{z}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00267}00267\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ AC\ =\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(c.\doxymbox{\hyperlink{classmath_1_1_point3_d_a76f2141fd0f489a6178af64799a4af9e}{x}}-\/a.\doxymbox{\hyperlink{classmath_1_1_point3_d_a76f2141fd0f489a6178af64799a4af9e}{x}},c.\doxymbox{\hyperlink{classmath_1_1_point3_d_a95da161fb44a307eed73f43b4199ab03}{y}}-\/a.\doxymbox{\hyperlink{classmath_1_1_point3_d_a95da161fb44a307eed73f43b4199ab03}{y}},c.\doxymbox{\hyperlink{classmath_1_1_point3_d_ab71f0d665e8471bafcc1fc014ce286a7}{z}}-\/a.\doxymbox{\hyperlink{classmath_1_1_point3_d_ab71f0d665e8471bafcc1fc014ce286a7}{z}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00268}00268\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ Z=\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}.\doxymbox{\hyperlink{classmath_1_1_point3_d_a6dc894c64b6ec767f4a5a6ef66e2df0c}{CrossProduct}}(AB,AC);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00269}00269\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ sz=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{proj\_vec\_to\_sph}}(Z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00270}00270\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sr=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{s\_dist}}(sz,A);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00271}00271\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00272}00272\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}(sz,sr,1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00273}00273\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00274}00274\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00281}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{00281}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{s\_dist}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z,\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ w)\{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00282}00282\ \ \ \ \ \textcolor{keywordtype}{double}[]\ v1,\ v2;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00283}00283\ \ \ \ \ \textcolor{keywordtype}{double}\ dotprod;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00284}00284\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00285}00285\ \ \ \ \ \textcolor{keywordflow}{if}((Math.abs(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}-\/w.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}})\ <\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ \&\&\ (Math.abs(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}-\/w.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}})\ <\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}}))}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00286}00286\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (0.0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00287}00287\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00288}00288\ \ \ \ \ v1\ =\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00289}00289\ \ \ \ \ v2\ =\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(w);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00290}00290\ \ \ \ \ dotprod\ =\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac84fe9644ba06ee847b25ba5647d633e}{dot\_prod}}(v1,\ v2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00291}00291\ \ \ \ \ \textcolor{keywordflow}{if}(Math.abs(dotprod)\ >\ (1.0\ -\/\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}}))}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00292}00292\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.PI;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00293}00293\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00294}00294\ \ \ \ \ \textcolor{keywordflow}{return}\ Math.acos(dotprod);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00295}00295\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00296}00296\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00304}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac9286f2dce25477771bfad91c5c41585}{00304}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac9286f2dce25477771bfad91c5c41585}{proj\_pt\_to\_sph}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00305}00305\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ zs=z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a34bb2d2c1e84ff7be5d13e8358016199}{absSq}}();}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00306}00306\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zs<.00000000001)\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00307}00307\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(0.0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00308}00308\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(Math.atan2(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}},z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}),Math.acos((1-\/zs)/(1+zs)));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00309}00309\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00310}00310\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00315}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a113cfcee0c83ccc6c72393a3f744df19}{00315}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a113cfcee0c83ccc6c72393a3f744df19}{s\_dist\_pt\_to\_line}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z,}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00316}00316\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ end1,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ end2)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00317}00317\ \ \ \ \ \textcolor{keywordtype}{double}\ []A;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00318}00318\ \ \ \ \ \textcolor{keywordtype}{double}\ []B;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00319}00319\ \ \ \ \ \textcolor{keywordtype}{double}\ []C;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00320}00320\ \ \ \ \ \textcolor{keywordtype}{double}\ []AxB;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00321}00321\ \ \ \ \ \textcolor{keywordtype}{double}\ []CxAxB;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00322}00322\ \ \ \ \ A=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(end1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00323}00323\ \ \ \ \ B=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(end2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00324}00324\ \ \ \ \ C=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00325}00325\ \ \ \ \ AxB=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2c4d09eee04311aeed5d8a367722876}{crossProduct}}(A,B);\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00326}00326\ \ \ \ \ CxAxB=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2c4d09eee04311aeed5d8a367722876}{crossProduct}}(C,AxB);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00327}00327\ \ \ \ \ \textcolor{keywordtype}{double}\ p=(AxB[0]*AxB[0]+AxB[1]*AxB[1]+AxB[2]*AxB[2]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00328}00328\ \ \ \ \ \textcolor{keywordtype}{double}\ d=(CxAxB[0]*CxAxB[0]+CxAxB[1]*CxAxB[1]+CxAxB[2]*CxAxB[2]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00329}00329\ \ \ \ \ \textcolor{comment}{//\ d=p*Math.sin(theta)}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00330}00330\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a97fdc58d93bc79cf1c5f693249674111}{piby2}}-\/Math.asin(Math.sqrt(d/p));\ \textcolor{comment}{//\ distance\ is\ Pi/2-\/theta.}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00331}00331\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00332}00332\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00339}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{00339}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}[]\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ sph\_z)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00340}00340\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ V\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00341}00341\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ s=Math.sin(sph\_z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00342}00342\ \ \ \ \ \ \ \ \ V[0]\ =\ s\ *\ Math.cos(sph\_z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00343}00343\ \ \ \ \ \ \ \ \ V[1]\ =\ s\ *\ Math.sin(sph\_z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00344}00344\ \ \ \ \ \ \ \ \ V[2]\ =\ Math.cos(sph\_z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00345}00345\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00346}00346\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ V;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00347}00347\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00348}00348\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00349}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a4ab4967d6762b51c12f105639afbd0c8}{00349}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}[]\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a4ab4967d6762b51c12f105639afbd0c8}{s\_pt\_to\_vec}}(\textcolor{keywordtype}{double}\ x,\textcolor{keywordtype}{double}\ y)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00350}00350\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ V\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00351}00351\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ s=Math.sin(y);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00352}00352\ \ \ \ \ \ \ \ \ V[0]\ =\ s\ *\ Math.cos(x);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00353}00353\ \ \ \ \ \ \ \ \ V[1]\ =\ s\ *\ Math.sin(x);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00354}00354\ \ \ \ \ \ \ \ \ V[2]\ =\ Math.cos(y);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00355}00355\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00356}00356\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ V;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00357}00357\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00358}00358\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00366}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a26869438efba9b3db174b2fa4f09dc71}{00366}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a26869438efba9b3db174b2fa4f09dc71}{eucl\_dist3D}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ w)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00367}00367\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []pt0=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math}{SphericalMath}}.\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00368}00368\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []pt1=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math}{SphericalMath}}.\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(w);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00369}00369\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (Math.sqrt((pt1[0]-\/pt0[0])*(pt1[0]-\/pt0[0])\ +}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00370}00370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (pt1[1]-\/pt0[1])*(pt1[1]-\/pt0[1])\ +}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00371}00371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (pt1[2]-\/pt0[2])*(pt1[2]-\/pt0[2])));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00372}00372\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00373}00373\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00380}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{00380}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{proj\_vec\_to\_sph}}(\doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ p3d)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00381}00381\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{proj\_vec\_to\_sph}}(p3d.\doxymbox{\hyperlink{classmath_1_1_point3_d_a76f2141fd0f489a6178af64799a4af9e}{x}},p3d.\doxymbox{\hyperlink{classmath_1_1_point3_d_a95da161fb44a307eed73f43b4199ab03}{y}},p3d.\doxymbox{\hyperlink{classmath_1_1_point3_d_ab71f0d665e8471bafcc1fc014ce286a7}{z}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00382}00382\ \ \ \}\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00383}00383\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00393}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a2b17997277432444a6633e6c2713bc70}{00393}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a2b17997277432444a6633e6c2713bc70}{proj\_vec\_to\_sph}}(\textcolor{keywordtype}{double}\ x,\textcolor{keywordtype}{double}\ y,\textcolor{keywordtype}{double}\ z)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00394}00394\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dist;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00395}00395\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00396}00396\ \ \ \ \ \ \ \textcolor{comment}{//\ default\ for\ things\ near\ origin\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00397}00397\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((dist=Math.sqrt(x*x+y*y+z*z))<\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00398}00398\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(0.0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00399}00399\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00400}00400\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(Math.atan2(y,x),Math.acos(z/dist));\ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00401}00401\ \ \ \}\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00402}00402\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00409}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad9e34f66f31e2ad525560cd8c6a571d0}{00409}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad9e34f66f31e2ad525560cd8c6a571d0}{sphToVisualPlane}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00410}00410\ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad9e34f66f31e2ad525560cd8c6a571d0}{sphToVisualPlane}}(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}},z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00411}00411\ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00412}00412\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00419}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a75065198d182604abca2e5fc81fcdee7}{00419}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a75065198d182604abca2e5fc81fcdee7}{sphToVisualPlane}}(\textcolor{keywordtype}{double}\ theta,\textcolor{keywordtype}{double}\ phi)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00420}00420\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(Math.sin(phi)*Math.sin(theta),Math.cos(phi));\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00421}00421\ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00422}00422\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00429}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac84fe9644ba06ee847b25ba5647d633e}{00429}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac84fe9644ba06ee847b25ba5647d633e}{dot\_prod}}(\textcolor{keywordtype}{double}\ V[],\ \textcolor{keywordtype}{double}\ W[])\{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00430}00430\ \ \ \ \ \textcolor{keywordflow}{return}\ (V[0]\ *\ W[0]\ +\ V[1]\ *\ W[1]\ +\ V[2]\ *\ W[2]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00431}00431\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00432}00432\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00438}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_afdc9992474ba0e88a614d0920e6ff03d}{00438}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_afdc9992474ba0e88a614d0920e6ff03d}{vec\_norm}}(\textcolor{keywordtype}{double}\ X[])\{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00439}00439\ \ \ \ \ \textcolor{keywordflow}{return}(Math.sqrt(X[0]\ *\ X[0]\ +\ X[1]\ *\ X[1]\ +\ X[2]\ *\ X[2]));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00440}00440\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00441}00441\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00442}00442\ \textcolor{comment}{//class\ Vector2D\ \{}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00443}00443\ \textcolor{comment}{//\ \ \ \ double\ y;}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00444}00444\ \textcolor{comment}{//\ \ \ \ double\ z;}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00445}00445\ \textcolor{comment}{//\ \ \}}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00446}00446\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00447}00447\ \ \ \textcolor{comment}{//\ (OBE)\ Note:\ simple\ computation\ for\ control\ point\ for}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00448}00448\ \ \ \textcolor{comment}{//\ drawing\ arc\ of\ great\ circle\ between\ two\ points.}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00449}00449\ \ \ \textcolor{comment}{//\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00450}00450\ \ \ \textcolor{comment}{//\ The\ quadratic\ curve\ is\ formed\ so\ the\ lines\ from\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00451}00451\ \ \ \textcolor{comment}{//\ \ \ the\ control\ point\ to\ the\ two\ ends\ are\ tangent}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00452}00452\ \ \ \textcolor{comment}{//\ \ \ to\ the\ curve.}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00453}00453\ \ \ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00454}00454\ \ \ \textcolor{comment}{//\ Only\ difficulty\ is\ if\ points\ are\ antipodal:\ return}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00455}00455\ \ \ \textcolor{comment}{//\ controlpoint\ as\ the\ origin;\ may\ eventually\ need\ a\ flag}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00456}00456\ \ \ \textcolor{comment}{//\ to\ indicate\ this.}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00457}00457\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00458}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_adcf046a6dcf179c131d88751de56cb07}{00458}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_adcf046a6dcf179c131d88751de56cb07}{computeControl}}(\doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ A,\doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ B)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00459}00459\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ AdotB=\doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}.\doxymbox{\hyperlink{classmath_1_1_point3_d_a4d2605150b92e918d23aa77bba5d0209}{DotProduct}}(A,B);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00460}00460\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (AdotB<-\/.9999999)\ \{\ \textcolor{comment}{//\ antipodal}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00461}00461\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(0.0,0.0,0.0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00462}00462\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00463}00463\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}.\doxymbox{\hyperlink{classmath_1_1_point3_d_a31fece59076f71964928efc5869ec428}{vectorSum}}(A,B).\doxymbox{\hyperlink{classmath_1_1_point3_d_a8098d035a49f5094d8e6376b0803190d}{times}}(1/(1+AdotB));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00464}00464\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00465}00465\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00472}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2c4d09eee04311aeed5d8a367722876}{00472}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}[]\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2c4d09eee04311aeed5d8a367722876}{crossProduct}}(\textcolor{keywordtype}{double}\ X[],\ \textcolor{keywordtype}{double}\ Y[])\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00473}00473\ \ \ \ \ \textcolor{keywordtype}{double}[]\ Z\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00474}00474\ \ \ \ \ Z[0]\ =\ X[1]\ *\ Y[2]\ -\/\ X[2]\ *\ Y[1];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00475}00475\ \ \ \ \ Z[1]\ =\ X[2]\ *\ Y[0]\ -\/\ X[0]\ *\ Y[2];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00476}00476\ \ \ \ \ Z[2]\ =\ X[0]\ *\ Y[1]\ -\/\ X[1]\ *\ Y[0];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00477}00477\ \ \ \ \ \textcolor{keywordflow}{return}\ (Z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00478}00478\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00479}00479\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00495}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0d4932564bb52d5d1f0f53bd64193fe1}{00495}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0d4932564bb52d5d1f0f53bd64193fe1}{sph\_tangency}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z1,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z2,}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00496}00496\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00497}00497\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dratio=(\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{s\_dist}}(z1,z2))*r1/(r1+r2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00498}00498\ \ \ \ \ \ \ \textcolor{comment}{//\ try\ first\ direction}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00499}00499\ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ T3=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a6149de1007dc0ae8f421a0f91cd41fdd}{sph\_tangent}}(z1,z2));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00500}00500\ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ tp1=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a92b22f51be9b939712da46e19938fc2d}{sph\_shoot}}(z1,T3,dratio);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00501}00501\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ err1=Math.abs(\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{s\_dist}}(z1,tp1)-\/r1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00502}00502\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (err1<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ \textcolor{comment}{//\ looks\ good\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00503}00503\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tp1;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00504}00504\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00505}00505\ \ \ \ \ \ \ \textcolor{comment}{//\ try\ opposite\ direction}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00506}00506\ \ \ \ \ \ \ T3=T3.\doxymbox{\hyperlink{classmath_1_1_point3_d_a8098d035a49f5094d8e6376b0803190d}{times}}(-\/1.0);\ \textcolor{comment}{//\ flip\ tangent}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00507}00507\ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ tp2=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a92b22f51be9b939712da46e19938fc2d}{sph\_shoot}}(z1,T3,dratio);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00508}00508\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ err2=Math.abs(\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a0608fc0a89c674e65b836e35e9d17991}{s\_dist}}(z1,tp2)-\/r1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00509}00509\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (err2<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ \textcolor{comment}{//\ looks\ good\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00510}00510\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tp2;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00511}00511\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00512}00512\ \ \ \ \ \ \ \textcolor{comment}{//\ Should\ be\ tp1}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00513}00513\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (err1<=10000.0*err2)}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00514}00514\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tp1;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00515}00515\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tp2;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00516}00516\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00517}00517\ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00533}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a903e2ae47c166734819a484a0145786e}{00533}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a903e2ae47c166734819a484a0145786e}{s\_compcenter}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z0,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z1,}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00534}00534\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r0,\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\textcolor{keywordtype}{double}\ ivd0,\textcolor{keywordtype}{double}\ ivd1,\textcolor{keywordtype}{double}\ ivd2)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00535}00535\ \ \ \ \ \textcolor{keywordtype}{double}[]\ vec0=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00536}00536\ \ \ \ \ \textcolor{comment}{//\ side\ lengths}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00537}00537\ \ \ \ \ \textcolor{keywordtype}{double}\ s0=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad9298f12abe9aa942c142d86917fe9cd}{s\_ivd\_length}}(r0,r1,ivd0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00538}00538\ \ \ \ \ \textcolor{keywordtype}{double}\ s1=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad9298f12abe9aa942c142d86917fe9cd}{s\_ivd\_length}}(r1,r2,ivd1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00539}00539\ \ \ \ \ \textcolor{keywordtype}{double}\ s2=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad9298f12abe9aa942c142d86917fe9cd}{s\_ivd\_length}}(r2,r0,ivd2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00540}00540\ \ \ \ \ \textcolor{comment}{//\ angle\ is\ how\ far\ around\ from\ TV\ we\ will\ rotate\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00541}00541\ \ \ \ \ \textcolor{keywordtype}{double}\ angle=Math.acos((\ Math.cos(s1)-\/Math.cos(s2)*Math.cos(s0)\ )/}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00542}00542\ \ \ \ \ \ \ \ \ \ (\ Math.sin(s2)*Math.sin(s0)\ ));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00543}00543\ \ \ \ \ \textcolor{comment}{//\ TV\ is\ a\ tangent\ vector\ at\ z0}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00544}00544\ \ \ \ \ \textcolor{keywordtype}{double}[]\ TV=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a6149de1007dc0ae8f421a0f91cd41fdd}{sph\_tangent}}(z0,z1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00545}00545\ \ \ \ \ \textcolor{comment}{//\ N\ =\ z0\ x\ T}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00546}00546\ \ \ \ \ \textcolor{keywordtype}{double}[]\ N=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2c4d09eee04311aeed5d8a367722876}{crossProduct}}(vec0,TV);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00547}00547\ \ \ \ \ \textcolor{comment}{//\ P\ will\ point\ toward\ the\ new\ center\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00548}00548\ \ \ \ \ \textcolor{keywordtype}{double}\ []P=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00549}00549\ \ \ \ \ P[0]=Math.cos(angle)*TV[0]+Math.sin(angle)*N[0];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00550}00550\ \ \ \ \ P[1]=Math.cos(angle)*TV[1]+Math.sin(angle)*N[1];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00551}00551\ \ \ \ \ P[2]=Math.cos(angle)*TV[2]+Math.sin(angle)*N[2];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00552}00552\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00553}00553\ \ \ \ \ \textcolor{keywordtype}{double}\ []mtan=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00554}00554\ \ \ \ \ mtan[0]=Math.cos(r0+r2)*vec0[0]+Math.sin(r0+r2)*P[0];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00555}00555\ \ \ \ \ mtan[1]=Math.cos(r0+r2)*vec0[1]+Math.sin(r0+r2)*P[1];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00556}00556\ \ \ \ \ mtan[2]=Math.cos(r0+r2)*vec0[2]+Math.sin(r0+r2)*P[2];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00557}00557\ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(0.0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00558}00558\ \ \ \ \ \textcolor{keywordflow}{if}(mtan[2]<=(1.0-\/\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00559}00559\ \ \ \ \ \ \ \ \ z=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(Math.atan2(mtan[1],mtan[0]),Math.acos(mtan[2]));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00560}00560\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00561}00561\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}(z,r2,1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00562}00562\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00563}00563\ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00574}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a93c509a1f40613b4e5aaf64221c5beba}{00574}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a93c509a1f40613b4e5aaf64221c5beba}{s\_compcenter}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z0,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z1,}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00575}00575\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r0,\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00576}00576\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a903e2ae47c166734819a484a0145786e}{s\_compcenter}}(z0,z1,r0,r1,r2,1.0,1.0,1.0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00577}00577\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00578}00578\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00588}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a67989d4e160b4a06873f21962dae1a7c}{00588}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a67989d4e160b4a06873f21962dae1a7c}{s\_shoot}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ w,\textcolor{keywordtype}{double}\ dist)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00589}00589\ \ \ \ \ \ \ \textcolor{comment}{//\ if\ very\ close,\ just\ return\ z}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00590}00590\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(dist)<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00591}00591\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00592}00592\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00593}00593\ \ \ \ \ \ \ \textcolor{comment}{//\ adjust\ mod\ 2*pi\ until\ dist\ lies\ in\ [0,2*pi]}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00594}00594\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ pi2=2.0*Math.PI;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00595}00595\ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (dist<0)\ dist+=pi2;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00596}00596\ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (dist>pi2)\ dist\ -\/=pi2;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00597}00597\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00598}00598\ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ T=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a6149de1007dc0ae8f421a0f91cd41fdd}{sph\_tangent}}(z,w);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00599}00599\ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ V=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00600}00600\ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ A=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00601}00601\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cosd=Math.cos(dist);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00602}00602\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sind=Math.sin(dist);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00603}00603\ \ \ \ \ \ \ A[0]=cosd*V[0]+sind*T[0];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00604}00604\ \ \ \ \ \ \ A[1]=cosd*V[1]+sind*T[1];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00605}00605\ \ \ \ \ \ \ A[2]=cosd*V[2]+sind*T[2];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00606}00606\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{proj\_vec\_to\_sph}}(A[0],A[1],A[2]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00607}00607\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00608}00608\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00618}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a92b22f51be9b939712da46e19938fc2d}{00618}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a92b22f51be9b939712da46e19938fc2d}{sph\_shoot}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z,\doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ T,\textcolor{keywordtype}{double}\ dist)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00619}00619\ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ V=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00620}00620\ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ A=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00621}00621\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cosd=Math.cos(dist);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00622}00622\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sind=Math.sin(dist);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00623}00623\ \ \ \ \ \ \ A[0]=cosd*V[0]+sind*T.\doxymbox{\hyperlink{classmath_1_1_point3_d_a76f2141fd0f489a6178af64799a4af9e}{x}};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00624}00624\ \ \ \ \ \ \ A[1]=cosd*V[1]+sind*T.\doxymbox{\hyperlink{classmath_1_1_point3_d_a95da161fb44a307eed73f43b4199ab03}{y}};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00625}00625\ \ \ \ \ \ \ A[2]=cosd*V[2]+sind*T.\doxymbox{\hyperlink{classmath_1_1_point3_d_ab71f0d665e8471bafcc1fc014ce286a7}{z}};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00626}00626\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{proj\_vec\_to\_sph}}(A[0],A[1],A[2]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00627}00627\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00628}00628\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00643}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a6149de1007dc0ae8f421a0f91cd41fdd}{00643}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}[]\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a6149de1007dc0ae8f421a0f91cd41fdd}{sph\_tangent}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ ctr1,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ ctr2)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00644}00644\ \ \ \ \ \textcolor{keywordtype}{double}\ d,vn;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00645}00645\ \ \ \ \ \textcolor{keywordtype}{double}[]\ A;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00646}00646\ \ \ \ \ \textcolor{keywordtype}{double}[]\ B;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00647}00647\ \ \ \ \ \textcolor{keywordtype}{double}[]\ P=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00648}00648\ \ \ \ \ \textcolor{keywordtype}{double}[]\ T=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00649}00649\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00650}00650\ \ \ \ \ A=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(ctr1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00651}00651\ \ \ \ \ B=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(ctr2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00652}00652\ \ \ \ \ d=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac84fe9644ba06ee847b25ba5647d633e}{dot\_prod}}(A,B);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00653}00653\ \ \ \ \ \textcolor{comment}{//\ Find\ projection\ of\ B\ on\ plane\ normal\ to\ A}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00654}00654\ \ \ \ \ P[0]=B[0]-\/d*A[0];\ \ P[1]=B[1]-\/d*A[1];\ \ P[2]=B[2]-\/d*A[2];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00655}00655\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00656}00656\ \ \ \ \ \textcolor{comment}{//\ A\ and\ B\ essentially\ parallel?\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00657}00657\ \ \ \ \ \textcolor{keywordflow}{if}\ ((vn=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_afdc9992474ba0e88a614d0920e6ff03d}{vec\_norm}}(P))<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00658}00658\ \ \ \ \ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00659}00659\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ A\ is\ not\ N\ or\ S,\ point\ in\ horizontal\ direction}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00660}00660\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ pn=Math.sqrt(A[0]*A[0]+A[1]*A[1]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00661}00661\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pn>.0000001)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00662}00662\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ orthogonal,\ X\ coord\ 0}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00663}00663\ \ \ \ \ \ \ \ \ \ \ \ \ T[0]=A[1]/pn;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00664}00664\ \ \ \ \ \ \ \ \ \ \ \ \ T[1]=-\/A[0]/pn;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00665}00665\ \ \ \ \ \ \ \ \ \ \ \ \ T[2]=0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00666}00666\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00667}00667\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ otherwise,\ point\ toward\ (0,1,0)}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00668}00668\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00669}00669\ \ \ \ \ \ \ \ \ \ \ \ \ T[0]=0.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00670}00670\ \ \ \ \ \ \ \ \ \ \ \ \ T[1]=1.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00671}00671\ \ \ \ \ \ \ \ \ \ \ \ \ T[2]=0.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00672}00672\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00673}00673\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ T;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00674}00674\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00675}00675\ \ \ \ \ T[0]=P[0]/vn;T[1]=P[1]/vn;T[2]=P[2]/vn;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00676}00676\ \ \ \ \ \textcolor{keywordflow}{return}\ T;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00677}00677\ \ \ \}\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00678}00678\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00688}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aacd8eb17e55662ab0b6d8f36b859cc8e}{00688}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aacd8eb17e55662ab0b6d8f36b859cc8e}{s\_pt\_to\_plane}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00689}00689\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cosphi=Math.cos(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00690}00690\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00691}00691\ \ \ \ \ \ \ \textcolor{comment}{//\ at\ south\ pole?}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00692}00692\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cosphi<-\/.99999999)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00693}00693\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(10000*Math.cos(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}),10000*Math.sin(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00694}00694\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00695}00695\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r=Math.sin(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}})/(1.0+cosphi);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00696}00696\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=r*Math.cos(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00697}00697\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ y=r*Math.sin(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00698}00698\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(x,y);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00699}00699\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00700}00700\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00705}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af9e8b66ffd3830f83e6df9bb39f93720}{00705}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af9e8b66ffd3830f83e6df9bb39f93720}{s\_to\_e\_data}}(\doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ cs)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00706}00706\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af9e8b66ffd3830f83e6df9bb39f93720}{s\_to\_e\_data}}(cs.\doxymbox{\hyperlink{classgeometry_1_1_circle_simple_a059622538832dc4107683c82cf29734b}{center}},cs.\doxymbox{\hyperlink{classgeometry_1_1_circle_simple_ad0e97e48c1d6370efa1907e2993015bd}{rad}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00707}00707\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00708}00708\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00728}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad54662fe58a7418fe44eefd9eec6d7bc}{00728}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ad54662fe58a7418fe44eefd9eec6d7bc}{s\_to\_e\_data}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z,\textcolor{keywordtype}{double}\ r)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00729}00729\ \ \ \ \ \textcolor{keywordtype}{int}\ flipflag=1;\ \textcolor{comment}{//\ set\ to\ -\/1\ if\ south\ pole\ enclosed}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00730}00730\ \ \ \ \ \textcolor{keywordtype}{double}\ er;\ \textcolor{comment}{//\ new\ radius}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00731}00731\ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ e;\ \textcolor{comment}{//\ new\ center}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00732}00732\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00733}00733\ \ \ \ \ \textcolor{keywordtype}{double}[]\ V=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z);\ \textcolor{comment}{//\ unit\ 3-\/vector}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00734}00734\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00735}00735\ \ \ \ \ \textcolor{comment}{//\ essentially\ passes\ through\ infinity?\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00736}00736\ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}+r-\/Math.PI)<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ \textcolor{comment}{//\ increment\ r\ slightly,\ proceed}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00737}00737\ \ \ \ \ \ \ \ \ r\ +=\ 2.5*\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00738}00738\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00739}00739\ \ \ \ \ \textcolor{comment}{//\ encloses\ infinity?}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00740}00740\ \ \ \ \ \textcolor{keywordflow}{if}\ ((z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}+r)>=(Math.PI+\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00741}00741\ \ \ \ \ \ \ \ \ r=Math.PI-\/r;\ \textcolor{comment}{//\ fake\ radius}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00742}00742\ \ \ \ \ \ \ \ \ V[0]\ *=\ (-\/1.0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00743}00743\ \ \ \ \ \ \ \ \ V[1]\ *=\ (-\/1.0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00744}00744\ \ \ \ \ \ \ \ \ V[2]\ *=\ (-\/1.0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00745}00745\ \ \ \ \ \ \ \ \ z=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{proj\_vec\_to\_sph}}(V[0],V[1],V[2]);\ \textcolor{comment}{//\ fake\ center}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00746}00746\ \ \ \ \ \ \ \ \ flipflag=-\/1;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00747}00747\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00748}00748\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00749}00749\ \ \ \ \ \textcolor{comment}{//\ z-\/coords\ of\ bdry\ points\ below/above\ center}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00750}00750\ \ \ \ \ \textcolor{keywordtype}{double}\ up=z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}+r;\ \textcolor{comment}{//\ below}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00751}00751\ \ \ \ \ \textcolor{keywordtype}{double}\ down=z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}-\/r;\ \textcolor{comment}{//\ above}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00752}00752\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00753}00753\ \ \ \ \ \textcolor{comment}{//\ essentially\ centered\ at\ np\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00754}00754\ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}})<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00755}00755\ \ \ \ \ \ \ \ \ er=Math.sin(up)/(1.0+Math.cos(up));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00756}00756\ \ \ \ \ \ \ \ \ e=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(0.0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00757}00757\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}(e,er,flipflag);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00758}00758\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00759}00759\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00760}00760\ \ \ \ \ \textcolor{comment}{//\ essentially\ centered\ at\ sp,\ but\ not\ flipped.}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00761}00761\ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}-\/Math.PI)<\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}}\ \&\&\ flipflag!=-\/1)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00762}00762\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ radius\ must\ be\ extremely\ small,\ treat\ as\ though}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00763}00763\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ it\ encloses\ sp,\ so\ fake\ center\ and\ huge\ fake\ radius.}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00764}00764\ \ \ \ \ \ \ \ \ er=100000;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00765}00765\ \ \ \ \ \ \ \ \ e=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(0.0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00766}00766\ \ \ \ \ \ \ \ \ flipflag=-\/1;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00767}00767\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}(e,er,flipflag);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00768}00768\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00769}00769\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00770}00770\ \ \ \ \ \textcolor{comment}{//\ essentially\ passes\ through\ infinity,\ so\ decrease\ 'up'.}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00771}00771\ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(up-\/Math.PI)<\ .00001)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00772}00772\ \ \ \ \ \ \ \ \ up\ -\/=\ .000015;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00773}00773\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00774}00774\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00775}00775\ \ \ \ \ \textcolor{comment}{//\ proceed}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00776}00776\ \ \ \ \ \textcolor{keywordtype}{double}\ RR=Math.sin(up)/(1.0+Math.cos(up));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00777}00777\ \ \ \ \ \textcolor{keywordtype}{double}\ rr=Math.sin(down)/(1.0+Math.cos(down));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00778}00778\ \ \ \ \ er=Math.abs(RR-\/rr)/2.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00779}00779\ \ \ \ \ \textcolor{keywordtype}{double}\ m=(RR+rr)/2.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00780}00780\ \ \ \ \ \textcolor{keywordtype}{double}\ sny=Math.sin(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00781}00781\ \ \ \ \ e=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(V[0]*m/sny,V[1]*m/sny);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00782}00782\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00783}00783\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}(e,er,flipflag);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00784}00784\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00785}00785\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00786}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aba7cca1b57c72b994ef26ed18c133745}{00786}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aba7cca1b57c72b994ef26ed18c133745}{e\_to\_s\_data}}(\doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ cs)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00787}00787\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aba7cca1b57c72b994ef26ed18c133745}{e\_to\_s\_data}}(cs.\doxymbox{\hyperlink{classgeometry_1_1_circle_simple_a059622538832dc4107683c82cf29734b}{center}},cs.\doxymbox{\hyperlink{classgeometry_1_1_circle_simple_ad0e97e48c1d6370efa1907e2993015bd}{rad}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00788}00788\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00789}00789\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00800}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a6ea9bc427cc06a57d00320757d9059a9}{00800}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a6ea9bc427cc06a57d00320757d9059a9}{e\_to\_s\_data}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ ez,\textcolor{keywordtype}{double}\ er)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00801}00801\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00802}00802\ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ sz=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(0.0);\ \textcolor{comment}{//\ will\ be\ sph\ center}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00803}00803\ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ P3=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];\ \textcolor{comment}{//\ 3D\ point\ on\ sphere}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00804}00804\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00805}00805\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rr=Math.abs(er);\ \textcolor{comment}{//\ note,\ r\ negative\ handled\ later}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00806}00806\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00807}00807\ \ \ \ \ \ \ \textcolor{comment}{//\ if\ er\ too\ small,\ project\ center,\ set\ sr=er\ unchanged.}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00808}00808\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rr<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00809}00809\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ denom=ez.\doxymbox{\hyperlink{classcomplex_1_1_complex_a34bb2d2c1e84ff7be5d13e8358016199}{absSq}}()+1.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00810}00810\ \ \ \ \ \ \ \ \ \ \ P3[0]=(2*ez.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}})/denom;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00811}00811\ \ \ \ \ \ \ \ \ \ \ P3[1]=(2*ez.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}})/denom;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00812}00812\ \ \ \ \ \ \ \ \ \ \ P3[2]=(2.0-\/denom)/denom;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00813}00813\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(P3[2]>(1.0-\/\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}}))\ \{\ \textcolor{comment}{//\ near\ N\ pole}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00814}00814\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ez.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}=ez.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}=0.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00815}00815\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}(sz,er,0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00816}00816\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00817}00817\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (P3[2]<(\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}}-\/1.0))\ \{\ \textcolor{comment}{//\ near\ S\ pole}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00818}00818\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sz.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}=0.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00819}00819\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sz.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}=Math.PI;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00820}00820\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}(sz,er,0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00821}00821\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00822}00822\ \ \ \ \ \ \ \ \ \ \ sz.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}=Math.acos(P3[2]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00823}00823\ \ \ \ \ \ \ \ \ \ \ sz.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}=Math.atan2(P3[1],P3[0]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00824}00824\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}(sz,er,1);\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00825}00825\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00826}00826\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00827}00827\ \ \ \ \ \ \ \textcolor{comment}{//\ General\ strategy:\ project\ 3\ equally\ spaced\ points\ of\ the}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00828}00828\ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ euclidean\ circle\ to\ 3\ points\ on\ the\ sphere.}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00829}00829\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00830}00830\ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[]\ epts=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00831}00831\ \ \ \ \ \ \ epts[0]=ez.\doxymbox{\hyperlink{classcomplex_1_1_complex_a95d34bf26325d45f83602832c07e831a}{plus}}(rr);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00832}00832\ \ \ \ \ \ \ epts[1]=ez.\doxymbox{\hyperlink{classcomplex_1_1_complex_a95d34bf26325d45f83602832c07e831a}{plus}}(\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a759910677001a2f309e9e83888387db3}{omega3}}[1].\doxymbox{\hyperlink{classcomplex_1_1_complex_ad3d80696b9c43028347a7f7608c78f99}{times}}(rr));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00833}00833\ \ \ \ \ \ \ epts[2]=ez.\doxymbox{\hyperlink{classcomplex_1_1_complex_a95d34bf26325d45f83602832c07e831a}{plus}}(\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a759910677001a2f309e9e83888387db3}{omega3}}[2].\doxymbox{\hyperlink{classcomplex_1_1_complex_ad3d80696b9c43028347a7f7608c78f99}{times}}(rr));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00834}00834\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00835}00835\ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[]\ spts=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00836}00836\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00837}00837\ \ \ \ \ \ \ \ \ \ \ spts[j]=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac9286f2dce25477771bfad91c5c41585}{proj\_pt\_to\_sph}}(epts[j]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00838}00838\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00839}00839\ \ \ \ \ \ \ \textcolor{comment}{//\ for\ er<0,\ reverse\ orientation}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00840}00840\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (er<0)\ \{\ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00841}00841\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ h=spts[0];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00842}00842\ \ \ \ \ \ \ \ \ \ \ spts[0]=spts[2];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00843}00843\ \ \ \ \ \ \ \ \ \ \ spts[2]=h;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00844}00844\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00845}00845\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00846}00846\ \ \ \ \ \ \ \textcolor{comment}{//\ find\ the\ circle\ through\ the\ 3\ spherical\ points}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00847}00847\ \ \ \ \ \ \ \doxymbox{\hyperlink{classgeometry_1_1_circle_simple}{CircleSimple}}\ cS=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a455b5e29aeba46f419426a2c05d59844}{circle\_3\_sph}}(spts[0],spts[1],spts[2]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00848}00848\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00849}00849\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cS;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00850}00850\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00851}00851\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00862}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a06c1fd1eac368b6087a1bab3402f931f}{00862}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a06c1fd1eac368b6087a1bab3402f931f}{pt\_in\_sph\_tri}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ sph\_pt,}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00863}00863\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z1,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z2,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z3)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00864}00864\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ X;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00865}00865\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ Y;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00866}00866\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ Z;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00867}00867\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ P;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00868}00868\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ C;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00869}00869\ \ \ \ \ \ \ \ \ P=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(sph\_pt);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00870}00870\ \ \ \ \ \ \ \ \ X=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00871}00871\ \ \ \ \ \ \ \ \ Y=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00872}00872\ \ \ \ \ \ \ \ \ Z=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z3);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00873}00873\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00874}00874\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ it\ on\ wrong\ side\ of\ plane\ through\ X,Y,Z?}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00875}00875\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []XY=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00876}00876\ \ \ \ \ \ \ \ \ XY[0]=Y[0]-\/X[0];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00877}00877\ \ \ \ \ \ \ \ \ XY[1]=Y[1]-\/X[1];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00878}00878\ \ \ \ \ \ \ \ \ XY[2]=Y[2]-\/X[2];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00879}00879\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []XZ=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00880}00880\ \ \ \ \ \ \ \ \ XZ[0]=Z[0]-\/X[0];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00881}00881\ \ \ \ \ \ \ \ \ XZ[1]=Z[1]-\/X[1];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00882}00882\ \ \ \ \ \ \ \ \ XZ[2]=Z[2]-\/X[2];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00883}00883\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []XP=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00884}00884\ \ \ \ \ \ \ \ \ XP[0]=P[0]-\/X[0];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00885}00885\ \ \ \ \ \ \ \ \ XP[1]=P[1]-\/X[1];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00886}00886\ \ \ \ \ \ \ \ \ XP[2]=P[2]-\/X[2];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00887}00887\ \ \ \ \ \ \ \ \ C=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2c4d09eee04311aeed5d8a367722876}{crossProduct}}(XY,XZ);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00888}00888\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ wrong\ direction?\ can't\ be\ in\ triangle}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00889}00889\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac84fe9644ba06ee847b25ba5647d633e}{dot\_prod}}(C,XP)<0.0)}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00890}00890\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00891}00891\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00892}00892\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ on\ wrong\ side\ of\ one\ of\ planes\ through\ origin?}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00893}00893\ \ \ \ \ \ \ \ \ C=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2c4d09eee04311aeed5d8a367722876}{crossProduct}}(Y,X);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00894}00894\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac84fe9644ba06ee847b25ba5647d633e}{dot\_prod}}(P,C)>0)\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00895}00895\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00896}00896\ \ \ \ \ \ \ \ \ C=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2c4d09eee04311aeed5d8a367722876}{crossProduct}}(Z,Y);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00897}00897\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac84fe9644ba06ee847b25ba5647d633e}{dot\_prod}}(P,C)>0)\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00898}00898\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00899}00899\ \ \ \ \ \ \ \ \ C=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2c4d09eee04311aeed5d8a367722876}{crossProduct}}(X,Z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00900}00900\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac84fe9644ba06ee847b25ba5647d633e}{dot\_prod}}(P,C)>0)\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00901}00901\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00902}00902\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00903}00903\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00904}00904\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00905}00905\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00914}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac468f36a4b16b1f0fe7bb58c2ccc0cea}{00914}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classutil_1_1_util_packet}{UtilPacket}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac468f36a4b16b1f0fe7bb58c2ccc0cea}{screen\_to\_s\_pt}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ pt)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00915}00915\ \ \ \ \ \textcolor{keywordtype}{double}\ xx=1.0\ -\/\ pt.\doxymbox{\hyperlink{classcomplex_1_1_complex_a34bb2d2c1e84ff7be5d13e8358016199}{absSq}}();}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00916}00916\ \ \ \ \ \textcolor{keywordflow}{if}\ (xx<0)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00917}00917\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_util_packet}{UtilPacket}}(0,0.0,0.0);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00918}00918\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00919}00919\ \ \ \ \ \textcolor{keywordtype}{double}[]\ V=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00920}00920\ \ \ \ \ V[0]=xx;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00921}00921\ \ \ \ \ V[1]=pt.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00922}00922\ \ \ \ \ V[2]=pt.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00923}00923\ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{proj\_vec\_to\_sph}}(V[0],V[1],V[2]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00924}00924\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_util_packet}{UtilPacket}}(1,z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}},z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}});}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00925}00925\ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00926}00926\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00935}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a450d45b150ad16c311d2bef3f8deecb9}{00935}}\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a450d45b150ad16c311d2bef3f8deecb9}{sph\_tri\_center}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z1,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z2,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z3)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00936}00936\ \ \ \ \ \textcolor{keywordtype}{double}[]\ X,Y,Z,M,C,D;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00937}00937\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00938}00938\ \ \ \ \ X=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z1);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00939}00939\ \ \ \ \ Y=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z2);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00940}00940\ \ \ \ \ Z=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(z3);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00941}00941\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00942}00942\ \ \ \ \ \textcolor{comment}{//\ centroid}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00943}00943\ \ \ \ \ M=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00944}00944\ \ \ \ \ M[0]=(X[0]+Y[0]+Z[0])/3.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00945}00945\ \ \ \ \ M[1]=(X[1]+Y[1]+Z[1])/3.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00946}00946\ \ \ \ \ M[2]=(X[2]+Y[2]+Z[2])/3.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00947}00947\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00948}00948\ \ \ \ \ \textcolor{comment}{//\ C=\ YxX,\ vn\ =\ |C|\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00949}00949\ \ \ \ \ C=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2c4d09eee04311aeed5d8a367722876}{crossProduct}}(Y,X);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00950}00950\ \ \ \ \ \textcolor{keywordtype}{double}\ vn=Math.sqrt(C[0]*C[0]+C[1]*C[1]+C[2]*C[2]);\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00951}00951\ \ \ \ \ \textcolor{keywordflow}{if}\ (vn<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ \{\ \textcolor{comment}{//\ almost\ parallel\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00952}00952\ \ \ \ \ \ \ \ \ D=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2c4d09eee04311aeed5d8a367722876}{crossProduct}}(Z,Y);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00953}00953\ \ \ \ \ \ \ \ \ vn=Math.sqrt(D[0]*D[0]+D[1]*D[1]+D[2]*D[2]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00954}00954\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vn<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}}\ ||\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac84fe9644ba06ee847b25ba5647d633e}{dot\_prod}}(D,X)<0)\ \textcolor{comment}{//\ M\ should\ be\ good.\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00955}00955\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{proj\_vec\_to\_sph}}(M[0],M[1],M[2]));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00956}00956\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{proj\_vec\_to\_sph}}((-\/1.0)*M[0],(-\/1.0)*M[1],(-\/1.0)*M[2]));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00957}00957\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00958}00958\ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_afdc9992474ba0e88a614d0920e6ff03d}{vec\_norm}}(M)<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ \textcolor{comment}{//\ almost\ coplanar\ }}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00959}00959\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{proj\_vec\_to\_sph}}(-\/C[0],-\/C[1],-\/C[2]));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00960}00960\ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_ac84fe9644ba06ee847b25ba5647d633e}{dot\_prod}}(C,Z)<0)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00961}00961\ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ ans=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{proj\_vec\_to\_sph}}(M[0],M[1],M[2]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00962}00962\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (ans);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00963}00963\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00964}00964\ \ \ \ \ \textcolor{keywordflow}{return}\ (\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aa2e53048929e5bcdb3f8cffc5aea8446}{proj\_vec\_to\_sph}}((-\/1.0)*M[0],(-\/1.0)*M[1],(-\/1.0)*M[2]));}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00965}00965\ \ \ \}\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00966}00966\ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00977}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_acb639ba6d0dd2cff63da639956837ad0}{00977}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classbary_stuff_1_1_bary_point}{BaryPoint}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_acb639ba6d0dd2cff63da639956837ad0}{s\_pt\_to\_bary}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z1,\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z2,\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z3)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00978}00978\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ not\ finished}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00979}00979\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00980}00980\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00981}00981\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00988}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a9c429077f4d7715b90cf6c05be7c15d7}{00988}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a9c429077f4d7715b90cf6c05be7c15d7}{getAntipodal}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ s\_pt)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00989}00989\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00990}00990\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ handle\ theta}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00991}00991\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=s\_pt.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}-\/Math.PI;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00992}00992\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (s\_pt.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}<0)}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00993}00993\ \ \ \ \ \ \ \ \ \ \ \ \ x\ +=\ 2.0*Math.PI;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00994}00994\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ pole=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(x);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00995}00995\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ pmp=Math.PI-\/s\_pt.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}};}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00996}00996\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(pmp)<\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a1452b83e8bf6424aeb7bdd680b676a9e}{S\_TOLER}})\ \textcolor{comment}{//\ south\ pole?}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00997}00997\ \ \ \ \ \ \ \ \ \ \ \ \ pole.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}=Math.abs(pmp);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00998}00998\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l00999}00999\ \ \ \ \ \ \ \ \ \ \ \ \ pole.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}=pmp;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01000}01000\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pole;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01001}01001\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01002}01002\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01013}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aface08b1b4251edaff047a3fc6100295}{01013}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_aface08b1b4251edaff047a3fc6100295}{transCentroid}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ []P,}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01014}01014\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []trans,\textcolor{keywordtype}{boolean}\ sPole)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01015}01015\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=P.length-\/1;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01016}01016\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ X=0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01017}01017\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ Y=0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01018}01018\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ Z=0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01019}01019\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sPole)}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01020}01020\ \ \ \ \ \ \ \ \ \ \ \ \ Z=-\/1;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01021}01021\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01022}01022\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n=1;n<=N;n++)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01023}01023\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ u=trans[0]*P[n].\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}+trans[1];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01024}01024\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ v=trans[0]*P[n].\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}+trans[2];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01025}01025\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sq=u*u+v*v;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01026}01026\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ denom=1.0+sq;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01027}01027\ \ \ \ \ \ \ \ \ \ \ \ \ X\ +=\ 2.0*u/denom;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01028}01028\ \ \ \ \ \ \ \ \ \ \ \ \ Y\ +=\ 2.0*v/denom;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01029}01029\ \ \ \ \ \ \ \ \ \ \ \ \ Z\ +=(1.0-\/sq)/denom;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01030}01030\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01031}01031\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01032}01032\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dn=(double)N;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01033}01033\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sPole)}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01034}01034\ \ \ \ \ \ \ \ \ \ \ \ \ dn+=1.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01035}01035\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(X/dn,Y/dn,Z/dn);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01036}01036\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01037}01037\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01044}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a793e148d729a0353c77d6c7411a59630}{01044}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_a793e148d729a0353c77d6c7411a59630}{getCentroid}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ []pts)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01045}01045\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01046}01046\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ the\ centroid}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01047}01047\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ sz=pts.length-\/1;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01048}01048\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ xcoord=0.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01049}01049\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ycoord=0.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01050}01050\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ zcoord=0.0;}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01051}01051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=sz;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01052}01052\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []xyz=\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_af8fcda3c765b18f42b303a52db4a6403}{s\_pt\_to\_vec}}(pts[j]);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01053}01053\ \ \ \ \ \ \ \ \ \ \ \ \ xcoord\ +=xyz[0];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01054}01054\ \ \ \ \ \ \ \ \ \ \ \ \ ycoord\ +=xyz[1];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01055}01055\ \ \ \ \ \ \ \ \ \ \ \ \ zcoord\ +=xyz[2];}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01056}01056\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01057}01057\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01058}01058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(xcoord/sz,ycoord/sz,zcoord/sz);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01059}01059\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01060}01060\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01067}\doxymbox{\hyperlink{classgeometry_1_1_spherical_math_adb2e6ff2265e96ad10276b3f41f83382}{01067}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ \doxymbox{\hyperlink{classgeometry_1_1_spherical_math_adb2e6ff2265e96ad10276b3f41f83382}{e\_to\_sph\_vec}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ ez)\ \{}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01068}01068\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ z=ez.\doxymbox{\hyperlink{classcomplex_1_1_complex_a34bb2d2c1e84ff7be5d13e8358016199}{absSq}}();}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01069}01069\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=ez.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}*(1.0+z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01070}01070\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ y=ez.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}*(1.0+z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01071}01071\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(x,y,z);}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01072}01072\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01073}01073\ }
+\DoxyCodeLine{\Hypertarget{_spherical_math_8java_source_l01074}01074\ \}}
+
+\end{DoxyCode}

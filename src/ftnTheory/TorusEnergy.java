@@ -13,6 +13,9 @@ import packing.PackExtender;
 import packing.TorusData;
 import util.CmdStruct;
 
+/**
+ * @brief Torus Energy functionality for circle packing experiments.
+ */
 public class TorusEnergy extends PackExtender {
 	
 	static double mycon=Math.sqrt(1/Math.sqrt(3));
@@ -223,7 +226,7 @@ public class TorusEnergy extends PackExtender {
 	}
 	
 	/**
-	 * Try different notions of energy: 
+	 * @brief Try different notions of energy: 
 	 *   + sum of squared lengths of all edges
 	 *   + sum of conductances squared
 	 * @param p PackData
@@ -246,7 +249,7 @@ public class TorusEnergy extends PackExtender {
 	}
 
 	/**
-	 * normalize so area is 1. Note this only requires radii, not layout or angle sums
+	 * @brief normalize so area is 1. Note this only requires radii, not layout or angle sums
 	 * @return 1
 	 */
 	public int normalize() {
@@ -267,7 +270,7 @@ public class TorusEnergy extends PackExtender {
 	}
 
 	/**
-	 * Given an edge, copy the packing to 'tmpPack', flip the edge, repack/layout/normalize,
+	 * @brief Given an edge, copy the packing to 'tmpPack', flip the edge, repack/layout/normalize,
 	 * and return the resulting energy. Then one can decide whether to replace packData
 	 * with result.
 	 * @param v int

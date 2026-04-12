@@ -5,10 +5,13 @@ import complex.Complex;
 import exceptions.VarException;
 import util.StringUtil;
 
+/**
+ * @brief Get Value.
+ */
 public class GetValue {
 	
 	/**
-	 * Find the double value specified by a string. 
+	 * @brief Find the double value specified by a string. 
 	 * It may be a normal signed numerical value 
 	 * (included an integer) or a variable.
 	 * @param str, trimmed String

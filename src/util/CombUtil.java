@@ -4,6 +4,8 @@ import combinatorics.komplex.HalfEdge;
 import packing.PackData;
 
 /**
+ * @brief This contains combinatorical utility routines for circle packings.
+ *
  * This contains combinatorical utility routines for circle packings.
  * @author kens
  *
@@ -11,7 +13,7 @@ import packing.PackData;
 public class CombUtil {
 	
 	/**
-	 * If w is neighbor of v, return its index in the flower of v; else return -1.
+	 * @brief If w is neighbor of v, return its index in the flower of v; else return -1.
 	 * @param p PackData
 	 * @param v int
 	 * @param w int

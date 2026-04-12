@@ -3,6 +3,8 @@ package util;
 import complex.Complex;
 
 /**
+ * @brief Utility class for building face chain following an arclength parameterized
+ *
  * Utility class for building face chain following an arclength parameterized
  * polygonal path: contains a face index, a point on the path, its associated 
  * arclength parameter, and link for next. Some of links could be pruned

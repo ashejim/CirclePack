@@ -6,10 +6,13 @@ import complex.Complex;
 
 import exceptions.ParserException;
 
+/**
+ * @brief Erf_function functionality for circle packing experiments.
+ */
 public class Erf_function {
 
 	/** 
-	 * Create a new packing with boundary radii based on the
+	 * @brief Create a new packing with boundary radii based on the
 	 * indefinite integral of 2/sqrt{pi}e^{-z^n} (so 
 	 * 1/sqrt{pi}e^{-z^n} is the derivative).
 	 * Case n=1 is the exponential, n=2 is "error function". 

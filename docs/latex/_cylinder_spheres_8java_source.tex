@@ -1,0 +1,708 @@
+\doxysection{Cylinder\+Spheres.\+java}
+\hypertarget{_cylinder_spheres_8java_source}{}\label{_cylinder_spheres_8java_source}\index{src/ftnTheory/CylinderSpheres.java@{src/ftnTheory/CylinderSpheres.java}}
+\doxymbox{\hyperlink{_cylinder_spheres_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00001}00001\ \textcolor{keyword}{package\ }ftnTheory;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00003}00003\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00004}00004\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00005}00005\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00006}00006\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00007}00007\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00008}00008\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00009}00009\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00010}00010\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00011}00011\ \textcolor{keyword}{import}\ combinatorics.komplex.DcelFace;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00012}00012\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00013}00013\ \textcolor{keyword}{import}\ combinatorics.komplex.Vertex;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00014}00014\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00015}00015\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00016}00016\ \textcolor{keyword}{import}\ komplex.EdgeSimple;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00017}00017\ \textcolor{keyword}{import}\ listManip.EdgeLink;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00018}00018\ \textcolor{keyword}{import}\ listManip.HalfLink;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00019}00019\ \textcolor{keyword}{import}\ math.Point3D;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00020}00020\ \textcolor{keyword}{import}\ packing.PackCreation;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00021}00021\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00022}00022\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00023}00023\ \textcolor{keyword}{import}\ util.CmdStruct;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00024}00024\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00060}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres}{00060}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_ad57a73ce6c5607be6aa7bde5fbeb5d5f}{CylinderSpheres}}\ \textcolor{keyword}{extends}\ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_ae957a214f340a4a70b1fe0067f5b50ec}{PackExtender}}\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00061}00061\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00062}00062\ \ \ \ \ \textcolor{comment}{//\ combinatorial\ parameters\ for\ coherent\ cylindrical}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00063}00063\ \ \ \ \ \textcolor{comment}{//\ sphere\ packing.\ Require\ 0<=Q<=P\ and\ P>=3.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00064}00064\ \ \ \ \ \textcolor{keywordtype}{int}\ P;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00065}00065\ \ \ \ \ \textcolor{keywordtype}{int}\ Q;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00066}00066\ \ \ \ \ \textcolor{keywordtype}{int}\ levelCount;\ \textcolor{comment}{//\ >=\ 3\ in\ practice}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00067}00067\ \ \ \ \ \textcolor{keywordtype}{int}\ baseLevel;\ \textcolor{comment}{//\ level\ of\ necklass\ starting\ at\ (R,0,0)}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00068}00068\ \ \ \ \ \textcolor{keywordtype}{int}\ nodeCount;\ \textcolor{comment}{//\ final\ count\ of\ spheres\ after\ creation.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00069}00069\ \ \ \ \ \textcolor{keywordtype}{int}\ hexCount;\ \textcolor{comment}{//\ number\ of\ hex\ cells.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00070}00070\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00071}00071\ \ \ \ \ \textcolor{comment}{//\ Key\ computational\ values\ are\ R\ and\ z1,\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00072}00072\ \ \ \ \ \textcolor{comment}{//\ \ \ computed\ from\ P,Q}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00073}00073\ \ \ \ \ \textcolor{keywordtype}{double}\ cylR;\ \textcolor{comment}{//\ mid\ cylinder\ radius,\ contains\ centers}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00074}00074\ \ \ \ \ \textcolor{keywordtype}{double}\ cylz1;\ \textcolor{comment}{//\ z-\/height\ of\ S1}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00075}00075\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00076}00076\ \ \ \ \ \textcolor{comment}{//\ Remaining\ values\ computed\ from\ R\ and\ z1}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00077}00077\ \ \ \ \ \textcolor{keywordtype}{double}\ cylz2;\ \textcolor{comment}{//\ z-\/height\ of\ S2}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00078}00078\ \ \ \ \ \textcolor{keywordtype}{double}\ cylt1;\ \textcolor{comment}{//\ radian\ measure\ of\ S1\ center}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00079}00079\ \ \ \ \ \textcolor{keywordtype}{double}\ cylt2;\ \textcolor{comment}{//\ radian\ measure\ of\ S2\ center}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00080}00080\ \ \ \ \ \textcolor{keywordtype}{double}\ carbonR;\ \textcolor{comment}{//\ radius\ of\ cylinder\ for\ buckytube\ carbons}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00081}00081\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00082}00082\ \ \ \ \ \textcolor{comment}{//\ data\ for\ sending\ to\ matlab}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00083}00083\ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[]\ cents2D;\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00084}00084\ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}[]\ barycenters;\ \textcolor{comment}{//\ face\ barycenters,\ carbon\ locations}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00085}00085\ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_edge_link}{EdgeLink}}\ edgeLink;\ \textcolor{comment}{//\ indices:\ edges\ between\ tangent\ spheres}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00086}00086\ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_edge_link}{EdgeLink}}\ hexLink;\ \textcolor{comment}{//\ carbon\ bond\ edges,\ using\ faceIndx}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00087}00087\ \ \ \ \ ArrayList<HalfLink>\ necklasses;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00088}00088\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00089}00089\ \ \ \ \ \textcolor{comment}{//\ keep\ track\ of\ status:}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00090}00090\ \ \ \ \ \textcolor{comment}{//\ \ \ 0=nothing\ done;\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00091}00091\ \ \ \ \ \textcolor{comment}{//\ \ \ 1=P,Q,N\ and\ combinatorics\ in\ place;}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00092}00092\ \ \ \ \ \textcolor{comment}{//\ \ \ 2=R,\ z1,\ t1,\ t2\ computed}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00093}00093\ \ \ \ \ \textcolor{comment}{//\ \ \ 3=data\ ready\ for\ matlab-\/type\ output}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00094}00094\ \ \ \ \ \textcolor{keywordtype}{int}\ status;\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00095}00095\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00096}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_ad57a73ce6c5607be6aa7bde5fbeb5d5f}{00096}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_ad57a73ce6c5607be6aa7bde5fbeb5d5f}{CylinderSpheres}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00097}00097\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_ac277c866c6509acaa6863449325b9810}{extensionType}}=\textcolor{stringliteral}{"{}CylinderSpheres"{}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a09f89a7924aa9d5f3d7d412ecbb14045}{extensionAbbrev}}=\textcolor{stringliteral}{"{}CS"{}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00100}00100\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a7fbf8bec08903e29a71391a1b9cb5b0e}{toolTip}}=\textcolor{stringliteral}{"{}'CylinderSpheres'\ creates/manipulates\ buckytube\ "{}}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}type\ combinatorics\ and\ creates\ data\ for\ use\ in\ "{}}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}Matlab\ to\ display."{}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00103}00103\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_ad0d29dc837a41ee7acbeefb3e5ba6a30}{registerXType}}();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00104}00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classpacking_1_1_pack_extender_af4d75598ac8dcac3a492794707363a12}{running}})\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ status=0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ P=6;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ Q=6;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ levelCount=3;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00110}00110\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00111}00111\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00112}00112\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00113}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_ab4788a12edfe34e7de90104393e4895e}{00113}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_ab4788a12edfe34e7de90104393e4895e}{cmdParser}}(String\ cmd,Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00114}00114\ \ \ \ \ \ \ \ \ Vector<String>\ items=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00115}00115\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00116}00116\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00117}00117\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ==============\ param\ =========================}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00118}00118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}param"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ status=0;\ \textcolor{comment}{//\ we're\ restarting}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ p=Integer.parseInt(items.get(0));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ q=Integer.parseInt(items.get(1));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p<q)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hold=p;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p=q;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ q=hold;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (q<0\ ||\ p<3)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00130}00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}must\ have\ q>0\ and\ p<3"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00133}00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ P=p;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00134}00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Q=q;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items.size()>2)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00136}00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=Integer.parseInt(items.get(2));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00137}00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n<3)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00138}00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n=3;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00139}00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ levelCount=n;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00140}00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ levelCount=3;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00143}00143\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a613d86c090c2aa0d2b964147b28ba24c}{Oops}}(\textcolor{stringliteral}{"{}usage:\ |cs|\ param\ \{p,q\}"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ the\ cylindrical\ hex\ combinatorics}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ newPack=\doxymbox{\hyperlink{classpacking_1_1_pack_creation}{PackCreation}}.\doxymbox{\hyperlink{classpacking_1_1_pack_creation_ae42d3eb001a2d8e0c9573f04634c8028}{hexCylinder}}(P,\ Q,\ levelCount);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ newPack.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a029713a94a23f613ecc097009f3a4945}{status}}=\textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pnum=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.packNum;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}=\doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_ad220d02cf48842628c8004e048fdbd03}{swapPackData}}(newPack,pnum,\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ nodeCount=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.nodeCount;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ status\ =1;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00157}00157\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00158}00158\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00159}00159\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===================\ compute\ ==============}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00160}00160\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}comp"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (status==0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_a613d86c090c2aa0d2b964147b28ba24c}{Oops}}(\textcolor{stringliteral}{"{}Must\ first\ call\ '|cs|\ parameters\ p\ q\ [n]'"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ results=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_aa99a60456f18693290be76b9143362f2}{computeRz}}(P,Q);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ cylR=results[0];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ cylz1=results[1];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ cylt1=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_abff1ba11f1af1c644f6162dd8dd28d3d}{what\_is\_t}}(cylR,cylz1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ s2=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0a3dca18af8a5aaa2e722972aaf20209}{computeS2}}(cylR,cylz1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00170}00170\ \ \ \ \ \ \ \ \ \ \ \ \ cylt2=s2.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00171}00171\ \ \ \ \ \ \ \ \ \ \ \ \ cylz2=s2.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00172}00172\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00173}00173\ \ \ \ \ \ \ \ \ \ \ \ \ status=1;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00174}00174\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((results[2]+results[3])>.001)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00175}00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a55b748491a03d78415048d4f044992ac}{msg}}(\textcolor{stringliteral}{"{}in\ 'comp',\ errors\ too\ large:\ t\_error\ =\ "{}}+results[2]+\textcolor{stringliteral}{"{},\ z\_error\ =\ "{}}+results[3]);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00176}00176\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00177}00177\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00178}00178\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a55b748491a03d78415048d4f044992ac}{msg}}(\textcolor{stringliteral}{"{}Have\ computed\ R\ =\ "{}}+cylR+\textcolor{stringliteral}{"{}\ and\ z1\ =\ "{}}+cylz1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00179}00179\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00180}00180\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00181}00181\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00182}00182\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ======================\ data\ =====================}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00183}00183\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ lots\ to\ do\ here.\ I'll\ organize\ data\ based\ on\ the}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00184}00184\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ succession\ of\ necklasses,\ from\ top\ to\ bottom,}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00185}00185\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ with\ data\ in\ successive\ rows\ of\ 'cents2D'.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00186}00186\ \ \ \ \ \ \ \ \ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00187}00187\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ 'cents2D'\ will\ be\ a\ n*(p+q)\ array\ with}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00188}00188\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ complex\ entries\ t+iz.\ This\ is\ based\ on\ 'levelCount'}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00189}00189\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ necklasses,\ P+Q\ spheres\ in\ each\ necklass.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00190}00190\ \ \ \ \ \ \ \ \ \textcolor{comment}{//}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00191}00191\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ 'hexcells'\ will\ be\ associated\ with\ interior}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00192}00192\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ vertices,\ proceeding\ necklass\ by\ necklass\ from}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00193}00193\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ top-\/1\ to\ bottom+1.\ Note,\ there\ will\ be\ redundancies.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00194}00194\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00195}00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}data"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00196}00196\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00197}00197\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ shifts:\ V\ in\ P\ direction,\ W\ in\ Q\ direction}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00198}00198\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ U\ down\ and\ right\ to\ shift\ necklasses.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00199}00199\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ V=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(cylt1,cylz1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00200}00200\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ W=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(cylt2,cylz2);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00201}00201\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ U=V.\doxymbox{\hyperlink{classcomplex_1_1_complex_abf8a9392412c0e349a2d8424a00d0dac}{minus}}(W);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00202}00202\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00203}00203\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'alpha'\ edge\ should\ go\ from\ 1\ to\ 2.\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ This\ should\ be\ parallel\ to\ boundary,\ but\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00205}00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ pointed\ left;\ use\ it\ to\ find\ 'topbase'\ as\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00206}00206\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ upper\ left\ corner,\ pointed\ clw\ on\ bdry.\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00207}00207\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Then\ build\ 'levelCount'\ necklasses.\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00208}00208\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ hetrace=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.packDCEL.alpha;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00209}00209\ \ \ \ \ \ \ \ \ \ \ \ \ hetrace=hetrace.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00210}00210\ \ \ \ \ \ \ \ \ \ \ \ \ hetrace=hetrace.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00211}00211\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ topbase=hetrace.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00212}00212\ \ \ \ \ \ \ \ \ \ \ \ \ necklasses=\textcolor{keyword}{new}\ ArrayList<HalfLink>(3);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00213}00213\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00214}00214\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ starter=topbase;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00215}00215\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<levelCount;k++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00216}00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ necklasses.add(\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a23590b8d55eb7ccd386b0c8c4dec5d40}{necklass}}(starter,\textcolor{keyword}{false}));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00217}00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ starter=starter.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00218}00218\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00219}00219\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ last\ (requires\ clw=true)}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00220}00220\ \ \ \ \ \ \ \ \ \ \ \ \ necklasses.add(\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a23590b8d55eb7ccd386b0c8c4dec5d40}{necklass}}(starter,\textcolor{keyword}{true}));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00221}00221\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00222}00222\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ build\ desired\ redChain;\ left\ side,\ top}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00223}00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ to\ bottom,\ last\ necklass,\ right\ side,}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ bottom\ to\ top,\ then\ first\ twins\ in}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00225}00225\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ reverse\ order.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00226}00226\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ he=topbase.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00227}00227\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<(levelCount-\/1);j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00228}00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00229}00229\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00230}00230\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00231}00231\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ left\ turn\ depends\ on\ Q>0\ or\ Q=0}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00232}00232\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Q>0)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00233}00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00234}00234\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00235}00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00236}00236\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<(levelCount-\/1);j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00237}00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00238}00238\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00239}00239\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}\ top=necklasses.get(0);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00240}00240\ \ \ \ \ \ \ \ \ \ \ \ \ top=\doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}.\doxymbox{\hyperlink{classlist_manip_1_1_half_link_a1a89e3dedd7a9fb8b855629bf4f80ac1}{reverseElements}}(top);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ top=\doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}.\doxymbox{\hyperlink{classlist_manip_1_1_half_link_a59145a82e5310f99180ab28d6e2c4b4a}{reverseLink}}(top);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00242}00242\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00243}00243\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Now\ preferred\ redchain\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00244}00244\ \textcolor{comment}{/*\ \ \ \ \ \ \ \ \ \ extenderPD.vlist=new\ NodeLink(top);}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00245}00245\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ if\ (cpCommand("{}newRed\ vlist"{})==0)}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00246}00246\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops("{}Failed\ to\ form\ new\ redchain"{});}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00247}00247\ \textcolor{comment}{*/}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00248}00248\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00249}00249\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ centers\ along\ first\ row,\ then\ shift}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00250}00250\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ to\ complete\ successive\ rows.\ Our\ leftshift}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00251}00251\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ will\ mean\ the\ sphere\ at\ (R,0,0)\ (the}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00252}00252\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ base\ sphere)\ will\ be\ about\ half\ way\ down}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00253}00253\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ the\ left\ side.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00254}00254\ \ \ \ \ \ \ \ \ \ \ \ \ cents2D=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[levelCount*(P+Q)+1];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00255}00255\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}[]\ tmp3D=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}[levelCount*(P+Q)+1];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00256}00256\ \ \ \ \ \ \ \ \ \ \ \ \ baseLevel=(int)(levelCount/2);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00257}00257\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (2*(levelCount/2)!=2)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00258}00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ baseLevel++;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00259}00259\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00260}00260\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ position\ top\ necklass,\ set\ 'origin.center's}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00261}00261\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ and\ entries\ in\ 'cents2D'.\ Also\ set}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00262}00262\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ vertices\ 'vutil'\ to\ correspond\ with\ index}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00263}00263\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ in\ cents2D.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00264}00264\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ vtick=0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00265}00265\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ nextcent=U.\doxymbox{\hyperlink{classcomplex_1_1_complex_ad3d80696b9c43028347a7f7608c78f99}{times}}(-\/1.0*(\textcolor{keywordtype}{double})baseLevel);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00266}00266\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<HalfLink>\ nls=necklasses.iterator();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00267}00267\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}\ hlink=nls.next();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00268}00268\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<HalfEdge>\ hls=hlink.iterator();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00269}00269\ \ \ \ \ \ \ \ \ \ \ \ \ he=hls.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00270}00270\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex}{Vertex}}\ vert=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00271}00271\ \ \ \ \ \ \ \ \ \ \ \ \ vert.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_a5b8177facc1fc5bf351eeb7dd6f242de}{center}}=nextcent;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00272}00272\ \ \ \ \ \ \ \ \ \ \ \ \ vert.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ab969e6efc9b756977b5a43b790aad6ab}{vutil}}=++vtick;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00273}00273\ \ \ \ \ \ \ \ \ \ \ \ \ cents2D[vtick]=nextcent;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00274}00274\ \ \ \ \ \ \ \ \ \ \ \ \ tmp3D[vert.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ade75be0bbad40645e6551e920502846e}{vertIndx}}]=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0f321dd254f538ce72823afbc00240c7}{set3D}}(cylR,cents2D[vtick]);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00275}00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ endP=P;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00276}00276\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Q==0)\ \textcolor{comment}{//\ leave\ of\ P\_th\ one}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00277}00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ endP=P-\/1;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00278}00278\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=endP;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00279}00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=hls.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00280}00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextcent=nextcent.\doxymbox{\hyperlink{classcomplex_1_1_complex_a37cceb4559d9d41156e914717c7fdb98}{add}}(V);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00281}00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cents2D[++vtick]=nextcent;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00282}00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp3D[he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ade75be0bbad40645e6551e920502846e}{vertIndx}}]=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0f321dd254f538ce72823afbc00240c7}{set3D}}(cylR,cents2D[vtick]);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00283}00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_a5b8177facc1fc5bf351eeb7dd6f242de}{center}}=nextcent;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00284}00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ab969e6efc9b756977b5a43b790aad6ab}{vutil}}=vtick;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00285}00285\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00286}00286\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Q>0)\ \{\ \ \textcolor{comment}{//\ 3*cylz1+cylz2}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00287}00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=2;j<=Q;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00288}00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=hls.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00289}00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextcent=nextcent.\doxymbox{\hyperlink{classcomplex_1_1_complex_a37cceb4559d9d41156e914717c7fdb98}{add}}(W);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00290}00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cents2D[++vtick]=nextcent;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00291}00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp3D[he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ade75be0bbad40645e6551e920502846e}{vertIndx}}]=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0f321dd254f538ce72823afbc00240c7}{set3D}}(cylR,cents2D[vtick]);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00292}00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_a5b8177facc1fc5bf351eeb7dd6f242de}{center}}=nextcent;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00293}00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ab969e6efc9b756977b5a43b790aad6ab}{vutil}}=vtick;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00294}00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00295}00295\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00296}00296\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00297}00297\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ replicate\ on\ subsequent\ necklasses}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00298}00298\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ row=2;row<=levelCount;row++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00299}00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ sU=U.\doxymbox{\hyperlink{classcomplex_1_1_complex_ad3d80696b9c43028347a7f7608c78f99}{times}}((\textcolor{keywordtype}{double})(row-\/1));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00300}00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hlink=nls.next();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00301}00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hls=hlink.iterator();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00302}00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vert=hls.next().origin;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00303}00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vert.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ab969e6efc9b756977b5a43b790aad6ab}{vutil}}=++vtick;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00304}00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cents2D[vtick]=cents2D[1].add(sU);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00305}00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp3D[vert.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ade75be0bbad40645e6551e920502846e}{vertIndx}}]=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0f321dd254f538ce72823afbc00240c7}{set3D}}(cylR,cents2D[vtick]);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00306}00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=2;j<=(P+Q);j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00307}00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vert=hls.next().origin;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00308}00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vert.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ab969e6efc9b756977b5a43b790aad6ab}{vutil}}=++vtick;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00309}00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vert.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_a5b8177facc1fc5bf351eeb7dd6f242de}{center}}=cents2D[vtick]=cents2D[j].\doxymbox{\hyperlink{classcomplex_1_1_complex_a37cceb4559d9d41156e914717c7fdb98}{add}}(sU);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00310}00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp3D[vert.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ade75be0bbad40645e6551e920502846e}{vertIndx}}]=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0f321dd254f538ce72823afbc00240c7}{set3D}}(cylR,cents2D[vtick]);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00311}00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00312}00312\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00313}00313\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00314}00314\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ all\ face\ 3D\ barycenters}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00315}00315\ \ \ \ \ \ \ \ \ \ \ \ \ barycenters=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}[\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.faceCount+1];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00316}00316\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ nrm=cylR;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00317}00317\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ f=1;f<=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.faceCount;f++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00318}00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_dcel_face}{DcelFace}}\ face=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.packDCEL.faces[f];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00319}00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}[]\ c=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}[3];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00320}00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ verts=face.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_dcel_face_a60de327c44a8556b33cb32f424a878fe}{getVerts}}();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00321}00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ m=0;m<3;m++)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00322}00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ c[m]=tmp3D[verts[m]];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00323}00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ barycenters[f]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00324}00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (c[0].x+c[1].x+c[2].x)/3.0,}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00325}00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (c[0].y+c[1].y+c[2].y)/3.0,}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00326}00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (c[0].z+c[1].z+c[2].z)/3.0);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00327}00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nrm=barycenters[f].norm();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00328}00328\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00329}00329\ \ \ \ \ \ \ \ \ \ \ \ \ carbonR=nrm;\ \textcolor{comment}{//barycenters[1].norm();\ //\ all\ 3D\ norms\ should\ be\ equal}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00330}00330\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00331}00331\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ 'edgeLink'.\ Note\ that\ vertex\ 'vutil'\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00332}00332\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ agrees\ with\ its\ index\ in\ cents2D.\ 'edgeLink'}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00333}00333\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ is\ pairs\ of\ 'vutil'\ indices.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00334}00334\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00335}00335\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Start\ with\ top\ and\ bottom\ necklass\ rows;\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00336}00336\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ to\ avoid\ repeats,\ make\ sure\ that\ edge\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00337}00337\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (v,w)\ has\ v<w.\ We\ will\ get\ rest\ of\ edges}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00338}00338\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ as\ we\ process\ successive\ interior\ necklasses.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00339}00339\ \ \ \ \ \ \ \ \ \ \ \ \ edgeLink=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_edge_link}{EdgeLink}}();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00340}00340\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00341}00341\ \ \ \ \ \ \ \ \ \ \ \ \ hlink=necklasses.get(0);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00342}00342\ \ \ \ \ \ \ \ \ \ \ \ \ hls=hlink.iterator();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00343}00343\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (hls.hasNext())\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00344}00344\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=hls.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00345}00345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ vv=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ab969e6efc9b756977b5a43b790aad6ab}{vutil}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00346}00346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ww=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ab969e6efc9b756977b5a43b790aad6ab}{vutil}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00347}00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ww<vv)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00348}00348\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hold=vv;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00349}00349\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vv=ww;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00350}00350\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ww=hold;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00351}00351\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00352}00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ es=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(vv,ww);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00353}00353\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ edgeLink.add(es);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00354}00354\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00355}00355\ \ \ \ \ \ \ \ \ \ \ \ \ hlink=necklasses.get(necklasses.size()-\/1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00356}00356\ \ \ \ \ \ \ \ \ \ \ \ \ hls=hlink.iterator();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00357}00357\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (hls.hasNext())\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00358}00358\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=hls.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00359}00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ vv=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ab969e6efc9b756977b5a43b790aad6ab}{vutil}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00360}00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ww=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ab969e6efc9b756977b5a43b790aad6ab}{vutil}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00361}00361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ww<vv)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00362}00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hold=vv;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00363}00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vv=ww;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00364}00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ww=hold;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00365}00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00366}00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ es=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(vv,ww);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00367}00367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ edgeLink.add(es);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00368}00368\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00369}00369\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00370}00370\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ proceed\ through\ interior\ necklasses:\ store\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00371}00371\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ individual\ hexcells\ and\ make\ 'edgeLink'\ entries}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00372}00372\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ (possibly\ redundant).\ }}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00373}00373\ \ \ \ \ \ \ \ \ \ \ \ \ hexLink=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_edge_link}{EdgeLink}}((\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}})\textcolor{keyword}{null});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00374}00374\ \ \ \ \ \ \ \ \ \ \ \ \ nls=necklasses.iterator();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00375}00375\ \ \ \ \ \ \ \ \ \ \ \ \ nls.next();\ \textcolor{comment}{//\ toss\ first,\ and\ ignore\ last\ (bdry)}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00376}00376\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ r=2;r<levelCount;r++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00377}00377\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hlink=nls.next();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00378}00378\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hls=hlink.iterator();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00379}00379\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (hls.hasNext())\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00380}00380\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=hls.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00381}00381\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=6;k++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00382}00382\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ bond\ edge\ to\ hexLink}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00383}00383\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ vv=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a4155eca1928f96d1786bc1836f286e41}{face}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_dcel_face_abb13a4191f755ec807f9a6f5f01c6565}{faceIndx}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00384}00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ww=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a4155eca1928f96d1786bc1836f286e41}{face}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_dcel_face_abb13a4191f755ec807f9a6f5f01c6565}{faceIndx}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00385}00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ww<vv)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00386}00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hold=vv;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00387}00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vv=ww;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00388}00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ww=hold;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00389}00389\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00390}00390\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ es=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(vv,ww);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00391}00391\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hexLink.add(es);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00392}00392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00393}00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ tangency\ edge\ to\ edgeLink}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00394}00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vv=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ab969e6efc9b756977b5a43b790aad6ab}{vutil}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00395}00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ww=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_ab969e6efc9b756977b5a43b790aad6ab}{vutil}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00396}00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ww<vv)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00397}00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hold=vv;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00398}00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vv=ww;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00399}00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ww=hold;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00400}00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00401}00401\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ es=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}(vv,ww);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00402}00402\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ edgeLink.add(es);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00403}00403\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00404}00404\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}};\ \textcolor{comment}{//\ next\ spoke\ cclw}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00405}00405\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00406}00406\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00407}00407\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00408}00408\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00409}00409\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ remove\ redundancies}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00410}00410\ \ \ \ \ \ \ \ \ \ \ \ \ edgeLink=edgeLink.makeCopy(\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00411}00411\ \ \ \ \ \ \ \ \ \ \ \ \ hexLink=hexLink.makeCopy(\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00412}00412\ \ \ \ \ \ \ \ \ \ \ \ \ status=3;\ \textcolor{comment}{//\ ready\ to\ share\ with\ Matlab}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00413}00413\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00414}00414\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00415}00415\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00416}00416\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}output"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00417}00417\ \ \ \ \ \ \ \ \ \ \ \ \ File\ tmpdir=\textcolor{keyword}{new}\ File(\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager}{CPFileManager}}.\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager_a5e1169c4ad67806bff91a89ef933ca6a}{HomeDirectory}}+}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00418}00418\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}/Documents/NewPapers/CylinderSpheres/CPdata"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00419}00419\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ strbuf=\textcolor{keyword}{new}\ StringBuilder();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00420}00420\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ append\_flag=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00421}00421\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ script\_flag=\textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00422}00422\ \ \ \ \ \ \ \ \ \ \ \ \ File\ file=\textcolor{keyword}{new}\ File(\textcolor{stringliteral}{"{}hexCyl\_"{}}+P+\textcolor{stringliteral}{"{}\_"{}}+Q+\textcolor{stringliteral}{"{}\_"{}}+levelCount+\textcolor{stringliteral}{"{}.m"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00423}00423\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ there\ may\ be\ a\ filename\ given}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00424}00424\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ code=\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager}{CPFileManager}}.\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager_aa338133067b72de47f9dc077aa19dbc5}{trailingFile}}(flagSegs,\ strbuf);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00425}00425\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (code!=0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00426}00426\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ file=\textcolor{keyword}{new}\ File(strbuf.toString());}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00427}00427\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ script\_flag=((code\ \&\ 04)==04);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00428}00428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ append\_flag=((code\ \&\ 02)==02);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00429}00429\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00430}00430\ \ \ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ fp=\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager}{CPFileManager}}.\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager_ae57b0d849e8881a4a795078b810bb72b}{openWriteFP}}(tmpdir,append\_flag,}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00431}00431\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ file.getName(),script\_flag);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00432}00432\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00433}00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\%\ Output\ from\ CirclePack\ extender\ 'CylinderSpheres'\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00434}00434\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}r="{}}+cylR+\textcolor{stringliteral}{"{};\ z="{}}+cylz1+\textcolor{stringliteral}{"{};\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00435}00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}HC=HexCylinder(r,z);\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00436}00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\%\ Specified\ parameters:\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00437}00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}HC.p="{}}+P+\textcolor{stringliteral}{"{};\(\backslash\)n"{}}+\textcolor{stringliteral}{"{}HC.q="{}}+Q+\textcolor{stringliteral}{"{};\(\backslash\)nHC.nodeCount="{}}+nodeCount+}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00438}00438\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{};\(\backslash\)nHC.levelCount="{}}+levelCount+\textcolor{stringliteral}{"{};\(\backslash\)nHC.baseLevel="{}}+baseLevel+\textcolor{stringliteral}{"{};\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00439}00439\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\%\ Computed\ values:\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00440}00440\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}HC.R="{}}+cylR+\textcolor{stringliteral}{"{};\(\backslash\)nHC.t1="{}}+cylt1+\textcolor{stringliteral}{"{};\(\backslash\)nHC.z1="{}}+cylz1+}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00441}00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{};\(\backslash\)nHC.t2="{}}+cylt2+\textcolor{stringliteral}{"{};\(\backslash\)nHC.z2="{}}+cylz2+\textcolor{stringliteral}{"{};\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00442}00442\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cents2D!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00443}00443\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}HC.cents2D\ =\ [\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00444}00444\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=nodeCount;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00445}00445\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z=cents2D[j];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00446}00446\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}+\textcolor{stringliteral}{"{},\ "{}}+z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}+\textcolor{stringliteral}{"{};\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00447}00447\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00448}00448\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}];\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00449}00449\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00450}00450\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00451}00451\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (cents3D!=null)\ \{}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00452}00452\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write("{}HC.cents3D\ =\ [\(\backslash\)n"{});}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00453}00453\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ for\ (int\ j=1;j<=nodeCount;j++)\ \{}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00454}00454\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ pt=cents3D[j];}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00455}00455\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(pt.x+"{},\ "{}+pt.y+"{},\ "{}+pt.z+"{};\(\backslash\)n"{});}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00456}00456\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00457}00457\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write("{}];\(\backslash\)n\(\backslash\)n"{});}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00458}00458\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00459}00459\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00460}00460\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (edgeLink!=\textcolor{keyword}{null}\ \&\&\ edgeLink.size()>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00461}00461\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}HC.edgeLink\ =\ [\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00462}00462\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<EdgeSimple>\ est=edgeLink.iterator();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00463}00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (est.hasNext())\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00464}00464\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ es=est.next();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00465}00465\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(es.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a0820504dd0986ea34d72ab10f331b9ce}{v}}+\textcolor{stringliteral}{"{},\ "{}}+es.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}}+\textcolor{stringliteral}{"{};\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00466}00466\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00467}00467\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}];\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00468}00468\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00469}00469\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00470}00470\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (barycenters!=\textcolor{keyword}{null}\ \&\&\ barycenters.length!=0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00471}00471\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}HC.barycenters\ =\ [\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00472}00472\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}}.faceCount;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00473}00473\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ pt3=barycenters[j];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00474}00474\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(pt3.\doxymbox{\hyperlink{classmath_1_1_point3_d_a76f2141fd0f489a6178af64799a4af9e}{x}}+\textcolor{stringliteral}{"{},\ "{}}+pt3.\doxymbox{\hyperlink{classmath_1_1_point3_d_a95da161fb44a307eed73f43b4199ab03}{y}}+\textcolor{stringliteral}{"{},\ "{}}+pt3.\doxymbox{\hyperlink{classmath_1_1_point3_d_ab71f0d665e8471bafcc1fc014ce286a7}{z}}+\textcolor{stringliteral}{"{};\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00475}00475\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00476}00476\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}];\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00477}00477\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00478}00478\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00479}00479\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hexLink!=\textcolor{keyword}{null}\ \&\&\ hexLink.size()>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00480}00480\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}HC.hexLink\ =\ [\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00481}00481\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<EdgeSimple>\ hst=hexLink.iterator();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00482}00482\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (hst.hasNext())\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00483}00483\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classkomplex_1_1_edge_simple}{EdgeSimple}}\ es=hst.next();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00484}00484\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(es.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a0820504dd0986ea34d72ab10f331b9ce}{v}}+\textcolor{stringliteral}{"{},\ "{}}+es.\doxymbox{\hyperlink{classkomplex_1_1_edge_simple_a2a83e0bcd3766bedff061ef886e4e248}{w}}+\textcolor{stringliteral}{"{};\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00485}00485\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00486}00486\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}];\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00487}00487\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00488}00488\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00489}00489\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ have\ matlab\ compute\ cents3D}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00490}00490\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}HC.HCcomp3D();\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00491}00491\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00492}00492\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a55b748491a03d78415048d4f044992ac}{msg}}(\textcolor{stringliteral}{"{}Data\ for\ Matlab\ stored\ in\ '"{}}+}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00493}00493\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ file.getName()+\textcolor{stringliteral}{"{}'"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00494}00494\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ status=4;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00495}00495\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00496}00496\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.flush();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00497}00497\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.close();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00498}00498\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00499}00499\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.print(ex.toString());}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00500}00500\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00501}00501\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.flush();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00502}00502\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.close();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00503}00503\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ exe)\ \{\}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00504}00504\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00505}00505\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00506}00506\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00507}00507\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00508}00508\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00509}00509\ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ cmd\ parsing}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00510}00510\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00522}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a23590b8d55eb7ccd386b0c8c4dec5d40}{00522}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a23590b8d55eb7ccd386b0c8c4dec5d40}{necklass}}(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ startedge,\textcolor{keywordtype}{boolean}\ clw)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00523}00523\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}\ hlink=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}(\doxymbox{\hyperlink{classpacking_1_1_pack_extender_aee46893a90f5460af8f25cacb9a384c7}{extenderPD}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00524}00524\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ he=startedge;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00525}00525\ \ \ \ \ \ \ \ \ hlink.\doxymbox{\hyperlink{classlist_manip_1_1_half_link_a951a371ac1fc89ebef9fe4e158363b2f}{add}}(he);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00526}00526\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<P;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00527}00527\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (clw)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00528}00528\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00529}00529\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00530}00530\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00531}00531\ \ \ \ \ \ \ \ \ \ \ \ \ hlink.\doxymbox{\hyperlink{classlist_manip_1_1_half_link_a951a371ac1fc89ebef9fe4e158363b2f}{add}}(he);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00532}00532\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00533}00533\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Q>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00534}00534\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (clw)\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00535}00535\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00536}00536\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00537}00537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00538}00538\ \ \ \ \ \ \ \ \ \ \ \ \ hlink.\doxymbox{\hyperlink{classlist_manip_1_1_half_link_a951a371ac1fc89ebef9fe4e158363b2f}{add}}(he);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00539}00539\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Q>1)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00540}00540\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<Q;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00541}00541\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (clw)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00542}00542\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00543}00543\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00544}00544\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00545}00545\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hlink.\doxymbox{\hyperlink{classlist_manip_1_1_half_link_a951a371ac1fc89ebef9fe4e158363b2f}{add}}(he);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00546}00546\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00547}00547\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00548}00548\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00549}00549\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ hlink;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00550}00550\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00551}00551\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00560}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_aa99a60456f18693290be76b9143362f2}{00560}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}[]\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_aa99a60456f18693290be76b9143362f2}{computeRz}}(\textcolor{keywordtype}{int}\ p,\textcolor{keywordtype}{int}\ q)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00561}00561\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ R;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00562}00562\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ z1;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00563}00563\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00564}00564\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ R\ between\ min/max\ possible,\ but\ not\ less\ than\ 0.5}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00565}00565\ \ \ \ \ \ \ \ \ R=(p+q)/(3*Math.PI);\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00566}00566\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (R<0.5)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00567}00567\ \ \ \ \ \ \ \ \ \ \ \ \ R=0.5;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00568}00568\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p<q)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00569}00569\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hold=p;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00570}00570\ \ \ \ \ \ \ \ \ \ \ \ \ p=q;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00571}00571\ \ \ \ \ \ \ \ \ \ \ \ \ q=hold;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00572}00572\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00573}00573\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00574}00574\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ special\ situations}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00575}00575\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p==q)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00576}00576\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ ans=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[4];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00577}00577\ \ \ \ \ \ \ \ \ \ \ \ \ ans[0]=Math.sqrt(3.0/(8.0*(1.0-\/Math.cos(2.0*Math.PI/(2.0*p)))));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00578}00578\ \ \ \ \ \ \ \ \ \ \ \ \ ans[1]=-\/0.5;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00579}00579\ \ \ \ \ \ \ \ \ \ \ \ \ ans[2]=0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00580}00580\ \ \ \ \ \ \ \ \ \ \ \ \ ans[3]=0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00581}00581\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00582}00582\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00583}00583\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (q==0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00584}00584\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ ans=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[4];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00585}00585\ \ \ \ \ \ \ \ \ \ \ \ \ ans[0]=Math.sqrt(1.0/(2.0*(1.0-\/Math.cos(2.0*Math.PI/p))));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00586}00586\ \ \ \ \ \ \ \ \ \ \ \ \ ans[1]=0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00587}00587\ \ \ \ \ \ \ \ \ \ \ \ \ ans[2]=0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00588}00588\ \ \ \ \ \ \ \ \ \ \ \ \ ans[3]=0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00589}00589\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00590}00590\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00591}00591\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00592}00592\ \ \ \ \ \ \ \ \ z1=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_ad1eedca73de4b9fc395d5867088c846f}{what\_is\_z1}}(R,p,q,-\/1.0);\ \textcolor{comment}{//\ get\ started}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00593}00593\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t1=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_abff1ba11f1af1c644f6162dd8dd28d3d}{what\_is\_t}}(R,z1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00594}00594\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ s1=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0a3dca18af8a5aaa2e722972aaf20209}{computeS2}}(R,z1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00595}00595\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t\_error=Math.abs(p*t1+q*s1.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}-\/R*\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a9711ce5e3465280bf4a653d319829e05}{pi2}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00596}00596\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ z\_error=Math.abs(p*z1+q*s1.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00597}00597\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety=1000;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00598}00598\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((t\_error+z\_error)>.000001\ \&\&\ safety>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00599}00599\ \ \ \ \ \ \ \ \ \ \ \ \ safety=safety-\/1;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00600}00600\ \ \ \ \ \ \ \ \ \ \ \ \ R=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_ad1f9ecb54642245092a58ecb8ebc2a2e}{newtees}}(R,z1,p,q);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00601}00601\ \ \ \ \ \ \ \ \ \ \ \ \ z1=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_ad1eedca73de4b9fc395d5867088c846f}{what\_is\_z1}}(R,p,q,z1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00602}00602\ \ \ \ \ \ \ \ \ \ \ \ \ t1=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_abff1ba11f1af1c644f6162dd8dd28d3d}{what\_is\_t}}(R,z1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00603}00603\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ s2=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0a3dca18af8a5aaa2e722972aaf20209}{computeS2}}(R,z1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00604}00604\ \ \ \ \ \ \ \ \ \ \ \ \ t\_error=Math.abs(p*t1+q*s2.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}-\/R*\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a9711ce5e3465280bf4a653d319829e05}{pi2}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00605}00605\ \ \ \ \ \ \ \ \ \ \ \ \ z\_error=Math.abs(p*z1+q*s2.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00606}00606\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00607}00607\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ ans=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[4];}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00608}00608\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (safety==0)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00609}00609\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}safetied\ out\ in\ 'computeRz'"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00610}00610\ \ \ \ \ \ \ \ \ ans[0]=R;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00611}00611\ \ \ \ \ \ \ \ \ ans[1]=z1;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00612}00612\ \ \ \ \ \ \ \ \ ans[2]=t\_error;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00613}00613\ \ \ \ \ \ \ \ \ ans[3]=z\_error;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00614}00614\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00615}00615\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00616}00616\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00626}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0a3dca18af8a5aaa2e722972aaf20209}{00626}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0a3dca18af8a5aaa2e722972aaf20209}{computeS2}}(\textcolor{keywordtype}{double}\ R,\textcolor{keywordtype}{double}\ z1)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00627}00627\ \ \ \ \ \ \ \ \ z1=-\/1*Math.\doxymbox{\hyperlink{classcomplex_1_1_complex_aec43a8d3e1882921b50f57e27dd8eb67}{abs}}(z1);\ \textcolor{comment}{//\ z1\ should\ lie\ in\ (-\/ZR,0].}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00628}00628\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ZR=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a415389a0100ccd0e96c064978c2c7da8}{what\_is\_Z\_R}}(R);\ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00629}00629\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (z1<-\/1.0*ZR)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00630}00630\ \ \ \ \ \ \ \ \ \ \ \ \ z1=-\/1.0*ZR;\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00631}00631\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ min\_z=0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00632}00632\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ max\_z=ZR;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00633}00633\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ z2=min\_z;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00634}00634\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ best=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a7246ad73b7ead4f5c8dcbdbea81d1bed}{S2\_distance}}(R,z1,z2);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00635}00635\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety=1000;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00636}00636\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ improve\ using\ Newton\ method}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00637}00637\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (Math.abs(best-\/1.0)>0.0000000000001\ \&\&\ safety>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00638}00638\ \ \ \ \ \ \ \ \ \ \ \ \ safety=safety-\/-\/;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00639}00639\ \ \ \ \ \ \ \ \ \ \ \ \ z2=(min\_z+max\_z)/2.0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00640}00640\ \ \ \ \ \ \ \ \ \ \ \ \ best=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a7246ad73b7ead4f5c8dcbdbea81d1bed}{S2\_distance}}(R,z1,z2);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00641}00641\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (best<1)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00642}00642\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ min\_z=z2;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00643}00643\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (best>1)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00644}00644\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_z=z2;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00645}00645\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00646}00646\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (safety==0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00647}00647\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(best-\/1.0)>.001)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00648}00648\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}safety\ error\ in\ computeS2"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00649}00649\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00650}00650\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00651}00651\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00652}00652\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t2=R*Math.acos(1+(z2*z2-\/1)/(2*R*R));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00653}00653\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(t2,z2);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00654}00654\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00655}00655\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00664}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_ad1f9ecb54642245092a58ecb8ebc2a2e}{00664}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_ad1f9ecb54642245092a58ecb8ebc2a2e}{newtees}}(\textcolor{keywordtype}{double}\ RR,\textcolor{keywordtype}{double}\ zz1,\textcolor{keywordtype}{int}\ p,\textcolor{keywordtype}{int}\ q)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00665}00665\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ R=RR;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00666}00666\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ z1=zz1;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00667}00667\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t1=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_abff1ba11f1af1c644f6162dd8dd28d3d}{what\_is\_t}}(R,z1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00668}00668\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ s2=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0a3dca18af8a5aaa2e722972aaf20209}{computeS2}}(R,z1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00669}00669\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ value=p*t1+q*s2.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}-\/2.0*Math.PI*R;\ \textcolor{comment}{//\ want\ this\ to\ be\ zero.}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00670}00670\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety=1000;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00671}00671\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (Math.abs(value)>.000000001\ \&\&\ safety>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00672}00672\ \ \ \ \ \ \ \ \ \ \ \ \ safety-\/-\/;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00673}00673\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dt1=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a5c3eaa452bcb001d118e5012b7c3d582}{der\_tz}}(R,z1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00674}00674\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dt2=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a5c3eaa452bcb001d118e5012b7c3d582}{der\_tz}}(R,s2.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00675}00675\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dvdR=p*dt1+q*dt2-\/2*Math.PI;\ \textcolor{comment}{//\ derivative\ or\ value\ wrt\ R}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00676}00676\ \ \ \ \ \ \ \ \ \ \ \ \ R=R-\/value/dvdR;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00677}00677\ \ \ \ \ \ \ \ \ \ \ \ \ t1=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_abff1ba11f1af1c644f6162dd8dd28d3d}{what\_is\_t}}(R,z1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00678}00678\ \ \ \ \ \ \ \ \ \ \ \ \ s2=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0a3dca18af8a5aaa2e722972aaf20209}{computeS2}}(R,z1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00679}00679\ \ \ \ \ \ \ \ \ \ \ \ \ value=p*t1+q*s2.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}-\/2.0*Math.PI*R;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00680}00680\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00681}00681\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (safety==0)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00682}00682\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}safetied\ out\ in\ 'newtees'"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00683}00683\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ R;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00684}00684\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00685}00685\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00694}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a57743815d0cf6648aab770a802e01357}{00694}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a57743815d0cf6648aab770a802e01357}{faceBarycenter}}(\textcolor{keywordtype}{double}\ R,\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ edge)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00695}00695\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ a=edge.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_a5b8177facc1fc5bf351eeb7dd6f242de}{center}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00696}00696\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ b=edge.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_a5b8177facc1fc5bf351eeb7dd6f242de}{center}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00697}00697\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ c=edge.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_a5b8177facc1fc5bf351eeb7dd6f242de}{center}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00698}00698\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ a3D=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0f321dd254f538ce72823afbc00240c7}{set3D}}(R,a);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00699}00699\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ b3D=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0f321dd254f538ce72823afbc00240c7}{set3D}}(R,b);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00700}00700\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ c3D=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0f321dd254f538ce72823afbc00240c7}{set3D}}(R,c);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00701}00701\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cx=(a3D.\doxymbox{\hyperlink{classmath_1_1_point3_d_a76f2141fd0f489a6178af64799a4af9e}{x}}+b3D.\doxymbox{\hyperlink{classmath_1_1_point3_d_a76f2141fd0f489a6178af64799a4af9e}{x}}+c3D.\doxymbox{\hyperlink{classmath_1_1_point3_d_a76f2141fd0f489a6178af64799a4af9e}{x}})/3.0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00702}00702\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cy=(a3D.\doxymbox{\hyperlink{classmath_1_1_point3_d_a95da161fb44a307eed73f43b4199ab03}{y}}+b3D.\doxymbox{\hyperlink{classmath_1_1_point3_d_a95da161fb44a307eed73f43b4199ab03}{y}}+c3D.\doxymbox{\hyperlink{classmath_1_1_point3_d_a95da161fb44a307eed73f43b4199ab03}{y}})/3.0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00703}00703\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cz=(a3D.\doxymbox{\hyperlink{classmath_1_1_point3_d_ab71f0d665e8471bafcc1fc014ce286a7}{z}}+b3D.\doxymbox{\hyperlink{classmath_1_1_point3_d_ab71f0d665e8471bafcc1fc014ce286a7}{z}}+b3D.\doxymbox{\hyperlink{classmath_1_1_point3_d_ab71f0d665e8471bafcc1fc014ce286a7}{z}})/3.0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00704}00704\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(cx,cy,cz);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00705}00705\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00706}00706\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00715}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a7246ad73b7ead4f5c8dcbdbea81d1bed}{00715}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a7246ad73b7ead4f5c8dcbdbea81d1bed}{S2\_distance}}(\textcolor{keywordtype}{double}\ R,\textcolor{keywordtype}{double}\ z1,\textcolor{keywordtype}{double}\ x)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00716}00716\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (a)\ Find\ c1:}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00717}00717\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c1=1.0+(z1*z1-\/1.0)/(2.0*R*R);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00718}00718\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ s1=Math.sqrt(1.0-\/c1*c1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00719}00719\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (b)\ Find\ c2\ as\ a\ function\ of\ x}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00720}00720\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c2=1.0+(x*x-\/1)/(2*R*R);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00721}00721\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ s2=Math.sqrt(1.0-\/c2*c2);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00722}00722\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d=(x-\/z1)*(x-\/z1)-\/(2*R*R)*(c1*c2+s1*s2-\/1.0);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00723}00723\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.sqrt(d);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00724}00724\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00725}00725\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00733}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a5c3eaa452bcb001d118e5012b7c3d582}{00733}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a5c3eaa452bcb001d118e5012b7c3d582}{der\_tz}}(\textcolor{keywordtype}{double}\ R,\textcolor{keywordtype}{double}\ z)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00734}00734\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ y=(1.0-\/z*z);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00735}00735\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/2.0*R*z/(Math.sqrt(y)*Math.sqrt(4.0*R*R-\/y));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00736}00736\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00737}00737\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00746}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_ad1eedca73de4b9fc395d5867088c846f}{00746}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_ad1eedca73de4b9fc395d5867088c846f}{what\_is\_z1}}(\textcolor{keywordtype}{double}\ R,\textcolor{keywordtype}{int}\ p,\textcolor{keywordtype}{int}\ q,\textcolor{keywordtype}{double}\ z1)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00747}00747\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (q==0)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00748}00748\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00749}00749\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00750}00750\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ max\_z1=0;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00751}00751\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ZR=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a415389a0100ccd0e96c064978c2c7da8}{what\_is\_Z\_R}}(R);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00752}00752\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ min\_z1=-\/ZR;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00753}00753\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (z1<-\/.9)}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00754}00754\ \ \ \ \ \ \ \ \ \ \ \ \ z1=min\_z1;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00755}00755\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ z\_out=z1;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00756}00756\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ s2=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0a3dca18af8a5aaa2e722972aaf20209}{computeS2}}(R,z1);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00757}00757\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ p1q2=p*z\_out+q*s2.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00758}00758\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety=1000;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00759}00759\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (Math.abs(p1q2)>.00000001)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00760}00760\ \ \ \ \ \ \ \ \ \ \ \ \ safety-\/-\/;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00761}00761\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p1q2>0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00762}00762\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_z1=z\_out;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00763}00763\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z\_out=(z\_out+min\_z1)/2;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00764}00764\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00765}00765\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (p1q2<0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00766}00766\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ min\_z1=z\_out;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00767}00767\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z\_out=(z\_out+max\_z1)/2;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00768}00768\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00769}00769\ \ \ \ \ \ \ \ \ \ \ \ \ s2=\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0a3dca18af8a5aaa2e722972aaf20209}{computeS2}}(R,z\_out);}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00770}00770\ \ \ \ \ \ \ \ \ \ \ \ \ p1q2=p*z\_out+q*s2.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00771}00771\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00772}00772\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (safety==0)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00773}00773\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}safety'ed\ out\ in\ computeRz"{}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00774}00774\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00775}00775\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ z\_out;}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00776}00776\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00777}00777\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00778}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_abff1ba11f1af1c644f6162dd8dd28d3d}{00778}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_abff1ba11f1af1c644f6162dd8dd28d3d}{what\_is\_t}}(\textcolor{keywordtype}{double}\ R,\textcolor{keywordtype}{double}\ z1)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00779}00779\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ R*Math.acos(1.0+(z1*z1-\/1.0)/(2.0*R*R));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00780}00780\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00781}00781\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00782}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a415389a0100ccd0e96c064978c2c7da8}{00782}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a415389a0100ccd0e96c064978c2c7da8}{what\_is\_Z\_R}}(\textcolor{keywordtype}{double}\ R)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00783}00783\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.sqrt(1.0+2.0*R*R*(Math.sqrt(1.0-\/1.0/(4.0*R*R))-\/1.0));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00784}00784\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00785}00785\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00793}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0f321dd254f538ce72823afbc00240c7}{00793}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a0f321dd254f538ce72823afbc00240c7}{set3D}}(\textcolor{keywordtype}{double}\ R,\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ pt)\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00794}00794\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t=pt.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}};}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00795}00795\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}(R*Math.cos(t/R),R*Math.sin(t/R),pt.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}});}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00796}00796\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00797}00797\ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00798}\doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a1c029cdcc0cf3113dadda09e6ba84d8a}{00798}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classftn_theory_1_1_cylinder_spheres_a1c029cdcc0cf3113dadda09e6ba84d8a}{initCmdStruct}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00799}00799\ \ \ \ \ \ \ \ \ super.initCmdStruct();}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00800}00800\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af41fa6d58814a6f9137c21f89d25f85b}{cmdStruct}}.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_cmd_struct}{CmdStruct}}(\textcolor{stringliteral}{"{}parameters"{}},\textcolor{stringliteral}{"{}p\ q\ [n]"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00801}00801\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Given\ p,\ q,\ n\ (default\ 3),\ build\ packing"{}}));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00802}00802\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af41fa6d58814a6f9137c21f89d25f85b}{cmdStruct}}.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_cmd_struct}{CmdStruct}}(\textcolor{stringliteral}{"{}compute"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00803}00803\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Compute\ R,z1,\ etc."{}}));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00804}00804\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af41fa6d58814a6f9137c21f89d25f85b}{cmdStruct}}.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_cmd_struct}{CmdStruct}}(\textcolor{stringliteral}{"{}data"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00805}00805\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}generate\ the\ data\ for\ output"{}}));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00806}00806\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_extender_af41fa6d58814a6f9137c21f89d25f85b}{cmdStruct}}.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classutil_1_1_cmd_struct}{CmdStruct}}(\textcolor{stringliteral}{"{}output"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00807}00807\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}write\ data\ to\ matlab-\/type\ file"{}}));}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00808}00808\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00809}00809\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00810}00810\ \}}
+\DoxyCodeLine{\Hypertarget{_cylinder_spheres_8java_source_l00811}00811\ }
+
+\end{DoxyCode}

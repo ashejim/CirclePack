@@ -6,6 +6,8 @@ import java.net.UnknownHostException;
 import java.util.StringTokenizer;
 
 /**
+ * @brief ClientToCP class.
+ *
  * 
  * @author Frank Martin (Freiberg) started this, 2012
  *
@@ -72,6 +74,9 @@ public class ClientToCP implements Runnable
         runThread.start();
     }
     
+    /**
+     * @brief TODO: Document run.
+     */
     public void run()
     {
         String msg = null;
@@ -221,6 +226,10 @@ public class ClientToCP implements Runnable
         }
     }
     
+    /**
+     * @brief TODO: Document sendCommand.
+     * @param cmd
+     */
     public void sendCommand(String cmd)
     {
         if(out != null)
@@ -229,6 +238,16 @@ public class ClientToCP implements Runnable
         }
     }
     
+    /**
+     * @brief TODO: Document sendPacking.
+     * @param flwrs[][]
+     * @param rad[]
+     * @param cz_re[]
+     * @param cz_im[]
+     * @param alpha
+     * @param beta
+     * @param gamma
+     */
     public void sendPacking(int flwrs[][], double rad[], double cz_re[], double cz_im[], 
     		int alpha, int beta, int gamma)
     {
@@ -274,6 +293,9 @@ public class ClientToCP implements Runnable
         }
     }
     
+    /**
+     * @brief TODO: Document notifyGetPacking.
+     */
     public void notifyGetPacking()
     {
         if(out != null)
@@ -294,6 +316,9 @@ public class ClientToCP implements Runnable
     		return pack;
     }
     
+    /**
+     * @brief TODO: Document closeConnection.
+     */
     public void closeConnection()
     {// closes the connection to CP
         isRun = false;
@@ -330,6 +355,13 @@ public class ClientToCP implements Runnable
 		}
     }
     
+    /**
+     * @brief TODO: Document reconnect.
+     * @param host
+     * @param port
+     * @param name
+     * @return boolean
+     */
     public boolean reconnect(String host, int port, String name)
     {// reconnect to CP    	
     	// first close the connection

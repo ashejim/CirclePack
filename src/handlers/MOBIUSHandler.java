@@ -7,6 +7,8 @@ import listeners.MOBIUSListener;
 import mytools.MyToolHandler;
 
 /**
+ * @brief This handles Mobius MyTool's on a panel which applies
+ *
  * This handles Mobius MyTool's on a panel which applies
  * to all packings. See the 'PACKMOBHandler's for sidepairing
  * and utility transformations attached to specific packings.

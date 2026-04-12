@@ -36,23 +36,26 @@ import util.StringUtil;
 import util.TriAspect;
 
 /**
- * Static routines for working with discrete Schwarzian 
- * derivatives and intrinsic schwarzians. These are for
- * tangency packings: Schwarzian Derivative is associated
- * with discrete mappings between packings for the same 
- * complex, which intrinsice schwarzians are associated 
- * with individual packing based on identification of 
- * faces with the "base equilateral"; namely, the tangent 
- * triple of circles of radius sqrt(3), symmetric w.r.t. 
- * the origin, and having its first edge vertical through 
- * z=1. See "ftnTheory.SchwarzMap.java" for related work 
- * in the setting of maps based on the original 
- * notions in Gerald Orick's thesis.
- * 
- * The "intrinsic" schwarzians are real numbers stored 
- * in 'HalfEdge.schwarzian', defaulting to 0.0. The 
- * methods here are for creating, analyzing, manipulating 
- * this data. Some routines do not apply in the 
+ * @brief Static routines for computing and manipulating discrete
+ *        Schwarzian derivatives on circle packings.
+ *
+ * The discrete Schwarzian derivative is associated with maps between
+ * circle packings sharing the same combinatorics.  For each oriented
+ * edge, it measures how the cross-ratio of the four relevant circles
+ * changes under the map — analogous to the classical Schwarzian
+ * derivative {f, z} = f'''/f' − (3/2)(f''/f')² for analytic functions.
+ *
+ * This class also handles "intrinsic" Schwarzians, which are real
+ * numbers stored in {@link combinatorics.komplex.HalfEdge#schwarzian}
+ * (default 0.0) and encode how an individual packing deviates from
+ * a reference configuration — the "base equilateral" (tangent triple
+ * of circles with radius √3, symmetric about the origin, first edge
+ * vertical through z = 1).
+ *
+ * @see schwarzWork.SchwarzMap  Map-based Schwarzian computations
+ *      (following Gerald Orick's thesis).
+ * @see math.Mobius#stdBaseMobius  The edge Möbius for the base equilateral.
+ * @author Ken Stephenson 
  * hyperbolic setting since layouts can leave the disc. 
  * The "normalized" presentation of a flower puts 
  * the center as the upper half plane, its 
@@ -84,7 +87,7 @@ public class Schwarzian {
 	final static CirMatrix fourthCircle=new CirMatrix(new CircleSimple(new Complex(4.0),Math.sqrt(3.0)));
 		
 	/**
-	 * Compute and set intrinsic schwarzians for 
+	 * @brief Compute and set intrinsic schwarzians for 
 	 * given interior edges based only on radii. For 
 	 * each edge, find the 4 radii involved, find the 
 	 * base Mobius transformations and compute the 
@@ -221,7 +224,7 @@ public class Schwarzian {
 	}
 	
 	/**
-	 * Get 4 radii for edge to use in calculating schwarzian.
+	 * @brief Get 4 radii for edge to use in calculating schwarzian.
 	 * Ordinary because there are no complications due to 
 	 * multi-connectedness.
 	 * @param p PackData
@@ -269,7 +272,7 @@ public class Schwarzian {
 	}
 	
 	/**
-	 * Given first m=n-3 uzians (1-schwarians),
+	 * @brief Given first m=n-3 uzians (1-schwarians),
 	 * find remaining 3 uzians. Return full list.
 	 * @param uzians
 	 * @return double[], full list of uzians
@@ -337,7 +340,7 @@ public class Schwarzian {
 	
 		
 	/**
-	 * Given radii (r0,r1,r2) for oriented face {v,w,a},
+	 * @brief Given radii (r0,r1,r2) for oriented face {v,w,a},
 	 * radius r4 for b in the oriented face {w,v,b}, and
 	 * the geometry, find the schwarzian for {v,w} and {w,v}.
 	 * TODO: can't yet handle 1 or 2 infinite radii.
@@ -401,7 +404,7 @@ public class Schwarzian {
 	}
 		
 	/**
-	 * Compute intrinsic schwarzian mobius transformation 
+	 * @brief Compute intrinsic schwarzian mobius transformation 
 	 * for edge between f and g via 'baseMobius's, ensuring 
 	 * that trace=+2, det=1. 
 	 * The intrinsic schwarzian is the edge Mobius derivative of
@@ -472,7 +475,7 @@ public class Schwarzian {
 	}
 
 	/**
-	 * Find the circle across the 'j' edge of the target face f
+	 * @brief Find the circle across the 'j' edge of the target face f
 	 * if the schwarzian is 's' and 'bm_f' is the Mobius FROM the 
 	 * base equilateral TO the target face.
 	 * @param s double, schwarzian
@@ -520,7 +523,7 @@ public class Schwarzian {
 	}
 	
 	/**
-	 * Develop various schemes to help understand schwarzians: e.g., 
+	 * @brief Develop various schemes to help understand schwarzians: e.g., 
 	 * draw circles with color blue-to-red based on sum of 
 	 * schwarzians; draw edges blue-to-red based on schwarzians.
 	 * @param p PackData
@@ -643,7 +646,7 @@ public class Schwarzian {
 	}
 	
 	/**
-	 * For debugging: print center of circle and of image 
+	 * @brief For debugging: print center of circle and of image 
 	 * circle under a Mobius.
 	 * @param mob Mobius
 	 * @param hes int
@@ -659,7 +662,7 @@ public class Schwarzian {
 	}
 	
 	/**
-	 * Fillin the 'SchwarzData' utility package
+	 * @brief Fillin the 'SchwarzData' utility package
 	 * @param domf TriAspects
 	 * @param tmpg
 	 * @param rngF
@@ -763,7 +766,7 @@ public class Schwarzian {
 	}
 	
 	/** 
-	 * This creates 'SchwaraData', but only computes 'Sch_Deriv'.
+	 * @brief This creates 'SchwaraData', but only computes 'Sch_Deriv'.
 	 * @param domf TriAspects
 	 * @param domg
 	 * @param rngF
@@ -892,7 +895,7 @@ public class Schwarzian {
 	}
 
 	/**
-	 * Compute the INtrinsic Schwarzian for edge shared by 
+	 * @brief Compute the INtrinsic Schwarzian for edge shared by 
 	 * two face. Note that g should already have been
 	 * adjusted to align along shared edge with f.
 	 * @param tri_f TriAspect
@@ -943,7 +946,7 @@ public class Schwarzian {
 	}
 
 	/**
-	 * The 'uzian' is 1-s where s the intrinsic
+	 * @brief The 'uzian' is 1-s where s the intrinsic
 	 * schwarzian for some edge. The uzian is better
 	 * in many formulas. Typically, schvector is length
 	 * n for an n-flower, but often only need n-3 

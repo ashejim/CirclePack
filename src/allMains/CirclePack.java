@@ -4,6 +4,8 @@ import circlePack.PackControl;
 import circlePack.ShellControl;
 
 /**
+ * @brief Note: all 'CirclePack' actually does is start 'PackControl'
+ *
  * Note: all 'CirclePack' actually does is start 'PackControl'
  * or 'ShellControl', which extend 'CPBase' and add additional 
  * variables. 

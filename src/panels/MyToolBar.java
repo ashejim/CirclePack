@@ -11,6 +11,8 @@ import javax.swing.border.LineBorder;
 import mytools.MyPopupMenu;
 
 /**
+ * @brief This is a panel of buttons for user-defined (or script-defined, etc.
+ *
  * This is a panel of buttons for user-defined (or script-defined, etc.)
  * commands. They are created, managed, etc. by a MyToolHandler.
  *

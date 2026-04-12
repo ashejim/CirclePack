@@ -2,6 +2,8 @@ package cpTalk.cpMatlab;
 
 
 /**
+ * @brief Plan is to compile matlab routines in BuilderJA.
+ *
  * Plan is to compile matlab routines in BuilderJA.
  * @author kstephe2
  *

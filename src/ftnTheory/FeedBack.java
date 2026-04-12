@@ -16,6 +16,8 @@ import util.StringUtil;
 import exceptions.ParserException;
 
 /**
+ * @brief This 'PackExtender' was initiated for preliminary experiments with
+ *
  * This 'PackExtender' was initiated for preliminary experiments with 
  * the expectation that it could be developed incrementally. 
  * 
@@ -283,7 +285,7 @@ public class FeedBack extends PackExtender {
 	}
 
 	/**
-	 * Is there a packet for (v,w)?
+	 * @brief Is there a packet for (v,w)?
 	 * @param v
 	 * @param w
 	 * @return
@@ -317,6 +319,8 @@ public class FeedBack extends PackExtender {
 	}
 
 	/**
+ * @brief Utility class.
+ *
 	 * Utility class. Feedback is about vertices being influenced by 
 	 * other vertices. The nature of the influence can vary -- maybe
 	 * effect on radius or angle sum, etc -- and the meaning of the

@@ -277,6 +277,8 @@ public class TileColoring extends PackExtender {
 }
 
 /**
+ * @brief Utility class containing tile histories: 'history[]' show tile
+ *
  * Utility class containing tile histories: 'history[]' show tile
  * types for successive subdivisions, so history[0] is the global 
  * parent type, history[1] is type within, history[2] is type

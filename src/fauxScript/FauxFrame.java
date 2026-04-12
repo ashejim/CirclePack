@@ -26,6 +26,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 /**
+ * @brief try to understand how to format CirclePack's 'script' frame.
+ *
  * try to understand how to format CirclePack's 'script' frame.
  * @author kens
  */
@@ -75,6 +77,9 @@ public class FauxFrame extends JFrame implements KeyListener, MouseListener {
 		this.setVisible(true);
 	}
 
+	/**
+	 * @brief TODO: Document createCmdStuff.
+	 */
 	public void createCmdStuff() {
 		cmdFrame = new JFrame();
         cmdFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -161,6 +166,9 @@ public class FauxFrame extends JFrame implements KeyListener, MouseListener {
 		cmdFrame.setVisible(true);
 	}
 	
+	/**
+	 * @brief TODO: Document createPersistent.
+	 */
 	public void createPersistent() {
 		//indices
 		fhelpBar = new JTextArea("components: 0=hoverPanel; 1=scriptPanel; 2=stackArea; 3=stackScroll; "+
@@ -237,6 +245,9 @@ public class FauxFrame extends JFrame implements KeyListener, MouseListener {
 		compVector.add(6, fGlueBox);
 	}
 	
+	/**
+	 * @brief TODO: Document loadPersistent.
+	 */
 	public void loadPersistent() {
 		/* Moved over GridBag stuff to BoxLayout for simplicity. */
 		/*
@@ -277,6 +288,9 @@ public class FauxFrame extends JFrame implements KeyListener, MouseListener {
 		//fStackArea.add(fGlueBox);
 	}
 	
+	/**
+	 * @brief TODO: Document createContent.
+	 */
 	public void createContent() {
 		
 		//cmd boxes
@@ -366,6 +380,11 @@ public class FauxFrame extends JFrame implements KeyListener, MouseListener {
 		for (int j=13;j<16;j++) fCPDataBox.add(compVector.get(j));
 	}
 	
+	/**
+	 * @brief TODO: Document execute.
+	 * @param cmdstr
+	 * @return int
+	 */
 	public int execute(String cmdstr) {
 		int count = 0;
 		String cmds[] = cmdstr.split(" ");
@@ -452,6 +471,11 @@ public class FauxFrame extends JFrame implements KeyListener, MouseListener {
 		return count;
 	}
 	
+	/**
+	 * @brief TODO: Document myColor.
+	 * @param col
+	 * @return Color
+	 */
 	public Color myColor(int col) {
 		if (col == 1) {return Color.red;}
 		if (col == 2) {return Color.blue;}
@@ -479,6 +503,9 @@ public class FauxFrame extends JFrame implements KeyListener, MouseListener {
 		return vec;
 	}
 	
+	/**
+	 * @brief TODO: Document showText.
+	 */
 	public void showText() {
 		cmdHistory.setText(history.toString());
 	}

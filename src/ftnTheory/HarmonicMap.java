@@ -3,7 +3,9 @@ package ftnTheory;
 import allMains.CirclePack;
 import packing.PackData;
 
-/** 
+/**
+ * @brief Routines for experimenting with harmonic mappings (and
+ * 
  * Routines for experimenting with harmonic mappings (and 
  * analogous analytic functions 6/10). These are highly 
  * structured at this time (7/2007), requiring two base 
@@ -40,7 +42,7 @@ public class HarmonicMap {
 	PackData F_pack;
 
 	/**
-	 * Check that Hp and Gp are euclidean and have the same nodeCount (assumed to
+	 * @brief Check that Hp and Gp are euclidean and have the same nodeCount (assumed to
 	 * imply the same combinatorics).
 	 * @param Hp
 	 * @param Gp

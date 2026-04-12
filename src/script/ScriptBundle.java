@@ -42,6 +42,8 @@ import util.FileUtil;
 import util.MemComboBox;
 
 /**
+ * @brief This is the bundle of buttons, file chooser, edit bar
+ *
  * This is the bundle of buttons, file chooser, edit bar
  * which moves between the bottom of 'PackControl' and the
  * top of the script frame.
@@ -244,7 +246,7 @@ public class ScriptBundle extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * Recursive go through the tree to open or close any command nodes
+	 * @brief Recursive go through the tree to open or close any command nodes
 	 * (which are not currently in EDIT state). See 'ScriptManager.cmdOpenMode'
 	 * flag.
 	 * @param treeNode
@@ -342,7 +344,7 @@ public class ScriptBundle extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * setting openAllButton icon to +/-
+	 * @brief setting openAllButton icon to +/-
 	 * @param open, boolean. open=true, then want 'small_minus' to show
 	 */
 	public void setOpenAllButton(boolean open) {
@@ -353,7 +355,7 @@ public class ScriptBundle extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * A single ScriptBar is created in PackControl 
+	 * @brief A single ScriptBar is created in PackControl 
 	 * but used both in the PackControl and Script 
 	 * frames. Move from frame contentPane to 
 	 * 'scriptPanel' of scriptFrame. In the former, 
@@ -403,6 +405,8 @@ public class ScriptBundle extends JPanel implements ActionListener {
 }
 
 /**
+ * @brief Convenience class to build edit bar mytools and set drag action
+ *
  * Convenience class to build edit bar mytools and set drag action
  */
 class editTool extends MyTool {

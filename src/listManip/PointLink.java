@@ -17,6 +17,8 @@ import complex.Complex;
 import exceptions.ParserException;
 
 /**
+ * @brief This is a linked list for 'Complex' numbers.
+ *
  * This is a linked list for 'Complex' numbers. 
  * Such lists are used, e.g., to collect location 
  * information from canvas mouse clicks, also 
@@ -90,7 +92,7 @@ public class PointLink extends LinkedList<Complex> {
 	}
 	
 	/**
-	 * Add links to this list. 
+	 * @brief Add links to this list. 
 	 * @param datastr
 	 * @return
 	 */	
@@ -100,7 +102,7 @@ public class PointLink extends LinkedList<Complex> {
 	}
 	
 	/**
-	 * Add links to this list.
+	 * @brief Add links to this list.
 	 * @param items Vector<String>
 	 * @return int count
 	 */	
@@ -335,7 +337,7 @@ public class PointLink extends LinkedList<Complex> {
 	
 	
 	/**
-	 * Make a distinct copy of this linked list; no check
+	 * @brief Make a distinct copy of this linked list; no check
 	 * of validity of the entries.
 	 * @return PointLink
 	 */
@@ -350,7 +352,7 @@ public class PointLink extends LinkedList<Complex> {
 	
 	
 	/**
-	 * Abut a copy of given @see PointLink to the end of this one. 
+	 * @brief Abut a copy of given @see PointLink to the end of this one. 
 	 * @param morePL @see PointLin
 	 * @return count of new complex numbers (some may be redundant)
 	 */
@@ -369,7 +371,7 @@ public class PointLink extends LinkedList<Complex> {
 	}
 	
 	/**
-	 * Pick first complex off first string of first vector of vector
+	 * @brief Pick first complex off first string of first vector of vector
 	 * of string vectors. 
 	 * @param flagsegs Vector<Vector<String>>
 	 * @return Complex, null on failure
@@ -385,7 +387,7 @@ public class PointLink extends LinkedList<Complex> {
 	}
 
 	/**
-	 * Pick first complex off string
+	 * @brief Pick first complex off string
 	 * @param str String
 	 * @return Complex, null on failure
 	 */
@@ -400,7 +402,7 @@ public class PointLink extends LinkedList<Complex> {
 
 	
 	/**
-	 * Index 'indx' points to entry z, then rotate, returning a new PointLink
+	 * @brief Index 'indx' points to entry z, then rotate, returning a new PointLink
 	 * starting and ending with v.
 	 * @param link @see PointLink
 	 * @param indx new starting index
@@ -426,7 +428,7 @@ public class PointLink extends LinkedList<Complex> {
 
 	
 	/**
-	 * Return a new 'PointLink' whose order is the reverse of this
+	 * @brief Return a new 'PointLink' whose order is the reverse of this
 	 * @return new 'PointLink', null if this is empty.
 	 */
 	public PointLink reverseMe() {
@@ -440,7 +442,7 @@ public class PointLink extends LinkedList<Complex> {
 	}
 	
 	/**
-     * Return random entry from pointlist; caution, does not adjust
+     * @brief Return random entry from pointlist; caution, does not adjust
      * for repeat entries.
      * @param pointlist
      * @return Complex, null on error
@@ -452,7 +454,7 @@ public class PointLink extends LinkedList<Complex> {
     }
 
 	 /**
-	  * Set 'packData' (which helps determine eligibility of entries)
+	  * @brief Set 'packData' (which helps determine eligibility of entries)
 	  * @param p PackData
 	  */
 	 public void setPackData(PackData p) {

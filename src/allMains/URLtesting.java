@@ -8,7 +8,9 @@ import java.nio.file.Paths;
 
 import util.FileUtil;
 
-/** 
+/**
+ * @brief Testing to figure out how to manage files, directories,
+ * 
  * Testing to figure out how to manage files, directories,
  * and URLs. For example, it appears that for local 
  * files/directories the URL should be 'file:///C:<filename>'

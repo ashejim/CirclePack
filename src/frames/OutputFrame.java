@@ -60,6 +60,10 @@ public class OutputFrame extends javax.swing.JFrame {
 	}
 	
 	class WAdapter extends WindowAdapter {
+	   	/**
+	   	 * @brief TODO: Document windowClosing.
+	   	 * @param wevt
+	   	 */
 	   	public void windowClosing(WindowEvent wevt) {
 	   		if (wevt.getID()==WindowEvent.WINDOW_CLOSING)
 	   			PackControl.outputFrame.setVisible(false);

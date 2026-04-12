@@ -10,6 +10,9 @@ import geometry.HyperbolicMath;
 import math.Point3D;
 import util.ZRhold;
 
+/**
+ * @brief Interpolator.
+ */
 public class Interpolator {
 	PackData p;
 	PackData q;
@@ -47,7 +50,7 @@ public class Interpolator {
 	
 	
 	/**
-	 * Load 'ZRhold' array for this packing. In hyp
+	 * @brief Load 'ZRhold' array for this packing. In hyp
 	 * case, convert to eucl for interpolation steps.
 	 * @param p PackData
 	 * @return ArrayList<ZRhold>
@@ -66,7 +69,7 @@ public class Interpolator {
 	}
 	
 	/**
-	 * Store the centers/radii to the packing. Note
+	 * @brief Store the centers/radii to the packing. Note
 	 * that in the hyp case, the 'ZRhold' data was
 	 * converted to eucl, so we have to convert back. 
 	 * Also note that for red vertices v, we only 
@@ -122,7 +125,7 @@ public class Interpolator {
 	}
 	
 	/**
-	 * Interpolate between to complex centers and radii.
+	 * @brief Interpolate between to complex centers and radii.
 	 * @param zr1 ZRhold
 	 * @param zr2 ZRhold
 	 * @param x double

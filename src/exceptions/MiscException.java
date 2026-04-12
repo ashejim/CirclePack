@@ -1,6 +1,8 @@
 package exceptions;
 
-/** 
+/**
+ * @brief This should be a temporary exception; go back later and set a more
+ * 
  * This should be a temporary exception; go back later and set a more
  * appropriate one.
  */

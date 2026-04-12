@@ -8,6 +8,8 @@ import packing.PackData;
 import exceptions.DataException;
 
 /**
+ * @brief This class contains static methods to embed --- more accurately, to
+ *
  * This class contains static methods to embed --- more accurately, to
  * intersect --- to the extent possible, one circle packing complex p1 with 
  * another p2, starting with designated contiguous vertex pairs in each.
@@ -162,7 +164,7 @@ public class Embedder {
 	}
 	
 	/** 
-	 * Determine if vertex v of q1 is embedable as V of q2, wrt 
+	 * @brief Determine if vertex v of q1 is embedable as V of q2, wrt 
 	 * indices j, J, respectively. If v and V are both interior, then
 	 * they must have the same 'num' of petals. If one is bdry and one
 	 * interior, then interior must have at least one more petal than bdry.
@@ -190,7 +192,7 @@ public class Embedder {
 	}
 	
 	/**
-	 * Check consistency of matches among petals of v and V as given
+	 * @brief Check consistency of matches among petals of v and V as given
 	 * in vstat and Vstat. First, find one consistent match, then check 
 	 * others. If there is no first match, throw exception.
 	 * @param q1

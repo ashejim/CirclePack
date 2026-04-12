@@ -6,6 +6,9 @@ import java.awt.Toolkit;
 
 import javax.swing.JTextField;
 
+/**
+ * @brief Status Panel.
+ */
 public class StatusPanel extends javax.swing.JPanel {
 
 	private static final long 
@@ -45,7 +48,7 @@ public class StatusPanel extends javax.swing.JPanel {
 		}
 	}
 	 /**
-	   * Shows how many commands were executed in the last string.
+	   * @brief Shows how many commands were executed in the last string.
 	   * @param count
 	   */
 	  public void cmdCount(int count) {
@@ -53,7 +56,7 @@ public class StatusPanel extends javax.swing.JPanel {
 	  }
 	  
 	  /**
-	   * Shows error messages from CPack in StatusPanel and Error tab.
+	   * @brief Shows error messages from CPack in StatusPanel and Error tab.
 	   * @param msg
 	   */
 	  public void flashErrorMsg(String msg) {

@@ -46,6 +46,8 @@ import packing.PackData;
 import util.PopupBuilder;
 
 /**
+ * @brief This frame is holds side-by-side canvasses to display 'map'
+ *
  * This frame is holds side-by-side canvasses to display 'map'
  * type behavior. The user/script can shift between 'PairedFrame'
  * and 'MainFrame' display, not both.
@@ -234,7 +236,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Called when we need to layout the frame anew, as after
+	 * @brief Called when we need to layout the frame anew, as after
 	 * size change. Reset 'pairKeyDim' and 'mapCanvasSize' to
 	 * 'canvasSize'
 	 * @param canvasSize Dimension,
@@ -383,7 +385,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Given Dimension of display, what is max 'mapCanvasSize'?
+	 * @brief Given Dimension of display, what is max 'mapCanvasSize'?
 	 * @param displayDim, Dimension of display area
 	 * @return Dimension
 	 */	
@@ -397,7 +399,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Given 'PairedFrame' height, what is associated 'mapCanvasSize'?
+	 * @brief Given 'PairedFrame' height, what is associated 'mapCanvasSize'?
 	 * @param height
 	 * @return int
 	 */
@@ -406,7 +408,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Currently, only allow square canvasses, so us max of wide/high.
+	 * @brief Currently, only allow square canvasses, so us max of wide/high.
 	 * Domain/range have same dimension.
 	 * @param wide, int pixels
 	 * @param high, int pixels
@@ -425,7 +427,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Get the dimension of the domain/range canvasses.
+	 * @brief Get the dimension of the domain/range canvasses.
 	 * @return
 	 */
 	public static Dimension getCanvasDim() {
@@ -448,7 +450,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Check if 'PairWrapper' is domain or range wrapper
+	 * @brief Check if 'PairWrapper' is domain or range wrapper
 	 * @param pw
 	 * @return 0 for domain, 1 for range, -1 for neither
 	 */
@@ -459,7 +461,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Check status of the other 'PairWrapper' packing.
+	 * @brief Check status of the other 'PairWrapper' packing.
 	 * @param pW
 	 * @return 'status' of other packing
 	 */
@@ -473,7 +475,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Called due to mouse click in pWrapper if 'mapConnection' is true 
+	 * @brief Called due to mouse click in pWrapper if 'mapConnection' is true 
 	 * and mode is 'defaultMode'. 
 	 * We find circles (cf_flag=true) (or faces, cf_flag=false) in one packing and 
 	 * display them as filled in both packings. NOTE: these draws are done in the 
@@ -543,7 +545,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 
 	/** set 'tele' state: communicate actions between the
-	 * domain/range canvasses.
+	 * @brief domain/range canvasses.
 	 * @param setON, boolean: true, then turn on, false, off
 	 */
 	public void setTeleState(boolean setON) {
@@ -595,7 +597,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Select packing number in domain ComboBox, triggers action
+	 * @brief Select packing number in domain ComboBox, triggers action
 	 * @param dnum
 	 */
 	public void setDomainNum(int dnum) {
@@ -603,7 +605,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Select packing number in range ComboBox, triggers action
+	 * @brief Select packing number in range ComboBox, triggers action
 	 * @param dnum
 	 */
 	public void setRangeNum(int rnum) {
@@ -611,6 +613,8 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 
 	/**
+ * @brief For closing the pairedFrame; if 'PackControl' isn't open,
+ *
      * For closing the pairedFrame; if 'PackControl' isn't open,
      * then call for exit; else just make pairedFrame invisible.
      * This what a 'minimal' user would expect.

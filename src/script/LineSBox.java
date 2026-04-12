@@ -13,6 +13,8 @@ import circlePack.PackControl;
 import exceptions.MiscException;
 
 /**
+ * @brief The 'LineSBox' is an ephemeral abstract node for consolidating
+ *
  * The 'LineSBox' is an ephemeral abstract node for consolidating 
  * a contiguous sequence of two or more unopened 'CmdSBox's or 
  * 'FileSBox's. They are created only in 'CPTreeNode.consolidateNodes'.
@@ -38,7 +40,7 @@ public class LineSBox extends StackBox {
 	}
 	
 	/**
-	 * add from vector of 'CPTreeNode's (have to be type 7 or 8 (cmd or file))
+	 * @brief add from vector of 'CPTreeNode's (have to be type 7 or 8 (cmd or file))
 	 * @param vec, Vector<CPTreeNode>
 	 * @return count, 0 on error
 	 */

@@ -8,6 +8,8 @@ import math.Point3D;
 import packing.PackData;
 
 /**
+ * @brief A BaryPoint is a triple of barycentric coords describing a
+ *
  * A BaryPoint is a triple of barycentric coords describing a
  * point relative to a triangle; typically, a point in a triangle,
  * on an edge, or at a corner. At creation we enforce b0+b1+b2=1. 
@@ -59,7 +61,7 @@ public class BaryPoint {
 	}
 	
 	/**
-	 * Return the corresponding eucl point in eucl triangle {z1,z2,z3}. 
+	 * @brief Return the corresponding eucl point in eucl triangle {z1,z2,z3}. 
 	 * @param z1 Complex
 	 * @param z2 Complex
 	 * @param z3 Complex
@@ -70,7 +72,7 @@ public class BaryPoint {
 	}
 	
 	/**
-	 * Where is BaryPoint relative to triangle? (up to OKERR)
+	 * @brief Where is BaryPoint relative to triangle? (up to OKERR)
 	 * 0=inside? -1=outside? 1,2,3 = at vertex?
 	 * 12,23,13 = on indicated edge?
 	 * @param bp BaryPoint
@@ -108,7 +110,7 @@ public class BaryPoint {
 	}
 	
 	/**
-	 * Is BaryPoint on one of lines defining the triangle?
+	 * @brief Is BaryPoint on one of lines defining the triangle?
 	 * @param bp BaryPoint
 	 * @param z1 Complex
 	 * @param z2 Complex
@@ -142,7 +144,7 @@ public class BaryPoint {
 			
 
 	/**
-	 * return the corresponding 3D point in triangle 'p1','p2','p3' Can be 
+	 * @brief return the corresponding 3D point in triangle 'p1','p2','p3' Can be 
 	 * used for plane points (third coord 0), but mainly intended for working 
 	 * with barycentric coords in hyp and sph geometry.
 	 * @param p1 Point3D
@@ -158,7 +160,7 @@ public class BaryPoint {
 	}
 	
 	/**
-	 * Given triangle corners, point z, and the geometry, return the barycentric
+	 * @brief Given triangle corners, point z, and the geometry, return the barycentric
 	 * coordinates of z
 	 * @param hes int, geometry
 	 * @param z Complex
@@ -181,7 +183,7 @@ public class BaryPoint {
 	}
 	
 	/**
-	 * Convert the barycentric coords of 'this' to a point in the given
+	 * @brief Convert the barycentric coords of 'this' to a point in the given
 	 * triangle, depending on geometry.
 	 * @param hes int, geometry
 	 * @param z1 Complex
@@ -222,7 +224,7 @@ public class BaryPoint {
 	}
 	
 	/**
-	 * To contend with roundoff error, this returns the "nearest" 
+	 * @brief To contend with roundoff error, this returns the "nearest" 
 	 * BaryPoint having non-negative entries to given BaryPoint 'inpt'. 
 	 * Return 'inpt' itself if interior (i.e. non-negative entries); 
 	 * return null if 'cutoff' is true and 'inpt' is too far from 
@@ -296,7 +298,7 @@ public class BaryPoint {
 	}
 	
 	/**
-	 * Given a euclidean triangle, corners {z0,z1,z2} and vector 'vec',
+	 * @brief Given a euclidean triangle, corners {z0,z1,z2} and vector 'vec',
 	 * return image of 'vec' under linear transformation taking 
 	 * z0 --> (0,0), z1 --> (1,0), z2 --> (0,1). This is direction
 	 * in the standard simplex corresponding to 'vec' and is used
@@ -321,7 +323,7 @@ public class BaryPoint {
 	}
 	
 	/**
-	 * Starting in standard simplex at (b0,b1), find up-gradient exit 
+	 * @brief Starting in standard simplex at (b0,b1), find up-gradient exit 
 	 * bary coords B0,B1; i.e., transit in direction closest to 'grad'. 
 	 * Exit may be a corner or edge. Return null if 'grad' is too small 
 	 * (no movement), if no direction in simplex is up-gradient, or if

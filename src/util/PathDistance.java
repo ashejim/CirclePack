@@ -10,6 +10,8 @@ import allMains.CPBase;
 import complex.Complex;
 
 /**
+ * @brief Class stores segments of a Path2D.
+ *
  * Class stores segments of a Path2D.Double for efficient
  * identification of points within a given distance from the
  * path.
@@ -98,7 +100,7 @@ public class PathDistance {
 	}
 	
 	/**
-	 * Check if z is within distance sqrt(thresh2) of myPath
+	 * @brief Check if z is within distance sqrt(thresh2) of myPath
 	 * (compare thres2 to distance squared to avoid extra computation)
 	 * @param z Complex
 	 * @return true/false

@@ -19,6 +19,8 @@ import listManip.VertexMap;
 import packing.PackData;
 
 /**
+ * @brief This class supports creation, storage, and manipulations for
+ *
  * This class supports creation, storage, and manipulations for 
  * combinatorial data on 'tilings'. This data may be associated
  * with a circle packing parent; often, the packing is created 
@@ -131,7 +133,7 @@ public class TileData {
 	}
 	
 	/**
-	 * Set the parent packing
+	 * @brief Set the parent packing
 	 * @param p PackData
 	 */
 	public void setParent(PackData p) {
@@ -143,7 +145,7 @@ public class TileData {
 	}
 	
 	/**
-	 * Tilings start at depth 0. Depth increases by 1 upon
+	 * @brief Tilings start at depth 0. Depth increases by 1 upon
 	 * subdivision, as in the extender 'ConformalTiling'.
 	 * CAUTION: this is not used much as of 4/2025, but
 	 * may be needed.
@@ -158,7 +160,7 @@ public class TileData {
 	}
 	
 	/**
-	 * Converts tiling via 'tileFlowers' to a simple PackData; 
+	 * @brief Converts tiling via 'tileFlowers' to a simple PackData; 
 	 * in particular, there is just one circle for each tile 
 	 * (not a circle for each vertex of each tile). This was 
 	 * needed in looking at simulated 2D 'glasses'. 
@@ -210,7 +212,7 @@ public class TileData {
 	}
 
 	/**
-	 * Create the minimal packing based on 'myTiles' data, 
+	 * @brief Create the minimal packing based on 'myTiles' data, 
 	 * as when reading from a TILECOUNT file. There are 
 	 * two types of data input files: 'TILES:' and 'TILEFLOWERS:' (mutually exclusive). 
 	 * Normally, need 'TILEFLOWERS:' if there are unigons, 
@@ -476,7 +478,8 @@ public class TileData {
 		for (int t=1;t<=newtd.tileCount;t++) {
 			Tile tile=newtd.myTiles[t];
 			HalfLink spokes=
-					thePack.packDCEL.vertices[tile.baryVert].getSpokes(null);
+					thePack.packDCEL.vertices[tile.baryVert].getSpokes(null);
+
 			// go around vertices, see if there's a tile across edge.
 			for (int k=0;k<spokes.size();k++) {
 				HalfEdge spoke=spokes.get(k);
@@ -511,7 +514,7 @@ public class TileData {
 	}
 	
 	/**
-	 * Create a new integer array by inserting 'newV' after 'preV'
+	 * @brief Create a new integer array by inserting 'newV' after 'preV'
 	 * in 'array'. Typically 'array' is a closed petal flower, so
 	 * if 'preV' is both first and last, 'newV' should become 
 	 * second petal.
@@ -538,7 +541,7 @@ public class TileData {
 	}
 
 	/**
-	 * Create a fully realized (builtMode 3) packing for 
+	 * @brief Create a fully realized (builtMode 3) packing for 
 	 * given 'TileData'. This is a hex refinement of the 
 	 * barycentric refinement of the original tiles: that is,
 	 * 
@@ -997,7 +1000,7 @@ public class TileData {
 	}
 	
 	/**
-	 * Check if given ordered list equals the 'vert' vector 
+	 * @brief Check if given ordered list equals the 'vert' vector 
 	 * for some tile.
 	 * @param vlist NodeLink
 	 * @return int, tile index or -1 if not found
@@ -1024,7 +1027,7 @@ public class TileData {
 	
 	/**
 	 * TODO: not used currently, needs to be checked
-	 * Using provisional 'nodeCount' and 'HalfEdge's already
+	 * @brief Using provisional 'nodeCount' and 'HalfEdge's already
 	 * in place, decern tiling information by finding closed 
 	 * loops of vertices defining the tiles. (Triangles are 
 	 * included like any other tiles.)  
@@ -1114,7 +1117,7 @@ public class TileData {
 	}
 	
 	/**
-	 * Given a circle packing p and an interior vertex V, find a
+	 * @brief Given a circle packing p and an interior vertex V, find a
 	 * maximal paving of p by interior flowers, starting with that
 	 * of V itself. A paving is a disjoint union of interior flowers 
 	 * sharing edges.
@@ -1176,7 +1179,7 @@ public class TileData {
 	}
 	
 	/**
-	 * Given a packing and a list of its vertices, create tiling
+	 * @brief Given a packing and a list of its vertices, create tiling
 	 * consisting of the flowers of the given vertices. We check
 	 * that vertices in the list are interior and non-neighboring,
 	 * but the tile pattern may be disconnected, incomplete, etc.
@@ -1244,7 +1247,7 @@ public class TileData {
 	}
 	
 	/** 
-	 * Recursively copy 'TileData' tree: go recursively through 
+	 * @brief Recursively copy 'TileData' tree: go recursively through 
 	 * 'myTiles' and their 'myTileData's, recursively set 
 	 * 'packData' if 'parentPD' is given, set 'parentTile' 
 	 * if given (e.g., when copying 'myTileData'). 'dualTileData' 
@@ -1272,7 +1275,7 @@ public class TileData {
 	}
 
 	/**
-	 * Clone 'tileData'; 'packData' and 'parentTile' 
+	 * @brief Clone 'tileData'; 'packData' and 'parentTile' 
 	 * set to null and may need to be set by calling 
 	 * routine. Also, 'subRule' and 'vertMap' must be 
 	 * updated separately.
@@ -1299,7 +1302,7 @@ public class TileData {
 	}
 	
 	/**
-	 * Create new 'TileData' with copies of 'this' tiles,
+	 * @brief Create new 'TileData' with copies of 'this' tiles,
 	 * but only copy 'vert', 'vertCount','augVert',
 	 * 'augVertCount, 'tileType', 'baryVert', 'mark', and 
 	 * 'subRules'.
@@ -1331,7 +1334,7 @@ public class TileData {
 	}
 	
 	/**
-	 * Given vertex, see if it's baryVert for some 'myTiles' entry
+	 * @brief Given vertex, see if it's baryVert for some 'myTiles' entry
 	 * @param bc int, baryVert
 	 * @return Tile, null if not found
 	 */
@@ -1345,7 +1348,7 @@ public class TileData {
 	}
 	
 	/**
-	 * Return list of petal indices of tile s in the flower of tile t.
+	 * @brief Return list of petal indices of tile s in the flower of tile t.
 	 * Careful, not the tile indices, just petal indices in the flower.
 	 * Note: tile may NOT neighbor itself.
 	 * May be empty if s not a neighbor at all; null on error.
@@ -1371,7 +1374,7 @@ public class TileData {
 	}
 	
 	/**
-	 * Use 'subdivisionRule' info to set 'vert' and 
+	 * @brief Use 'subdivisionRule' info to set 'vert' and 
 	 * 'augVert' data for the specified tile.
 	 * Caution: tileedges are given in rules files
 	 * in clockwise direction (not counterclockwise).
@@ -1411,7 +1414,7 @@ public class TileData {
 	}
 
 	/**
-	 * Given 'tIndx' tile index and 'eIndx' edge index, 
+	 * @brief Given 'tIndx' tile index and 'eIndx' edge index, 
 	 * return the 'augVert' list cclw along that edge, including
 	 * both first and last vertex.
 	 * 
@@ -1452,7 +1455,7 @@ public class TileData {
 	}
 
 	/**
-	 * set 'packData' element of 'TileData' and of its
+	 * @brief set 'packData' element of 'TileData' and of its
 	 * dual and quad TileData. 
 	 * @param td TileData
 	 * @param p PackData, may be null
@@ -1473,7 +1476,7 @@ public class TileData {
 	}
 
 	/**
-	 * Fill in the tileFlower information. Main 
+	 * @brief Fill in the tileFlower information. Main 
 	 * complications are due to possible unigons 
 	 * and digons.
 	 * @param tData TileData
@@ -1622,7 +1625,7 @@ public class TileData {
 	}
 
 	/**
-	 * Are the 'tileFlower's consistent? 
+	 * @brief Are the 'tileFlower's consistent? 
 	 * @return boolean
 	 */
 	public boolean flowerConsistency() {

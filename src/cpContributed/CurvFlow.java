@@ -21,12 +21,13 @@ import util.CmdStruct;
 import util.StringUtil;
 
 /**
+ * @brief "Curvature Flow" originated in a paper by Stephenson, Collins, Driscoll.
+ *
  * "Curvature Flow" originated in a paper by Stephenson, Collins, Driscoll.
  * 
  * This class allows one to experiment. 
  * @author kens
  */
-
 public class CurvFlow extends PackExtender {
 	PackData domainData; 	// starts with euclidean version of maximal packing
 	double []anglesumDiff; 	// anglesum differences: anglesums(packData) - anglesums(domainPack)
@@ -644,7 +645,7 @@ public class CurvFlow extends PackExtender {
 	}
 	
 	/**
-	 * Store the curvatures for boundary vertices in 'bdryCurv',
+	 * @brief Store the curvatures for boundary vertices in 'bdryCurv',
 	 * others set to zero: entry is Pi-anglesum. For (eucl) packing, 
 	 * should sum to 2*Pi(1+branch order). 
 	 * @param p packing
@@ -678,7 +679,7 @@ public class CurvFlow extends PackExtender {
 	}
 	
 	/**
-	 * Store array 'anglesumDiff' of anglesum differences, p-q.
+	 * @brief Store array 'anglesumDiff' of anglesum differences, p-q.
 	 * Initially and by default, q=='domainData', so by adding
 	 * 'angDiff' to 'domainData' angles sums, you get the angle
 	 * sums for p. Can also set using two given packings. Packings
@@ -706,7 +707,7 @@ public class CurvFlow extends PackExtender {
 	}
 	
 	/**
-	 * Store array 'aimDiff' of aim differences, p-q. 
+	 * @brief Store array 'aimDiff' of aim differences, p-q. 
 	 * CAUTION: the user must consider situations when aim
 	 * is negative, as typical with boundary vertices.
 	 * Initially and by default, q=='domainData', so by adding
@@ -734,7 +735,7 @@ public class CurvFlow extends PackExtender {
 	}
 	
 	/**
-	 * Store array 'radRatio' of radii ratios, p/q. 
+	 * @brief Store array 'radRatio' of radii ratios, p/q. 
 	 * Initially and by default, q=='domainData', so multiplying
 	 * its radii by 'radRatio' give radii for p. Can also use
 	 * two specified packings. Packings should be euclidean.
@@ -778,7 +779,7 @@ public class CurvFlow extends PackExtender {
 	
 	 /**
 	  * TODO: OBE, I've built the -bs option for this
-	  * If option '-b' is given and 'curveVector' has something, then substitute
+	  * @brief If option '-b' is given and 'curveVector' has something, then substitute
 	  * 'curveVector' temporarily in place of 'CPBase.baryVector' for the drawing
 	  * command. 
 	  * @param flagSegs flag sequences

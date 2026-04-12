@@ -85,6 +85,8 @@ import util.CPTimer;
 import util.PopupBuilder;
 
 /**
+ * @brief 'PackControl' populates the principal JFrame 'CPBase.
+ *
  * 'PackControl' populates the principal JFrame 'CPBase.frame' for 
  * the CirclePack package.
  */
@@ -455,7 +457,7 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
-	 * Set/reset canvas sizes w.r.t. display size. 'PackControl'
+	 * @brief Set/reset canvas sizes w.r.t. display size. 'PackControl'
 	 * frame size is currently preset and fixed via 'ControlDim'. 
 	 * 
 	 * Find max dimensions of 'activeFrame' and 'mapPairFrame';
@@ -765,7 +767,7 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
-	 * 'OurMenuBar' is main menu bar in 'frame', the principal JFrame.
+	 * @brief 'OurMenuBar' is main menu bar in 'frame', the principal JFrame.
 	 * @return JPanel
 	 */
 	public JPanel OurMenuBar() {
@@ -857,7 +859,7 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
-	 * Return pointer to currently active pack
+	 * @brief Return pointer to currently active pack
 	 * @return CPDrawing
 	 */
 	public static CPdrawing getActiveCPDrawing() {
@@ -866,7 +868,7 @@ MouseMotionListener,FocusListener {
 
 	
 	/**
-	 * Get preferred height of active canvas, config file.
+	 * @brief Get preferred height of active canvas, config file.
 	 * Caution: this may not be current height in 'MainFrame.canvasDim'.
 	 * @return int
 	 */
@@ -875,7 +877,7 @@ MouseMotionListener,FocusListener {
 	}
 
 	/**
-	 * Set startup canvas dimension (from config file)
+	 * @brief Set startup canvas dimension (from config file)
 	 * @param size int
 	 */
 	public static void setActiveCanvasDim(int size) {
@@ -885,7 +887,7 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
-	 * Set startup paired canvas dimension (from config file)
+	 * @brief Set startup paired canvas dimension (from config file)
 	 * @param size int
 	 */
 	public static void setPairedCanvasDim(int size) {
@@ -895,7 +897,7 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
-	 * Get preferred height of paired canvasses.
+	 * @brief Get preferred height of paired canvasses.
 	 * Caution: this may not be current height in 'PairedFrame.canvasDim'.
 	 * @return int
 	 */
@@ -904,7 +906,7 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
-	 * General font size for various windows can be adjusted by
+	 * @brief General font size for various windows can be adjusted by
 	 * increments of the base size (generally 11). 
 	 * @param size int, adjusted to range 0-6.
 	 */
@@ -915,7 +917,7 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
-	 * Get 'fontIncrement'
+	 * @brief Get 'fontIncrement'
 	 * @return int
 	 */
 	public static int getFontIncrement() {
@@ -924,7 +926,7 @@ MouseMotionListener,FocusListener {
 	
 	
 	/**
-	 * switch the currently active pack and update various
+	 * @brief switch the currently active pack and update various
 	 * settings: e.g., mainFrame pack, small canvas border
 	 * color, mainFrame modes, various display panels,
 	 * Mobius panel, etc. 
@@ -955,7 +957,7 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/** 
-	 * Append given string to 'scratch' text area
+	 * @brief Append given string to 'scratch' text area
 	 * @param s String
 	 */
 	public static void displayScratch(String s) {
@@ -966,7 +968,7 @@ MouseMotionListener,FocusListener {
 	}
 
 	/**
-	 * Check how many of the key windows are visible (even if
+	 * @brief Check how many of the key windows are visible (even if
 	 * iconified). When closing windows, need to make sure that
 	 * at least one gives access to CirclePack functionality.
 	 * The key windows are: active, advanced, mappair, message. 
@@ -986,7 +988,7 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
-	 * On true, open the "mapping pair" canvasses and close 'mainFrame',
+	 * @brief On true, open the "mapping pair" canvasses and close 'mainFrame',
 	 * else vice verse.
 	 * @param activate boolean
 	 */
@@ -1016,7 +1018,7 @@ MouseMotionListener,FocusListener {
 	}
 
 	/**
-	 * Open the side-by-side canvasses
+	 * @brief Open the side-by-side canvasses
 	 * @param pnum int
 	 * @param qnum int
 	 */
@@ -1029,7 +1031,7 @@ MouseMotionListener,FocusListener {
 	// ================== abstract methods required by CPBase =============
 
 	/**
-	 * put message in shell
+	 * @brief put message in shell
 	 * @param msgstr String
 	 */
 	public void myMsg(String msgstr) {
@@ -1041,7 +1043,7 @@ MouseMotionListener,FocusListener {
 	}
 
 	/**
-	 * put error message in shell
+	 * @brief put error message in shell
 	 * @param msgstr String
 	 */
 	public void myErrorMsg(String msgstr) {
@@ -1050,7 +1052,7 @@ MouseMotionListener,FocusListener {
 	}
 
 	/**
-	 * put debug message in shell
+	 * @brief put debug message in shell
 	 * @param msgstr String
 	 */
 	public void myDebugMsg(String msgstr) {
@@ -1058,7 +1060,7 @@ MouseMotionListener,FocusListener {
 	}
 
 	/**
-	 * Return active pack number
+	 * @brief Return active pack number
 	 * @return int
 	 */
 	public int getActivePackNum() {
@@ -1066,7 +1068,7 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
-	 * Returns pointer to active packing 'PackData'
+	 * @brief Returns pointer to active packing 'PackData'
 	 * @return PackData
 	 */
 	public PackData getActivePackData() {
@@ -1074,7 +1076,7 @@ MouseMotionListener,FocusListener {
 	}
 
 	/**
-	 * Install packing 'p' in place of 'packings[pnum]'; 
+	 * @brief Install packing 'p' in place of 'packings[pnum]'; 
 	 * former 'packings[pnum]' is generally orphaned. 
 	 * TODO: This replaced 'CPDrawing.swapPackData' and 
 	 * there may be problems in some cases when 'packData'
@@ -1109,7 +1111,7 @@ MouseMotionListener,FocusListener {
 	// done with abstract methods
 	
 	/** 
-	 * Open a command socket at a given port, local host.
+	 * @brief Open a command socket at a given port, local host.
 	 * In future, may change host, may search for unused port,
 	 * etc.
 	 * 
@@ -1222,6 +1224,8 @@ MouseMotionListener,FocusListener {
     }
     
     /**
+ * @brief for closing PackControl, the main frame, and exiting
+ *
      * for closing PackControl, the main frame, and exiting
      */
     class FAdapter extends WindowAdapter {
@@ -1233,6 +1237,8 @@ MouseMotionListener,FocusListener {
 	}
 	
     /**
+ * @brief for closing the activeFrame; just make it invisible
+ *
      * for closing the activeFrame; just make it invisible
      */
 	class WAdapter extends WindowAdapter {

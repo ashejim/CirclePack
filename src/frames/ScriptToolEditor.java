@@ -13,6 +13,8 @@ import mytools.MyToolEditor;
 import mytools.MyToolHandler;
 
 /**
+ * @brief ScriptToolEditor is a popup frame to allow the user to create
+ *
  * ScriptToolEditor is a popup frame to allow the user to create
  * tools to add to the script. Each tool involves a string of
  * commands for CPack, an Icon, and a tooltip. These can be

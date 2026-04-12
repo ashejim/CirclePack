@@ -23,6 +23,8 @@ import packing.PackExtender;
 import util.CmdStruct;
 
 /**
+ * @brief This extender creates data for hexagonal patterns of unit
+ *
  * This extender creates data for hexagonal patterns of unit
  * diameter spheres attached to cylinders. The parameters are
  * combinatorial, the fundamental vector given by p and q, and
@@ -507,7 +509,7 @@ public class CylinderSpheres extends PackExtender {
 	} // end of cmd parsing
 
 	/**
-	 * Build P Q closed necklass starting with
+	 * @brief Build P Q closed necklass starting with
 	 * horizontal edge 'startedge'. So P steps
 	 * horizontal, then a slight left turn and
 	 * Q steps. This is a closed chain of edges.
@@ -548,7 +550,7 @@ public class CylinderSpheres extends PackExtender {
 	}
 
 	/**
-	 * Start from scratch, only knowing p and q, and 
+	 * @brief Start from scratch, only knowing p and q, and 
 	 * compute R, z_1, and errors: abs(p*t1+q*t2-2*pi*R) 
 	 * and abs(p*z1+q*z2). 
 	 * @param p int
@@ -613,7 +615,7 @@ public class CylinderSpheres extends PackExtender {
 	}
 
 	/**
-	 * Give a cylinder of radius R, S0 the base sphere
+	 * @brief Give a cylinder of radius R, S0 the base sphere
 	 * at (R,0,0), S1 tangent to S0 with height z1, find
 	 * height z2>=0 and arclength value t2 of S2 which is
 	 * tangent to both S0 and S1.
@@ -652,7 +654,7 @@ public class CylinderSpheres extends PackExtender {
 	}
 
 	/**
-	 * Adjust R so p*t1+q*t2=2*pi*R=0.
+	 * @brief Adjust R so p*t1+q*t2=2*pi*R=0.
 	 * @param RR double
 	 * @param zz1 double
 	 * @param p int
@@ -682,7 +684,7 @@ public class CylinderSpheres extends PackExtender {
 	}
 
 	/**
-	 * Assuming vertex centers have been set as t+iz,
+	 * @brief Assuming vertex centers have been set as t+iz,
 	 * need to compute the 3D barycenter of the triangle
 	 * for the face on the left of 'edge'
 	 * @param R double, cylinder radius
@@ -722,7 +724,7 @@ public class CylinderSpheres extends PackExtender {
 	}
 
 	/**
-	 * partial derivative of t wrt z. Note t=t1 then 
+	 * @brief partial derivative of t wrt z. Note t=t1 then 
 	 * z=z1, while t=t2 then z=z2.
 	 * @param R double
 	 * @param z double
@@ -734,7 +736,7 @@ public class CylinderSpheres extends PackExtender {
 	}
 	
 	/**
-	 * Given R (and z1), adjust z1 until pz1+qz2=0;
+	 * @brief Given R (and z1), adjust z1 until pz1+qz2=0;
 	 * @param R double
 	 * @param p int
 	 * @param q int
@@ -782,7 +784,7 @@ public class CylinderSpheres extends PackExtender {
 	}
 
 	/**
-	 * Convert planar point t+iz into Point3D on cylinder
+	 * @brief Convert planar point t+iz into Point3D on cylinder
 	 * of radius R
 	 * @param R double
 	 * @param pt Complex

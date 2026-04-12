@@ -24,6 +24,8 @@ import util.CmdStruct;
 import util.ColorUtil;
 
 /**
+ * @brief Alternate procedure for laying out spherical circle packings:
+ *
  * Alternate procedure for laying out spherical circle packings:
  * Identify 4 'beacons', combinatorially well-distributed vertices. 
  * For each, puncture and max pack, then record the inv distances of other
@@ -61,7 +63,6 @@ import util.ColorUtil;
  * @author kstephe2 based on ideas of Edward Crane
  *
  */
-
 public class SphereLayout extends PackExtender {
 	NodeLink beacons;
 	VertGPS []vertGPS;

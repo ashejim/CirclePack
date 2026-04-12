@@ -10,6 +10,8 @@ import packing.PackData;
 import packing.PackExtender;
 import util.CmdStruct;
 /**
+ * @brief OBE: This approach to computing sphere packings did
+ *
  * 
  * OBE: This approach to computing sphere packings did
  * not seem to work out. As of early 2025 I am shifting
@@ -24,7 +26,6 @@ import util.CmdStruct;
  * and manipulation features to help. On request, an
  * auxiliary frame like the current one pops open. 
  */
-
 public class SpherePack extends PackExtender {
 	
 	SphWidget auxFrame;  // auxiliary frame for 'SpherePack' manipulations

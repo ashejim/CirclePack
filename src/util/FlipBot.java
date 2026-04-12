@@ -10,6 +10,9 @@ import packing.PackData;
 import exceptions.CombException;
 import exceptions.ParserException;
 
+/**
+ * @brief Flip Bot.
+ */
 public class FlipBot {
 	
 //	static final int FLIP_NEVER=01;
@@ -71,7 +74,7 @@ public class FlipBot {
 	 *                     here are the two key routines 
 	 * ================================================================= */
 	/**
-	 * This simply chooses the edge flip to carry out based on 
+	 * @brief This simply chooses the edge flip to carry out based on 
 	 * currently established 'flipStrategy'.
 	 * @return EdgeSimple, 'null' if there is to be no flip, (-1,-1) on error.
 	 */
@@ -153,7 +156,7 @@ public class FlipBot {
 	}
 
 	/**
-	 * This chooses the vertex the bot is to move to based on 
+	 * @brief This chooses the vertex the bot is to move to based on 
 	 * 'moveStrategy'; the calling routine carries out the move. 
 	 * If 'edge' is not null, it is the new edge encoded as
 	 * (v_left, v_right) relative to the directed edge that was
@@ -238,7 +241,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * Find candidate nghb vertices for edge flips from homeVert based on 'mode'. 
+	 * @brief Find candidate nghb vertices for edge flips from homeVert based on 'mode'. 
 	 * Have to make up these codes as we need them:
 	 * -1 ==> all petals; 
 	 * 0 ==> largest degree; 
@@ -372,7 +375,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * Assume 'p' itself has already been updated for any combinatorial changes.
+	 * @brief Assume 'p' itself has already been updated for any combinatorial changes.
 	 * This updates the 'FlipBot's locally maintained data: degrees, energy, etc.
 	 * @return int, 1 on success
 	 */
@@ -407,7 +410,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * energy of interior edge (u,v) is (deg(u)+deg(v)) - (deg(a)+deg(b)),
+	 * @brief energy of interior edge (u,v) is (deg(u)+deg(v)) - (deg(a)+deg(b)),
 	 * where a and b are the common neighbors. Assume 'edgeEnergies'
 	 * has been updated. Return vector of petal indices for edges
 	 * having max energy among all edges from 'homeVert'
@@ -428,7 +431,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * Choose a random petal
+	 * @brief Choose a random petal
 	 * @return int, vertex index
 	 */
 	public int moveRandom() {
@@ -437,7 +440,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * Set the vertex this FlipBot is living on. (This is not the
+	 * @brief Set the vertex this FlipBot is living on. (This is not the
 	 * way we usually move a FlipBot to a vertex; generally this
 	 * is done by the FlipBot itself.) 
 	 * @param v int, new 'homeVert'. 
@@ -453,7 +456,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * get name of this FlipBot
+	 * @brief get name of this FlipBot
 	 * @return String
 	 */
 	public String getName() {
@@ -465,7 +468,7 @@ public class FlipBot {
 	}
 
 	/**
-	 * Return the current flip strategy string
+	 * @brief Return the current flip strategy string
 	 * @return
 	 */
 	public String getFlipStrategy() {
@@ -473,14 +476,14 @@ public class FlipBot {
 	}
 	
 	/**
-	 * Here is where we set the flip strategy to a string
+	 * @brief Here is where we set the flip strategy to a string
 	 * @param strat String, 
 	 */
 	public void setFlipStrategy(String strat) {
 		flipStrategy=new String(strat.toLowerCase());
 	}
 	/**
-	 * Return the current move strategy code
+	 * @brief Return the current move strategy code
 	 * @return
 	 */
 	public String getMoveStrategy() {
@@ -488,7 +491,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * Here is where we set the move strategy as a string
+	 * @brief Here is where we set the move strategy as a string
 	 * @param strat String
 	 */
 	public void setMoveStrategy(String strat) {
@@ -496,7 +499,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * Set 'homeVert' to 'v' or to random vertex if 'v' is
+	 * @brief Set 'homeVert' to 'v' or to random vertex if 'v' is
 	 * improper
 	 * @param v int
 	 */
@@ -508,7 +511,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * return the current 'homeVert'
+	 * @brief return the current 'homeVert'
 	 * @return int
 	 */
 	public int getHomeVert() {
@@ -516,7 +519,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * Set 'otherEnd' to the end of edge to flip which is opposite
+	 * @brief Set 'otherEnd' to the end of edge to flip which is opposite
 	 * to 'homeVert'. May be 0 in general.
 	 * @param w int
 	 */
@@ -525,7 +528,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * 'otherEnd' will often be set to zero.
+	 * @brief 'otherEnd' will often be set to zero.
 	 * @return int
 	 */
 	public int getOtherEnd() {
@@ -533,7 +536,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * get the edge from 'previousHome' to 'homeVert' if it
+	 * @brief get the edge from 'previousHome' to 'homeVert' if it
 	 * exists
 	 * @return EdgeSimple, null on error
 	 */
@@ -545,7 +548,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * return 'previoiusHome'
+	 * @brief return 'previoiusHome'
 	 * @return int
 	 */
 	public int getPrevious() {
@@ -553,7 +556,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * set 'previousHome' to 'v' or random vert if 'v' is
+	 * @brief set 'previousHome' to 'v' or random vert if 'v' is
 	 * improper
 	 * @param v int
 	 */
@@ -564,7 +567,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * Assign distinguishing color in [232,248]
+	 * @brief Assign distinguishing color in [232,248]
 	 * @param c
 	 */
 	public void setColor(int c) {
@@ -572,7 +575,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * Retrieve the color assigned to this bot
+	 * @brief Retrieve the color assigned to this bot
 	 * @return Color
 	 */
 	public Color getColor() {
@@ -580,7 +583,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * Store the edge which this bot last flipped
+	 * @brief Store the edge which this bot last flipped
 	 * @param edge EdgeSimple
 	 */
 	public void setLastFlipped(EdgeSimple edge) {
@@ -588,7 +591,7 @@ public class FlipBot {
 	}
 	
 	/**
-	 * Return 'lastFlipped' if it's a valid edge
+	 * @brief Return 'lastFlipped' if it's a valid edge
 	 * @return EdgeSimple, null if not an edge
 	 */
 	public EdgeSimple getLastFlipped() {

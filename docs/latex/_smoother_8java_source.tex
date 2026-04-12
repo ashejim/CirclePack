@@ -1,0 +1,253 @@
+\doxysection{Smoother.\+java}
+\hypertarget{_smoother_8java_source}{}\label{_smoother_8java_source}\index{src/microLattice/Smoother.java@{src/microLattice/Smoother.java}}
+\doxymbox{\hyperlink{_smoother_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00001}00001\ \textcolor{keyword}{package\ }microLattice;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00003}00003\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00005}00005\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00006}00006\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00007}00007\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00008}00008\ \textcolor{keyword}{import}\ geometry.EuclMath;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00009}00009\ \textcolor{keyword}{import}\ input.CommandStrParser;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00010}00010\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00011}00011\ \textcolor{keyword}{import}\ util.PathUtil;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00012}00012\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00037}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother}{00037}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a66d5e2531369904e8b99154e6fc014b8}{Smoother}}\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00038}00038\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00039}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a00f23b94f7de5483b5c192e29be898fa}{00039}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a00f23b94f7de5483b5c192e29be898fa}{MIN\_INV\_DIST}}=0.5;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00040}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a11053a55b622b5f74506fb5437bcd876}{00040}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a11053a55b622b5f74506fb5437bcd876}{MAX\_INV\_DIST}}=3.0;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00041}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a151fd1cd31b2ba051646c495dbf6279a}{00041}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a151fd1cd31b2ba051646c495dbf6279a}{TARGET\_INV\_DIST}}=1.0;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00042}00042\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00043}00043\ \ \ \ \ \doxymbox{\hyperlink{classmicro_lattice_1_1_micro_grid}{MicroGrid}}\ parentMG;\ \ \ \ \ \textcolor{comment}{//\ parent\ MicroGrid,\ null\ for\ standalone}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00044}00044\ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ myPackData;\ \ \ \ \textcolor{comment}{//\ access\ to\ parent\ packing}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00045}00045\ \textcolor{comment}{//\ \ RData[]\ newRData;\ \ \ \ \ \ \ //\ adjusted\ data;\ can\ swap\ out\ to\ visualize\ changes}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00046}00046\ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[]\ origCenters;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00047}00047\ \ \ \ \ \textcolor{keywordtype}{double}[]\ origRadii;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00048}00048\ \ \ \ \ Vector<Complex>\ myPolygon;\ \ \ \textcolor{comment}{//\ polygonal}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00049}00049\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00050}00050\ \ \ \ \ \textcolor{keywordtype}{double}\ minRadius;\ \ \ \ \ \ \ \textcolor{comment}{//\ slightly\ smaller\ than\ smallest\ radius\ (of\ parentMG)}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00051}00051\ \ \ \ \ \textcolor{keywordtype}{double}\ maxRadius;\ \ \ \ \ \ \ \textcolor{comment}{//\ slightly\ larger\ than\ largest}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00052}00052\ \ \ \ \ \textcolor{keywordtype}{double}\ min\_inv\_dist;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00053}00053\ \ \ \ \ \textcolor{keywordtype}{double}\ max\_inv\_dist;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00054}00054\ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[]\ ctr\_force;\ \ \ \ \textcolor{comment}{//\ resultant\ force\ at\ each\ vert}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00055}00055\ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[]\ ctr\_vel;\ \ \ \ \ \ \textcolor{comment}{//\ velocity\ vector\ at\ each\ vert\ ??\ not\ used}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00056}00056\ \ \ \ \ \textcolor{keywordtype}{double}[]\ rad\_vel;\ \ \ \ \ \ \ \textcolor{comment}{//\ ??\ not\ used}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00057}00057\ \ \ \ \ \textcolor{keywordtype}{double}[]\ rad\_force;\ \ \ \ \ \textcolor{comment}{//\ radius\ pressure\ at\ each\ vert}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00058}00058\ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[]\ newCenters;\ \ \ \textcolor{comment}{//\ as\ adjusted}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00059}00059\ \ \ \ \ \textcolor{keywordtype}{double}[]\ newRadii;\ \ \ \ \ \ \textcolor{comment}{//\ as\ adjusted}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00060}00060\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00061}00061\ \ \ \ \ \textcolor{comment}{//\ parameters/settings}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00062}00062\ \ \ \ \ \textcolor{keywordtype}{int}\ bdryMode;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0\ =\ frozen\ bdry\ centers\ -\/-\/\ default}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00063}00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 1\ =\ move\ bdry\ centers\ to\ polygon}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00064}00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 2\ =\ bdry\ circles\ tangent\ to\ polygon}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00065}00065\ \ \ \ \ \textcolor{keywordtype}{double}\ radPressure;\ \ \ \ \textcolor{comment}{//\ in\ [0,1].\ Pressure\ for\ radius\ to\ move\ toward}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ value\ based\ on\ intensity}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00067}00067\ \ \ \ \ \textcolor{keywordtype}{double}\ speed;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ positive,\ typically\ small\ for\ conservative\ adjustments}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00068}00068\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00069}00069\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00070}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a66d5e2531369904e8b99154e6fc014b8}{00070}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a66d5e2531369904e8b99154e6fc014b8}{Smoother}}(\doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p,\doxymbox{\hyperlink{classmicro_lattice_1_1_micro_grid}{MicroGrid}}\ mg)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00071}00071\ \ \ \ \ \ \ \ \ myPackData=p;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00072}00072\ \ \ \ \ \ \ \ \ parentMG=mg;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00073}00073\ \ \ \ \ \ \ \ \ min\_inv\_dist=\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a00f23b94f7de5483b5c192e29be898fa}{MIN\_INV\_DIST}};}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00074}00074\ \ \ \ \ \ \ \ \ max\_inv\_dist=\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a11053a55b622b5f74506fb5437bcd876}{MAX\_INV\_DIST}};}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00075}00075\ \ \ \ \ \ \ \ \ ctr\_force=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[myPackData.nodeCount+1];}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00076}00076\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ the\ polygon;\ should\ be\ a\ single\ component}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a23c728f5a90fcc5cafd5a75ddeae6ccb}{ClosedPath}}!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00079}00079\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<Vector<Complex>>\ comps=\doxymbox{\hyperlink{classutil_1_1_path_util}{PathUtil}}.\doxymbox{\hyperlink{classutil_1_1_path_util_a4e898a2c0ec8ea25310b9491a707835b}{gpPolygon}}(\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a23c728f5a90fcc5cafd5a75ddeae6ccb}{ClosedPath}});}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ myPolygon=comps.get(0);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00081}00081\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00082}00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ unit\ circle\ by\ default}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ myPolygon=\textcolor{keyword}{new}\ Vector<Complex>();}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ incr=Math.PI/90.0;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<180;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ang=(double)(j*incr);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPolygon.add(\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(Math.cos(ang),Math.sin(ang)));}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00089}00089\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00090}00090\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00091}00091\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ default\ parameters?}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00092}00092\ \ \ \ \ \ \ \ \ bdryMode=0;\ \textcolor{comment}{//\ default\ to\ frozen\ bdry}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00093}00093\ \ \ \ \ \ \ \ \ radPressure=0.05;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00094}00094\ \ \ \ \ \ \ \ \ speed=0.1;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00095}00095\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00096}00096\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (parentMG!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ minRadius=.75*parentMG.stepRad[1];}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ maxRadius=1.25*parentMG.stepRad[parentMG.levelCount];}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00100}00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ minRadius=Double.MAX\_VALUE;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ maxRadius=0.0;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPackData.nodeCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad=myPackData.getRadius(v);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00105}00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ minRadius=(rad<minRadius)\ ?\ rad:minRadius;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ maxRadius=(rad>maxRadius)\ ?\ rad:maxRadius;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ make\ a\ little\ room}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ minRadius\ *=0.75;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ maxRadius\ *=1.25;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00111}00111\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00112}00112\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00113}00113\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ copy\ rData}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00114}00114\ \ \ \ \ \ \ \ \ origRadii=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPackData.nodeCount+1];}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00115}00115\ \ \ \ \ \ \ \ \ origCenters=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[myPackData.nodeCount+1];}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00116}00116\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPackData.nodeCount;v++)\ \{\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ origRadii[v]=myPackData.getRadius(v);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ origCenters[v]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(myPackData.getCenter(v));}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00119}00119\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00120}00120\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00121}00121\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ allocate\ space,\ insert\ original\ data}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00122}00122\ \ \ \ \ \ \ \ \ newRadii=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPackData.nodeCount+1];}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00123}00123\ \ \ \ \ \ \ \ \ newCenters=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[myPackData.nodeCount+1];}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00124}00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPackData.nodeCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ newRadii[v]=origRadii[v];}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ newCenters[v]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(origCenters[v]);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00127}00127\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00128}00128\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00129}00129\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00141}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_ac51a4d832261ce2c20f9accfbdfe3939}{00141}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_ac51a4d832261ce2c20f9accfbdfe3939}{computeCycles}}(\textcolor{keywordtype}{int}\ cycles,\textcolor{keywordtype}{int}\ mode)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00142}00142\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00143}00143\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<=cycles;i++)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00144}00144\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode==1)\ \{\ \textcolor{comment}{//\ default}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ compute\ all\ velocities,\ forces}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPackData.nodeCount;v++)}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_acde83261ecc91a4e594e3cc6bed92ff8}{calcForce}}(v);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ then\ apply}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPackData.nodeCount;v++)}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a84839245963a220ade0138ef6de4318f}{applyForce}}(v,speed);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (mode==2)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPackData.nodeCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_acde83261ecc91a4e594e3cc6bed92ff8}{calcForce}}(v);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a84839245963a220ade0138ef6de4318f}{applyForce}}(v,speed);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00159}00159\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ loop}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00160}00160\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00161}00161\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00162}00162\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00168}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a46931e73b339a83dfead2e09a45c3a81}{00168}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a46931e73b339a83dfead2e09a45c3a81}{computeCycles}}(\textcolor{keywordtype}{int}\ cycles)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00169}00169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_ac51a4d832261ce2c20f9accfbdfe3939}{computeCycles}}(cycles,1);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00170}00170\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00171}00171\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00177}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a85c2886d8b88bc5be759e994b45b1739}{00177}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a85c2886d8b88bc5be759e994b45b1739}{dispNewData}}(Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00178}00178\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=0;v<=myPackData.nodeCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00179}00179\ \ \ \ \ \ \ \ \ \ \ \ \ myPackData.setRadius(v,newRadii[v]);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00180}00180\ \ \ \ \ \ \ \ \ \ \ \ \ myPackData.setCenter(v,\ newCenters[v]);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00181}00181\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00182}00182\ \ \ \ \ \ \ \ \ StringBuilder\ strbld=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}disp\ "{}});}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00183}00183\ \ \ \ \ \ \ \ \ strbld.append(\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_af90025878e893063d528b05b0efe6fa9}{reconstitute}}(flagSegs));}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00184}00184\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ans=\doxymbox{\hyperlink{classinput_1_1_command_str_parser}{CommandStrParser}}.\doxymbox{\hyperlink{classinput_1_1_command_str_parser_ad2c354ce742f567dba1b7cd963fb0323}{jexecute}}(myPackData,strbld.toString());}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00185}00185\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00186}00186\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ restore\ original\ data}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00187}00187\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=0;v<=myPackData.nodeCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00188}00188\ \ \ \ \ \ \ \ \ \ \ \ \ myPackData.setRadius(v,origRadii[v]);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00189}00189\ \ \ \ \ \ \ \ \ \ \ \ \ myPackData.setCenter(v,\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(origCenters[v]));}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00190}00190\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00191}00191\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00192}00192\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00193}00193\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00199}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a2e1c8a197897e61067e6a7bbc5a2fa57}{00199}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a2e1c8a197897e61067e6a7bbc5a2fa57}{acceptNewData}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00200}00200\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPackData.nodeCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00201}00201\ \ \ \ \ \ \ \ \ \ \ \ \ myPackData.setRadius(v,newRadii[v]);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00202}00202\ \ \ \ \ \ \ \ \ \ \ \ \ origRadii[v]=newRadii[v];}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00203}00203\ \ \ \ \ \ \ \ \ \ \ \ \ myPackData.setCenter(v,\ \textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(newCenters[v]));}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00204}00204\ \ \ \ \ \ \ \ \ \ \ \ \ origCenters[v]=newCenters[v];}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00205}00205\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00206}00206\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00207}00207\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00208}00208\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00215}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_acde83261ecc91a4e594e3cc6bed92ff8}{00215}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_acde83261ecc91a4e594e3cc6bed92ff8}{calcForce}}(\textcolor{keywordtype}{int}\ v)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00216}00216\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00217}00217\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p=myPackData;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00218}00218\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ F=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(0.0);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00219}00219\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ radF=0.0;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00220}00220\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=0;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00221}00221\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_aa068e76b4eaf6d57fd8de185c340d3f3}{countFaces}}(v)+p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_aa6cd667ae217d2db3c8a4df443824147}{getBdryFlag}}(v);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00222}00222\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a177e9530106e3853d45fb1cf8fef09a0}{packDCEL}}.\doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l_ae1a67384d92394e4ff044871e7870115}{vertices}}[v].\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_a7918014932705f81d3c003f0dcb35062}{getFlower}}(\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00223}00223\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00224}00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=flower[j];}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00225}00225\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ inv\_d=\doxymbox{\hyperlink{classgeometry_1_1_eucl_math}{EuclMath}}.\doxymbox{\hyperlink{classgeometry_1_1_eucl_math_abeb47051278b82db6ef617ba61ea04a5}{inv\_dist}}(newCenters[v],newCenters[w],}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00226}00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newRadii[v],newRadii[w]);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00227}00227\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a8f7e128fda52ed8b8c104e83dca67374}{isBdry}}(v)\ \&\&\ bdryMode>0)\ ||\ inv\_d<min\_inv\_dist\ ||\ inv\_d>max\_inv\_dist)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00228}00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a151fd1cd31b2ba051646c495dbf6279a}{TARGET\_INV\_DIST}}-\/inv\_d;\ \textcolor{comment}{//\ currently\ working\ with\ tangency}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00229}00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ k=1.0;\ \textcolor{comment}{//\ ??\ for\ future\ use?}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00230}00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ uvec=newCenters[w].\doxymbox{\hyperlink{classcomplex_1_1_complex_abf8a9392412c0e349a2d8424a00d0dac}{minus}}(newCenters[w]);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00231}00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ uvecabs=uvec.\doxymbox{\hyperlink{classcomplex_1_1_complex_aec43a8d3e1882921b50f57e27dd8eb67}{abs}}();}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00232}00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ F.\doxymbox{\hyperlink{classcomplex_1_1_complex_a37cceb4559d9d41156e914717c7fdb98}{add}}(uvec.\doxymbox{\hyperlink{classcomplex_1_1_complex_ad3d80696b9c43028347a7f7608c78f99}{times}}(k*x/uvecabs));}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00233}00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ radF\ =+\ k*(uvecabs-\/newRadii[v]-\/newRadii[w]);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00234}00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ N++;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00235}00235\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00236}00236\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00237}00237\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00238}00238\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a8f7e128fda52ed8b8c104e83dca67374}{isBdry}}(v)\ \&\&\ bdryMode>0)\ \{\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00239}00239\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ bdryPt=\doxymbox{\hyperlink{classutil_1_1_path_util}{PathUtil}}.\doxymbox{\hyperlink{classutil_1_1_path_util_aed53a4556da413a51194a606880cdabd}{getClosestPoint}}(newCenters[v],myPolygon);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00240}00240\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ vec=bdryPt.\doxymbox{\hyperlink{classcomplex_1_1_complex_abf8a9392412c0e349a2d8424a00d0dac}{minus}}(newCenters[v]);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00241}00241\ \ \ \ \ \ \ \ \ \ \ \ \ F.\doxymbox{\hyperlink{classcomplex_1_1_complex_a37cceb4559d9d41156e914717c7fdb98}{add}}(vec);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00242}00242\ \ \ \ \ \ \ \ \ \ \ \ \ radF\ +=\ (vec.\doxymbox{\hyperlink{classcomplex_1_1_complex_aec43a8d3e1882921b50f57e27dd8eb67}{abs}}()-\/newRadii[v]);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00243}00243\ \ \ \ \ \ \ \ \ \ \ \ \ N++;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00244}00244\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00245}00245\ \textcolor{comment}{//\ \ \ \ \ \ else\ \{\ //\ ???\ doesn't\ seem\ to\ be\ used}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00246}00246\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ double\ desiredRad=parentMG.getRadius(newCenters[v]);}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00247}00247\ \textcolor{comment}{//\ \ \ \ \ \ \}}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00248}00248\ \ \ \ \ \ \ \ \ ctr\_force[v]=F;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00249}00249\ \ \ \ \ \ \ \ \ rad\_force[v]=radF/N;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00250}00250\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00251}00251\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00257}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a84839245963a220ade0138ef6de4318f}{00257}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a84839245963a220ade0138ef6de4318f}{applyForce}}(\textcolor{keywordtype}{int}\ v,\textcolor{keywordtype}{double}\ t)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00258}00258\ \ \ \ \ \ \ \ \ newRadii[v]\ +=\ rad\_force[v]*t;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00259}00259\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newRadii[v]<=minRadius)}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00260}00260\ \ \ \ \ \ \ \ \ \ \ \ \ newRadii[v]=minRadius;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00261}00261\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (newRadii[v]>=maxRadius)}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00262}00262\ \ \ \ \ \ \ \ \ \ \ \ \ newRadii[v]=maxRadius;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00263}00263\ \ \ \ \ \ \ \ \ newCenters[v]=newCenters[v].add(ctr\_force[v].times(t));}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00264}00264\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00265}00265\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00272}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a7c64c4103c7bd08d121cbb27d083e285}{00272}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a7c64c4103c7bd08d121cbb27d083e285}{setBdryMode}}(\textcolor{keywordtype}{int}\ mode)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00273}00273\ \ \ \ \ \ \ \ \ bdryMode=mode;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00274}00274\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00275}00275\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00276}00276\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00283}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a2663b9813c4f3ab083733361f68ecb86}{00283}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a2663b9813c4f3ab083733361f68ecb86}{setRadPressure}}(\textcolor{keywordtype}{double}\ b)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00284}00284\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (b>=0\ \&\&\ b<=1)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00285}00285\ \ \ \ \ \ \ \ \ \ \ \ \ radPressure=b;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00286}00286\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00287}00287\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00288}00288\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00289}00289\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00290}00290\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00297}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_ad61621089bb21f0282416ab6c6e7b0bb}{00297}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_ad61621089bb21f0282416ab6c6e7b0bb}{setSpeed}}(\textcolor{keywordtype}{double}\ s)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00298}00298\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (s>0\ \&\&\ s<=1)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00299}00299\ \ \ \ \ \ \ \ \ \ \ \ \ speed=s;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00300}00300\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00301}00301\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00302}00302\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00303}00303\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00304}00304\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00309}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_af1ca7aa604a34a681201ed328ca8256b}{00309}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_af1ca7aa604a34a681201ed328ca8256b}{exit}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00310}00310\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (parentMG!=\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00311}00311\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ parentMG.cmdParser(\textcolor{stringliteral}{"{}smoother\ -\/x"{}},\textcolor{keyword}{null});}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00312}00312\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPackData!=\textcolor{keyword}{null}\ \&\&\ myPackData.smoother==\textcolor{keyword}{this})\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00313}00313\ \ \ \ \ \ \ \ \ \ \ \ \ myPackData.smoother=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00314}00314\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00315}00315\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00316}00316\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a256d5abaf313dc969c8d216ec44c71d7}{errMsg}}(\textcolor{stringliteral}{"{}failed\ to\ exit\ 'smoother'"{}});}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00317}00317\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00318}00318\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00319}00319\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00325}\doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a76f45c54c9cac11b2ee34a010229f07b}{00325}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classmicro_lattice_1_1_smoother_a76f45c54c9cac11b2ee34a010229f07b}{reset}}()\ \{\ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00326}00326\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPackData.nodeCount;v++)\ \{}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00327}00327\ \ \ \ \ \ \ \ \ \ \ \ \ newRadii[v]=origRadii[v]=myPackData.getRadius(v);}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00328}00328\ \ \ \ \ \ \ \ \ \ \ \ \ newCenters[v]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(myPackData.getCenter(v));}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00329}00329\ \ \ \ \ \ \ \ \ \ \ \ \ origCenters[v]=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}(myPackData.getCenter(v));}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00330}00330\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00331}00331\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00332}00332\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00333}00333\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_smoother_8java_source_l00334}00334\ \}}
+
+\end{DoxyCode}

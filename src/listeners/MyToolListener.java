@@ -13,6 +13,8 @@ import util.ModeMenuItem;
 import allMains.CPBase;
 
 /**
+ * @brief This is an abstract class for listeners created by MyToolHandlers.
+ *
  * This is an abstract class for listeners created by MyToolHandlers.
  * It creates appropriate bar menus and tool menus (in parallel with 
  * subclasses of the abstract MyToolEditor class).

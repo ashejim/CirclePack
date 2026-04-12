@@ -16,6 +16,8 @@ import listManip.VertexMap;
 import packing.PackData;
 
 /**
+ * @brief This class is for building subdivision tilings
+ *
  * This class is for building subdivision tilings
  * to specified depths. It is a separate class because
  * of the complications involved, particularly the
@@ -46,7 +48,7 @@ public class DepthBuilder {
 	}
     
 	/**
-	 * If 'tData' has 'subRules' and appropriate 
+	 * @brief If 'tData' has 'subRules' and appropriate 
 	 * 'tileType's, then build the canonical circle 
 	 * packing for 'tData' recursively to the given 
 	 * 'depth', attaching 'tData' as its 'tileData'. 
@@ -447,7 +449,7 @@ public class DepthBuilder {
 	}
 	
 	/**
-	 * Create a packing via 'DepthPacking' with 'debug' option
+	 * @brief Create a packing via 'DepthPacking' with 'debug' option
 	 * @param td TileData
 	 * @param d int, depth
 	 * @param m int, mode

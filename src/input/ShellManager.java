@@ -12,6 +12,8 @@ import allMains.CPBase;
 import circlePack.PackControl;
 
 /**
+ * @brief This class manages the static command history buffer, 'runHistory'
+ *
  * This class manages the static command history buffer, 'runHistory'
  * I am trying to run the CirclePack GUT via a unix style 'shell'. 
  * Successive user commands and resulting messages and error messages 
@@ -56,7 +58,7 @@ public class ShellManager {
 	}
 	
 	/**
-	 * Command execution passes info in 'ResultPacket'. 
+	 * @brief Command execution passes info in 'ResultPacket'. 
      * @param rP ResultPacket
      * @param mycon MyConsole, which console issued this command?        
 	 */
@@ -86,7 +88,7 @@ public class ShellManager {
 	}
 	
 	/**
-	 * Add command string and possibly return "count" from command
+	 * @brief Add command string and possibly return "count" from command
 	 * execution.
 	 * @param cmd
 	 * @param count, gives (+-) success count as a string
@@ -107,7 +109,7 @@ public class ShellManager {
 	}
 	
 	/**
-	 * Add msg in blue
+	 * @brief Add msg in blue
 	 * @param msg
 	 */
 	public void recordMsg(String msg) {
@@ -118,7 +120,7 @@ public class ShellManager {
 	}
 	
 	/**
-	 * Add error msg in red
+	 * @brief Add error msg in red
 	 * @param errmsg String
 	 */
 	public void recordError(String errmsg) {
@@ -129,7 +131,7 @@ public class ShellManager {
 	}
 	
 	/**
-	 * Add debug msg in green
+	 * @brief Add debug msg in green
 	 * @param errmsg String
 	 */
 	public void recordDebug(String bugmsg) {

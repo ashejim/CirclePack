@@ -22,6 +22,8 @@ import math.Mobius;
 import util.StringUtil;
 
 /**
+ * @brief This is a new approach to "chaperone" generalized branch
+ *
  * This is a new approach to "chaperone" generalized branch
  * points. The old approach in 'ChapBranchPt' excised a flower,
  * then manipulated it separately from the parent packing. In
@@ -156,7 +158,7 @@ public class ChapBrModPt extends GenBrModPt {
 	}
 
 	/**
-	 * The parameters for 'chaperone' type are (jump1, jump2),
+	 * @brief The parameters for 'chaperone' type are (jump1, jump2),
 	 * (indices for circles jumping to new sister) and 
 	 * associated overlap angles over1, over2.
 	 * @return String
@@ -170,7 +172,7 @@ public class ChapBrModPt extends GenBrModPt {
 	}
 
 	/**
-	 * Chaperone branch point parameters are jump circles 
+	 * @brief Chaperone branch point parameters are jump circles 
 	 * and corresponding overlap angles (to be multiplied by 
 	 * PI here). We read "w1 w2 a1 a2"; a1, a2 are multiplied 
 	 * by Pi and their cosines are stored in cos_overs[] 
@@ -270,7 +272,7 @@ public class ChapBrModPt extends GenBrModPt {
 	// **********************
 	
 	/**
-	 * This incorporates this branch point into 'packData'
+	 * @brief This incorporates this branch point into 'packData'
 	 * @return int, vertCount
 	 */
 	public int modifyPackData() {
@@ -374,7 +376,7 @@ public class ChapBrModPt extends GenBrModPt {
 	}
 
 	/**
-	 * See if there are special actions for display. If so,
+	 * @brief See if there are special actions for display. If so,
 	 * do them, remove them, and pass the rest to 'super'.
 	 * @param flagSegs flag sequences
 	 * @return int count of display actions

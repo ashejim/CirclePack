@@ -18,6 +18,8 @@ import input.MyConsole;
 import input.ShellManager;
 
 /**
+ * @brief Created at startup.
+ *
  * Created at startup. Provides hovering shell/scratch panel.
  * When locked, panes are scrollable and command entry line is
  * added. Hover occurs when mouse is in "Messages" button or

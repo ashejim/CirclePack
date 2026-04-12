@@ -13,6 +13,8 @@ import allMains.CirclePack;
 import complex.Complex;
 
 /**
+ * @brief The idea is to perturb circle packings with bdry centers on
+ *
  * The idea is to perturb circle packings with bdry centers on
  * a given polygonal curve; so we want to perturb the curve
  * and be able to adjust the packing so the centers lie on
@@ -149,7 +151,7 @@ public class ShapeShifter extends PackExtender {
 	}
 	
 	/**
-	 * Convert Path2D.Double to PathLink.
+	 * @brief Convert Path2D.Double to PathLink.
 	 *
 	 * @return PathLink, null on error
 	 */

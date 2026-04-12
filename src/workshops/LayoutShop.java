@@ -21,6 +21,8 @@ import schwarzWork.Schwarzian;
 import util.TriAspect;
 
 /**
+ * @brief Static routines for doing various layout processes.
+ *
  * Static routines for doing various layout processes.
  * 
  * @author kstephe2
@@ -29,7 +31,7 @@ import util.TriAspect;
 public class LayoutShop {
 
 	/**
-	 * Given chain 'hlink' (generally closed), return the list of vertex centers. If
+	 * @brief Given chain 'hlink' (generally closed), return the list of vertex centers. If
 	 * any red vertices are encounted then polygon may cross side-paired edges, so
 	 * we find the chain of faces to its left (closed if hlink is closed) and use
 	 * these in succession to recompute the centers along hlink; the resulting list
@@ -122,7 +124,7 @@ public class LayoutShop {
 	}
 
 	/**
-	 * Given a chain of contiguous 'TriAspect's, assume the j edge of the first is
+	 * @brief Given a chain of contiguous 'TriAspect's, assume the j edge of the first is
 	 * already placed, compute its third center, then continue along aspects setting
 	 * shared centers and fixing third centers. Note: new centers end up in the
 	 * TriAspect's, but are not updated anywhere else.
@@ -158,7 +160,7 @@ public class LayoutShop {
 	}
 
 	/**
-	 * Recompute centers along list of faces; only do 
+	 * @brief Recompute centers along list of faces; only do 
 	 * contiguous faces, and assume first already placed.
 	 * 
 	 * @param pdcel    PackDCEL
@@ -227,7 +229,7 @@ public class LayoutShop {
 	}
 
 	/**
-	 * Update given 'gtri' g using nghb'ing 'ftri' and the 
+	 * @brief Update given 'gtri' g using nghb'ing 'ftri' and the 
 	 * opposite radius 'rad' in g. Note that 'edge' is 
 	 * an edge of f, 'edge.twin' an edge of g. 'gtri' is
 	 * updated with data with f and with new data for opposite
@@ -288,7 +290,7 @@ public class LayoutShop {
 	}
 
 	/**
-	 * Update given 'gtri' g using nghb'ing 'ftri' and 
+	 * @brief Update given 'gtri' g using nghb'ing 'ftri' and 
 	 * the schwarzian for shared 'edge' (which is an 
 	 * oriented edge of f). 'gtri' is updated with 
 	 * data with f and with new data for opposite vertex.
@@ -355,7 +357,7 @@ public class LayoutShop {
 	}
 
 	/**
-	 * Given HalfEdge (v,w) with faces f and g 
+	 * @brief Given HalfEdge (v,w) with faces f and g 
 	 * (left/right resp.), compute the center of vert 
 	 * opposite (w,v) in face g based on data in 
 	 * 'tri_f': either centers for v and w and the 

@@ -19,7 +19,7 @@ import listManip.NodeLink;
 import listManip.VertexMap;
 
 /**
- * This file is for static methods manipulating combinatoric
+ * @brief This file is for static methods manipulating combinatoric
  * structures. These "*_raw" methods typically handle radii
  * and centers only in copying them to new elements and there
  * is almost no dependence on the PackData parent.
@@ -63,6 +63,8 @@ import listManip.VertexMap;
  *
  */
 /**
+ * @brief Low-level DCEL surgery: edge flips, vertex insertions, face splits, and boundary modifications.
+ *
  * @author kstephe2
  *
  */
@@ -70,7 +72,7 @@ public class RawManip {
 	
 	  
 	/**
-	 * Create a new PackDCEL seed with n petals
+	 * @brief Create a new PackDCEL seed with n petals
 	 * @param n int
 	 * @return PackDCEL
 	 */
@@ -93,7 +95,7 @@ public class RawManip {
 	}
 
 	/**
-	 * General "generational" marking routine.
+	 * @brief General "generational" marking routine.
 	 * 'seedstop' entries >0 for "seed" set, <0 for
 	 * "stop" set, 0 for neutral. Seeds are first
 	 * generation, with successive generations
@@ -183,7 +185,7 @@ public class RawManip {
 	}
 	
 	/**
-	 * Add a new vertex which splits this edge and connects
+	 * @brief Add a new vertex which splits this edge and connects
 	 * to shared neighbors. So new vert degree is 3 for bdry
 	 * edge, 4 for interior edge. Red chain should stay intact.
 	 * Call to 'meldEdge_raw' should reverse this using the
@@ -331,7 +333,7 @@ public class RawManip {
 	}
 	
 	/**
-	 * Split 'V' flower into two flowers, depending on 
+	 * @brief Split 'V' flower into two flowers, depending on 
 	 * situation.  
 	 * (1) 'uedge', 'wedge' both non-null, then V must be
 	 * interior: first flower is u --> w about V, while 
@@ -633,7 +635,7 @@ public class RawManip {
 	}
 	
 	/**
-	 * Remove interior degree 3 'vert' (i.e., a "ball bearing")
+	 * @brief Remove interior degree 3 'vert' (i.e., a "ball bearing")
 	 * without introducing new bdry. Adjust 'vertices'. If 'vert' 
 	 * is red, adjust red chain.
 	 * @param pdcel PackDCEL
@@ -768,7 +770,7 @@ public class RawManip {
 	}
 		
 	/**
-	 * Remove a vertex; 'vertices' are adjusted and reindexed,
+	 * @brief Remove a vertex; 'vertices' are adjusted and reindexed,
 	 * with old index in 'vutil'. Calling routine must have
 	 * checked for legality, e.g., whether it leaves an interior 
 	 * neighbor with only 2 neighbors, etc. 'redChain' is lost;
@@ -834,7 +836,7 @@ public class RawManip {
 	}
 
 	/**
-	 * v must be boundary vertex; link cclw and clw nghbs
+	 * @brief v must be boundary vertex; link cclw and clw nghbs
 	 * with a new edge, making v interior. Red chain is 
 	 * adjusted, but calling routine updates combinatorics. 
 	 * If v and its 2 nghbs form an ideal face, make it 
@@ -981,7 +983,7 @@ public class RawManip {
 	}
 
 	/**
-	   * Create a barycenter for face 'edge.face'; 
+	   * @brief Create a barycenter for face 'edge.face'; 
 	   * 'vutil' set to hold reference vert. If 'edge.face'
 	   * is ideal, throw out the red chain; otherwise,
 	   * 'redFlag's, and 'bdryFlag's should remain 
@@ -1076,7 +1078,7 @@ public class RawManip {
 	  }
 		
 	  /**
-	   * Add barycenters to given list of faces. 
+	   * @brief Add barycenters to given list of faces. 
 	   * A barycenter is a new vertex interior to the 
 	   * face and connected to its bdry vertices.
 	   * @param farray ArrayList<dcel.Face>
@@ -1101,7 +1103,7 @@ public class RawManip {
 	  }
 
 	/**
-	   * Add vertex nghb'ing given clw bdry edge (w,u). Set 'vutil' 
+	   * @brief Add vertex nghb'ing given clw bdry edge (w,u). Set 'vutil' 
 	   * of new vertex to 'w' as its reference vertex. If red chain
 	   * exists, adjust it.
 	   * @param pdcel PackDCEL
@@ -1228,7 +1230,7 @@ public class RawManip {
 	  }
 	  
 	  /**
-	   * Given clw bdry edge, add a "box", a rectangle tile with
+	   * @brief Given clw bdry edge, add a "box", a rectangle tile with
 	   * barycenter. If 'fullbox', then attach three new bdry edges
 	   * to given 'edge' to form the box; else two new bdry edges,
 	   * one to base of 'edge' and one to end of 'edge.next'.
@@ -1270,7 +1272,7 @@ public class RawManip {
 	  }
 
 	  /**
-	   * add combinatorics for a layer of "square" 
+	   * @brief add combinatorics for a layer of "square" 
 	   * faces with barycenters, one for each bdry edge, 
 	   * 'v1' to 'v2'. 'vutil' of new vertex is index of 
 	   * reference circle on original bdry. Calling routine 
@@ -1642,7 +1644,7 @@ public class RawManip {
 	  }
 
 	  /**
-	   * If 'rededge' backtracks, we can shrink red chain 
+	   * @brief If 'rededge' backtracks, we can shrink red chain 
 	   * (moving 'redChain' as necessary). No action? return
 	   * 'rededge'. If red chain is just two edges, 
 	   * this becomes a sphere, return null. Else return next
@@ -1702,7 +1704,7 @@ public class RawManip {
 	  }
 	  
 	  /**
-	   * Given initial HalfEdge {v.w}, do two things: 
+	   * @brief Given initial HalfEdge {v.w}, do two things: 
 	   * (1) advance in half-hex direction (pass two edges on left) 
 	   * for new 'baseEdge' {w,u} and
 	   * (2) flip the next clw edge about v, {v,c}, if possible.
@@ -1745,7 +1747,7 @@ public class RawManip {
 	  }
 
 	  /**
-	   * "Flip" an 'edge' in the combinatorics; that means, 
+	   * @brief "Flip" an 'edge' in the combinatorics; that means, 
 	   * to replace 'edge' by the other diagonal in the union
 	   * of its two faces. The numbers of faces, edges, and 
 	   * verts is unchanged. There are combinatoric conditions 
@@ -1850,7 +1852,7 @@ public class RawManip {
 	  }
 
 	  /**
-	   * Either hex or bary refine the given DCEL. 
+	   * @brief Either hex or bary refine the given DCEL. 
 	   * Start either process by first dividing each 
 	   * edge in half. Then either add edges between 
 	   * the new edge vertices (hex refining) or add 
@@ -2278,7 +2280,7 @@ public class RawManip {
 		}
 		  
 		/**
-		 * Routine to 'migrate' a branch point from interior point
+		 * @brief Routine to 'migrate' a branch point from interior point
 		 * v to nghb w. Based on a common geometric method for 
 		 * creating branch points, namely, by attaching two packings 
 		 * along a common slit, the tips of the slits becoming the 
@@ -2369,7 +2371,7 @@ public class RawManip {
 		}
 		  
 		/**
-		 * Add a new vertex to some or all vertices bounding 
+		 * @brief Add a new vertex to some or all vertices bounding 
 		 * an ideal face, starting with 'v' and going cclw about 
 		 * the bdry component (clw about the ideal face) until the
 		 * new vertex neighbors w. If w=v, then we're adding a 
@@ -2422,7 +2424,7 @@ public class RawManip {
 
 			  
 	/**
-	 * If ideal face 'f' has precisely three edges, then 
+	 * @brief If ideal face 'f' has precisely three edges, then 
 	 * make it into a normal face. Check for sphere and
 	 * adjust red chain as necessary.
 	 * @param pdcel
@@ -2564,7 +2566,7 @@ public class RawManip {
 	}
 		  	  
 	/**
-	 * Find an common edge opposite to both v and w: 
+	 * @brief Find an common edge opposite to both v and w: 
 	 * v will be to its left, w to its
 	 * right.
 	 * 
@@ -2584,7 +2586,7 @@ public class RawManip {
 	}
 
 	/**
-	 * Build a raw PackDCEL consisting of n>=3 copies of 'base'
+	 * @brief Build a raw PackDCEL consisting of n>=3 copies of 'base'
 	 * attached about its bdry vertex 'v', each pasting involving
 	 * 'sides'>=1 bdry edges from 'v'.
 	 * @param base PackDCEL
@@ -2621,7 +2623,7 @@ public class RawManip {
 	}
 	
 	/**
-	 * Remove an interior node of degree 4, namely, the
+	 * @brief Remove an interior node of degree 4, namely, the
 	 * origin 'v' of 'edge'. If 'w' is other end, introduce 
 	 * new edge from opposite vertex 'u' to 'w'. (So we
 	 * collapse 'v' to 'u'.) Fix up 'vertices', 'vertCount',
@@ -2645,7 +2647,7 @@ public class RawManip {
 	}
 
 	/**
-	 * Simply swap vertices v and w in a raw PackDCEL
+	 * @brief Simply swap vertices v and w in a raw PackDCEL
 	 * @param pdcel PackDCEL
 	 * @param v int
 	 * @param w int
@@ -2666,7 +2668,7 @@ public class RawManip {
 	}
 	
 	/**
-	 * Fracking is a combinatorial refinement process. Given 
+	 * @brief Fracking is a combinatorial refinement process. Given 
 	 * a vertex, we first add a barycenter to each neighboring face.
 	 * Then we flip each edge shared by two of these faces. Finally,
 	 * we remove any boundary edges of these faces. Return the 
@@ -2707,7 +2709,7 @@ public class RawManip {
 	}
 	
 	/**
-	 * Remove 'edge', which must be bdry or have both ends 
+	 * @brief Remove 'edge', which must be bdry or have both ends 
 	 * interior. 
 	 * + If edge has two interior ends, this creates a new
 	 *   bdry component surrounding the edge, red chain
@@ -2867,7 +2869,7 @@ public class RawManip {
 	}
 	
 	/**
-	 * Meld the two ends of 'edge' <v,w>, orphaning the edge
+	 * @brief Meld the two ends of 'edge' <v,w>, orphaning the edge
 	 * and one end. If <v,w> is cclw bdry edge or <v,w> is 
 	 * interior and w is interior, then orphan w.
 	 * Try to keep the red chain intact, but if too 
@@ -3099,7 +3101,7 @@ public class RawManip {
 	}
 	
 	/**
-	 * Use 'NodeLink' to create a closed chain of new
+	 * @brief Use 'NodeLink' to create a closed chain of new
 	 * red edges. The links must be contiguous and must close up.
 	 * We set 'myEdge's for the 'RedEdge's but do not set
 	 * their 'myRedEdge' or 'Vertex.redFlag's.
@@ -3152,7 +3154,7 @@ public class RawManip {
 	}
 	
 	/**
-	 * Wipe out the linked 'RedEdge's starting with 'redChain': 
+	 * @brief Wipe out the linked 'RedEdge's starting with 'redChain': 
 	 * null 'myEdge' references to 'myRedEdge', null 'redChain', 
 	 * orphan all 'RedEdges' so they can be garbaged. 
 	 * Return 0 if there seems to be a problem -- e.g., the 
@@ -3190,7 +3192,7 @@ public class RawManip {
 	}
 	
 	/**
-	 * Remove the 'Vertex' with index 'v', readjusting 'vertices',
+	 * @brief Remove the 'Vertex' with index 'v', readjusting 'vertices',
 	 * 'vertexCount', and 'oldNew'. If 'oldNew' is null and 'v' 
 	 * is less than 'vertexCount', then 'oldNew' is initiated.
 	 * This code allows various 'raw' routines to be called
@@ -3216,7 +3218,7 @@ public class RawManip {
 	}
 	
 	/**
-	 * Build the 'HalfLink' whose faces define an oriented 
+	 * @brief Build the 'HalfLink' whose faces define an oriented 
 	 * chain outside of 'beach'; beach is typically a closed 
 	 * chain of vertices, as a cclw beach around an island. 
 	 * If 'beach' is all interior, the result should define a
@@ -3352,7 +3354,7 @@ public class RawManip {
 	}
 
 	/**
-	 * Build the 'HalfLink' whose faces define the contiguous
+	 * @brief Build the 'HalfLink' whose faces define the contiguous
 	 * chain of faces to the right of 'hlink'. So these are
 	 * halfedges outward from the right; used, e.g., to get
 	 * the faces surrounding an island. Start with halfedges 

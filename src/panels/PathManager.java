@@ -19,6 +19,8 @@ import allMains.CirclePack;
 import complex.Complex;
 
 /**
+ * @brief This manages paths in the plane, reading, writing, etc.
+ *
  * This manages paths in the plane, reading, writing, etc.
  * TODO: coordinate better with 'PathLink' class. E.g., might
  * read in as PathLink first, then convert.
@@ -30,7 +32,7 @@ public class PathManager {
 	static enum PathReadState {LOOK_FOR_PATH,START_SEG,READ_XY,CLOSE};
 	
 	/**
-	 * Reads a file with 'PATH' data; look in script if 'script_flag' is true,
+	 * @brief Reads a file with 'PATH' data; look in script if 'script_flag' is true,
 	 * else look first in the 'PackingDirectory', then in the 'CurrentDirectory'.
 	 * @param filename
 	 * @param script_flag
@@ -41,7 +43,7 @@ public class PathManager {
 	}
 	
 	/**
-	 * Reads a file with 'PATH' data; look in script if 'script_flag' is true,
+	 * @brief Reads a file with 'PATH' data; look in script if 'script_flag' is true,
 	 * else look first in 'dir', then default to 'PackingDirectory' or 'CurrentDirectory'.
 	 * @param dir File, directory or null to go to default 
 	 * @param filename String, filename alone
@@ -132,7 +134,7 @@ public class PathManager {
 	}
 	
 	/** 
-	 * Write the given path to a file.
+	 * @brief Write the given path to a file.
 	 * @param fp
 	 * @param gpath
 	 * @return
@@ -167,7 +169,7 @@ public class PathManager {
 	  }
 
 	  /**
-	   * Use 'ClosedPath', this returns true if z is
+	   * @brief Use 'ClosedPath', this returns true if z is
 	   * inside the path, else it returns false.
 	   * @param z Complex
 	   * @return boolean
@@ -177,7 +179,7 @@ public class PathManager {
 	  }
 
 	  /**
-	   * Return true if z is inside 'genpath'.
+	   * @brief Return true if z is inside 'genpath'.
 	   * @param z, Complex
 	   * @param genpath, Path2D.Double
 	   * @return boolean

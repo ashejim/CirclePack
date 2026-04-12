@@ -12,6 +12,8 @@ import circlePack.PackControl;
 
 
 /**
+ * @brief Takes care of all dialogs for file (and eventually, web) in/output.
+ *
  * Takes care of all dialogs for file (and eventually, web) in/output.
  * Should rewrite so these also keep track of the directories when they
  * are changed.
@@ -32,7 +34,7 @@ public class FileDialogs {
 	public static final int SUBRULEFILE=10; // subdivision rules file, a la Floyd
 	
 	/**
-	 * Open a dialog
+	 * @brief Open a dialog
 	 * @param type int: 1=SCRIPT, 2=FILE, 3=TOOLS, 4=POSTSCRIPT, 5=JPG, 7=EXTENDER, 8=ABOUT
 	 * @param swDir boolean: true, then reset relevant directory on success
 	 * @return File
@@ -42,7 +44,7 @@ public class FileDialogs {
 	}
 	
 	/**
-	 * Open a dialog
+	 * @brief Open a dialog
 	 * @param type int: 1=SCRIPT, 2=FILE, 3=TOOLS, 4=POSTSCRIPT, 5=JPG, 7=EXTENDER, 8=ABOUT
 	 *        9=DATAFILE, 10=SUBRULEFILE
 	 * @param swDir boolean: true, then reset relevant directory on success

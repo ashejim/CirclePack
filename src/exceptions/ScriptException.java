@@ -1,6 +1,8 @@
 package exceptions;
 
-/** 
+/**
+ * @brief Exception thrown when reading or processing script actions.
+ * 
  * Exception thrown when reading or processing script actions.
  */
 public class ScriptException extends RuntimeException {

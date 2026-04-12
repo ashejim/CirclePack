@@ -8,6 +8,9 @@ import packing.PackExtender;
 import util.CmdStruct;
 import exceptions.DataException;
 
+/**
+ * @brief Flip Machines functionality for circle packing experiments.
+ */
 public class FlipMachines extends PackExtender {
 	Random rand;
 	

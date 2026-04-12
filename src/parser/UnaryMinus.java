@@ -16,6 +16,11 @@ public class UnaryMinus implements Word {
   public String toString() {
     return "(-" + arg +")";
   }
+  /**
+   * @brief TODO: Document evaluate.
+   * @param ev
+   * @return Complex
+   */
   public Complex evaluate(Evaluator ev) {
     Complex d=ev.evaluate(arg);
     d=d.times(-1);

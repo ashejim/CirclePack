@@ -8,6 +8,8 @@ import javax.swing.Icon;
 import javax.swing.JLabel;
 
 /**
+ * @brief This provides a progress indicator
+ *
  * This provides a progress indicator
  * @author kens
  */

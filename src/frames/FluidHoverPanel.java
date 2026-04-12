@@ -15,6 +15,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
+ * @brief The FluidHoverPanel component is a container class that initially appears
+ *
  * The FluidHoverPanel component is a container class that initially appears
  * as a tool tip for its parent component, but locks into a standard frame
  * when moused over. If the frame is currently locked, mousing over the
@@ -67,7 +69,7 @@ public class FluidHoverPanel extends JPanel {
 	private FluidHoverPanel() {}
 
 	/**
-	 * The FluidHoverPanel must be constructed with a reference to its parent
+	 * @brief The FluidHoverPanel must be constructed with a reference to its parent
 	 * component. The passed parent component will display this FluidHoverPanel
 	 * when it is moused over.
 	 * 
@@ -104,7 +106,7 @@ public class FluidHoverPanel extends JPanel {
 	}
 
 	/**
-	 * Set the title of this instance. The title will display
+	 * @brief Set the title of this instance. The title will display
 	 * in the title bar of the locked frame.
 	 * 
 	 * @param title the title of the locked frame
@@ -114,7 +116,7 @@ public class FluidHoverPanel extends JPanel {
 	}
 
 	/**
-	 * Set whether or not this instance is currently locked. A locked
+	 * @brief Set whether or not this instance is currently locked. A locked
 	 * instance will display the panel in a visible and decorated frame.
 	 * 
 	 * @param lock whether or not to lock this instance
@@ -163,7 +165,7 @@ public class FluidHoverPanel extends JPanel {
 	}
 
 	/**
-	 * Determines whether or not this instance is currently locked. If the
+	 * @brief Determines whether or not this instance is currently locked. If the
 	 * instance is locked, the panel is currently displayed in a visible
 	 * and decorated frame.
 	 * 
@@ -183,7 +185,7 @@ public class FluidHoverPanel extends JPanel {
 	}
 
 	/**
-	 * HoverAdapter is the internal class of FluidHoverPanel that controls
+	 * @brief HoverAdapter is the internal class of FluidHoverPanel that controls
 	 * the appearance of the tooltip panel. It is a MouseAdapter that gets
 	 * attached to the parent component when FluidHoverPanel is instantiated,
 	 * and reacts to MouseEvents received by the parent component.

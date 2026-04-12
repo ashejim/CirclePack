@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * @brief C P Multi Server.
+ */
 public class CPMultiServer extends Thread {
 
 		ServerSocket serverSocket = null;

@@ -18,6 +18,8 @@ import util.ColorUtil;
 import util.StringUtil;
 
 /**
+ * @brief 'Percolation' is at least a start at experiments in this
+ *
  * 'Percolation' is at least a start at experiments in this
  * topic. A first target is Cardy's Theorem, though the route
  * via a 'hexamania' type approach is something I still don't
@@ -63,7 +65,6 @@ import util.StringUtil;
  * @author kstephe2
  *
  */
-
 public class Percolation extends PackExtender {
 	
 	Vector<NodeLink> bdryArcs;  // 4 boundary arcs: trying to connect 0 and 2 or 1 and 4
@@ -389,7 +390,7 @@ public class Percolation extends PackExtender {
 	}
 	
 	/**
-	 * Carry out a sequence of percolation experiments, N for each 
+	 * @brief Carry out a sequence of percolation experiments, N for each 
 	 * vertex along the bottom edge (between last two verts3 entries),
 	 * and prepare the data for writing.
 	 * @param p 
@@ -443,7 +444,7 @@ public class Percolation extends PackExtender {
 	}
 	
 	/**
-	 * set conductances and petalTrans; should not change unless we
+	 * @brief set conductances and petalTrans; should not change unless we
 	 * do a repack
 	 * @param true, use simple (versus tailored) random walk
 	 */
@@ -455,7 +456,7 @@ public class Percolation extends PackExtender {
 	}
 	
 	/**
-	 * Carry out experiments
+	 * @brief Carry out experiments
 	 * @param corns
 	 * @param N
 	 * @return
@@ -514,7 +515,7 @@ public class Percolation extends PackExtender {
 	}
 	
 	/**
-	 * go with a random walk
+	 * @brief go with a random walk
 	 * @param nextv if 0, choose random open vert
 	 * @return chosen initial vert; 0 when no further verts available
 	 */
@@ -576,7 +577,7 @@ public class Percolation extends PackExtender {
 	}
 
 	/**
-	 * Recursive routine: vert v is infected if color is between 0 and 200.
+	 * @brief Recursive routine: vert v is infected if color is between 0 and 200.
 	 * If color < 100, it looks for neighboring petals with corresponding 
 	 * marks 244 (light blue), while if color > 100, it looks for 243
 	 * (light red). If it finds such a neighbor, it recursively calls 
@@ -607,7 +608,7 @@ public class Percolation extends PackExtender {
 	}
 
 	/** 
-	 * Does this infected circle complete a path?
+	 * @brief Does this infected circle complete a path?
 	 * @param v int, vertex which is marked 1, 2, 199, or 198
 	 * @return 'completed' if yes; 0 if no.
 	 */
@@ -632,7 +633,7 @@ public class Percolation extends PackExtender {
 	}
 	
 	/**
-	 * Set corners based on NodeLink
+	 * @brief Set corners based on NodeLink
 	 * @param nlist
 	 * @return last corner or 0 on error
 	 */
@@ -648,7 +649,7 @@ public class Percolation extends PackExtender {
 	}
 
 	/**
-	 * Set marks on four boundary segments; each segment starts 
+	 * @brief Set marks on four boundary segments; each segment starts 
 	 * with one of 'corners'. Set marks to 1, 199, 2, 198, in succession.
 	 * The 1 and 2 are "blue" arcs, the 199 and 198 are "red" arcs.
 	 * @return last corner on success, 0 on error
@@ -692,7 +693,7 @@ public class Percolation extends PackExtender {
 	}
 
 	/**
-	 * Start a random walker at v and go until it hits a marked
+	 * @brief Start a random walker at v and go until it hits a marked
 	 * vertex, then set v's mark accordingly. 
 	 * @param v
 	 * @return 0 on failure, 
@@ -744,7 +745,7 @@ public class Percolation extends PackExtender {
 	}
 	
 	/**
-	 * Assume conductances are set, petalTrans are allocated; find the 
+	 * @brief Assume conductances are set, petalTrans are allocated; find the 
 	 * transition probabilities and store in vector for easy random choice. 
 	 * For vertex v with transition probabilities p_vj for petals j=1,2,...,n. 
 	 * Store p_v1, p_v1+p_v2, ...,p_v1+...+p_vn. Get uniform random value x 
@@ -792,6 +793,8 @@ public class Percolation extends PackExtender {
 	}
 	
 	/**
+ * @brief Class containing accumulated transition probabilities;
+ *
 	 * Class containing accumulated transition probabilities;
 	 * 'num' is one less than the number of edges, since don't have
 	 * to check the last one --- it is chosen by default.
@@ -808,7 +811,7 @@ public class Percolation extends PackExtender {
 		}
 
 		/**
-		 * Which petal index does random number indicate
+		 * @brief Which petal index does random number indicate
 		 * based on 'portions'? i.e. first index j so that 
 		 * x <= portions[j].
 		 * @param x random in [0,1]

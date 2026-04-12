@@ -12,6 +12,8 @@ import math.Mobius;
 import packing.PackData;
 
 /**
+ * @brief The "quad" branching was intended to branching that occurs
+ *
  * The "quad" branching was intended to branching that occurs 
  * precisely on an edge between two faces. The numerics are
  * sensitive near tangency points where two circles and two
@@ -67,7 +69,7 @@ public class QuadBrModPt extends GenBrModPt {
 	}
 	
 	/**
-	 * Create packing via a cookie method; set 'vertexMap' and 'bdryLink'
+	 * @brief Create packing via a cookie method; set 'vertexMap' and 'bdryLink'
 	 * @return @see PackData
 	 */
 	public PackData createMyPack() {
@@ -86,7 +88,7 @@ public class QuadBrModPt extends GenBrModPt {
 	}
 	
 	/**
-	 * Quadface branch point parameters are the overlap angles associated with 
+	 * @brief Quadface branch point parameters are the overlap angles associated with 
 	 * the shared edge and face designation for layout. Data should be "n x",
 	 * where n is 1 or 2 (meaning, face f or g, resp) and overlap is x*Pi,
 	 * x in [-1,1]. 

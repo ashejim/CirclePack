@@ -28,6 +28,8 @@ import complex.Complex;
 import exceptions.ParserException;
 
 /**
+ * @brief MobiusToolEditor is a popup frame to allow the user to create
+ *
  * MobiusToolEditor is a popup frame to allow the user to create
  * tools to add to Mobius toolbar. Each tool involves a string of
  * commands for CirclePack, an Icon, and a tooltip. These can be

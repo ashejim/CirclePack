@@ -1,0 +1,55 @@
+\doxysection{Tile\+Rule.\+java}
+\hypertarget{_tile_rule_8java_source}{}\label{_tile_rule_8java_source}\index{src/tiling/TileRule.java@{src/tiling/TileRule.java}}
+\doxymbox{\hyperlink{_tile_rule_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00001}00001\ \textcolor{keyword}{package\ }tiling;}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00003}00003\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00004}00004\ \textcolor{keyword}{import}\ math.Point3D;}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00024}\doxymbox{\hyperlink{classtiling_1_1_tile_rule}{00024}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classtiling_1_1_tile_rule_a10123494d78f4b47bf60e48ef28cef27}{TileRule}}\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00025}00025\ }
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00026}\doxymbox{\hyperlink{classtiling_1_1_tile_rule_a14191a1a5bad84fdf327b5ae45b3d7ea}{00026}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_a14191a1a5bad84fdf327b5ae45b3d7ea}{targetType}};\ \ \textcolor{comment}{//\ 'type'\ (>=\ 4)\ of\ tile\ this\ rule\ applies\ to}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00027}00027\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00028}00028\ \ \ \ \ \textcolor{comment}{//\ broken\ into\ child\ tiles}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00029}\doxymbox{\hyperlink{classtiling_1_1_tile_rule_afa26685f6bb8379d9212c7b70730479d}{00029}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_afa26685f6bb8379d9212c7b70730479d}{childCount}};\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ number\ of\ tiles\ in\ subdivision}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00030}\doxymbox{\hyperlink{classtiling_1_1_tile_rule_abb1cddb2530d9cec5ccbc253626e6fd7}{00030}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[]\ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_abb1cddb2530d9cec5ccbc253626e6fd7}{childType}};\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ types\ start\ at\ 4;\ indexed\ from\ 1}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00031}00031\ \ \ \ \ \textcolor{comment}{//\ rules\ file\ may\ give\ a\ marking\ to\ some\ subtiles.}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00032}00032\ \ \ \ \ \textcolor{comment}{//\ CAUTION:\ independent\ of\ type;\ used\ as\ 'Tile.mark'\ (i.e.,\ inherited\ from\ 'Face.mark')}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00033}00033\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ at\ creation;\ could\ be\ corrupted\ if\ marks\ are\ reset,\ then\ can't\ be\ recovered.}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00034}00034\ \ \ \ \ \textcolor{keywordtype}{int}[]\ childMark;\ }
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00035}00035\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00036}00036\ \ \ \ \ \textcolor{comment}{//\ note:\ children\ are\ indexed\ starting\ at\ 1\ (indexing\ of\ Floyd\ starts\ with\ 0)}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00037}00037\ \ \ \ \ \textcolor{keywordtype}{int}[][][]\ childFlower;\ \ \ \ \ \ \textcolor{comment}{//\ for\ each\ child,\ indices\ of\ nghbs\ (-\/1\ if\ none)\ and}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00038}00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ indices\ within\ that\ nghb\ of\ corresponding\ edges.}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00039}00039\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ temp\ standing\ for\ 'Tile.tileFlower'.}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00040}00040\ \ \ \ \ \textcolor{comment}{//\ e.g.\ childFlower[3][2][0]=4\ means\ child\ 3\ is\ pasted\ to\ child\ 4\ across\ edge\ 2}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00041}00041\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ childFlower[3][2][1]=5\ means\ that\ this\ pasting\ is\ edge\ 5\ of\ child\ 4.}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00042}00042\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00043}00043\ \ \ \ \ \textcolor{comment}{//\ edges\ broken\ into\ child\ edges\ }}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00044}\doxymbox{\hyperlink{classtiling_1_1_tile_rule_a334d1dbb05b3ffcf12e5630ff8128149}{00044}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_a334d1dbb05b3ffcf12e5630ff8128149}{edgeCount}};\ \ \ \ \ \ \ \textcolor{comment}{//\ number\ of\ edges}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00045}\doxymbox{\hyperlink{classtiling_1_1_tile_rule_a53ea9f1028a9b96547f013dc86585080}{00045}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classtiling_1_1_edge_rule}{EdgeRule}}[]\ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_a53ea9f1028a9b96547f013dc86585080}{edgeRule}};\ \textcolor{comment}{//\ number\ each\ original\ edge\ is\ broken\ into,\ indexed\ from\ 0}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00046}00046\ \ \ \ \ \textcolor{comment}{//\ Optional:\ corners\ when\ in\ 'standard'\ position:\ first\ edge\ =\ [0,1].}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00047}\doxymbox{\hyperlink{classtiling_1_1_tile_rule_ab9317db0078b3b3454fe2d05c98bcb72}{00047}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[]\ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_ab9317db0078b3b3454fe2d05c98bcb72}{stdCorners}};}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00048}00048\ \ \ \ \ \textcolor{comment}{//\ further\ option:\ normal\ to\ plane\ of\ the\ face\ in\ 3D:\ face\ lies\ in\ plane}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00049}00049\ \ \ \ \ \textcolor{comment}{//\ \ \ \ determined\ by\ first\ edge\ and\ this\ normal.}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00050}\doxymbox{\hyperlink{classtiling_1_1_tile_rule_a95f71237cae4d22539800cc17e96e7d0}{00050}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classmath_1_1_point3_d}{Point3D}}\ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_a95f71237cae4d22539800cc17e96e7d0}{stdNormal}};}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00051}00051\ \ \ \ \ \textcolor{comment}{//\ Optional:\ base\ edges\ of\ subtiles\ vis-\/a-\/vis\ standard\ position.}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00052}\doxymbox{\hyperlink{classtiling_1_1_tile_rule_a2a68888e7d88b225885391954ab8a8b4}{00052}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}[][]\ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_a2a68888e7d88b225885391954ab8a8b4}{tileBase}};\ \textcolor{comment}{//\ indexed\ from\ 1\ (as\ with\ 'childType')}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00053}00053\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00054}00054\ \ \ \ \ \textcolor{comment}{//\ constructor}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00055}\doxymbox{\hyperlink{classtiling_1_1_tile_rule_a10123494d78f4b47bf60e48ef28cef27}{00055}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_a10123494d78f4b47bf60e48ef28cef27}{TileRule}}(\textcolor{keywordtype}{int}\ tt,\textcolor{keywordtype}{int}\ ecount)\ \{}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00056}00056\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_a14191a1a5bad84fdf327b5ae45b3d7ea}{targetType}}=tt;\ }
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00057}00057\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_a334d1dbb05b3ffcf12e5630ff8128149}{edgeCount}}=ecount;}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00058}00058\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_a53ea9f1028a9b96547f013dc86585080}{edgeRule}}=\textcolor{keyword}{new}\ \doxymbox{\hyperlink{classtiling_1_1_edge_rule}{EdgeRule}}[ecount];}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00059}00059\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ children\ info\ will\ be\ set\ later}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00061}00061\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_abb1cddb2530d9cec5ccbc253626e6fd7}{childType}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00062}00062\ \ \ \ \ \ \ \ \ childFlower=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00063}00063\ \ \ \ \ \ \ \ \ childMark=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00064}00064\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classtiling_1_1_tile_rule_ab9317db0078b3b3454fe2d05c98bcb72}{stdCorners}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00065}00065\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00066}00066\ }
+\DoxyCodeLine{\Hypertarget{_tile_rule_8java_source_l00067}00067\ \}}
+
+\end{DoxyCode}

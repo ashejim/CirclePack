@@ -21,6 +21,9 @@ import exceptions.MiscException;
 import images.CPIcon;
 import mytools.MyTool;
 
+/**
+ * @brief C P Tree Node.
+ */
 public class CPTreeNode extends DefaultMutableTreeNode {
 
   private static final long 
@@ -247,7 +250,7 @@ public class CPTreeNode extends DefaultMutableTreeNode {
   }
   
   /**
-   * Can be 'handy' only if it is a cursor first
+   * @brief Can be 'handy' only if it is a cursor first
    * @return
    */
   public boolean isHandy() {
@@ -261,7 +264,7 @@ public class CPTreeNode extends DefaultMutableTreeNode {
   }
   
   /**
-   * Does this COMMAND or MODE node have #XY?
+   * @brief Does this COMMAND or MODE node have #XY?
    * @return
    */
   public boolean isXY() {
@@ -271,7 +274,7 @@ public class CPTreeNode extends DefaultMutableTreeNode {
   }
 
   /**
-   * Return index of 'refNode' as child of 'parentTN'.
+   * @brief Return index of 'refNode' as child of 'parentTN'.
    * @param parentTN
    * @param refNode
    * @return int, -1 if not a child
@@ -289,7 +292,7 @@ public class CPTreeNode extends DefaultMutableTreeNode {
   }
   
 	/**
-	 * Find maximal contiguous sequence of nodes containing (and of
+	 * @brief Find maximal contiguous sequence of nodes containing (and of
 	 * same type, either 7==COMMAND, or 8=FILE, or 8=MODE, or 5=LINEUP) 
 	 * as refNode which are closed and in DISPLAY mode.
 	 * (all these are to be children of same parent.)
@@ -331,7 +334,7 @@ public class CPTreeNode extends DefaultMutableTreeNode {
 	}
 	
 	/** 
-	 * Consolidation: recursively check child structures under CPSCRIPT, 
+	 * @brief Consolidation: recursively check child structures under CPSCRIPT, 
 	 * SECTION, or CPData for possible consolidations into 'LineSBox's. 
 	 * This is where 'LineSBox's are created, they are destroyed when 
 	 * nodes in them are opened, deleted, created, edited, etc.

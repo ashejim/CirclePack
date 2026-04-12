@@ -12,6 +12,8 @@ import math.Mobius;
 import packing.PackData;
 
 /**
+ * @brief Revised (9/21) parent class for various types of "generalized
+ *
  * Revised (9/21) parent class for various types of "generalized 
  * branch points". Within a complex, a generalized branch point 
  * is a simply connected subcomplex on whose interior circles we 
@@ -129,7 +131,7 @@ public abstract class GenBrModPt {
 	// ************************************************
 
 	/**
-	 * Return latest local holonomy; usually updated after layout
+	 * @brief Return latest local holonomy; usually updated after layout
 	 * when the first edge is in place. This does not affect the
 	 * current centers.
 	 * @return Mobius, null on error

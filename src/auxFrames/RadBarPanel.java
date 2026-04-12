@@ -22,6 +22,10 @@ public class RadBarPanel extends JPanel {
 		rad_bar_power=rbp;
 	}
 	
+	/**
+	 * @brief TODO: Document paintComponent.
+	 * @param g
+	 */
 	public void paintComponent(Graphics g) {
 //		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;

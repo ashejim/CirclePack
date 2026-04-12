@@ -9,6 +9,8 @@ import geometry.CircleSimple;
 import packing.PackCreation;
 
 /**
+ * @brief Work with intrinsic schwarzians of individual
+ *
  * Work with intrinsic schwarzians of individual 
  * closed flowers in normalized setting: 
  * Center C is upper half plane, petal c_n is 
@@ -98,7 +100,7 @@ public class SchFlowerData {
 	}
 	
 	/**
-	 * The uzians must be set and we do computations 
+	 * @brief The uzians must be set and we do computations 
 	 * based on the first n-3 of them, then recompute
 	 * the remaining 3, watching for out-of-bounds values
 	 * @return int 1 if okay, -n if branching of order n,
@@ -199,7 +201,7 @@ public class SchFlowerData {
 	}
 
 	/**
-	 * Given the tangency point of c_{n-3} and the
+	 * @brief Given the tangency point of c_{n-3} and the
 	 * radii of c_{n-4} and c_{n-3}, we can compute
 	 * the tangency point of c_{n-2} and the 3 
 	 * final uzians, u_{n-3}, u_{n-2}, and u_{n-1}.
@@ -220,7 +222,7 @@ public class SchFlowerData {
 	}
 	
 	/**
-	 * Situation 1: Find the tangency point of the
+	 * @brief Situation 1: Find the tangency point of the
 	 * last petal c_{n-2}. Radius 1 is mandated.
 	 * @param u double
 	 * @return
@@ -233,7 +235,7 @@ public class SchFlowerData {
 	}
 	
 	/**
-	 * Situation 2: find petal c1; no radii data needed
+	 * @brief Situation 2: find petal c1; no radii data needed
 	 * since c0 is always radius 1.
 	 * @param u double
 	 * @return double[2], displacement, recip sqrt of radius
@@ -246,7 +248,7 @@ public class SchFlowerData {
 	}
 
 	/**
-	 * The generic situation as we place successive 
+	 * @brief The generic situation as we place successive 
 	 * petals. Note that tdata[0] and tdata[1] may be
 	 * negative when this placement shows branching.
 	 * @param u double
@@ -262,7 +264,7 @@ public class SchFlowerData {
 	}
 	
 	/**
-	 * This takes care of the next petal after one 
+	 * @brief This takes care of the next petal after one 
 	 * leading to branching. The situation occurs when 
 	 * isqR is <= 0 (though ==0 should generally be
 	 * handled separately).
@@ -282,7 +284,7 @@ public class SchFlowerData {
 	}
 	
 	/**
-	 * Compute full array of "constraint" functions 
+	 * @brief Compute full array of "constraint" functions 
 	 * C_j, j=0,...,(N-1), based on given N uzians 
 	 * {u0,u1,...,u(N-1)}. We set C_0=0.0, C_1=1.0, and
 	 * C_{N-1}=1.0 in advance and compute the rest 
@@ -345,7 +347,7 @@ public class SchFlowerData {
 	}
 	
 	/**
-	 * Compute the "error" if given uzians are laid
+	 * @brief Compute the "error" if given uzians are laid
 	 * out as a euclidean n-flower around the unit disc. 
 	 * Use the 'seed' call from 'PackCreation'; we 
 	 * don't need the packing, but CircleSimple.center
@@ -372,7 +374,7 @@ public class SchFlowerData {
 	}
 	
 	/**
-	 * Compute the intrinsic schwarzians for a 
+	 * @brief Compute the intrinsic schwarzians for a 
 	 * uniform flower of N petals with 'anglesum'. 
 	 * Typically, anglesum = multiple of 2*pi.
 	 * @param N int

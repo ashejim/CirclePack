@@ -12,6 +12,8 @@ import listManip.NodeLink;
 import packing.PackData;
 
 /**
+ * @brief A Frame for sliders displaying specified angle sums.
+ *
  * A Frame for sliders displaying specified angle sums.
  * @author kstephe2, June 2020
  *

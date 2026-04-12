@@ -9,21 +9,34 @@ import listManip.HalfLink;
 import util.ColorUtil;
 
 /**
- * DCEL face. Careful, the 'edge' and 'faceIndx' are not
- * persistent data but may be changed, e.g., when 'alpha'
- * is reset. Typically, the 'edge' is chosen based on layout
- * order: its vertices are assumed in place, next vertex 
- * around is computed based on these.
- * 
- * @author kstephe2
+ * @brief DCEL face: a triangular face bounded by three half-edges.
  *
+ * Each face stores a pointer to one of its bounding half-edges
+ * ({@link #edge}); the other two are reachable via {@code edge.next}
+ * and {@code edge.prev}.  The face lies to the <em>left</em> of its
+ * half-edge.
+ *
+ * @note The {@link #edge} pointer and {@link #faceIndx} are not
+ *       persistent — they may be reassigned when the alpha vertex
+ *       is reset or the DCEL is restructured.  Typically, {@code edge}
+ *       is chosen so that its origin and the next vertex are already
+ *       placed, and the third vertex is computed from them.
+ *
+ * Ideal (exterior) faces have {@code faceIndx < 0}.
+ *
+ * @author Ken Stephenson
  */
 public class DcelFace {
 
-	public HalfEdge edge; // 'this' is on the left of its halfedge
-	public int faceIndx;  // utility index for this face
+	/** One bounding half-edge; the face is to its left. */
+	public HalfEdge edge;
+	/** Index of this face (positive for interior, negative for ideal/exterior). */
+	public int faceIndx;
+	/** Display color for this face. */
 	public Color color;
+	/** General-purpose mark for algorithms. */
 	public int mark;
+	/** Temporary utility integer. */
 	public int futil;
 	
 	// Constructor(s)
@@ -39,7 +52,7 @@ public class DcelFace {
 	}
 	
 	/**
-	 * Return the face across the side opposite
+	 * @brief Return the face across the side opposite
 	 * to 'v'. We assume this face has 3 vertices.
 	 * Null on error: e.g., v is not a 
 	 * vertex of this face or if the expected face 
@@ -64,7 +77,7 @@ public class DcelFace {
 	}
 	
 	/**
-	 * Return cclw ordered array of neighboring face indices.
+	 * @brief Return cclw ordered array of neighboring face indices.
 	 * Close up by repeating first entry if there are no ideal
 	 * faces as neighbors. If there is a neighboring ideal face
 	 * (and we assume there is at most one), then return an open
@@ -112,7 +125,7 @@ public class DcelFace {
 	}
 		
 	/**
-	 * Is this an "ideal" face? If yes, return an edge whose twin 
+	 * @brief Is this an "ideal" face? If yes, return an edge whose twin 
 	 * edge has a null face (or an ideal face), else return null
 	 * @return HalfEdge, null if no boundary edge found
 	 */
@@ -127,7 +140,7 @@ public class DcelFace {
 	}
 	
 	/**
-	 * Does this face share an edge (not just a vertex) with an ideal face
+	 * @brief Does this face share an edge (not just a vertex) with an ideal face
 	 * @return 'HalfEdge', first shared, or null if none shared
 	 */
 	public HalfEdge isRed() {
@@ -142,7 +155,7 @@ public class DcelFace {
 	}
 	
 	/**
-	 * Return the edge of 'this' face if its twin is
+	 * @brief Return the edge of 'this' face if its twin is
 	 * an edge of 'gface', else return null. Should 
 	 * work for both normal and ideal faces.
 	 * @param gface Face
@@ -159,7 +172,7 @@ public class DcelFace {
 	}
 	
 	/**
-	 * Return counterclockwise (non-closed) array of vertex indices 
+	 * @brief Return counterclockwise (non-closed) array of vertex indices 
 	 * defining this (possibly ideal) face. 
 	 * @return int[]
 	 */
@@ -168,7 +181,7 @@ public class DcelFace {
 	}
 	
 	/**
-	 * Return counterclockwise (non-closed) array of vertex indices 
+	 * @brief Return counterclockwise (non-closed) array of vertex indices 
 	 * defining this (possibly ideal) face. If v>o, start with v.
 	 * @param v integer, possibly 0 
 	 * @return int[], null if v>) and v is not a vertex
@@ -211,7 +224,7 @@ public class DcelFace {
 	}
 
 	/** 
-	 * Count the number of edges
+	 * @brief Count the number of edges
 	 * @return int
 	 */
 	public int getNum() {
@@ -229,7 +242,7 @@ public class DcelFace {
 	}
 	
 	/**
-	 * Return color, null if null
+	 * @brief Return color, null if null
 	 * @return new Color
 	 */
 	public Color getColor() {
@@ -239,7 +252,7 @@ public class DcelFace {
 	}
 	
 	/**
-	 * set clone of 'col'
+	 * @brief set clone of 'col'
 	 * @param col Color
 	 */
 	public void setColor(Color col) {
@@ -250,7 +263,7 @@ public class DcelFace {
 	}
 	
 	/**
-	 * Find the index of vertex 'v' in the list of vertices around
+	 * @brief Find the index of vertex 'v' in the list of vertices around
 	 * this face. Index 0 is index of the origin of 'face.edge'.
 	 * @param v int
 	 * @return int indx, -1 on error
@@ -268,7 +281,7 @@ public class DcelFace {
 	}
 
 	/**
-	 * Return ordered array of 'HalfEdge's around the face,
+	 * @brief Return ordered array of 'HalfEdge's around the face,
 	 * starting with 'he'; list is open, so first edge is not 
 	 * repeated at the end.
 	 * @return ArrayList<HalfEdge>, null if 'he' not an edge
@@ -286,7 +299,7 @@ public class DcelFace {
 	}
 
 	/**
-	 * Return ordered array of 'HalfEdge's around the face;
+	 * @brief Return ordered array of 'HalfEdge's around the face;
 	 * list is open, so first edge is not repeated at the end.
 	 * The first entry is the 'edge' for this face.
 	 * @return ArrayList<HalfEdge>
@@ -296,7 +309,7 @@ public class DcelFace {
 	}
 	
 	/**
-	 * clone: CAUTION: pointers may be in conflict or outdated, 
+	 * @brief clone: CAUTION: pointers may be in conflict or outdated, 
 	 * @return new Face
 	 */
 	public DcelFace clone() {

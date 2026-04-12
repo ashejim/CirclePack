@@ -25,6 +25,8 @@ import circlePack.PackControl;
 import dragdrop.EditDropListener;
 
 /**
+ * @brief StackBox for SECTION nodes.
+ *
  * StackBox for SECTION nodes. This basically just has a title for now.
  * @author kens
  *
@@ -56,6 +58,9 @@ public class SectionSBox extends StackBox {
 		redisplaySB(myWidth);
 	}
 
+	/**
+	 * @brief TODO: Document buildComponents.
+	 */
 	public void buildComponents() {
 
 		// borders
@@ -127,6 +132,10 @@ public class SectionSBox extends StackBox {
 		headerPanel.setMaximumSize(new Dimension(myWidth,200));
 	}
 
+	/**
+	 * @brief TODO: Document redisplaySB.
+	 * @param wide
+	 */
 	public void redisplaySB(int wide) { // rebuild each time
 		myWidth=wide;
 		removeAll();  // get rid of all child StackBox's
@@ -148,6 +157,9 @@ public class SectionSBox extends StackBox {
 		revalidate();
 	}
 
+	/**
+	 * @brief TODO: Document startEdit.
+	 */
 	public void startEdit() {
 		if (currentMode!=DISPLAY) return;
 
@@ -166,6 +178,9 @@ public class SectionSBox extends StackBox {
 		//AF>>>//
 		// Unlock the viewport and get the stack box in view.
 		EventQueue.invokeLater(new Runnable() {
+			/**
+			 * @brief TODO: Document run.
+			 */
 			public void run() {
 				((LockableJViewport) PackControl.scriptHover.stackScroll.getViewport()).setLocked(false);
 				setViewRect();
@@ -174,6 +189,9 @@ public class SectionSBox extends StackBox {
 		//<<<AF//
 	}
 
+	/**
+	 * @brief TODO: Document cancelEdit.
+	 */
 	public void cancelEdit() {
 		if (currentMode==DISPLAY) return;
 		
@@ -196,6 +214,9 @@ public class SectionSBox extends StackBox {
 		//AF>>>//
 		// Unlock the viewport.
 		EventQueue.invokeLater(new Runnable() {
+			/**
+			 * @brief TODO: Document run.
+			 */
 			public void run() {
 				((LockableJViewport) PackControl.scriptHover.stackScroll.getViewport()).setLocked(false);
 			}
@@ -203,6 +224,9 @@ public class SectionSBox extends StackBox {
 		//<<<AF//
 	}
 
+	/**
+	 * @brief TODO: Document acceptEdit.
+	 */
 	public void acceptEdit() {
 		if (currentMode==DISPLAY) return;
 		
@@ -224,6 +248,9 @@ public class SectionSBox extends StackBox {
 		//AF>>>//
 		// Unlock the viewport.
 		EventQueue.invokeLater(new Runnable() {
+			/**
+			 * @brief TODO: Document run.
+			 */
 			public void run() {
 				((LockableJViewport) PackControl.scriptHover.stackScroll.getViewport()).setLocked(false);
 			}
@@ -253,6 +280,9 @@ public class SectionSBox extends StackBox {
 		//AF>>>//
 		// Unlock the viewport.
 		EventQueue.invokeLater(new Runnable() {
+			/**
+			 * @brief TODO: Document run.
+			 */
 			public void run() {
 				((LockableJViewport) PackControl.scriptHover.stackScroll.getViewport()).setLocked(false);
 			}
@@ -270,10 +300,13 @@ public class SectionSBox extends StackBox {
 		}	
 	}
 
+	/**
+	 * @brief TODO: Document createNewTN.
+	 */
 	public void createNewTN() {	}
 
 	/**
-	 * Create menus for 'SectionSBox's, either edit or display mode.
+	 * @brief Create menus for 'SectionSBox's, either edit or display mode.
 	 * @param editmode boolean: true, then for edit mode
 	 * @return JPopupMenu
 	 */

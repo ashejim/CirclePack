@@ -12,6 +12,8 @@ import util.PathUtil;
 import util.StringUtil;
 
 /**
+ * @brief This code was started by John Bowers in our work on 3D printing.
+ *
  * This code was started by John Bowers in our work on 3D printing.
  * It does the "field-based smoothing" step in our infill pattern work,
  * which modifies an existing packing by moving centers in response
@@ -126,7 +128,7 @@ public class Smoother {
 	}
 	
 	/**
-	 * This actually iterates the radius/center adjustments some
+	 * @brief This actually iterates the radius/center adjustments some
 	 * given number of times using the current parameters.
 	 * There are two modes (for now): 
 	 *  * mode=1 (default): first compute all the adjustments based 
@@ -159,7 +161,7 @@ public class Smoother {
 	}
 
 	/** 
-	 * Compute using default mode=1
+	 * @brief Compute using default mode=1
 	 * @param cycles
 	 * @return
 	 */
@@ -168,7 +170,7 @@ public class Smoother {
 	}
 
 	/**
-	 * display on the screen for myPackData using normal display flags
+	 * @brief display on the screen for myPackData using normal display flags
 	 * @param flagSegs Vector<Vector<String>>
 	 * @return int result for execution call
 	 */
@@ -190,7 +192,7 @@ public class Smoother {
 	}
 	
 	/**
-	 * Replace 'myPackData.rdata' by 'newRData', which has newly
+	 * @brief Replace 'myPackData.rdata' by 'newRData', which has newly
 	 * computed radii and centers
 	 * @return 1
 	 */
@@ -206,7 +208,7 @@ public class Smoother {
 	
 	/**
 	 * TODO: I don't understand what John's code in 'ForceGraphCirclesWithPolygon'
-	 * code does here, have to revisit this.
+	 * @brief code does here, have to revisit this.
 	 * compute 'ctr_force' and 'rad_force' for vertex v
 	 * @param v int 
 	 */
@@ -248,7 +250,7 @@ public class Smoother {
 	}
 
 	/**
-	 * Use the force data to compute 'newRadii', 'newCenters'
+	 * @brief Use the force data to compute 'newRadii', 'newCenters'
 	 * @param v int
 	 * @param t double
 	 */
@@ -262,7 +264,7 @@ public class Smoother {
 	}
 	
 	/**
-	 * What happens to bdry circles? mode=0, freeze in place; mode=1, move to put
+	 * @brief What happens to bdry circles? mode=0, freeze in place; mode=1, move to put
 	 * centers on the polygon; mode=2, make tangent to the polygon. Default is 0.
 	 * @param mode int
 	 * @return 1
@@ -273,7 +275,7 @@ public class Smoother {
 	}
 
 	/**
-	 * Set the 'radPressure' in [0,1]. Towards 1 means more weight
+	 * @brief Set the 'radPressure' in [0,1]. Towards 1 means more weight
 	 * on matching radius to the value based on intensity.
 	 * @param b double
 	 * @return 1 on success, else 0
@@ -287,7 +289,7 @@ public class Smoother {
 	}
 
 	/**
-	 * Set the 'speed', normally small in (0,1]. Larger means more
+	 * @brief Set the 'speed', normally small in (0,1]. Larger means more
 	 * aggressive adjustments.
 	 * @param s double
 	 * @return 1 on success, else 0
@@ -301,7 +303,7 @@ public class Smoother {
 	}
 	
 	/**
-	 * kill this smoother
+	 * @brief kill this smoother
 	 * @return int, 0 on failure
 	 */
 	public int exit() {
@@ -316,7 +318,7 @@ public class Smoother {
 	}
 
 	/**
-	 * Reset 'newRadii'/'newCenters' and 'origRadii'/'origCenters'
+	 * @brief Reset 'newRadii'/'newCenters' and 'origRadii'/'origCenters'
 	 * to values in 'myPackData'
 	 * @return 1
 	 */

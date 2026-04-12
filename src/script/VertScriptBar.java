@@ -19,6 +19,8 @@ import circlePack.PackControl;
 import frames.PairedFrame;
 
 /**
+ * @brief There is a vertical script bar that is attached to
+ *
  * There is a vertical script bar that is attached to
  * 'MainFrame' or to 'PairFrame', whichever is open.
  * We prepare it once and move it to the appropriate

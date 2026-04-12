@@ -1,6 +1,8 @@
 package frames;
 
 /**
+ * @brief This class has been removed and replaced by VariableControlPanel.
+ *
  * This class has been removed and replaced by VariableControlPanel.
  * The new class is exactly the same but does not instantiate and
  * control its own frame.

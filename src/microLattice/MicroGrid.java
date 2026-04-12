@@ -43,6 +43,8 @@ import util.PlatenParams;
 import util.StringUtil;
 
 /**
+ * @brief NOTE: 3/30/17.
+ *
  * NOTE: 3/30/17. This is tailored for constructions associated with 
  * ORNL and 3Dprinting and should be easy to convert to C++ or matlab.
  * The original code started in 'HexPlaten', but has been improved and
@@ -294,7 +296,7 @@ public class MicroGrid extends PackExtender {
 	
 	/**
 	 * TODO: Still working on this new mode=2 situation. 
-	 * We have two effects, the area density attached to faces 
+	 * @brief We have two effects, the area density attached to faces 
 	 * of 'qackData'; this comes with the conformal map. On top 
 	 * of that we may impose an additional density pulled back 
 	 * from the surface under the conformal map. These will be
@@ -320,7 +322,7 @@ public class MicroGrid extends PackExtender {
 	}
 	
 	/**
-	 * Format for intensity file, mode=1 (planar case) 
+	 * @brief Format for intensity file, mode=1 (planar case) 
 	 * (NOTE: i,j are flipped here. Each row is a y-level, 
 	 * each column an x-level
 	 * 
@@ -476,7 +478,7 @@ public class MicroGrid extends PackExtender {
 	}
 	
 	/**
-	 * Here we check the specified parameters and if they're 
+	 * @brief Here we check the specified parameters and if they're 
 	 * in place, we compute the various quantities that depend 
 	 * on them:
 	 * TODO: for future tailoring, we call with a 'mode' 
@@ -710,7 +712,7 @@ public class MicroGrid extends PackExtender {
 	}
 	
 	/**
-	 * Caution: requires data to have been read into p1. Compute 
+	 * @brief Caution: requires data to have been read into p1. Compute 
 	 * the length of the dual graph edges which hit the path.
 	 * @param p PackData
 	 * @return double
@@ -739,7 +741,7 @@ public class MicroGrid extends PackExtender {
 	}
 	
 	/**
-	 * This creates a packing of the 'level' superlattice.
+	 * @brief This creates a packing of the 'level' superlattice.
 	 * It's 'VertexMap' entrys <v,mv> identify each vert v with 
 	 * the associated vert mv in the full microGrid. 
 	 * @param level int
@@ -789,7 +791,7 @@ public class MicroGrid extends PackExtender {
 
 	/**
 	 * TODO: want to allow either formula or data set via interpolation.
-	 * Currently use 'intensityField'.
+	 * @brief Currently use 'intensityField'.
 	 * @param z Complex
 	 * @return non-negative double, intensity; 0 for outside intensity field
 	 */
@@ -822,7 +824,7 @@ public class MicroGrid extends PackExtender {
 	}
 	
 	/**
-	 * Get the radius from 'stepRad' associated with intensity
+	 * @brief Get the radius from 'stepRad' associated with intensity
 	 * at the point z.
 	 * @param z Complex
 	 * @return double
@@ -840,7 +842,7 @@ public class MicroGrid extends PackExtender {
 	}
 
 	/**
-	 * Based on microgrid: fill 'microIntensity' array with 
+	 * @brief Based on microgrid: fill 'microIntensity' array with 
 	 * intensities and find max/min.
 	 *  mode 1: use intensityField; 
 	 *  mode 2: use area density and
@@ -1708,7 +1710,7 @@ public class MicroGrid extends PackExtender {
 	} // end of 'cmdParser'
 	
 	/**
-	 * Make selections up to desired level and step. (Currently, each level 
+	 * @brief Make selections up to desired level and step. (Currently, each level 
 	 * involves 5 steps. If all are completed at level L, then 'lastProcessed'
 	 * is set to L. If something fails in processing or if the S<5 (partial
 	 * processing), then 'lastProcessed' is set to -level.)
@@ -1768,7 +1770,7 @@ public class MicroGrid extends PackExtender {
 
 
 	/**
-	 * This is the heart of the current algorithm, although it is 
+	 * @brief This is the heart of the current algorithm, although it is 
 	 * still under development. 
 	 * 
 	 * Currently each level is a 5-stage process, with circles
@@ -2382,7 +2384,7 @@ public class MicroGrid extends PackExtender {
 	}
 	
 	/**
-	 * After 'processLevel', vertex 'mark' shows status, >0 for those that are
+	 * @brief After 'processLevel', vertex 'mark' shows status, >0 for those that are
 	 * centers, <0 for those that are excluded. This routine marks the faces
 	 * with vertices marked and returns a list of vertices on the boundary
 	 * of the support.
@@ -2438,7 +2440,7 @@ public class MicroGrid extends PackExtender {
 	}
 	
 	/**
-	 * Get vector of 'Node's in 'level' superlattice that are closest
+	 * @brief Get vector of 'Node's in 'level' superlattice that are closest
 	 * to the points with signed microgrid coords (u,w).
 	 * @param level int
 	 * @param u int
@@ -2567,7 +2569,7 @@ public class MicroGrid extends PackExtender {
 	}
 
 	/**
-	 * Build linked list of hex lattice points (in relative
+	 * @brief Build linked list of hex lattice points (in relative
 	 * coords) with at most given distance (in lattice units) 
 	 * about a lattice point; the point itself is not included. 
 	 * (To ensure points are strictly inside given radius, 
@@ -2600,7 +2602,7 @@ public class MicroGrid extends PackExtender {
 	}
 		
 	/**
-	 * Utility to parse 'level' in command strings: usage "-L{n}". Remove first 
+	 * @brief Utility to parse 'level' in command strings: usage "-L{n}". Remove first 
 	 * string of fsegs(0) and return n. 
 	 * @param fsegs Vector<Vector<String>>
 	 * @return int, -1 on error or if input is null
@@ -2622,7 +2624,7 @@ public class MicroGrid extends PackExtender {
 	}
 
 	/**
-	 * Given signed microGrid coords (u,w), return the 'Node' for
+	 * @brief Given signed microGrid coords (u,w), return the 'Node' for
 	 * (u,w) if it is a point in the 'level' superlattice. Return
 	 * null if not.
 	 * @param level int
@@ -2644,7 +2646,7 @@ public class MicroGrid extends PackExtender {
 	}
 	
 	/**
-	 * This initializes 'levelCount', 'gridN[]', 'stepRad[]', 'stepDiam[]', 'stepIntensity[]'.
+	 * @brief This initializes 'levelCount', 'gridN[]', 'stepRad[]', 'stepDiam[]', 'stepIntensity[]'.
 	 * Default (mode==0) means equal increments (using log scale and max ratio). 
 	 * TODO: in future, allow user to specify how to set up relation between radii and intensity
 	 * @param mode
@@ -2753,7 +2755,9 @@ public class MicroGrid extends PackExtender {
 	
 
 	// ======================= internal class ==============================
-	/** 
+	/**
+ * @brief A 'Node' represents a point of the basic microgrid (before scaling).
+ * 
 	 * A 'Node' represents a point of the basic microgrid (before scaling). 
 	 * A node location is in integer coords (n,m), where location is
 	 * v = n*u + m*w where
@@ -2783,7 +2787,7 @@ public class MicroGrid extends PackExtender {
 		}
 		
 		/** 
-		 * Find real world location
+		 * @brief Find real world location
 		 * @return Complex
 		 */
 		public Complex getZ() {

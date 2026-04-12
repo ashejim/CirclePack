@@ -12,6 +12,8 @@ import javax.swing.JTextField;
 import util.xNumField;
 
 /**
+ * @brief Part of the structure for general purpose groups of sliders.
+ *
  * Part of the structure for general purpose groups of sliders.
  * This JPanel contains an object label, a slider, and a value field.
  */
@@ -72,7 +74,7 @@ public class ActiveSlider extends JPanel {
 	}
 	
 	/**
-	 * Read the value from the slider
+	 * @brief Read the value from the slider
 	 * @return double
 	 */
 	public double getValue() {
@@ -95,7 +97,7 @@ public class ActiveSlider extends JPanel {
 	}
 	
 	/**
-	 * set value for slider; this triggers change event
+	 * @brief set value for slider; this triggers change event
 	 * @param val
 	 */
 	public void setValue(double val) {
@@ -105,7 +107,7 @@ public class ActiveSlider extends JPanel {
 	}
 	
 	/**
-	 * update value without change event
+	 * @brief update value without change event
 	 * @param val
 	 */
 	public void updateValue(double val) {
@@ -123,7 +125,7 @@ public class ActiveSlider extends JPanel {
 	}
 	
 	/**
-	 * Handle a slider change event
+	 * @brief Handle a slider change event
 	 * @param event
 	 */
 	public void changeReaction() {

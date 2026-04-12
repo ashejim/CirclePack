@@ -4,6 +4,8 @@ import java.awt.dnd.DragSourceAdapter;
 import java.awt.dnd.DragSourceDropEvent;
 
 /**
+ * @brief For MyTool drag/drop operation.
+ *
  * For MyTool drag/drop operation. This tells source MyTool what 
  * to do after sucessful drop; currently, it does nothing.
  * @author kens

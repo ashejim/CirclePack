@@ -30,6 +30,8 @@ import exceptions.DataException;
 import util.xNumField;
 
 /**
+ * @brief Slider panels occur in 'Pack Info' under the 'Variables' tab
+ *
  * Slider panels occur in 'Pack Info' under the 'Variables' tab
  * in a region below the variables table. Each displays its variable 
  * name, the slider, slider min/max settings, a 'ftn?' checkbox (e.g.
@@ -243,7 +245,7 @@ public class SliderPanel extends JPanel
 	}
 	
 	/**
-	 * Get current value as a string; it should be a double, may send it 
+	 * @brief Get current value as a string; it should be a double, may send it 
 	 * through a function first, but should still be a double, e.g., z*pi.
 	 * 
 	 * CAUTION: this is called 'toString' to override the 
@@ -356,7 +358,7 @@ public class SliderPanel extends JPanel
     }
     
 	/**
-     * value is set or changed, this processes the expression in the 
+     * @brief value is set or changed, this processes the expression in the 
      * ftnField, changing background to yellow if it's in error.
      * @param e
      */

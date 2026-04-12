@@ -9,6 +9,9 @@ import mytools.MyTool;
 import mytools.MyToolHandler;
 import canvasses.MyCanvasMode;
 
+/**
+ * @brief S C R I P T Handler.
+ */
 public class SCRIPTHandler extends MyToolHandler {
 
 	// Constructor 

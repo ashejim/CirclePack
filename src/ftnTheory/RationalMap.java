@@ -32,6 +32,8 @@ import util.EdgeSeg;
 import util.StringUtil;
 
 /**
+ * @brief 'RationalMap' is used to construct discrete meromorphic mappings
+ *
  * 'RationalMap' is used to construct discrete meromorphic mappings
  * on compact surfaces based on given 'slit' and 'pasting' 
  * instructions. (It was started in response to inquiries by Laurent 
@@ -115,7 +117,6 @@ import util.StringUtil;
  * 
  * @author kens, started April 2008
  */
-
 public class RationalMap extends PackExtender {
 
 	final int ERROR=0;
@@ -534,7 +535,7 @@ public class RationalMap extends PackExtender {
 	}
 	
 	/**
-	 * Look for and paste the next pasting in 'pasteCodes', if there
+	 * @brief Look for and paste the next pasting in 'pasteCodes', if there
 	 * is one, else the next "default" pasting (two sides of same slit 
 	 * on same sheet); otherwise, set ERROR or BUILT state.
 	 * @return -1 on error
@@ -682,7 +683,7 @@ public class RationalMap extends PackExtender {
 	}
 	
 	/**
-	 * Paste new sheet 'tSheet' to domainPack by attaching its 'tSlit' to
+	 * @brief Paste new sheet 'tSheet' to domainPack by attaching its 'tSlit' to
 	 * the given edge segment of domainPack. We remove the used slit 
 	 * and add all but 'tSlit' to 'masterESlist'. Also, update 'masterMap'. 
 	 * @param es
@@ -758,7 +759,7 @@ public class RationalMap extends PackExtender {
 	}
 	
 	/**
-	 * Find the segment for sheet sht,slit cut in 'masterESlist'.
+	 * @brief Find the segment for sheet sht,slit cut in 'masterESlist'.
 	 * @return null on error
 	 */
 	public EdgeSeg findMasterES(int sht,int cut) {
@@ -772,7 +773,7 @@ public class RationalMap extends PackExtender {
 	}
 	
 	/**
-	 * See format in comments at top of this file:
+	 * @brief See format in comments at top of this file:
 	 * @param fp BufferedReader, opened by calling routine
 	 * @return 0 on error. 
 	 */
@@ -909,7 +910,7 @@ public class RationalMap extends PackExtender {
 	}
 	
 	/**
-	 * The 'slitLinks' are original half edges of 'slitPack',
+	 * @brief The 'slitLinks' are original half edges of 'slitPack',
 	 * so should be inherited as the cclw oriented half edges
 	 * in bdry of current 'slitPack' (i.e., after 'extractDCEL').
 	 * Now we must set up the various 'EdgeSeg's in 'slits', two
@@ -956,7 +957,7 @@ public class RationalMap extends PackExtender {
 	}
 
 	/**
-	 * Display shell messages with edge segment info; see if all
+	 * @brief Display shell messages with edge segment info; see if all
 	 * startV, endV pairs are matched. If not return 0.
 	 * @return 0 on inconsistency
 	 */
@@ -999,7 +1000,7 @@ public class RationalMap extends PackExtender {
 	}
 	
 	/**
-	 * Find the next pastecode, either specified or default
+	 * @brief Find the next pastecode, either specified or default
 	 * @return PasteCode, or null if none found
 	 */
 	public PasteCode nextPasteCode() {
@@ -1030,7 +1031,7 @@ public class RationalMap extends PackExtender {
 	}
 
 	/**
-	 * Expand a vertex list to its "hex-extended" version, as when the
+	 * @brief Expand a vertex list to its "hex-extended" version, as when the
 	 * packing has been hex-refined. May just return vlist as is. 
 	 * @param packing p, NodeLink vlist
 	 * @return NodeLink (perhaps just vlist itself), null on error/empty

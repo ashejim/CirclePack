@@ -24,6 +24,9 @@ import images.CPIcon;
 import images.IconComboBox;
 import util.PopupBuilder;
 
+/**
+ * @brief My Tool Editor.
+ */
 public abstract class MyToolEditor extends JFrame implements ActionListener {
 
 	private static final long 
@@ -122,7 +125,7 @@ public abstract class MyToolEditor extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * As MyTool's are created by the handler, copies added to theCPIcons
+	 * @brief As MyTool's are created by the handler, copies added to theCPIcons
 	 * so that the user can choose (or rechoose) them in the editors.
 	 * (May eventually want info on which have been used.)
 	 * @param cpIc
@@ -148,7 +151,7 @@ public abstract class MyToolEditor extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * returns the index if '(Object)cpIcon' is in 'theCPIcons' vector.
+	 * @brief returns the index if '(Object)cpIcon' is in 'theCPIcons' vector.
 	 * If it doesn't find the object, it looks for an object with the
 	 * same name (including directory, I think).
 	 * @param cpIcon, CPIcon
@@ -162,7 +165,7 @@ public abstract class MyToolEditor extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * returns the index if 'theCPIcons' vector contains 
+	 * @brief returns the index if 'theCPIcons' vector contains 
 	 * CPIcon with 'name' matching 'iconname' (include directory, 
 	 * eg., "script/idea.png")
 	 * @param String iconname 
@@ -176,7 +179,7 @@ public abstract class MyToolEditor extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * returns the CPIcon at a particular index in theCPIcons
+	 * @brief returns the CPIcon at a particular index in theCPIcons
 	 * @param indx
 	 * @return
 	 */
@@ -190,7 +193,7 @@ public abstract class MyToolEditor extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Can this be dropped into canvasses?
+	 * @brief Can this be dropped into canvasses?
 	 * @return boolean
 	 */
 	public boolean isDropable() {
@@ -198,7 +201,7 @@ public abstract class MyToolEditor extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Enter the info from MyTool into fields
+	 * @brief Enter the info from MyTool into fields
 	 * @param button
 	 */
 	public void setEntries(MyTool mytool) {

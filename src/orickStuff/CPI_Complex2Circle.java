@@ -1,5 +1,8 @@
 package orickStuff;
 
+/**
+ * @brief C P I_ Complex2 Circle.
+ */
 public class CPI_Complex2Circle {
     CPI_Complex2 c;
     double r;

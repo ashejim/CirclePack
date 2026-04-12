@@ -9,6 +9,8 @@ import listManip.EdgeLink;
 import packing.PackData;
 
 /**
+ * @brief These static methods are for working with hex grids,
+ *
  * These static methods are for working with hex grids, 
  * the microGrid of the PackExtender "MicroGrid.java", 
  * various superlattices within that microGrid, etc. 
@@ -19,7 +21,7 @@ import packing.PackData;
 public class GridMethods {
 	
 	/**
-	 * Create hex packing as in 'hexBuild', but by direct build
+	 * @brief Create hex packing as in 'hexBuild', but by direct build
 	 * rather than adding generations in succession and repacking. 
 	 * (Advantage should be speed, but numbering does not spiral 
 	 * out so nicely.) The hex grid here is identified with span 
@@ -208,7 +210,7 @@ public class GridMethods {
 	}
 	
 	/**
-	 * Given equilateral cclw oriented face <a,b,c> in superlattice,
+	 * @brief Given equilateral cclw oriented face <a,b,c> in superlattice,
 	 * find all parent signed coords (u,v) that are inside that
 	 * triangle, on an edge, but not one of a,b,c. Here a, b, c are 
 	 * the verts in the parent grid, so use v2m to translate.
@@ -265,7 +267,7 @@ public class GridMethods {
 	}
 
 	/**
-	 * Find oriented triangles in n generation superlattice 
+	 * @brief Find oriented triangles in n generation superlattice 
 	 * with edge length d which contain the signed coords (u,v)
 	 * in parent. Can get at most 6, so store in 'trips' 6x6 
 	 * array allocated by calling routine. Each row [a1,a2,b1,b2,c1,c2] 
@@ -593,7 +595,7 @@ public class GridMethods {
 	}
 	
 	/**
-	 * Given parent lattice signed coords (u,w) find parent lattice
+	 * @brief Given parent lattice signed coords (u,w) find parent lattice
 	 * signed coords (us,ws) for the closest point to the lower 
 	 * left of (u,v) that corresponds to a superlattice point.
 	 * Here n is the number of superlattice generations, d its edge length,
@@ -620,7 +622,7 @@ public class GridMethods {
 	}
 
 	/** 
-	 * Given (u,v) signed coords in the parent, return (U,V), signed 
+	 * @brief Given (u,v) signed coords in the parent, return (U,V), signed 
 	 * coords in the superlattice, or null if (u,v) does not 
 	 * fall precisely on a superlattice location. The parent lattice
 	 * is 'pn' generations, the superlattice n generations with edge 
@@ -644,7 +646,7 @@ public class GridMethods {
 	}
 	
 	/** 
-	 * Get signed coords (u,w) in the parent lattice. The parent lattice
+	 * @brief Get signed coords (u,w) in the parent lattice. The parent lattice
 	 * is 'pn' generations, the superlattice n generations with edge 
 	 * length d. Given (U,W) signed coords in the superlattice, return (u,w), 
 	 * signed coords in the parent. 
@@ -664,7 +666,7 @@ public class GridMethods {
 	}
 
 	/**
-	 * are (U,V) legal signed coords for point in superlattice of 
+	 * @brief are (U,V) legal signed coords for point in superlattice of 
 	 * 'n' generations? Note that -n <= U,W <= n, so they may be negative.
 	 * @param U int
 	 * @param W int
@@ -682,7 +684,7 @@ public class GridMethods {
 	}
 	
 	/**
-	 * Relative grid coords for 6 neighbors at distance d in
+	 * @brief Relative grid coords for 6 neighbors at distance d in
 	 * our slanted hex arrangement.
 	 * @param d int
 	 * @return Edgelink  
@@ -699,7 +701,7 @@ public class GridMethods {
 	}
 
 	/**
-	 * Given (us,ws), signed coords in parent grid, for a vert 
+	 * @brief Given (us,ws), signed coords in parent grid, for a vert 
 	 * which lies in a superlattice of n generations with edge 
 	 * length d, return 'EdgeLink' of signed coords (u,w) in 
 	 * parent (possibly illegal) for any superlattice 'ghost' nghbs, 

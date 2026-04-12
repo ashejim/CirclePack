@@ -16,6 +16,8 @@ import javax.swing.JPopupMenu;
 import exceptions.InOutException;
 
 /**
+ * @brief Container for images on 'ImagePanel'; contains
+ *
  * Container for images on 'ImagePanel'; contains 
  * thumbnail image, name of actual file (with thumb 
  * index, 'id', '.*' extension), name for label, 
@@ -55,6 +57,11 @@ public class ThumbNail extends JPanel implements MouseListener {
 		add(label,BorderLayout.SOUTH);
 	}
 	
+	/**
+	 * @brief TODO: Document loadThumbImage.
+	 * @param file
+	 * @return ImageIcon
+	 */
 	public ImageIcon loadThumbImage(File file) {
 		ImageIcon tmp=null;
 		try {
@@ -66,10 +73,30 @@ public class ThumbNail extends JPanel implements MouseListener {
 		return tmp;
 	}
 
+	/**
+	 * @brief TODO: Document mouseEntered.
+	 * @param ev
+	 */
 	public void mouseEntered(MouseEvent ev) {}
+	/**
+	 * @brief TODO: Document mouseExited.
+	 * @param ev
+	 */
 	public void mouseExited(MouseEvent ev) {}
+	/**
+	 * @brief TODO: Document mouseClicked.
+	 * @param ev
+	 */
 	public void mouseClicked(MouseEvent ev) {}
+	/**
+	 * @brief TODO: Document mouseReleased.
+	 * @param ev
+	 */
 	public void mouseReleased(MouseEvent ev) {}
+	/**
+	 * @brief TODO: Document mousePressed.
+	 * @param e
+	 */
 	public void mousePressed(MouseEvent e) {
 		thumbMenu.show((Component)e.getSource(),e.getX(),e.getY());
 	}

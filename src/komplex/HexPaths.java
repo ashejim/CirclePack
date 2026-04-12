@@ -6,6 +6,8 @@ import listManip.EdgeLink;
 import packing.PackData;
 
 /**
+ * @brief Hex and hex related paths are important in combinatorics considerations.
+ *
  * Hex and hex related paths are important in combinatorics considerations.
  * Various static utility routines will be built here.
  * @author kens
@@ -15,7 +17,7 @@ public class HexPaths {
 	static PackData p;
 
 	/**
-	 * A 'half-hex' path is a directed edgepath with 2 edges incident on the 
+	 * @brief A 'half-hex' path is a directed edgepath with 2 edges incident on the 
 	 * left at every interior vertex. It is determined by an initial edge,
 	 * certain necessary start/stop conditions, and possibly optional "stop"
 	 * conditions. Return 'EdgeLink' or null on error.

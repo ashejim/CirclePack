@@ -2,6 +2,9 @@ package orickStuff;
 
 import java.util.Vector;
 
+/**
+ * @brief C P I_ C P File Section.
+ */
 public class CPI_CPFileSection {
 	String label;
 	Vector<CPI_CPFileToken> tokenList;

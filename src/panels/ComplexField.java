@@ -7,6 +7,8 @@ import javax.swing.JTextField;
 import complex.Complex;
 
 /**
+ * @brief ComplexField class.
+ *
  * <p>
  * Title:
  * </p>
@@ -23,7 +25,6 @@ import complex.Complex;
  * @author not attributable
  * @version 1.0
  */
-
 public class ComplexField extends JPanel {
 
 	private static final long 
@@ -69,6 +70,9 @@ public class ComplexField extends JPanel {
 		}
 	}
 
+	/**
+	 * @brief TODO: Document jbInit.
+	 */
 	public void jbInit() {
 		l.setText(defaultLabel);
 		tf.setText(defaultValue);

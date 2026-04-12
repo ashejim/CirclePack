@@ -18,6 +18,8 @@ import util.CmdStruct;
 import util.StringUtil;
 
 /**
+ * @brief This extender is aimed at the study of 'jammed' packings of
+ *
  * This extender is aimed at the study of 'jammed' packings of
  * equal sized discs. It was started in November 2017 in conjunction
  * with Varda Faghir (Arizona State). The data of interest is a
@@ -420,7 +422,7 @@ public class JammedPack extends PackExtender {
 	} // end of 'cmdParser'
 	
 	/**
-	 * Add a new edge between original vertices. The edge is from v to w
+	 * @brief Add a new edge between original vertices. The edge is from v to w
 	 * within the paver with barycenter b. Note that we increase the number
 	 * of vertices by 1. Calling routine updates the packing.
 	 * @param v int

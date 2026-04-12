@@ -7,6 +7,8 @@ import javax.swing.JMenuItem;
 import canvasses.MyCanvasMode;
 
 /**
+ * @brief 'MyCanvasMode' objects are created along with a popup
+ *
  * 'MyCanvasMode' objects are created along with a popup
  * menu item; this class allows us to keep track of 
  * the parent mode.

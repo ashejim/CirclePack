@@ -18,9 +18,32 @@ import packing.PackData;
 import util.TriData;
 
 /**
- * Euclidean repacking with DCEL structures
- * @author kstephe2 1/2021
+ * @brief Euclidean circle-packing repacker using DCEL data structures.
  *
+ * Implements Thurston's iterative radius-adjustment algorithm for
+ * Euclidean geometry.  The core loop ({@link #continueRiffle}) works
+ * as follows:
+ *
+ * 1. For each adjustable vertex v, compute the current angle sum
+ *    θ(v) from the surrounding radii.
+ * 2. Use the "uniform neighbor model" (UNM) to predict a new radius:
+ *    if v has 2N neighbors and the target angle sum is α, then
+ *        r_new = r · sin(θ/2N) · (1 − sin(α/2N))
+ *                  / [sin(α/2N) · (1 − sin(θ/2N))].
+ * 3. Apply a "superstep" acceleration: extrapolate along the direction
+ *    of change by a factor λ, computed adaptively to ensure the
+ *    accumulated error decreases.
+ * 4. Repeat until the L² error ‖θ − α‖₂ drops below tolerance or
+ *    the pass limit is reached.
+ *
+ * Also provides {@link #d_oldReliable}, a simpler but more robust
+ * fallback that uses a secant-method radius calculation per vertex,
+ * accommodating general inversive distances.
+ *
+ * @see RePacker       Abstract base class.
+ * @see HypPacker      Hyperbolic counterpart.
+ * @see GOpacker       Linearized (GOpack) alternative.
+ * @author Ken Stephenson (1/2021)
  */
 public class EuclPacker extends RePacker {
 	
@@ -43,7 +66,7 @@ public class EuclPacker extends RePacker {
     }
   
     /**
-     * Load relevant radius data into 'PackDCEL.triData'.
+     * @brief Load relevant radius data into 'PackDCEL.triData'.
      * @return LOADED =1 or FAILURE = -1
      */
     public int load() {
@@ -206,8 +229,21 @@ public class EuclPacker extends RePacker {
     }
     
     /**
-     * Continue riffling if status is RIFFLE; reset the passLimit.
-     * (We don't change 'totalPasses'.)
+     * @brief Continue the iterative repacking loop with superstep acceleration.
+     *
+     * This is the main computational engine.  Each pass consists of:
+     *   1. A UNM (uniform neighbor model) radius update for every adjustable vertex.
+     *   2. A superstep: extrapolate the radius changes by factor λ to accelerate
+     *      convergence, subject to safety bounds.
+     *   3. A verification pass: recompute angle sums with extrapolated radii and
+     *      check that the error actually decreased.
+     *
+     * The superstep uses two strategies (key=1 and key=2) and switches between
+     * them adaptively based on the ratio of actual vs. predicted improvement.
+     *
+     * @param passL  Maximum number of passes for this call.
+     * @return RIFFLE on success.
+     * @throws PackingException on negative radii or excessive bad cuts.
      */
     public int continueRiffle(int passL) throws PackingException {
 	double fbest;
@@ -218,29 +254,34 @@ public class EuclPacker extends RePacker {
 	localPasses=0;
 	passLimit=passL;
 
-	// Begin Main Loop 
+	// ============ Begin Main Loop ============
+	// Iterate until L2 error is below tolerance or pass limit reached
 	while ((accumErr2 >ttoler && localPasses<passLimit)) {
 	    
+	    // Snapshot current radii before this pass (for superstep computation)
 	    for (int i=1;i<=p.nodeCount;i++) 
 	    	R1[i] = getTriRadius(i);
 	    
 	    int numBadCuts = 0;
 	    double factor=0.0;
-	    do {   // Make sure factor < 1.0
+	    do {   // Retry loop: ensure error ratio factor < 1.0 (i.e., progress)
 	    	c1 = 0.0;
 	    	for (int j=0;j<aimnum;j++) {
 	  		  
-	            int v = index[j];   // point to active node
-	            faim = p.packDCEL.vertices[v].aim; // get target sum 
-	            double ra = getTriRadius(v);    // get present label
+	            int v = index[j];   // index of adjustable vertex
+	            faim = p.packDCEL.vertices[v].aim; // target angle sum α(v)
+	            double ra = getTriRadius(v);    // current radius r(v)
 	            
-		    	// compute anglesum inline (using local data)
+		    	// Compute current angle sum θ(v) from surrounding radii
 		    	fbest=compTriCurv(v,ra);
 	            
-	            // use the model to predict the next value 
+	            // === Uniform Neighbor Model (UNM) prediction ===
+	            // Model: if v had 2N equal neighbors, each face angle
+	            // would be θ/(2N).  The radius producing target α/(2N) is:
+	            //   r_new = r · sin(θ/2N)(1−sin(α/2N)) / [sin(α/2N)(1−sin(θ/2N))]
 	            int N = 2*vNum[v];
-	            double del = Math.sin(faim/N);
-	            double bet = Math.sin(fbest/N);
+	            double del = Math.sin(faim/N);   // sin(α/2N)
+	            double bet = Math.sin(fbest/N);  // sin(θ/2N)
 	            double r2 = ra*bet*(1-del)/(del*(1-bet));
 	            // store as new radius label 
 	            if (r2<0) 
@@ -275,45 +316,50 @@ public class EuclPacker extends RePacker {
 	    }
 	    cntBadCuts++;
 	    
-	    // ================= superstep calculation ==================== 
+	    // ========== Superstep Acceleration ==========
+	    // After one UNM pass, radii moved from R1→R2 with error
+	    // reduction factor = c1/accumErr2.  We extrapolate further
+	    // along direction (R2−R1) by factor λ to speed convergence.
 	    
-	    // new values 
+	    // Snapshot post-UNM radii
 	    for (int i=1;i<=p.nodeCount;i++) 
 	    	R2[i] = getTriRadius(i);
 	    
-	    // find maximum step one can safely take
+	    // Find maximum safe λ: need R2+λ(R2−R1) > 0 for all vertices.
+	    // For vertices where radius decreased (R2−R1 < 0),
+	    // λ must be < R2/(R1−R2) to keep radius positive.
 	    double lmax = 10000;
 	    double fact0=0.0;
-	    for (int j=0;j<aimnum;j++) {       // find max step 
+	    for (int j=0;j<aimnum;j++) {
 		int v = index[j];
-		double rat = R2[v] - R1[v];
+		double rat = R2[v] - R1[v];   // direction of change
 		double tr=0.0;
 		if (rat < 0)
-		    lmax = (lmax < (tr= (-R2[v]/rat))) ? lmax : tr; // to keep R>0
+		    lmax = (lmax < (tr= (-R2[v]/rat))) ? lmax : tr;
 	    }
-	    lmax = lmax/2;
+	    lmax = lmax/2;  // safety factor of 2
 	    
-	    // do super step
+	    // Compute λ using one of two strategies
 	    double lambda=0.0;
-	    if (key==1) {            //  type 1  SS 
+	    if (key==1) {            // Type 1: growing multiplier m
 	    	lambda = m*factor;
-	    	double mmax = 0.75/(1-factor);               // upper limit on m
+	    	double mmax = 0.75/(1-factor);   // cap on multiplier
 	    	double mm=0.0;
 	    	m = (mmax < (mm=(1+0.8/(sct+1))*m)) ? mmax : mm;
 	    }
-	    else  {               //  type 2 SS
+	    else  {               // Type 2: geometric extrapolation
 	    	fact0=0.0;
 	    	double ftol=0.0;
-	    	if (sct>fct && Math.abs(factor-fact0)<ftol) { // try SS-2 
-	    		lambda = factor/(1-factor);
+	    	if (sct>fct && Math.abs(factor-fact0)<ftol) {
+	    		lambda = factor/(1-factor);  // geometric series sum
 		    sct = -1;
 		}
 		else
-		    lambda = factor;               // do something 
+		    lambda = factor;               // fallback
 	    }
-	    lambda = (lambda>lmax) ? lmax : lambda;
+	    lambda = (lambda>lmax) ? lmax : lambda;  // clamp to safe max
 	    
-	    // interpolate new labels
+	    // Apply superstep: R_new = R2 + λ·(R2 − R1)
 	    for (int j=0;j<aimnum;j++) {
 	    	int v = index[j];
 	    	double nwr=R2[v]+lambda*(R2[v]-R1[v]);
@@ -324,54 +370,55 @@ public class EuclPacker extends RePacker {
 	    sct++;
 	    fact0 = factor;
 	    
-	    // end of superstep 
-	    
-	    // do step/check superstep 
+	    // ========== Verify Superstep ==========
+	    // Recompute angle sums with extrapolated radii and do
+	    // one more UNM update to check improvement.
 	    accumErr2 = 0;                             
 	    for (int j=0;j<aimnum;j++) {
 			int v = index[j];
 
-	        faim = p.packDCEL.vertices[v].aim; // get target sum 
-	        double rc = getTriRadius(v);    // get present label
+	        faim = p.packDCEL.vertices[v].aim;
+	        double rc = getTriRadius(v);
 	        
-	    	// compute anglesum inline (using local data)
+	    	// Recompute angle sum after superstep
 	        fbest=compTriCurv(v,rc);
 
-	        // use the model to predict the next value
+	        // UNM prediction from post-superstep state
 	        int N = 2*vNum[v];
-			// set up for model 
 
 			double del = Math.sin(faim/N);
 			double bet = Math.sin(fbest/N);
 			
 	        double r2 = rc*bet*(1-del)/(del*(1-bet));
-	        // store as new radius label 
 	        if (r2<0) 
 	        	throw new PackingException();
 	        setTriRadius(v,r2);
-	        p.packDCEL.vertices[v].curv = fbest;       /* store new angle sum */
+	        p.packDCEL.vertices[v].curv = fbest;
 	        fbest -= faim;
-	        accumErr2 += fbest*fbest;   /* accum abs error */
+	        accumErr2 += fbest*fbest;
 	    }
         accumErr2 = Math.sqrt(accumErr2);
         
-	    // check results 
-	    double pred = Math.exp(lambda*Math.log(factor)); // predicted improvement
-	    double act = accumErr2/c1;                   // actual improvement 
-	    if (act<1) {                   // did some good 
-	    	if (act>pred) {          // not as good as expected: reset 
+	    // ========== Evaluate Superstep Outcome ==========
+	    // Compare actual error reduction to the predicted reduction
+	    // factor^λ (linear convergence extrapolation).
+	    double pred = Math.exp(lambda*Math.log(factor)); // predicted: factor^λ
+	    double act = accumErr2/c1;                   // actual ratio
+	    if (act<1) {                   // error decreased: superstep helped
+	    	if (act>pred) {          // but not as much as predicted: reset multiplier
 	    		m = 1;
 	    		sct = 0;
-	    		if (key==1) key = 2;
-	    	}                       // implied else: accept result 
+	    		if (key==1) key = 2;  // switch superstep strategy
+	    	}
+	    	// else: accept result and keep growing multiplier
 	    }
-	    else {                           // reset to before superstep 
+	    else {                           // error increased: roll back to pre-superstep state
 	    	m = 1;
 	    	sct =0;
 	    	for (int i=1;i<=p.nodeCount;i++) 
-	    		setTriRadius(i,R2[i]);
+	    		setTriRadius(i,R2[i]);  // restore R2 (post-UNM, pre-superstep)
 	    	accumErr2 = c1;
-	    	if (key==2) key = 1;
+	    	if (key==2) key = 1;      // switch strategy for next attempt
 	    }
 	    
 	    // show activity 
@@ -386,12 +433,20 @@ public class EuclPacker extends RePacker {
     }
 
     /**
-     * DCEL version of original repack algorithm implemented in Java. 
-     * Accommodates inversive distances, where other methods may fail.
-     * This manipulates radii in 'pdcel.triData' structure, so user must 
-     * call 'load' first and then 'reapResults' after. 
-     * @param passes int 
-     * @return int count, -1 on error
+     * @brief "Old reliable" repacking: simple iterative secant method per vertex.
+     *
+     * This is the fallback algorithm that accommodates inversive distances
+     * (non-tangency packings) where the UNM-based superstep methods may
+     * fail.  For each adjustable vertex whose angle-sum error exceeds
+     * a cutoff, it calls {@link #e_RadCalc} to find a better radius via
+     * a few iterations of the secant method.
+     *
+     * The cutoff starts at (1/3) × (average absolute error) and shrinks
+     * as the radii converge.
+     *
+     * @param passes  Maximum number of full passes over all vertices.
+     * @return The number of passes performed, or FAILURE if no vertices
+     *         have positive aims.
      */
     public int d_oldReliable(int passes) {
       int count = 0;
@@ -444,13 +499,23 @@ public class EuclPacker extends RePacker {
     
    
     /**
-     * Copied from '*_radcalc'. This uses data in
-     * 'TriData' structure, so it knows the geometry.
-     * @param v int
-     * @param r double
-     * @param aim double
-     * @param N int
-     * @return double (radius)
+     * @brief Compute a better Euclidean radius for vertex v using the
+     *        secant method.
+     *
+     * Starting from radius r, iteratively adjusts the radius to drive
+     * the angle sum toward the target aim.  Uses a bracket [lower, upper]
+     * and the secant method (linear interpolation of the angle-sum
+     * function) to converge in N iterations.
+     *
+     * The angle-sum function θ(r) is monotonically decreasing in r
+     * for Euclidean geometry, which guarantees the secant method
+     * converges.
+     *
+     * @param v    Vertex index.
+     * @param r    Current radius.
+     * @param aim  Target angle sum.
+     * @param N    Number of secant iterations.
+     * @return The improved radius.
      */
     public double e_RadCalc(int v,double r, double aim,int N) {
     	double lower=0.5;
@@ -501,7 +566,7 @@ public class EuclPacker extends RePacker {
     }
     
 	/**
-	 * Affine repacking uses the "old reliable" iterative routines,
+	 * @brief Affine repacking uses the "old reliable" iterative routines,
 	 * but works face-by-face and only in the eucl setting. The
 	 * radii are in 'PackDCEL.triData'. Only the ratios of radii within 
 	 * each face are important. In the typical process (as with affine 
@@ -584,7 +649,7 @@ public class EuclPacker extends RePacker {
     }
     
     /**
-     * Pack as euclidean to form a polygon with equal corner angles.
+     * @brief Pack as euclidean to form a polygon with equal corner angles.
      * Normalize so the edge from first to second corners 
      * is horizontal (right to left).
      * @param p PackData, 
@@ -632,7 +697,7 @@ public class EuclPacker extends RePacker {
     }
   	
 	/**
-	 * Static up/down (or down/up) Perron version of oldReliable. Not intended for
+	 * @brief Static up/down (or down/up) Perron version of oldReliable. Not intended for
 	 * speed, rather to try to ensure monotone behavior of radii. We use the uniform
 	 * neighbor model (which theoretically avoids overshooting); this also allows us
 	 * to easily convert computation to euclidean.
@@ -916,7 +981,7 @@ public class EuclPacker extends RePacker {
 	}
 	
 	/**
-	 * The 'uniform' model (developed by Collins and Stephenson)
+	 * @brief The 'uniform' model (developed by Collins and Stephenson)
 	 * computes the radius to get angle sum 'aim' under the
 	 * assumption that all neighbors have same radius. In eucl
 	 * case, given angle sum 'asum' and number of faces 'num', 

@@ -44,6 +44,8 @@ import util.RealField;
 import variables.SliderControlPanel;
 
 /**
+ * @brief TabbedPackDataHover is a hover panel displaying pack data.
+ *
  * TabbedPackDataHover is a hover panel displaying pack data. It contains
  * a tabbed pane displaying combinatoric information, a pack data tree,
  * and the current active variables.
@@ -628,7 +630,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 	}
 
 	/**
-	 * Internal convenience method for limiting the maximum height 
+	 * @brief Internal convenience method for limiting the maximum height 
 	 * of an entry field component. This prevents entry fields from 
 	 * growing vertically when the window is resized to be larger.
 	 * 
@@ -651,7 +653,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 	}
 	
 	/**
-	 * UpdateActions encapsulates the UI update functionality 
+	 * @brief UpdateActions encapsulates the UI update functionality 
 	 * of TabbedPackDataHover. This is primarily for 
 	 * organizational clarity, but also prevents outside classes
 	 * from directly manipulating the update functionality of 
@@ -665,7 +667,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 	 */
 	protected class UpdateActions {
 		/**
-		 * Update the displayed pack data information for the given
+		 * @brief Update the displayed pack data information for the given
 		 * packing. This is typically the active packing.
 		 * 
 		 * @param packData the <code>PackData</code> to reflect in the update
@@ -679,7 +681,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 
 		/**
-		 * Update the vertex information.
+		 * @brief Update the vertex information.
 		 * 
 		 * @param p PackData, to reflect in the update
 		 * @param useActiveVertex boolean: true, use packing's active vertex
@@ -729,7 +731,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 
 		/**
-		 * Update the face information.
+		 * @brief Update the face information.
 		 * 
 		 * @param packData the <code>PackData</code> to reflect in the update
 		 */
@@ -760,7 +762,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 
 		/**
-		 * Update the edge information.
+		 * @brief Update the edge information.
 		 * 
 		 * @param packData the <code>PackData</code> to reflect in the update
 		 */
@@ -804,7 +806,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * Update the tile information.
+		 * @brief Update the tile information.
 		 * 
 		 * @param packData the <code>PackData</code> to reflect in update
 		 * @param useActiveVertex whether or not to use packing's active vertex
@@ -853,7 +855,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * implement changes in Pack Data Tree made by user
+		 * @brief implement changes in Pack Data Tree made by user
 		 * @param p PackData
 		 */
 		public void putVertColor(PackData p) {

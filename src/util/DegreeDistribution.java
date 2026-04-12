@@ -3,6 +3,8 @@ package util;
 import java.util.Random;
 
 /**
+ * @brief In a geometrically random circle packing of the disc, here is a
+ *
  * In a geometrically random circle packing of the disc, here is a
  * representation of the distribution of degrees for interior vertices
  * based on three runs of 10,000 circle random packings. From this one

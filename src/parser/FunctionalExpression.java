@@ -20,6 +20,11 @@ public class FunctionalExpression implements Word {
   public String toString() {
     return symbol + "("+arg+")";
   }
+  /**
+   * @brief TODO: Document evaluate.
+   * @param ev
+   * @return Complex
+   */
   public Complex evaluate(Evaluator ev) {
     Complex d = ev.evaluate(arg);
     if (symbol.compareTo("sin")==0)

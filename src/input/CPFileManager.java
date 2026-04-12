@@ -25,6 +25,8 @@ import exceptions.InOutException;
 import exceptions.ParserException;
 
 /**
+ * @brief This manager is created on startup for managing directory paths,
+ *
  * This manager is created on startup for managing directory paths, 
  * opening BufferedReader/Writers, etc. 
  * Reading/writing routines themselves are generally in appropriate 
@@ -89,7 +91,7 @@ public class CPFileManager {
 	}
 
 	/**
-	   * (See 'ckTrailingFileName' also)
+	   * @brief (See 'ckTrailingFileName' also)
 	   * Convention on files names at end of command options should
 	   * be '-f' for file, '-a' append (for writing only), and/or 's'
 	   * for script, plus '<filename>' (possibly with directory). 
@@ -148,7 +150,7 @@ public class CPFileManager {
 	  }
 	  
 	  /**
-	   * (See 'StringUtil.ckTrailingFileName' also)
+	   * @brief (See 'StringUtil.ckTrailingFileName' also)
 	   * Convention on files names at end of command options should
 	   * be '-f' for file, '-a' append (for writing only), and/or 's'
 	   * for script, plus '<filename>' (possibly with directory). 
@@ -256,7 +258,7 @@ public class CPFileManager {
 	  }
 
 	  /**
-	   * For getting filename at end of user string -- where we don't
+	   * @brief For getting filename at end of user string -- where we don't
 	   * have 'File' and 'URL' functionality.
 	   * Problems with file names we hope to fix:
 	   *   * file separator character: not only do windows and linux
@@ -313,7 +315,7 @@ public class CPFileManager {
 	  }
 
 	/**
-	   * Return the file extension
+	   * @brief Return the file extension
 	   * @param File file
 	   * @return String or null
 	   */
@@ -330,7 +332,7 @@ public class CPFileManager {
 	  }
 	  
 	/**
-	 * Given a string purporting to be a filename, return the
+	 * @brief Given a string purporting to be a filename, return the
 	 * directory (see if it's 'home') and the filename.
 	 * @param str
 	 * @return String[2]: return null on error
@@ -353,7 +355,7 @@ public class CPFileManager {
 	}
 
 	/**
-	 * Read various types of data from files or the script. Currently
+	 * @brief Read various types of data from files or the script. Currently
 	 * only 'xyz' data reading into 'p.xyzpoint' is implemented.
 	 * @param p, packing
 	 * @param filename; assume 'PackingDirectory' or tmp directory (for script files)
@@ -428,7 +430,7 @@ public class CPFileManager {
 	}
 
 	/**
-	 * Open a BufferedReader for a named file; if script_flag is true,
+	 * @brief Open a BufferedReader for a named file; if script_flag is true,
 	 * then it MUST come from the script, else from the RunDirectory.
 	 * Return null on error.
 	 * @param filename
@@ -472,7 +474,7 @@ public class CPFileManager {
 	}
 
 	/**
-	 * Open a BufferedWriter for a named file; if it exists, 
+	 * @brief Open a BufferedWriter for a named file; if it exists, 
 	 * it will be overwritten. If script_flag is true, then 
 	 * it is written to the script (if it's open), else to 
 	 * the given directory or to CurrentDirectory.
@@ -487,7 +489,7 @@ public class CPFileManager {
 	}
 	
 	/**
-	 * Open a BufferedWriter for a named file; append if it exists.
+	 * @brief Open a BufferedWriter for a named file; append if it exists.
 	 * If script_flag is true, then it is written to the script (if it's open), 
 	 * else to the CurrentDirectory.
 	 * Return null on error.
@@ -502,7 +504,7 @@ public class CPFileManager {
 	}
 		
 	/**
-	 * Open a BufferedWriter for a named file; append if it exists.
+	 * @brief Open a BufferedWriter for a named file; append if it exists.
 	 * If script_flag is true, then it is written to the script (if it's open), 
 	 * else to the given directory or the CurrentDirectory.
 	 * Return null on error.
@@ -517,7 +519,7 @@ public class CPFileManager {
 	}
 
 	/** 
-	 * Open when given the full path, as when using a file dialog.
+	 * @brief Open when given the full path, as when using a file dialog.
 	 * @param fullpath
 	 * @param append
 	 * @param script_flag
@@ -535,7 +537,7 @@ public class CPFileManager {
 	}
 	
 	/**
-	 * Open a BufferedWriter for a named file, either 
+	 * @brief Open a BufferedWriter for a named file, either 
 	 * append or overwrite. If script_flag is true, 
 	 * then it is written to the script (if it's open), 
 	 * else to the given directory or to CurrentDirectory.
@@ -590,7 +592,7 @@ public class CPFileManager {
 	}
 
 	/** 
-	 * Look in standard locations for 'MyTool' files: first in 'toolDirectory',
+	 * @brief Look in standard locations for 'MyTool' files: first in 'toolDirectory',
 	 * then in 'homeDirectory', then in jar 'Resources/mytools'.
 	 * @param mytName
 	 * @return URL or null
@@ -624,7 +626,7 @@ public class CPFileManager {
 	}
 	
 	/**
-	 * Copy one file to another in tmp directory, overwriting destination.
+	 * @brief Copy one file to another in tmp directory, overwriting destination.
 	 * NOTE: 'renameTo' can fail in Windows, so use this or 'copyFile' instead.
 	 * @param srFile String, source file name (no directory)
 	 * @param dtFile String, destination file name (no directory)
@@ -643,7 +645,7 @@ public class CPFileManager {
 	}
 	
 	/**
-	 * Copy one file to another, overwriting destination. If f2 is
+	 * @brief Copy one file to another, overwriting destination. If f2 is
 	 * same name as f1, modify f2 by adding '1' to its name.
 	 * @param f1 File, source, including directory
 	 * @param f2 File, destination, including directory

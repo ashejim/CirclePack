@@ -8,6 +8,8 @@ import listManip.NodeLink;
 import packing.PackData;
 
 /**
+ * @brief For creating/manipulating combinatoric information for
+ *
  * For creating/manipulating combinatoric information for
  * the dual graphs G for circle packing complexes K, i.e., the
  * vertices of G correspond to faces of K, an edge of G, <f,g>
@@ -36,7 +38,7 @@ import packing.PackData;
 public class DualGraph {
 
 	/**
-	 * Build dual graph of the packing p starting with 'startface'.
+	 * @brief Build dual graph of the packing p starting with 'startface'.
 	 * Should "spiral" out by generations, should have no repeats,
 	 * doesn't cross poison edges if any are specified 
 	 * @param p PackData

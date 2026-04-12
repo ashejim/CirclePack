@@ -10,6 +10,8 @@ import complex.Complex;
 import packing.CPdrawing;
 
 /**
+ * @brief 'RH' refers to 'Riemann-Hilbert'.
+ *
  * 'RH' refers to 'Riemann-Hilbert'. This class stores "restriction"
  * curves for the 'RiemHilbert' PackExtender class. Initially these
  * curves will be circles, so methods are included specific to that

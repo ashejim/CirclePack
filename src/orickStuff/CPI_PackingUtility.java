@@ -1,5 +1,8 @@
 package orickStuff;
 
+/**
+ * @brief C P I_ Packing Utility.
+ */
 public class CPI_PackingUtility {
 
 	static int CPI_TERMINATED_ON_ERROR = -1;

@@ -3,6 +3,9 @@ package orickStuff;
 import math.Point3D;
 import packing.PackData;
 
+/**
+ * @brief C P I_ C P_ Packing Utility.
+ */
 public class CPI_CP_PackingUtility extends CPI_PackingUtility{
 	
 	public static int normalize( PackData p) {

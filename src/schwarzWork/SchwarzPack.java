@@ -20,6 +20,8 @@ import util.ColorUtil;
 import util.StringUtil;
 
 /**
+ * @brief Experimental packing routines driven by Schwarzian derivative data.
+ *
  * This class is for experimenting with use of
  * intrinsic schwarzians in computing circle
  * packings, particularly on the sphere or 
@@ -117,7 +119,7 @@ public class SchwarzPack extends PackExtender {
 	}
 	
 	/**
-	 * Update errors and colors for 'vert' and its
+	 * @brief Update errors and colors for 'vert' and its
 	 * edges.
 	 * @param vert Vertex
 	 * @param print boolean; print errors
@@ -361,7 +363,7 @@ public class SchwarzPack extends PackExtender {
 	}
 	
 	/**
-	 * If 'target' is an adjustable edge, return
+	 * @brief If 'target' is an adjustable edge, return
 	 * a new schwarzian that moves towards a
 	 * computed schwarzian by the given factor 
 	 * times the average of the cclw and clw 
@@ -432,7 +434,7 @@ if (print)
 	}
 		
 	/**
-	 * Compute the "error" for the given 'vert' and
+	 * @brief Compute the "error" for the given 'vert' and
 	 * set the vertex color based on the anglesum 
 	 * (imaginary part) of the error; error is 
 	 * anglesum-aim. Red for anglesum too large,
@@ -457,7 +459,7 @@ if (print)
 	}
 
 	/**
-	 * Identify the vertices with the worst errors in
+	 * @brief Identify the vertices with the worst errors in
 	 * four categories: 
 	 *   ans[0]: most positive radius error
 	 *   ans[1]: most negative radius error
@@ -503,7 +505,7 @@ if (print)
 	// ---------------- static routines ----------------------
 
 	/**
-	 * Get a random interior edge, but don't
+	 * @brief Get a random interior edge, but don't
 	 * accept if it has at least one interior
 	 * end of degree 3, since that schwarzian
 	 * will necessarily be 1-1/sqrt(3).

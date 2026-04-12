@@ -9,6 +9,8 @@ import complex.MathComplex;
 import exceptions.ParserException;
 
 /**
+ * @brief The evaluator contains the 'dictionary' and
+ *
  * The evaluator contains the 'dictionary' and 
  * 'values' hashmaps for evaluating functions of 
  * a complex variable. The dictionary should
@@ -16,7 +18,6 @@ import exceptions.ParserException;
  * interface so that they have a complex 
  * 'evaluate' method.
  */
-
 public class Evaluator {
   private HashMap<String, Object> dictionary = new HashMap<String, Object>();
   private HashMap<String, Complex> values = new HashMap<String, Complex>();
@@ -277,7 +278,7 @@ private static String[] groupers = {
   }
   
   /**
-   * Runs 'analyze', which recursively consolidates expressions.
+   * @brief Runs 'analyze', which recursively consolidates expressions.
    * @param v
    */
   public boolean doIt(Vector<String> v) {
@@ -354,7 +355,7 @@ private static String[] groupers = {
   }
 
   /**
-   * Analyze segments without parentheses, consolidates with 
+   * @brief Analyze segments without parentheses, consolidates with 
    * repeated while loops and returns the single object that 
    * results. (I think this is done only after variables are 
    * set numerically in 'values'.)
@@ -386,7 +387,7 @@ private static String[] groupers = {
   }
   
   /**
-   * Evaluates the expression. Assumes that v consists of a single element
+   * @brief Evaluates the expression. Assumes that v consists of a single element
    * already computed, so it just gets the 'toString' of this element.
    * It must be a double, but a complex is returned with this as real part.
    * @param v Vector
@@ -398,7 +399,7 @@ private static String[] groupers = {
   }
 
   /**
-   * Evaluates a string if it is a double, else returns null.
+   * @brief Evaluates a string if it is a double, else returns null.
    * @param s
    * @return
    */
@@ -417,7 +418,7 @@ private static String[] groupers = {
   }
   
   /**
-   * Puts a new object w in the dictionary and returns its
+   * @brief Puts a new object w in the dictionary and returns its
    * name in the hashtable as a string. 
    * @param w
    * @return
@@ -429,7 +430,7 @@ private static String[] groupers = {
   }
 
   /**
-   * Returns index of first symbol * or / operator, or if not
+   * @brief Returns index of first symbol * or / operator, or if not
    * present, first + or - sign.
    * @param v
    * @return 
@@ -447,7 +448,7 @@ private static String[] groupers = {
   }
 
   /**
-   * Returns index to first power ^ symbol in the given vector
+   * @brief Returns index to first power ^ symbol in the given vector
    * @param v
    * @return
    */
@@ -459,7 +460,7 @@ private static String[] groupers = {
   }
   
   /**
-   * Returns index of first function located in the vector v.
+   * @brief Returns index of first function located in the vector v.
    * @param v
    * @return
    */
@@ -471,7 +472,7 @@ private static String[] groupers = {
   }
 
   /**
-   * Puts the given complex number in the hashtable of 
+   * @brief Puts the given complex number in the hashtable of 
    * 'values' under the symbol "z" and computes the dictionary.
    * @param z
    */
@@ -481,7 +482,7 @@ private static String[] groupers = {
   }
   
   /**
-   * Puts the given complex number in the hashtable of 'values' 
+   * @brief Puts the given complex number in the hashtable of 'values' 
    * under the given symbol s.
    * @param s
    * @param value

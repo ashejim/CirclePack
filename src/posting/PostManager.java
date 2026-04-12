@@ -17,7 +17,9 @@ import allMains.CPBase;
 import circlePack.PackControl;
 import exceptions.InOutException;
 
-/** For opening/augmenting/closing postscript output files.
+/**
+ * @brief /** For opening/augmenting/closing postscript output files.
+ * For opening/augmenting/closing postscript output files.
  * Status of 'fp' is important for opening/closing/adding
  * decisions, etc. This manager persists, but 'fp' changes.
  *
@@ -64,7 +66,7 @@ public class PostManager {
 	}
 	
 	/**
-	 * Open postscript file 'psFilename' for new data from given packing;
+	 * @brief Open postscript file 'psFilename' for new data from given packing;
 	 * may/may not be open/initialized already. If adding new material,
 	 * position file after 'targStr'. The 'mode' specifies:
 	 *    1 = open the file (previous contents discarded!)
@@ -296,7 +298,7 @@ public class PostManager {
 	}
 
 	/**
-	 * Check if a 'PostFactory' exists and 'fp' is non-null, meaning the
+	 * @brief Check if a 'PostFactory' exists and 'fp' is non-null, meaning the
 	 * temporary 'bodyFile' of postscript commands is open.
 	 * @return boolean
 	 */

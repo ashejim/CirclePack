@@ -28,6 +28,9 @@ import packing.PackData;
 import tiling.Tile;
 import util.DispFlags;
 
+/**
+ * @brief D C E Ldebug.
+ */
 public class DCELdebug {
 	
 	static File tmpdir=new File(System.getProperty("java.io.tmpdir"));
@@ -53,7 +56,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * Prints our all red edges and vertices
+	 * @brief Prints our all red edges and vertices
 	 * @param pdcel
 	 */
 	public static void listRedThings(PackDCEL pdcel) {
@@ -104,7 +107,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * check if all array indexes agree with their recorded "*Indx". 
+	 * @brief check if all array indexes agree with their recorded "*Indx". 
 	 * @param pdcel PackDCEL
 	 */
 	public static void indexConsistency(PackDCEL pdcel) {
@@ -128,7 +131,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * print those edges from 'vlist' that don't have faces.
+	 * @brief print those edges from 'vlist' that don't have faces.
 	 * @param pdcel PackDCEL
 	 * @param vlist NodeLink
 	 */
@@ -145,7 +148,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * Compare 'myEdge' to 'edges' entry with same index.
+	 * @brief Compare 'myEdge' to 'edges' entry with same index.
 	 * @param pdcel PackDCEL
 	 */
 	public static void redindx(PackDCEL pdcel) {
@@ -170,7 +173,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * Display colored face/edge pairs from 'glink' in screen
+	 * @brief Display colored face/edge pairs from 'glink' in screen
 	 * for packing 'pnum' or pdcel.p if 'pnum'<0.
 	 * @param pdcel PackDCEL
 	 * @param pnum int
@@ -356,7 +359,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * List spokes of each vertex and for each spoke
+	 * @brief List spokes of each vertex and for each spoke
 	 * its 'next', 'prev', and 'twin'.	
 	 * @param pdcel
 	 * @return int
@@ -519,7 +522,7 @@ public class DCELdebug {
 	}
 
 	/**
-	 * Given oriented 'HalfEdge', draw it in blue, its face 
+	 * @brief Given oriented 'HalfEdge', draw it in blue, its face 
 	 * on left in pale red, and the three circles.
 	 * @param pdcel PackDCEL
 	 * @param hfe HalfEdge
@@ -543,7 +546,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * Given oriented 'HalfEdge', draw it in blue and face 
+	 * @brief Given oriented 'HalfEdge', draw it in blue and face 
 	 * on left in pale red.
 	 * @param pdcel PackDCEL
 	 * @param hfe HalfEdge
@@ -561,7 +564,7 @@ public class DCELdebug {
 	}
 
 	/**
-	 * Given oriented edge, draw in blue and face on left in pale red
+	 * @brief Given oriented edge, draw in blue and face on left in pale red
 	 * @param p PackData
 	 * @param edge EdgeSimple 
 	 */
@@ -593,7 +596,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * Display the edges in the given 'hlink'
+	 * @brief Display the edges in the given 'hlink'
 	 * @param p PackData
 	 * @param hlink HalfLink
 	 */
@@ -611,7 +614,7 @@ public class DCELdebug {
 	}
 
 	/**
-	 * Draw redchain edges on parent packing
+	 * @brief Draw redchain edges on parent packing
 	 * @param p
 	 * @param redge
 	 */
@@ -632,7 +635,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * Draw whole redChain starting at redge; this uses newly
+	 * @brief Draw whole redChain starting at redge; this uses newly
 	 * stored centers, not the parent packing
 	 * @param p PackData
 	 * @param redge RedEdge
@@ -647,7 +650,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * print rad/center
+	 * @brief print rad/center
 	 * @param p
 	 * @param v
 	 */
@@ -657,7 +660,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * Given a red edge, draw it in red on packing p's screen
+	 * @brief Given a red edge, draw it in red on packing p's screen
 	 * @param p PackData
 	 * @param redge RedEdge
 	 */
@@ -781,7 +784,7 @@ public class DCELdebug {
 	}
 
 	/**
-	 * Find origin of edge and edge.prev.twin (clw spoke); 
+	 * @brief Find origin of edge and edge.prev.twin (clw spoke); 
 	 * should be same.
 	 * @param edge
 	 * @return EdgeSimple, or null
@@ -817,7 +820,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * List next vertices up until closure, limit of 5
+	 * @brief List next vertices up until closure, limit of 5
 	 * @param edge
 	 * @return
 	 */
@@ -873,7 +876,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * print the edge ends around the redChain using 'myEdge' and its twin
+	 * @brief print the edge ends around the redChain using 'myEdge' and its twin
 	 * @param redge RedEdge
 	 */
 	public static void redChainEnds(RedEdge redge) {
@@ -942,7 +945,7 @@ public class DCELdebug {
 	}
 
 	/**
-	 * Given HalfEdge, find up to 10 successive 'next' edges
+	 * @brief Given HalfEdge, find up to 10 successive 'next' edges
 	 * (and their twins).
 	 * @param edge HalfEdge
 	 */
@@ -962,7 +965,7 @@ public class DCELdebug {
 	}
 
 	/**
-	 * for a HalfEdge, show the 5 next edges and 5 previous edges
+	 * @brief for a HalfEdge, show the 5 next edges and 5 previous edges
 	 * @param edge
 	 */
 	public static void show4edges(HalfEdge edge) {
@@ -985,7 +988,7 @@ public class DCELdebug {
 	}
 	
 	/**
-	 * Print edges from given VertexMap
+	 * @brief Print edges from given VertexMap
 	 * @param vmap VertexMap
 	 */
 	public static void printVertexMap(VertexMap vmap) {

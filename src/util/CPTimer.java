@@ -1,6 +1,8 @@
 package util;
 
 /**
+ * @brief Unsophisticated timer for measuring wall clock time.
+ *
  * Unsophisticated timer for measuring wall clock time.
  * @author kens
  *
@@ -19,7 +21,7 @@ public class CPTimer {
 	}
 	
 	/**
-	 * For single timings: start timer or read elapsed time and 
+	 * @brief For single timings: start timer or read elapsed time and 
 	 * restart timer. * I 'startTime' is null, this sets
 	 * it via java call. If not null, this finds 
 	 * Get the elapsed time if 'startTime' is not null and

@@ -3,6 +3,8 @@ package allMains;
 import java.awt.EventQueue;
 
 /**
+ * @brief This version of CirclePack is to be run from a shell.
+ *
  * This version of CirclePack is to be run from a shell. There is
  * no GUI, but the intention is that one can still draw to an
  * image and save that image. 'CirclePack' is initiated in a 

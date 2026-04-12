@@ -1,0 +1,158 @@
+\doxysection{Path\+Manager.\+java}
+\hypertarget{_path_manager_8java_source}{}\label{_path_manager_8java_source}\index{src/panels/PathManager.java@{src/panels/PathManager.java}}
+\doxymbox{\hyperlink{_path_manager_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00001}00001\ \textcolor{keyword}{package\ }panels;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00003}00003\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00004}00004\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00005}00005\ \textcolor{keyword}{import}\ java.awt.geom.Path2D;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00006}00006\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00007}00007\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00008}00008\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00009}00009\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00010}00010\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00011}00011\ \textcolor{keyword}{import}\ java.util.StringTokenizer;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00012}00012\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00014}00014\ \textcolor{keyword}{import}\ util.PathUtil;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00015}00015\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00016}00016\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00017}00017\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00018}00018\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00019}00019\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00020}00020\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00030}\doxymbox{\hyperlink{classpanels_1_1_path_manager}{00030}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classpanels_1_1_path_manager}{PathManager}}\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00031}00031\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00032}00032\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{enum}\ PathReadState\ \{LOOK\_FOR\_PATH,START\_SEG,READ\_XY,CLOSE\};}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00033}00033\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00041}\doxymbox{\hyperlink{classpanels_1_1_path_manager_aa2210ff08fd1853dd2c9458665587355}{00041}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Path2D.Double\ \doxymbox{\hyperlink{classpanels_1_1_path_manager_aa2210ff08fd1853dd2c9458665587355}{readpath}}(String\ filename,\textcolor{keywordtype}{boolean}\ script\_flag)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00042}00042\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classpanels_1_1_path_manager_aa2210ff08fd1853dd2c9458665587355}{readpath}}(\textcolor{keyword}{null},filename,script\_flag);}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00043}00043\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00044}00044\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00053}\doxymbox{\hyperlink{classpanels_1_1_path_manager_acbc7b8ab75daaf7e2fd8110175775c70}{00053}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Path2D.Double\ \doxymbox{\hyperlink{classpanels_1_1_path_manager_acbc7b8ab75daaf7e2fd8110175775c70}{readpath}}(File\ dir,String\ filename,\textcolor{keywordtype}{boolean}\ script\_flag)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00054}00054\ \ \ \ \ \ \ \ \ Path2D.Double\ gpath=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00055}00055\ \ \ \ \ \ \ \ \ BufferedReader\ fp=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00056}00056\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ look\ in\ script}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00058}00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (script\_flag)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00059}00059\ \ \ \ \ \ \ \ \ \ \ \ \ fp=\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager}{CPFileManager}}.\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager_a3631af78d2b4a3c5bdb378fd07d73070}{openReadFP}}(\textcolor{keyword}{null},filename,script\_flag);}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00060}00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fp==\textcolor{keyword}{null})}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00062}00062\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00063}00063\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00064}00064\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ given\ directory}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00065}00065\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (dir!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00066}00066\ \ \ \ \ \ \ \ \ \ \ \ \ fp=\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager}{CPFileManager}}.\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager_a3631af78d2b4a3c5bdb378fd07d73070}{openReadFP}}(dir,filename,script\_flag);}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00067}00067\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00068}00068\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00069}00069\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ default\ locations}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00070}00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fp==\textcolor{keyword}{null}\ \&\&\ (fp=\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager}{CPFileManager}}.\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager_a3631af78d2b4a3c5bdb378fd07d73070}{openReadFP}}(\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager}{CPFileManager}}.\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager_add5ed56841380c1c2fdab12864b06d42}{PackingDirectory}},filename,script\_flag))==\textcolor{keyword}{null}\ \&\&}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00071}00071\ \ \ \ \ \ \ \ \ \ \ \ \ (fp=\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager}{CPFileManager}}.\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager_a3631af78d2b4a3c5bdb378fd07d73070}{openReadFP}}(\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager}{CPFileManager}}.\doxymbox{\hyperlink{classinput_1_1_c_p_file_manager_ab5616028b3c9cf216b1e961147d735f7}{CurrentDirectory}},filename,script\_flag))==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00072}00072\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00073}00073\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00074}00074\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00075}00075\ \ \ \ \ \ \ \ \ String\ line;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00076}00076\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00077}00077\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Must\ find\ 'PATH:'\ before\ reading\ further}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00078}00078\ \ \ \ \ \ \ \ \ PathReadState\ state=PathReadState.LOOK\_FOR\_PATH;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00079}00079\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00080}00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(state==PathReadState.LOOK\_FOR\_PATH\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ (line=\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_ae8fe2c28a7f4f2f065c92b2e10de3369}{ourNextLine}}(fp))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringTokenizer\ tok\ =\ \textcolor{keyword}{new}\ StringTokenizer(line);}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00083}00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(tok.hasMoreTokens())\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00084}00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ mainTok\ =\ tok.nextToken();}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00085}00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(mainTok.startsWith(\textcolor{stringliteral}{"{}PATH"{}}))\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00086}00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gpath=\textcolor{keyword}{new}\ Path2D.Double();}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ state=PathReadState.START\_SEG;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00089}00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00090}00090\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while\ for\ 'PATH'}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00091}00091\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00092}00092\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ expect\ next\ non-\/empty\ line\ to\ have\ two\ doubles}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00093}00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (state==PathReadState.START\_SEG\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ ((line=\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_ae8fe2c28a7f4f2f065c92b2e10de3369}{ourNextLine}}(fp))!=\textcolor{keyword}{null}))\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00096}00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringTokenizer\ tok\ =\ \textcolor{keyword}{new}\ StringTokenizer(line);}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00097}00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=Double.parseDouble((String)tok.nextToken());}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ y=Double.parseDouble((String)tok.nextToken());}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gpath.moveTo(x,y);}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ state=PathReadState.READ\_XY;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_aa6a51e5ac6ba247368d175e3dfe2c7a9}{myErrorMsg}}(\textcolor{stringliteral}{"{}Exception\ in\ reading\ path\ from\ '"{}}+filename+\textcolor{stringliteral}{"{}'."{}});}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00103}00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00104}00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00105}00105\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00106}00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(state==PathReadState.READ\_XY\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00107}00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ (line=\doxymbox{\hyperlink{classutil_1_1_string_util}{StringUtil}}.\doxymbox{\hyperlink{classutil_1_1_string_util_ae8fe2c28a7f4f2f065c92b2e10de3369}{ourNextLine}}(fp))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00108}00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringTokenizer\ tok\ =\ \textcolor{keyword}{new}\ StringTokenizer(line);}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00109}00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ xstr=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00110}00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ expect\ two\ doubles\ per\ line}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00111}00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00112}00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ xstr=(String)tok.nextToken();}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00113}00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=Double.parseDouble(xstr);}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00114}00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ y=Double.parseDouble((String)tok.nextToken());}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00115}00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gpath.lineTo(x,y);}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00116}00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (NumberFormatException\ nfe)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00117}00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (xstr.contains(\textcolor{stringliteral}{"{}BREAK"{}}))\ \{\ \textcolor{comment}{//\ indicates\ a\ new\ component\ of\ path}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00118}00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gpath.closePath();}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00119}00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ state=PathReadState.START\_SEG;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00121}00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ state=PathReadState.CLOSE;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00122}00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00123}00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00125}00125\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (state==PathReadState.CLOSE)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00126}00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gpath.closePath();}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00127}00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ gpath;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00128}00128\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00129}00129\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00130}00130\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classall_mains_1_1_circle_pack}{CirclePack}}.\doxymbox{\hyperlink{classall_mains_1_1_circle_pack_a65ce56d85be0f1a7eec7f113de1cb550}{cpb}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_aa6a51e5ac6ba247368d175e3dfe2c7a9}{myErrorMsg}}(\textcolor{stringliteral}{"{}Exception\ in\ reading\ path\ from\ '"{}}+filename+\textcolor{stringliteral}{"{}'."{}});}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00132}00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00133}00133\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00134}00134\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00135}00135\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00143}\doxymbox{\hyperlink{classpanels_1_1_path_manager_a9d54cb97e33158a737037c80013dad01}{00143}}\ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classpanels_1_1_path_manager_a9d54cb97e33158a737037c80013dad01}{writepath}}(BufferedWriter\ fp,Path2D.Double\ gpath)\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00144}00144\ \ \ \ \ \ \ \textcolor{keywordflow}{throws}\ IOException\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00145}00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fp==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}PATH:\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00147}00147\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ flatness\ =\ \doxymbox{\hyperlink{classutil_1_1_path_util}{PathUtil}}.\doxymbox{\hyperlink{classutil_1_1_path_util_a0b3b15533c2f5f6919dd088d8f7d0cd6}{gpExtent}}(gpath)\ *\ \doxymbox{\hyperlink{classutil_1_1_path_util}{PathUtil}}.\doxymbox{\hyperlink{classutil_1_1_path_util_ae5320e1026223159226e346d599be200}{FLAT\_FACTOR}};}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00148}00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ polynomial\ approximation\ }}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00149}00149\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<Vector<Complex>>\ polyGamma\ =\ \doxymbox{\hyperlink{classutil_1_1_path_util}{PathUtil}}.\doxymbox{\hyperlink{classutil_1_1_path_util_a4e898a2c0ec8ea25310b9491a707835b}{gpPolygon}}(gpath,}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00150}00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flatness);}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00151}00151\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Vector<Complex>>\ pvec=polyGamma.iterator();}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00152}00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (pvec.hasNext())\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00153}00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<Complex>\ piece=(Vector<Complex>)pvec.next();}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00154}00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Complex>\ ij=piece.iterator();}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00155}00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00156}00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (ij.hasNext())\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00157}00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z=(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}})ij.next();}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00158}00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{keyword}{new}\ String(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}}+\textcolor{stringliteral}{"{}\ "{}}+z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}}+\textcolor{stringliteral}{"{}\(\backslash\)n"{}}));}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00159}00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00160}00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00161}00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ delimiter\ if\ needed}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00162}00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pvec.hasNext())\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00163}00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}BREAK\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00164}00164\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00165}00165\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}END\(\backslash\)n"{}});}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00166}00166\ \ \ \ \ \ \ \ \ \ \ \ \ fp.flush();}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00167}00167\ \ \ \ \ \ \ \ \ \ \ \ \ fp.close();}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00169}00169\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00170}00170\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00177}\doxymbox{\hyperlink{classpanels_1_1_path_manager_aba0e097c5c6afd16eab5508b7bb89e5a}{00177}}\ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ \doxymbox{\hyperlink{classpanels_1_1_path_manager_aba0e097c5c6afd16eab5508b7bb89e5a}{path\_wrap}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00178}00178\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classpanels_1_1_path_manager_aba0e097c5c6afd16eab5508b7bb89e5a}{path\_wrap}}(z,\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a23c728f5a90fcc5cafd5a75ddeae6ccb}{ClosedPath}});}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00179}00179\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00180}00180\ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00187}\doxymbox{\hyperlink{classpanels_1_1_path_manager_a75288cd966e7e80b00b9aa9693a23784}{00187}}\ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ \doxymbox{\hyperlink{classpanels_1_1_path_manager_a75288cd966e7e80b00b9aa9693a23784}{path\_wrap}}(\doxymbox{\hyperlink{classcomplex_1_1_complex}{Complex}}\ z,Path2D.Double\ genpath)\ \{}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00188}00188\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (genpath==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00189}00189\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ genpath.contains(z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a958464318a8e5130f81982811fa26d0a}{x}},z.\doxymbox{\hyperlink{classcomplex_1_1_complex_a2ea99dadd5a7c4204a6b999f8e826b67}{y}});}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00190}00190\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00191}00191\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00192}00192\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00193}00193\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00194}00194\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_path_manager_8java_source_l00195}00195\ \}}
+
+\end{DoxyCode}

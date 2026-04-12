@@ -16,6 +16,8 @@ import math.Point3D;
 import util.StringUtil;
 
 /**
+ * @brief This class holds the structures for finite subdivision rules,
+ *
  * This class holds the structures for finite subdivision rules,
  * which describe how a finite collection of polygonal tile types 
  * are to be subdivided so each is a finite union of tiles from 
@@ -98,7 +100,7 @@ public class SubdivisionRules {
 	}
 	
 	/**
-	 * This routine is for reading Cannon/Floyd/Parry subdivision rules 
+	 * @brief This routine is for reading Cannon/Floyd/Parry subdivision rules 
 	 * *.r files. The 'getRulesTD' routine is then needed to create the
 	 * minimal 'TileData' associated with the subdivision for each tile
 	 * type. Note that the 'mode' 1, 2, 3, determines the construction,
@@ -592,7 +594,7 @@ public class SubdivisionRules {
 	}
 	
 	/**
-	 * Build the minimal 'TileData' structure for a given tile type
+	 * @brief Build the minimal 'TileData' structure for a given tile type
 	 * its associated "subdivision rule", a la Cannon/Floyd/Parry 
 	 * 'rules' files, and the current 'mode'. The rule specifies the 
 	 * subtile types, their neighbor relations, edge breakup patterns,
@@ -857,7 +859,7 @@ public class SubdivisionRules {
 	}
 
 	/**
-	 * Return the first tile type having n sides.
+	 * @brief Return the first tile type having n sides.
 	 * @param n int, number of sides
 	 * @return int, tile type, -1 on error or failure
 	 */
@@ -868,7 +870,7 @@ public class SubdivisionRules {
 	}
 	
 	/**
-	 * This manipulates a rules file and saves it into given directory/name.
+	 * @brief This manipulates a rules file and saves it into given directory/name.
 	 * It then reads the new file in the usual way to continue. Note that
 	 * optional data (like euclidean corners, etc.) is not copied into the
 	 * new rules file. The manipulations are very limited for now and

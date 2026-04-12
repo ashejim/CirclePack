@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
+ * @brief IntegerField is a panel-contained text field for
+ *
  * IntegerField is a panel-contained text field for 
  * displaying integer values and optionally includes 
  * a text label title. It is intended as a re-sizable 
@@ -48,7 +50,7 @@ public class IntegerField extends JPanel {
 	}
 
 	/**
-	 * Create a titled instance.
+	 * @brief Create a titled instance.
 	 * 
 	 * @param title the title of the instance; <code>null</code> for no title
 	 */
@@ -86,7 +88,7 @@ public class IntegerField extends JPanel {
 	}
 
 	/** 
-	 * Set the integer value to be displayed by this instance.
+	 * @brief Set the integer value to be displayed by this instance.
 	 * 
 	 * @param value the new <code>int</code> value
 	 */
@@ -102,7 +104,7 @@ public class IntegerField extends JPanel {
 	}
 	
 	/**
-	 * Get the integer value currently displayed by this 
+	 * @brief Get the integer value currently displayed by this 
 	 * instance; any variables are interpreted.
 	 * 
 	 * @return the <code>int</code> 
@@ -112,7 +114,7 @@ public class IntegerField extends JPanel {
 	}
 
 	/**
-	 * Returns the uninterpreted string
+	 * @brief Returns the uninterpreted string
 	 * @return String
 	 */
 	public String getText() {
@@ -120,7 +122,7 @@ public class IntegerField extends JPanel {
 	}
 	
 	/**
-	 * Set whether or not the associated text field is editable.
+	 * @brief Set whether or not the associated text field is editable.
 	 * 
 	 * @param editable whether or not the text field is editable
 	 */
@@ -129,7 +131,7 @@ public class IntegerField extends JPanel {
 	}
 
 	/**
-	 * Determine whether or not the associated text 
+	 * @brief Determine whether or not the associated text 
 	 * field is editable.
 	 * @return a <code>boolean</code> value representing 
 	 * whether or not the text field is editable
@@ -139,7 +141,7 @@ public class IntegerField extends JPanel {
 	}
 	
 	/**
-	 * Set the action command of the associated text field.
+	 * @brief Set the action command of the associated text field.
 	 * @param actionCommand the action command to set
 	 */
 	public void setActionCommand(String actionCommand) {
@@ -147,7 +149,7 @@ public class IntegerField extends JPanel {
 	}
 	
 	/**
-	 * Add an action listener to the associated text field.
+	 * @brief Add an action listener to the associated text field.
 	 * 
 	 * @param actionListener the ActionListener to add
 	 */

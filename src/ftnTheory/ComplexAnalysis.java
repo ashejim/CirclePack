@@ -28,6 +28,8 @@ import util.DispFlags;
 import util.FtnInterpolator;
 import util.StringUtil;
 /**
+ * @brief Discrete complex analysis computations on circle packings.
+ *
  * Compute complex analytic-like data for discrete analytic function
  * f: domainData --> rangeData. Computations put discrete complex 
  * derivative or other results into 'outputData'. For instance,
@@ -86,7 +88,7 @@ public class ComplexAnalysis extends PackExtender {
 	}
 	
 	/**
-	 * Given array of double values for vertices, return an
+	 * @brief Given array of double values for vertices, return an
 	 * array of its discrete Laplacian values --- that is, 
 	 * at v, compute average of petal values (weighted by
 	 * conductances) minus center value. 
@@ -520,7 +522,7 @@ public class ComplexAnalysis extends PackExtender {
 	}
 		
 	/**
-	 * Stephan Ruschewyeh (6/08) told me this conjecture: 
+	 * @brief Stephan Ruschewyeh (6/08) told me this conjecture: 
 	 * Assume f is in class S on the disc. Define 
 	 *     F_a(z)=integral_0^z f'(t)(t/f(t))^a dt
 	 * Conj: for a in [0,1], F_a(z) is in class S.
@@ -553,7 +555,7 @@ public class ComplexAnalysis extends PackExtender {
 	}
 	
 	/**
-	 * Compute conductances of the triangulation based on packing centers. 
+	 * @brief Compute conductances of the triangulation based on packing centers. 
 	 * If 'domData' is a packing, this is usual set of eucl conductances 
 	 * (a la Dubejko). However, in general, use ratio of 
 	 * distance between incircle centers of bounding faces to length of
@@ -622,7 +624,7 @@ public class ComplexAnalysis extends PackExtender {
 	}
 	
 	/**
-	 * This is derivative the DAF f: packData --> rangeData, but uses
+	 * @brief This is derivative the DAF f: packData --> rangeData, but uses
 	 * the conductances stored for the last 'domainData'. The resulting
 	 * centers are put in 'outputData'. The effective radii are also
 	 * stored in 'outputData'. 'mode' is for future use if there are

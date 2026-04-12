@@ -16,6 +16,8 @@ import javax.swing.SwingUtilities;
 import circlePack.PackControl;
 
 /**
+ * @brief HoverPanel is a JPanel which resides in one of
+ *
  * HoverPanel is a JPanel which resides in one of 
  * two frames that it creates, one for hovering, 
  * one for locking. Typically, buttons or other 
@@ -135,7 +137,7 @@ public class HoverPanel extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * Is the frame locked? (i.e., visible (or iconified) and decorated)
+	 * @brief Is the frame locked? (i.e., visible (or iconified) and decorated)
 	 * @return
 	 */
 	public boolean isLocked() {
@@ -143,7 +145,7 @@ public class HoverPanel extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * For calling from other thread (where 'this' means the thread)
+	 * @brief For calling from other thread (where 'this' means the thread)
 	 * @param jF
 	 */
 	public void addThis(JFrame jF) {
@@ -151,7 +153,7 @@ public class HoverPanel extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * Set the x and y value just off the mouse location
+	 * @brief Set the x and y value just off the mouse location
 	 * @param me, MouseEvent (or null)
 	 * @return Point for locating 
 	 */
@@ -284,6 +286,8 @@ public class HoverPanel extends JPanel implements MouseListener {
 	}
 */
 	/**
+ * @brief Close the lockedFrame and load the hoverFrame.
+ *
 	 * Close the lockedFrame and load the hoverFrame.
 	 */
 	class LockAdapter extends WindowAdapter {

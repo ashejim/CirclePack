@@ -1,0 +1,101 @@
+\doxysection{Gen\+Br\+Mod\+Pt.\+java}
+\hypertarget{_gen_br_mod_pt_8java_source}{}\label{_gen_br_mod_pt_8java_source}\index{src/branching/GenBrModPt.java@{src/branching/GenBrModPt.java}}
+\doxymbox{\hyperlink{_gen_br_mod_pt_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00001}00001\ \textcolor{keyword}{package\ }branching;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00003}00003\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00004}00004\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00006}00006\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00007}00007\ \textcolor{keyword}{import}\ combinatorics.komplex.Vertex;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00008}00008\ \textcolor{keyword}{import}\ dcel.PackDCEL;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00009}00009\ \textcolor{keyword}{import}\ ftnTheory.GenModBranching;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00010}00010\ \textcolor{keyword}{import}\ listManip.HalfLink;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00011}00011\ \textcolor{keyword}{import}\ math.Mobius;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00012}00012\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00013}00013\ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00063}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt}{00063}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ace9bae267116a8a244bdff710a50c3ab}{GenBrModPt}}\ \{}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00064}00064\ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00065}00065\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ RIFF\_TOLER=.00000001;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00066}00066\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ pi2=Math.PI*2.0;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00067}00067\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00068}00068\ \ \ \ \ \textcolor{comment}{//\ branch\ type}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00069}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_aad1f826eb682e83ba503c0e391e03619}{00069}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_aad1f826eb682e83ba503c0e391e03619}{TRADITIONAL}}=1;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00070}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a4c30663fed6b88839ea29973e847bf9d}{00070}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a4c30663fed6b88839ea29973e847bf9d}{FRACTURED}}=2;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00071}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a1c2186ed68697303ecbd114d23a98e93}{00071}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a1c2186ed68697303ecbd114d23a98e93}{QUADFACE}}=3;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00072}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a0db59075ceda739ac05b38a2508b32cd}{00072}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a0db59075ceda739ac05b38a2508b32cd}{SINGULAR}}=4;\ \textcolor{comment}{//\ singular\ face,\ using\ chaperones}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00073}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a116a2d462d3428e096245cc7c7bac0e8}{00073}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a116a2d462d3428e096245cc7c7bac0e8}{SHIFTED}}=5;\ \ \textcolor{comment}{//\ shifted,\ using\ ratio/phase\ parameters}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00074}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_aa82e703b7d55bf34f12767676c7e9834}{00074}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_aa82e703b7d55bf34f12767676c7e9834}{CHAPERONE}}=6;\ \textcolor{comment}{//\ shifted,\ using\ chaperone\ circles}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00075}00075\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00076}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a88d05de6ca6689d342f46b591974eb00}{00076}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classftn_theory_1_1_gen_mod_branching}{GenModBranching}}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a88d05de6ca6689d342f46b591974eb00}{gmb}};\ \ \textcolor{comment}{//\ parent\ extender}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00078}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_addf901b17c1aa181d9f8299e06cb5a32}{00078}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_addf901b17c1aa181d9f8299e06cb5a32}{myType}};\ \ \ \ \textcolor{comment}{//\ type\ (see\ above)}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00079}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_af91664f7cc1637821bd15337967ef305}{00079}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_af91664f7cc1637821bd15337967ef305}{myEdge}};\ \ \textcolor{comment}{//\ each\ type\ can\ be\ associated\ with\ a\ halfedge}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00080}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a06a048132abb3e0a04ecc20f69c676e2}{00080}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a06a048132abb3e0a04ecc20f69c676e2}{branchID}};\ \ \textcolor{comment}{//\ id\ number,\ starting\ from\ 0\ as\ created\ by\ parent}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00081}00081\ \textcolor{comment}{//\ \ public\ int\ myIndex;\ \ \ //\ may\ be\ face\ index\ or\ vert\ index,\ depending\ on\ type}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00082}00082\ \ \ \ \ \textcolor{keywordtype}{double}\ myAim;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ target\ angle\ sum;\ e.g.\ 4*pi.}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00083}00083\ \ \ \ \ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}\ p;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ who's\ your\ daddy?\ (held\ by\ GenModBranching\ extender)}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00084}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ad59836f24f1a9f4acd3fbed06a2a22ac}{00084}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ad59836f24f1a9f4acd3fbed06a2a22ac}{layoutAddons}};\ \ \textcolor{comment}{//\ adjoined\ to\ parent\ layout\ for\ this\ branch}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00085}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a596db105d274c900dba42ba14dd081fd}{00085}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a596db105d274c900dba42ba14dd081fd}{myHoloBorder}};\ \ \textcolor{comment}{//\ for\ local\ holonomy\ }}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00086}00086\ \ \ \ \ \doxymbox{\hyperlink{classmath_1_1_mobius}{Mobius}}\ myHolonomy;\ \ \ \ \textcolor{comment}{//\ Can\ update\ this\ after\ each\ layout}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00087}00087\ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00088}00088\ \ \ \ \ \textcolor{comment}{//\ TODO:\ converting\ to\ dcel\ structure,\ build\ temporary\ parallel\ data\ }}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00089}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a677fe13868c49ab40c6a59086a08d5da}{00089}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classlist_manip_1_1_half_link}{HalfLink}}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a677fe13868c49ab40c6a59086a08d5da}{eventHorizon}};\ \ \textcolor{comment}{//\ surrounding\ the\ branch\ region}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00090}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a913ed1c975bc64447b3cb254f501cd02}{00090}}\ \ \ \ \ \textcolor{keyword}{public}\ ArrayList<Vertex>\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a913ed1c975bc64447b3cb254f501cd02}{myExclusions}};\ \textcolor{comment}{//\ vertices\ on/inside\ 'eventHorizon'}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00091}00091\ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00092}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a800556717fff38bc4b3add217cd5c055}{00092}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a800556717fff38bc4b3add217cd5c055}{success}};\ \textcolor{comment}{//\ false\ if\ something\ went\ wrong\ during\ construction}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00093}00093\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00094}00094\ \ \ \ \ \doxymbox{\hyperlink{classdcel_1_1_pack_d_c_e_l}{PackDCEL}}\ pdc;\ \textcolor{comment}{//\ convenience}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00095}00095\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00096}00096\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00097}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ace9bae267116a8a244bdff710a50c3ab}{00097}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ace9bae267116a8a244bdff710a50c3ab}{GenBrModPt}}(\doxymbox{\hyperlink{classftn_theory_1_1_gen_mod_branching}{GenModBranching}}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a88d05de6ca6689d342f46b591974eb00}{gmb}},\textcolor{keywordtype}{int}\ bID,\textcolor{keywordtype}{double}\ aim)\ \{}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ p=\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a88d05de6ca6689d342f46b591974eb00}{gmb}}.extenderPD;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ pdc=p.packDCEL;\ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00100}00100\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a06a048132abb3e0a04ecc20f69c676e2}{branchID}}=bID;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00101}00101\ \ \ \ \ \ \ \ \ myAim=aim;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ myHolonomy=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00103}00103\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ad59836f24f1a9f4acd3fbed06a2a22ac}{layoutAddons}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00104}00104\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a596db105d274c900dba42ba14dd081fd}{myHoloBorder}}=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00105}00105\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a800556717fff38bc4b3add217cd5c055}{success}}=\textcolor{keyword}{false};\ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00106}00106\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00107}00107\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00108}00108\ \ \ \ \ \textcolor{comment}{//\ **************\ abstract\ methods\ ******************}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00109}00109\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00110}00110\ \ \ \ \ \textcolor{comment}{//\ create\ the\ local\ packing\ based\ on\ type\ of\ branch\ point}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00111}00111\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keywordtype}{int}\ modifyPackData();}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00112}00112\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00113}00113\ \ \ \ \ \textcolor{comment}{//\ prepare\ to\ delete\ by\ resetting\ 'packData'}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00114}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a0f94809ffb3f3cfc7012d946ed5a8d0a}{00114}}\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a0f94809ffb3f3cfc7012d946ed5a8d0a}{dismantle}}();}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00115}00115\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00116}00116\ \ \ \ \ \textcolor{comment}{//\ report\ existence\ and\ main\ data}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00117}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_aca96920e7742293efb7925cc73b86d22}{00117}}\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keyword}{public}\ String\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_aca96920e7742293efb7925cc73b86d22}{reportExistence}}();}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00118}00118\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00119}00119\ \ \ \ \ \textcolor{comment}{//\ report\ status:\ id,\ vert/face,\ holonomy\ error,\ etc.}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00120}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ac8c29bc0236481198a8ee043747518e1}{00120}}\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keyword}{public}\ String\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ac8c29bc0236481198a8ee043747518e1}{reportStatus}}();}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00121}00121\ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00122}00122\ \ \ \ \ \textcolor{comment}{//\ report\ parameters\ in\ String}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00123}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a75a83b95e8bccbd6e49ecf9cbb5ddc9d}{00123}}\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keyword}{public}\ String\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a75a83b95e8bccbd6e49ecf9cbb5ddc9d}{getParameters}}();}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00124}00124\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00125}00125\ \ \ \ \ \textcolor{comment}{//\ set\ parameters\ (list\ depends\ on\ branch\ type)}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00126}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a99e1e209aba65fc16ecce84e9d321832}{00126}}\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a99e1e209aba65fc16ecce84e9d321832}{setParameters}}(Vector<Vector<String>>\ flagSegs);}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00127}00127\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00128}00128\ \ \ \ \ \textcolor{comment}{//\ renew\ parameters\ and\ colors}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00129}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a54b1979ec058cf4447e0de456a14bae7}{00129}}\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a54b1979ec058cf4447e0de456a14bae7}{renew}}();}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00130}00130\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00131}00131\ \ \ \ \ \textcolor{comment}{//\ ************************************************}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00132}00132\ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00139}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a57e66c8b4526a6a2cc9a382b919cef7b}{00139}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classmath_1_1_mobius}{Mobius}}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a57e66c8b4526a6a2cc9a382b919cef7b}{getLocalHolonomy}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00140}00140\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a596db105d274c900dba42ba14dd081fd}{myHoloBorder}}==\textcolor{keyword}{null}\ ||\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a596db105d274c900dba42ba14dd081fd}{myHoloBorder}}.size()==0)}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00141}00141\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00142}00142\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{classpacking_1_1_pack_data}{PackData}}.\doxymbox{\hyperlink{classpacking_1_1_pack_data_a8d1f92c85f9181b5e0161c39a7697378}{holonomyMobius}}(p,\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_a596db105d274c900dba42ba14dd081fd}{myHoloBorder}});}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00143}00143\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00144}00144\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00145}00145\ \ \ \ \ \textcolor{comment}{//\ each\ type\ should\ process\ its\ local\ display\ options\ }}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00146}\doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ad7a1d4e11976f8f7cca9f4023a9074da}{00146}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{classbranching_1_1_gen_br_mod_pt_ad7a1d4e11976f8f7cca9f4023a9074da}{displayMe}}(Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00147}00147\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00148}00148\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00149}00149\ }
+\DoxyCodeLine{\Hypertarget{_gen_br_mod_pt_8java_source_l00150}00150\ \}}
+
+\end{DoxyCode}

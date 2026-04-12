@@ -1,5 +1,8 @@
 package exceptions;
 
+/**
+ * @brief Exception thrown for MobException errors in CirclePack.
+ */
 public class MobException extends RuntimeException {
 
 	private static final long 

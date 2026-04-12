@@ -14,6 +14,8 @@ import dragdrop.ToolDropListener;
 import packing.PackData;
 
 /**
+ * @brief The panel for displaying the packing.
+ *
  * The panel for displaying the packing. 
  * 
  * TODO: moving GUI stuff from CPdrawing
@@ -48,7 +50,7 @@ public class CPcanvas extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * Give string for geometry to label canvas
+	 * @brief Give string for geometry to label canvas
 	 * @return
 	 */
 	public String getGeomAbbrev(){
@@ -60,7 +62,7 @@ public class CPcanvas extends JPanel implements MouseListener {
 	}
 	
 	/** 
-	 * Return the 'packData' pack index, or -1 if not set
+	 * @brief Return the 'packData' pack index, or -1 if not set
 	 * @return int
 	 */
 	public int getPackNum() {

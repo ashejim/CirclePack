@@ -20,6 +20,8 @@ import complex.Complex;
 import complex.MathComplex;
 
 /**
+ * @brief CPEdge. x,y,x2,y2 set from outside. 'drawIt()' is main call. Color settings
+ *
  * CPEdge. x,y,x2,y2 set from outside. 'drawIt()' is main call. Color settings
  * in graphic context handled elsewhere.
  * 
@@ -27,7 +29,6 @@ import complex.MathComplex;
  * standard orientation (i.e., looking straight down x-axis toward origin,
  * z-axis vertical).
  */
-
 public class CPEdge extends Complex {
 
 	private static final double rad2deg=180.0/Math.PI;
@@ -138,7 +139,7 @@ public class CPEdge extends Complex {
 	}
 	
 	/**
-	 * Adds a spherical geodesic to an existing path
+	 * @brief Adds a spherical geodesic to an existing path
 	 * @param sg, SphGeodesic 
 	 * @param gpath, existing Path2D.Double
 	 * @param cpS, CPDrawing

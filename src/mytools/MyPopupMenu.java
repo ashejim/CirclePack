@@ -4,6 +4,8 @@ package mytools;
 import javax.swing.JPopupMenu;
 
 /**
+ * @brief Wrapper for JPopupMenus associated with MyToolHandlers;
+ *
  * Wrapper for JPopupMenus associated with MyToolHandlers;
  * needed just to be able to identify which handler responds 
  * to menu actions.  

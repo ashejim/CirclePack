@@ -3,6 +3,8 @@ package schwarzWork;
 import complex.Complex;
 
 /**
+ * @brief Lightweight container for Schwarzian derivative data associated with an edge.
+ *
  * Temporary holder for data related to Schwarzian 
  * related data for a given edge <v,w>. Associated 
  * packing(s) depend on context. 

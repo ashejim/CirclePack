@@ -23,6 +23,8 @@ import packing.PackData;
 import util.PopupBuilder;
 
 /**
+ * @brief Creates a JButton with icon (eventually in various states),
+ *
  * Creates a JButton with icon (eventually in various states),
  * associated CmdString (with name, mnemonic, tooltip, command, 
  * dropability, etc.) useful for implementing various actions.
@@ -71,7 +73,7 @@ public class MyTool extends JButton {
 	}
 	
 	/**
-	 * Create 'MyTool' JButton
+	 * @brief Create 'MyTool' JButton
 	 * @param cpIc, CPIcon (often created from icon image name)
 	 * @param cmdstr
 	 * @param name 
@@ -170,7 +172,7 @@ public class MyTool extends JButton {
 	}
 	
 	/**
-	 * Return current 'toolTip', trimmed. 
+	 * @brief Return current 'toolTip', trimmed. 
 	 * @return null if null or trims to 0 length
 	 */
 	public String getToolTip() {
@@ -182,7 +184,7 @@ public class MyTool extends JButton {
 	}
 
 	/**
-	 * Set the 'cmdString'; null if str is null or empty.
+	 * @brief Set the 'cmdString'; null if str is null or empty.
 	 * @param str
 	 */
 	public void setCommand(String str) {
@@ -213,7 +215,7 @@ public class MyTool extends JButton {
 	}
 
 	/**
-	 * Set internal 'toolTip' string and set tooltip text.
+	 * @brief Set internal 'toolTip' string and set tooltip text.
 	 * If 'toolTip' is null, default to use 'cmdString' as
 	 * the tooltip text. 
 	 * @param str
@@ -239,7 +241,7 @@ public class MyTool extends JButton {
 	}
 
 	/**
-	 * Make sure there's a name to use in hashing: for typical command
+	 * @brief Make sure there's a name to use in hashing: for typical command
 	 * tools, this is 'cmdString', else the tool's 'nameString'; for
 	 * modes, this is preceded by "Mode: ".
 	 * @return
@@ -273,7 +275,7 @@ public class MyTool extends JButton {
 	}
 
 	/**
-	 * Utility: returns a new trimmed string, '\n' replaced 
+	 * @brief Utility: returns a new trimmed string, '\n' replaced 
 	 * by ' ', or a non-null but empty string
 	 * @param str
 	 * @return
@@ -294,7 +296,7 @@ public class MyTool extends JButton {
 	}
 
 	/** 
-	 * Execute 'cmdString' via 'parseWrapper' and separate execution thread.
+	 * @brief Execute 'cmdString' via 'parseWrapper' and separate execution thread.
 	 * @param p, PackData
 	 */
 	public void execute(PackData p) { // apply to specified packing
@@ -306,7 +308,7 @@ public class MyTool extends JButton {
 	}
 	
 	/**
-	 * May need to clone tools: e.g., when adding to script toolbar or 
+	 * @brief May need to clone tools: e.g., when adding to script toolbar or 
 	 * copying between tool bars. Note: does not put in hashedtools, in
 	 * tool bars, or in mode vectors.
 	 * @return 'MyTool' or 'MyCanvasMode' as appropriate

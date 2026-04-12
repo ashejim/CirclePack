@@ -30,7 +30,9 @@ import allMains.CPBase;
 import canvasses.MainFrame;
 import circlePack.PackControl;
 
-/** Various preferences, directory options, etc. are kept in the
+/**
+ * @brief /** Various preferences, directory options, etc.
+ * Various preferences, directory options, etc. are kept in the
  * preferences file '~/myCirclePack/cpprefrc'. This class helps 
  * manage these preferences.
  * @author kens
@@ -253,7 +255,7 @@ private static final long
   }
 
   /**
-   * Check string 'value' to see if it is intended to point to "home"
+   * @brief Check string 'value' to see if it is intended to point to "home"
    * directory. If yes, return new 'File'. If not, return null; calling 
    * routine chooses initial directory path -- generally 'userDirectory'.
    * @param String value

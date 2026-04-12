@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 import circlePack.PackControl;
 
 /**
+ * @brief Class to display a SplashScreen while CirclePack initiates
+ *
  * Class to display a SplashScreen while CirclePack initiates
  * 
  * @author Bradford Smith

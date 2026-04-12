@@ -13,6 +13,8 @@ import math.Point3D;
 import packing.PackData;
 
 /**
+ * @brief Streamline generator for curvature-flow lines on circle packings.
+ *
  * A class for creating streamlines, a la curvature flow lines, 
  * as Chuck Collins did using matlab in joint paper with me and
  * Toby Driscoll.
@@ -40,7 +42,7 @@ public class StreamLiner {
 	}
 	
 	/**
-	 * Build 'BaryLink' giving streamline of gradient starting 
+	 * @brief Build 'BaryLink' giving streamline of gradient starting 
 	 * at 'pt' (caution: relative to the carrier of 'basePack').
 	 * We follow the gradient uphill (downhill) from 'pt'. Stop
 	 * on hitting a boundary edge or vertex or a local extremum.
@@ -98,7 +100,7 @@ public class StreamLiner {
 	}
 	
 	/**
-	 * Given BaryPoint, find the up-gradient exit point 
+	 * @brief Given BaryPoint, find the up-gradient exit point 
 	 * in that same face and return the 'BaryPacket' with
 	 * 'start' and 'end' points. Return null if 'start' and
 	 * 'end' are essentially equal or if the streamline stops.
@@ -173,7 +175,7 @@ public class StreamLiner {
 	}
 	
 	/**
-	 * Store desired values in 'dataValues'
+	 * @brief Store desired values in 'dataValues'
 	 * @param values []double
 	 * @return count, 0 on error
 	 */
@@ -192,7 +194,7 @@ public class StreamLiner {
 	}
 	
 	/**
-	 * Given BaryPoint 'inpt' as starting point, return new
+	 * @brief Given BaryPoint 'inpt' as starting point, return new
 	 * BaryPoint with 'face' properly set (i.e., we are determining 
 	 * which face the streamline goes into next). Other routines 
 	 * will find where it goes in that face.
@@ -397,7 +399,7 @@ public class StreamLiner {
 	}
 
 	/**
-	 * Given a gradient direction and the left/right sides of a
+	 * @brief Given a gradient direction and the left/right sides of a
 	 * triangular face, return true if the gradient points into 
 	 * the face. 
 	 * @param grad Complex

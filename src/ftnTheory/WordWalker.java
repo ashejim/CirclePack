@@ -13,6 +13,8 @@ import util.ColorUtil;
 import util.DispFlags;
 
 /**
+ * @brief This class is for "word walking" experiments: a tripartite
+ *
  * This class is for "word walking" experiments: a tripartite 
  * triangulation is one in which the vertices are partitioned
  * into 3 types, and every triangle has one vertex of each type.
@@ -89,7 +91,7 @@ public class WordWalker extends PackExtender {
 	}
 	
 	/**
-	 * Draw a face with special coloring: red, green, blue on the
+	 * @brief Draw a face with special coloring: red, green, blue on the
 	 * 0-1, 1-2, 2-0 sectors, respectively.
 	 * @param f int
 	 */

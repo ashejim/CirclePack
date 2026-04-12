@@ -10,6 +10,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
+/**
+ * @brief Build Tool Frame.
+ */
 public class BuildToolFrame extends JFrame {
 	
 	private static final long 

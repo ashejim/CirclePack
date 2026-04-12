@@ -4,7 +4,9 @@ import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 
-/** 
+/**
+ * @brief static routines to load, scale, and/or store images.
+ * 
  * static routines to load, scale, and/or store images.
  * @author kstephe2
  *
@@ -12,7 +14,7 @@ import java.awt.image.BufferedImage;
 public class GetScaleImage {
 	
 	/**
-	 * scale given image (equally in both directions) to fit inside given width x height
+	 * @brief scale given image (equally in both directions) to fit inside given width x height
 	 * @param bI @see BufferedImage
 	 * @param width int
 	 * @param height int

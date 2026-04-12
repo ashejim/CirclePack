@@ -25,6 +25,8 @@ import allMains.CPBase;
 import dragdrop.EditDropListener;
 
 /**
+ * @brief StackBox for persistent 'CPdata' node, which holds 'FILE'
+ *
  * StackBox for persistent 'CPdata' node, which holds 'FILE'
  * and/or 'LINEUP' nodes as children.
  * 
@@ -176,7 +178,7 @@ public class DataSBox extends StackBox {
 	}
 	
     /**
-     * Create menus for 'DataBox's, either edit or display mode.
+     * @brief Create menus for 'DataBox's, either edit or display mode.
      * @param editmode boolean: true, then for edit mode
      * @return JPopupMenu
      */

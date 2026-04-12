@@ -50,6 +50,8 @@ import util.SphView;
 import util.ViewBox;
 
 /**
+ * @brief This class maintains 'packImage', an image buffer, and knows
+ *
  * This class maintains 'packImage', an image buffer, and knows 
  * how to draw lines, circles, polygons, etc., maintain info on 
  * colors, real world coords, graphics.
@@ -74,7 +76,6 @@ import util.ViewBox;
  * (see 'ActiveScreen'). 
  * @author kens
  */
-
 public class CPdrawing extends JPanel implements MouseListener {
 
 	private static final long 
@@ -192,7 +193,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * Reset defaults for CirclePack; e.g., when new packing is loaded.
+	 * @brief Reset defaults for CirclePack; e.g., when new packing is loaded.
 	 * Note: may prefer different behavior, eg., when copying another 
 	 * packing.
 	 * @param startup, boolean: true only when first instantiating 'CPDrawing'.
@@ -337,7 +338,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/** 
-	 * Draws a circle or face index 'n' at given Complex z. In sph case,
+	 * @brief Draws a circle or face index 'n' at given Complex z. In sph case,
 	 * this routine takes care to move z to apparent sphere, then to
 	 * visual plane, and checks if it's on front.
 	 * @param z Complex: real-world Complex location
@@ -367,7 +368,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * Draws string, up to length 12, in blue at given 
+	 * @brief Draws string, up to length 12, in blue at given 
 	 * Complex z. In sph case, this routine takes care 
 	 * to move z to apparent sphere, then to
 	 * visual plane, and checks if it's on front.
@@ -393,7 +394,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * clears canvas; prepares disc/sphere background in non eucl cases
+	 * @brief clears canvas; prepares disc/sphere background in non eucl cases
 	 * @param repaint boolean
 	 */
 	public void clearCanvas(boolean repaint) {
@@ -413,7 +414,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * Use 'DispFlags' for all arcs
+	 * @brief Use 'DispFlags' for all arcs
 	 * @param z Complex
 	 * @param rad double
 	 * @param ang1 double
@@ -448,7 +449,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * Draw circle using 'DispFlags' encoding for color, thickness, 
+	 * @brief Draw circle using 'DispFlags' encoding for color, thickness, 
 	 * label, etc. 
 	 * @param z Complex
 	 * @param rad double
@@ -459,7 +460,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * Draw circle using 'DispFlags' encoding for color, thickness, 
+	 * @brief Draw circle using 'DispFlags' encoding for color, thickness, 
 	 * label, etc. 
 	 * @param cs CircleSimple
 	 * @param dflags DispFlags
@@ -514,7 +515,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * Draw face using 'DispFlags' for color, thickness, label, etc.
+	 * @brief Draw face using 'DispFlags' for color, thickness, label, etc.
 	 * (Radii are only needed in labeling in hyperbolic case.)
 	 * @param z0 Complex
 	 * @param z1 Complex
@@ -588,7 +589,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * Draw a closed polygon
+	 * @brief Draw a closed polygon
 	 * @param N int
 	 * @param corners double[2*N]
 	 * @param dflags DispFlags
@@ -631,7 +632,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * Draw an open polygon (no fill option)
+	 * @brief Draw an open polygon (no fill option)
 	 * @param N int
 	 * @param corners double[2*N]
 	 * @param dflags DispFlags
@@ -650,7 +651,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * Draw an geodesic segment
+	 * @brief Draw an geodesic segment
 	 * @param z1 Complex
 	 * @param z2 Complex
 	 * @param dflags DispFlags
@@ -684,7 +685,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * Draw trinket, colors, fill, etc. based on 'DispFlags' info.
+	 * @brief Draw trinket, colors, fill, etc. based on 'DispFlags' info.
 	 * Scale is 2^thickness.
 	 * @param trink int, index into library of trinket shapes
 	 * @param z Complex
@@ -705,7 +706,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * Paths are specified in real world coordinates. Have to convert
+	 * @brief Paths are specified in real world coordinates. Have to convert
 	 * these based on screen data, then further to pixels before drawing.
 	 * Note that color, linewidth etc. are handled by the calling routine.
 	 * @param path Path2D.Double
@@ -719,7 +720,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
     /**
-     * Draw shape with given color and stroke
+     * @brief Draw shape with given color and stroke
      * @param shape Shape
      * @param color Color
      * @param stroke Stroke
@@ -735,7 +736,7 @@ public class CPdrawing extends JPanel implements MouseListener {
     }
     
 	/**
-	 * Recursively draw euclidean tile shapes for subdivision 
+	 * @brief Recursively draw euclidean tile shapes for subdivision 
 	 * rule to given depth; tile rules must have optional 
 	 * position data from *.r rules file.
 	 * @param sRules SubdivisionRules, (with optional position data)
@@ -786,7 +787,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
      
 	/**
-	 * GUI stuff
+	 * @brief GUI stuff
 	 * 
 	 * Draw X axis on 'activeScreen'. Draw directly in canvas 
 	 * after the image buffer has been put in. 
@@ -822,7 +823,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * GUI stuff
+	 * @brief GUI stuff
 	 * 
 	 * Draw Y axis on 'activeScreen'. Draw directly in canvas 
 	 * after the image buffer has been put in. 
@@ -883,7 +884,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * get the current 'packData' for this screen
+	 * @brief get the current 'packData' for this screen
 	 * @return PackData
 	 */
 	public PackData getPackData() {
@@ -891,7 +892,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * GUI stuff
+	 * @brief GUI stuff
 	 * 
 	 * Replace the 'packData' for this screen; clean out any
 	 * 'SliderFrame' objects.
@@ -958,7 +959,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * GUI stuff
+	 * @brief GUI stuff
 	 * 
 	 * Give string for geometry to label canvas
 	 * @return String
@@ -972,7 +973,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * Return the geometry of 'packData'
+	 * @brief Return the geometry of 'packData'
 	 * @return
 	 */
 	public int getGeom(){
@@ -994,7 +995,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * Reset the geometries of the graphic objects;
+	 * @brief Reset the geometries of the graphic objects;
 	 * @param geom, int 1,0, or -1
 	 */
 	public void setGeometry(int geom) {
@@ -1005,7 +1006,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/** 
-	 * Return the 'packData' pack index, or -1 if not set
+	 * @brief Return the 'packData' pack index, or -1 if not set
 	 * @return int
 	 */
 	public int getPackNum() {
@@ -1030,7 +1031,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * Sets the linethickness and adjusts the current and default strokes.
+	 * @brief Sets the linethickness and adjusts the current and default strokes.
 	 * (Note: default needs resetting in case 'pixFactor' changes)
 	 * @param thickness
 	 */
@@ -1048,7 +1049,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/** 
-	 * 'fill opacity' controls the brilliance of colors for filled
+	 * @brief 'fill opacity' controls the brilliance of colors for filled
 	 * faces, circles. Less means lighter colors.
 	 * TODO: need to update 'screen' tab slider
 	 * @param t in [0,256)
@@ -1064,7 +1065,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/**
-	 * 'sphere opacity' controls how much the back of the sphere shows
+	 * @brief 'sphere opacity' controls how much the back of the sphere shows
 	 * through.
 	 * @param t in [0,256)
 	 */
@@ -1079,7 +1080,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/** 
-	 * Set font appearing for indices on canvas of this packing.
+	 * @brief Set font appearing for indices on canvas of this packing.
 	 * @param t
 	 */
 	public void setIndexFont(int t) {
@@ -1092,7 +1093,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * converts real world double x to pixel int x
+	 * @brief converts real world double x to pixel int x
 	 * @param x
 	 * @return int
 	 */
@@ -1117,7 +1118,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * converts real world double y to pixel int y
+	 * @brief converts real world double y to pixel int y
 	 * @param y
 	 * @return int
 	 */
@@ -1126,7 +1127,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * Given pt on canvas (integer wide,high), return real world point.
+	 * @brief Given pt on canvas (integer wide,high), return real world point.
 	 * @param pt, integer x,y
 	 * @param wide, high, integer canvas size
 	 * @return Point2D.Double
@@ -1138,7 +1139,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/** 
-	 * find real world center x coord
+	 * @brief find real world center x coord
 	 * @return
 	 */
 	public double getCenterX() {
@@ -1146,7 +1147,7 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/** 
-	 * find real world center y coord
+	 * @brief find real world center y coord
 	 * @return
 	 */
 	public double getCenterY() {

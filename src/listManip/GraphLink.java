@@ -15,6 +15,8 @@ import util.MathUtil;
 import util.StringUtil;
 
 /**
+ * @brief Describes a graph with nodes in linked list of 'EdgeSimple's.
+ *
  * Describes a graph with nodes in linked list of 'EdgeSimple's.
  * Nodes indexed by natural numbers (zero not included, though
  * 0 can be used to denote a root) and we must keep track of 
@@ -29,7 +31,6 @@ import util.StringUtil;
  * (orientation <g,f> from g to f) from a unique root.
  * @author kens
  */
-
 public class GraphLink extends LinkedList<EdgeSimple> {
 
 	private static final long 
@@ -85,7 +86,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	}
 
 	/**
-	 * Extract connected component containing 'root'.
+	 * @brief Extract connected component containing 'root'.
 	 * @param root int, >0
 	 * @return GraphLink or null on empty or error
 	 */
@@ -121,7 +122,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Search (starting at 'spot') for the next root, <0,f>.
+	 * @brief Search (starting at 'spot') for the next root, <0,f>.
 	 * This should only be allowed for tree/forest.
 	 * @param spot int starting point for search.
 	 * @return int , root f or -1 on failure.
@@ -140,7 +141,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Search (starting at 'spot') for index of next entry 
+	 * @brief Search (starting at 'spot') for index of next entry 
 	 * that is a root, <0,f>
 	 * @param int spot index
 	 * @return int, index of <0,f> entry or -1 on failure.
@@ -159,7 +160,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Identify connected components of the graph and determine
+	 * @brief Identify connected components of the graph and determine
 	 * if it's acyclic -- no closed edge paths. Return integer
 	 * array 'mark'. mark[node]=-1 if node is not in graph,
 	 * mark[node]=s if s is the smallest index in the connected
@@ -252,7 +253,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	}
 
 	/**
-	 * Get linked list of nodes (nonzero) in some pair with 'node'.
+	 * @brief Get linked list of nodes (nonzero) in some pair with 'node'.
 	 * If 'node' is 0, looking for root.
 	 * @param node
 	 * @return @see NodeLink, possible empty
@@ -277,7 +278,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	}
 
 	/**
-	 * Return array indicating combinatorial distance to 'node'.
+	 * @brief Return array indicating combinatorial distance to 'node'.
 	 * Entry = -1 for nodes not in the graph or not connected 
 	 * to 'node'. 'node' is 1 (first generation).
 	 * @param node int, >0
@@ -322,7 +323,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Abut GraphLink to end of 'this' GraphLink. If non-empty, and new
+	 * @brief Abut GraphLink to end of 'this' GraphLink. If non-empty, and new
 	 * elements start with a root, then don't include the root.
 	 * @param moreGL GraphLink
 	 * @return int, count of new elements (some may be improper, some redundant)
@@ -348,7 +349,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	}
 
 	/**
-     * Return random entry from GraphLink; caution, does not adjust
+     * @brief Return random entry from GraphLink; caution, does not adjust
      * for repeat entries.
      * @param graphlist GraphLink
      * @return EdgeSimple, null is graphlist is null or empty
@@ -404,7 +405,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Add links to this graph (if it is associated with PackData). 
+	 * @brief Add links to this graph (if it is associated with PackData). 
 	 * @param datastr String
 	 * @return int count
 	 */	
@@ -414,7 +415,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Add links to this graph (if it is associated with PackData)
+	 * @brief Add links to this graph (if it is associated with PackData)
 	 * @param items, a vector of strings
 	 * @return int count
 	 */
@@ -696,7 +697,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	}
 	
 	 /**
-	  * Create a new GraphLink that eliminates duplicate edges.
+	  * @brief Create a new GraphLink that eliminates duplicate edges.
 	  * @param el
 	  * @param orient boolean, true, then take account of orientation
 	  * @return new EdgeLink
@@ -714,7 +715,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	 }
 	 
 	 /**
-	   * Find index of <f,g> or <g,f> in the list
+	   * @brief Find index of <f,g> or <g,f> in the list
 	   * @param glist GraphLink
 	   * @param f int
 	   * @param g int
@@ -735,7 +736,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	 }
 	 
 	 /**
-	  * Check if this list contains (f,g) ( or (g,f) if orient=false)
+	  * @brief Check if this list contains (f,g) ( or (g,f) if orient=false)
 	  * @param f int
 	  * @param g int
 	  * @param orient boolean, true, enforce orientation
@@ -746,7 +747,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	 }
 	 
 	 /**
-	  * Check if this list contains (f,g) ( or (g,f) if orient=false)
+	  * @brief Check if this list contains (f,g) ( or (g,f) if orient=false)
 	  * TODO: convert temporarily to 'EdgeSimple
 	  * @param edge GraphSimple
 	  * @param orient boolean, true, enforce orientation
@@ -770,7 +771,7 @@ public class GraphLink extends LinkedList<EdgeSimple> {
 	}
 	
 	 /**
-	  * Set 'packData' (which helps determine eligibility of entries)
+	  * @brief Set 'packData' (which helps determine eligibility of entries)
 	  * @param p PackData
 	  */
 	 public void setPackData(PackData p) {

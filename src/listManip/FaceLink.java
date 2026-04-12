@@ -30,6 +30,8 @@ import util.StringUtil;
 import util.UtilPacket;
 
 /**
+ * @brief Linked list of faces for circle packings.
+ *
  * Linked list of faces for circle packings.
  * 
  * TODO: Because numbering is ephemeral and access is
@@ -61,7 +63,7 @@ public class FaceLink extends LinkedList<Integer> {
 		addFaceLinks(items);
 	}
 	/**
-	 * Not associated with any PackData
+	 * @brief Not associated with any PackData
 	 * @param datastr
 	 */
 	public FaceLink(String datastr) {
@@ -77,7 +79,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Initiate empty list
+	 * @brief Initiate empty list
 	 * @param p
 	 */
 	public FaceLink(PackData p) {
@@ -100,7 +102,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Add links to this list (only if it is associated with PackData?)
+	 * @brief Add links to this list (only if it is associated with PackData?)
 	 * @param datastr
 	 * @return
 	 */
@@ -110,7 +112,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Add links to this list (only if it is associated with PackData?)
+	 * @brief Add links to this list (only if it is associated with PackData?)
 	 * @param datastr
 	 * @return int
 	 */
@@ -811,7 +813,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Make a distinct copy of this linked list; no check
+	 * @brief Make a distinct copy of this linked list; no check
 	 * of validity of the indices.
 	 * @return NodeLink
 	 */
@@ -825,7 +827,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Abut a 'FaceLink' to the end of this one.
+	 * @brief Abut a 'FaceLink' to the end of this one.
 	 * @param moreFL
 	 * @return count of new face indices (some may be improper, some redundant)
 	 */
@@ -844,7 +846,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Pick first vertex number off a string. Return 0 on failure.
+	 * @brief Pick first vertex number off a string. Return 0 on failure.
 	 * @param p
 	 * @param str
 	 * @return
@@ -862,7 +864,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Is 'f' an entry?
+	 * @brief Is 'f' an entry?
 	 * @param f
 	 * @return int, index or -1 if error or not found
 	 */
@@ -874,7 +876,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 		
 	/**
-	 * Count my elements (without repeats)
+	 * @brief Count my elements (without repeats)
 	 * @return int count; -1 on error
 	 */
 	public static int countMe(FaceLink nl) {
@@ -903,7 +905,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * If @see FaceLink is a closed face list and 'indx' points to
+	 * @brief If @see FaceLink is a closed face list and 'indx' points to
 	 * entry f, then rotate, returning a new closed FaceLink
 	 * starting and ending with f.
 	 * @param link @see FaceLink
@@ -930,7 +932,7 @@ public class FaceLink extends LinkedList<Integer> {
 	
 	
 	/**
-	 * Return a new 'FaceLink' whose order is the reverse of this
+	 * @brief Return a new 'FaceLink' whose order is the reverse of this
 	 * @return new 'FaceLink', null if this is empty.
 	 */
 	public FaceLink reverseMe() {
@@ -944,7 +946,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Given a polygonal path and a packing, return a 'FaceParam' linked list
+	 * @brief Given a polygonal path and a packing, return a 'FaceParam' linked list
 	 * of faces approximating the path. Should be closed if the path is
 	 * closed. This is an alternate to 'path2faceparam' in that it
 	 * follows the path locally, so it can be used to follow paths on
@@ -1156,7 +1158,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Generate 'HalfLink' of edges associated with this 
+	 * @brief Generate 'HalfLink' of edges associated with this 
 	 * ordered 'FaceLink'; if successive faces f,g share 
 	 * a halfedge, then this is the halfedge for g.
 	 * @param pdcel PackDCEL
@@ -1183,7 +1185,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Prolonging a chain to follow a path. Given the last 'FaceParam' 
+	 * @brief Prolonging a chain to follow a path. Given the last 'FaceParam' 
 	 * element in a chain, add links (with successively distinct faces)
 	 * until reaching one not incident to the first; call the last
 	 * element with incident face 'midFP', and the first following
@@ -1332,7 +1334,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Given 'FaceParam', if 'FaceParam.face' and 'FaceParam.next.face' 
+	 * @brief Given 'FaceParam', if 'FaceParam.face' and 'FaceParam.next.face' 
 	 * are incident, build chain of 'FaceParam's between them (with
 	 * fake 'param', 'Z' values). Return the final 'FaceParam' on success
 	 * or null on failure. 
@@ -1434,7 +1436,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * In face f at parameter 'param'. Move along the path until you encounter
+	 * @brief In face f at parameter 'param'. Move along the path until you encounter
 	 * the next incident face (and you leave f). Return vector ans[]:
 	 *    ans[0]=next face index
 	 *    ans[1]=new param value
@@ -1511,7 +1513,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 
 	 /**
-	  * Set 'packData' (which helps determine eligibility of entries)
+	  * @brief Set 'packData' (which helps determine eligibility of entries)
 	  * @param p PackData
 	  */
 	 public void setPackData(PackData p) {
@@ -1519,7 +1521,7 @@ public class FaceLink extends LinkedList<Integer> {
 	 }
 
 	/**
-     * Return random entry from facelist; caution, does not adjust
+     * @brief Return random entry from facelist; caution, does not adjust
      * for repeat entries.
      * @param facelist
      * @return -1 on error
@@ -1532,7 +1534,7 @@ public class FaceLink extends LinkedList<Integer> {
     
 
 	/**
-	 * Make up list by looking through SetBuilder specs 
+	 * @brief Make up list by looking through SetBuilder specs 
 	 * (from {..} set-builder notation). Use 'tmpUtil' 
 	 * to collect information before creating the FaceLink 
 	 * for return.

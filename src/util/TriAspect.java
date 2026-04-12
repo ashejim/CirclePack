@@ -16,6 +16,8 @@ import math.Mobius;
 import packing.PackData;
 
 /**
+ * @brief Utility class holding geometric info localized to triangular
+ *
  * Utility class holding geometric info localized to triangular
  * faces of some parent circle packing. Used, e.g., with 
  * projective and affine structures and with discrete 
@@ -185,7 +187,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * Find the incircle. For eucl/sph, just use centers; 
+	 * @brief Find the incircle. For eucl/sph, just use centers; 
 	 * for hyp case, use 3 generalized tangency points.
 	 * @param faceIndx Face
 	 * @return CircleSimple
@@ -198,7 +200,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * Compute the circle opposite edge (j,j+1) using
+	 * @brief Compute the circle opposite edge (j,j+1) using
 	 * centers, radii, and inv distances.
 	 * @param j int
 	 * @param useLabels boolean
@@ -245,7 +247,7 @@ public class TriAspect extends TriData {
 	}
 
 	/**
-	 * Copy cent/radii by edge to pdcel
+	 * @brief Copy cent/radii by edge to pdcel
 	 * @param pdcel PackDCEL
 	 */
 	public void data2pdcel(PackDCEL pdcel) {
@@ -273,7 +275,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * Return index k in 'this' of first edge 'this' shares
+	 * @brief Return index k in 'this' of first edge 'this' shares
 	 * with 'ntri', if it exists.
 	 * @param ntri TriAspect
 	 * @return int index, -1 on failure
@@ -292,7 +294,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * Compute the eucl centers in normalized position 
+	 * @brief Compute the eucl centers in normalized position 
 	 * (v0 at origin, v1 on positive real, v2 in upper half 
 	 * plane) using 'labels' as the current eucl radii.
 	 * @return true; no checks yet implemented
@@ -311,7 +313,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * Get the center as new Complex.
+	 * @brief Get the center as new Complex.
 	 * @param j int, index in 'vert'
 	 * @return new Complex
 	 */
@@ -329,7 +331,7 @@ public class TriAspect extends TriData {
 
 
 	/**
-	 * Utility routine: only use 'TriAspect' to 
+	 * @brief Utility routine: only use 'TriAspect' to 
 	 * hold rad/cent data. Create a baseEquilateral 
 	 * in geometry 'hes'. In eucl and spherical 
 	 * case, the edge tangency points are at the 
@@ -356,7 +358,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * Compute the Mobius that would align 'this' with 
+	 * @brief Compute the Mobius that would align 'this' with 
 	 * 'acrossTri' (the 'TriAspect' across 'edge'). 
 	 * Mode determines what to align: 
 	 *    mode 1: use 'radii' (typical, default)
@@ -412,7 +414,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * Apply a Mobius transformation to my centers/radii.
+	 * @brief Apply a Mobius transformation to my centers/radii.
 	 * Note: other data, eg. labels, sides, tangPts, 
 	 * are NOT adjusted
 	 * @param mob Mobius
@@ -430,7 +432,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * Assume 'center's give eucl face in normalized 
+	 * @brief Assume 'center's give eucl face in normalized 
 	 * position based on current 'labels'. Given vert 
 	 * v2 and centers of opposite edge e, adjust 
 	 * 'center', 'labels', and 'sides' data so 
@@ -463,7 +465,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/** 
-	 * Assume 'center's have been computed in 
+	 * @brief Assume 'center's have been computed in 
 	 * normalized position* from 'labels'. Adjust 
 	 * the data so the face aligns with that across 
 	 * edge opposite to v2.
@@ -579,7 +581,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * Given vertex 'v' (from parent packing) of 
+	 * @brief Given vertex 'v' (from parent packing) of 
 	 * this face, return the skew, log(left/right 
 	 * side lengths) (as seen from v), with label 
 	 * for v scaled by 't'. Also return the 
@@ -603,7 +605,7 @@ public class TriAspect extends TriData {
 	}
 
 	/**
-	 * Return the angle at v, but with the recorded 
+	 * @brief Return the angle at v, but with the recorded 
 	 * eucl label at v multiplied by 't'. Thus, for 
 	 * t=1 this just computes the angle. Also, 
 	 * return the derivative w.r.t. t.
@@ -626,7 +628,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * Find the eucl area of the sector at 'v' 
+	 * @brief Find the eucl area of the sector at 'v' 
 	 * based on the labels
 	 * @param v int, parent index of 'v'
 	 * @return double, rad at 'v' times angle at 'v'
@@ -639,7 +641,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * Using center data, compute the area of 
+	 * @brief Using center data, compute the area of 
 	 * eucl face 'sector' at v. Assume angles 
 	 * already in 'angleV'. The 'sector' is the 
 	 * sector of the circle at v going through
@@ -657,7 +659,7 @@ public class TriAspect extends TriData {
 	}
 
 	/**
-	 * For help when debugging Schwarzian code. This
+	 * @brief For help when debugging Schwarzian code. This
 	 * displaye rgb dots at corners of this face base
 	 * on the Mobius transformation from the base 
 	 * equilateral (fface=true) or its companion 
@@ -701,7 +703,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * Return vector of complex tanPts, e.g. for matlab.
+	 * @brief Return vector of complex tanPts, e.g. for matlab.
 	 * @return String
 	 */
 	public String tanPts2Str() {

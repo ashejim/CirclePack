@@ -15,6 +15,8 @@ import listManip.VertexMap;
 import packing.PackData;
 
 /**
+ * @brief TileBuilder is intended for building 'TileData' structures
+ *
  * TileBuilder is intended for building 'TileData' structures 
  * and their packings.
  * 
@@ -80,7 +82,7 @@ public class TileBuilder {
 	}
 
 	/**
-	 * Build associated full barycentric complex for origTD: 
+	 * @brief Build associated full barycentric complex for origTD: 
 	 * that is, every n-tile is barycentrically subdivided to 
 	 * form 2n triangles, and then each of these is
 	 * barycentrically subdivided. (This is required, e.g., 
@@ -327,7 +329,7 @@ public class TileBuilder {
 	}
 	
 	/**
-	 * Start with packing for barycentric subdivision of 
+	 * @brief Start with packing for barycentric subdivision of 
 	 * tiling. The packing has 'tileData' and vertices 
 	 * are marked: 1 = tile baryVert, 2 = tile corner, 
 	 * 3 = tile edge barycenter. Barycenters of 
@@ -655,7 +657,7 @@ public class TileBuilder {
 	}
 	
 	/**
-	 * After doing some pasting, we need to update 
+	 * @brief After doing some pasting, we need to update 
 	 * the tile.vert[] vectors of tileData 'td'. 
 	 * @param td TileData
 	 * @param vmap VertexMap
@@ -690,7 +692,7 @@ public class TileBuilder {
 	}
 	
 	/**
-	 * Look through masterPack for first instance of bdry
+	 * @brief Look through masterPack for first instance of bdry
 	 * edges which are contiguous and to be attached to one 
 	 * another. (So, we're looking for a tile vert which is in 
 	 * the bdry, and tile edges on each side are to be 
@@ -738,7 +740,7 @@ public class TileBuilder {
 	}
 	
 	/**
-	 * Used 'check_for_slit' to locate tip of slit v to 
+	 * @brief Used 'check_for_slit' to locate tip of slit v to 
 	 * close up. Sew up the slit and adjust accordingly. 
 	 * @return boolean, false if none sewn up
 	 */
@@ -758,7 +760,7 @@ public class TileBuilder {
 	}
 
 	/**
-	 * Look through masterPack for tile edges which 
+	 * @brief Look through masterPack for tile edges which 
 	 * are in the boundary and can swallow an 
 	 * unattached tile. Adjoin and adjust accordingly. 
 	 * (So, looking for edge having same vert at each 
@@ -841,7 +843,7 @@ public class TileBuilder {
 	}
 	
 	/**
-	 * Copy tileFlower from tile 't1' to 't2
+	 * @brief Copy tileFlower from tile 't1' to 't2
 	 * @param t1 Tile
 	 * @param t2 Tile
 	 * @return vertCount, 0 on error
@@ -863,7 +865,7 @@ public class TileBuilder {
 	}
 	
 	/**
-	 * Given a tile and edge of origTD, determine if 
+	 * @brief Given a tile and edge of origTD, determine if 
 	 * the ends of the edge are the same vertex.
 	 * @param tileIndex
 	 * @param edgeIndex
@@ -884,7 +886,7 @@ public class TileBuilder {
 	}
 	
 	/**
-	 * If tiles t1, t2 share an edge, then we need to know
+	 * @brief If tiles t1, t2 share an edge, then we need to know
 	 * how to paste them. We return ans (int[]) with entries:
 	 *   * ans[0] = index in 't1.vert' where pasting starts
 	 *   * ans[1] = number of clockwise tile edges to paste
@@ -1021,7 +1023,7 @@ public class TileBuilder {
 	}
 	
 	/**
-	 * This routine adds tile vertices to tiles of 'td'
+	 * @brief This routine adds tile vertices to tiles of 'td'
 	 * based entirely on 'td's tileFlowers. This accommodates
 	 * cases, such as existence of digons, slits, 
 	 * or self-pastings (e.g., perhaps non-simply connected 

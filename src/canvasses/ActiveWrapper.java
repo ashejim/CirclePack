@@ -26,7 +26,7 @@ import util.PopupBuilder;
 import util.SphView;
 
 /**
- * Simple wrapper for canvases displaying circle packings; catch key,
+ * @brief Simple wrapper for canvases displaying circle packings; catch key,
  * mouse, and mouse motion events. The 'ActiveWrapper' is used in the 
  * 'MainPanel'; derived class, 'PairWrapper' (which override most
  * mouse events) is used for side-by-side window mode.
@@ -94,10 +94,17 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 		zoomOut(2.0D);
 	}
 
+	/**
+	 * @brief TODO: Document zoomIn.
+	 */
 	public void zoomIn() {
 		zoomIn(0.5D);
 	}
 	
+	/**
+	 * @brief TODO: Document zoomOut.
+	 * @param zoomOutMultiplier
+	 */
 	public void zoomOut(double zoomOutMultiplier) {
 		try {
 			cpDrawing.realBox.scaleView(zoomOutMultiplier);
@@ -107,6 +114,10 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 		repaint();
 	}
 
+	/**
+	 * @brief TODO: Document zoomIn.
+	 * @param zoomInMultiplier
+	 */
 	public void zoomIn(double zoomInMultiplier) {
 		try {
 			cpDrawing.realBox.scaleView(zoomInMultiplier);
@@ -137,6 +148,10 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 			}
 		}
 	}
+	/**
+	 * @brief TODO: Document keyTyped.
+	 * @param e
+	 */
 	public void keyTyped(KeyEvent e) {}
 	
 	// Methods required for MouseListener/MouseMotionListener
@@ -158,6 +173,10 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 		e.consume();
 	}
 	
+	/**
+	 * @brief TODO: Document mousePressed.
+	 * @param e
+	 */
 	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON2 ||
 				(e.getButton() == MouseEvent.BUTTON1 && 
@@ -176,6 +195,10 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 		e.consume();
 	}
 	
+	/**
+	 * @brief TODO: Document mouseReleased.
+	 * @param e
+	 */
 	public void mouseReleased(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON2 ||
 				(e.getButton() == MouseEvent.BUTTON1 && 
@@ -198,9 +221,17 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 	public void mouseDragged(MouseEvent e) {
 		activeMode.dragged(this,e);
 	}
+	/**
+	 * @brief TODO: Document mouseEntered.
+	 * @param e
+	 */
 	public void mouseEntered(MouseEvent e) {
 		requestFocus(); // send focus to activeScreen so it gets key events
 	}
+	/**
+	 * @brief TODO: Document mouseExited.
+	 * @param e
+	 */
 	public void mouseExited(MouseEvent e) {
 		PackControl.mbarPanel.requestFocusInWindow(); // move focus to innocuous place
 	}

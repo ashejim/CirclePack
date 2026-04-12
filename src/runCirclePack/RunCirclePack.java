@@ -15,6 +15,8 @@ import java.util.Map;
 import util.FileUtil;
 
 /**
+ * @brief Starting CirclePack as a 'jar' file is complicated.
+ *
  * Starting CirclePack as a 'jar' file is complicated. Two main 
  * issues: (1) need to store C libraries appropriate to the system,
  * (2) want splash screen (have to circumvent error in standard

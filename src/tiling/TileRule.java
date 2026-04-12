@@ -4,6 +4,8 @@ import complex.Complex;
 import math.Point3D;
 
 /**
+ * @brief For subdivision manipulations.
+ *
  * For subdivision manipulations. We follow Bill Floyd here: 
  * 'targetType' starts at 4 (because 0-3 are standard 'end' types, 
  * used to form rectangles in the original work of Cannon, 

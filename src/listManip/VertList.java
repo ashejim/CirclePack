@@ -3,6 +3,8 @@ package listManip;
 import exceptions.LayoutException;
 
 /**
+ * @brief Linked list of indices (often vertices, but not always).
+ *
  * Linked list of indices (often vertices, but not always).
  * @author kens
  *

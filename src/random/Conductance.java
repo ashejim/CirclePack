@@ -6,10 +6,13 @@ import geometry.EuclMath;
 import geometry.CircleSimple;
 import packing.PackData;
 
+/**
+ * @brief Conductance.
+ */
 public class Conductance {
 	
 	/** 
-	 * Save adjacency matrix of packing (<= 10,000 verts) in form for
+	 * @brief Save adjacency matrix of packing (<= 10,000 verts) in form for
 	 * matlab to read; the adjacency matrix has a 1 in (i,j) spot if
 	 * i and j are neighboring vertices, else a 0. 
 
@@ -39,7 +42,7 @@ public class Conductance {
 	}
 	
 	/**
-	 * Conductances for simple random walk are all 1.
+	 * @brief Conductances for simple random walk are all 1.
 	 * @param domData
 	 * @return double[v][j], v=vertex, j=petal index (first is repeated for
 	 * closed flowers)
@@ -56,7 +59,7 @@ public class Conductance {
 	}
 				
 	/**
-	 * Compute conductances of the triangulation based on packing centers. 
+	 * @brief Compute conductances of the triangulation based on packing centers. 
 	 * If 'domData' is a packing, this is usual set of eucl conductances 
 	 * (a la Dubejko). However, in general, use ratio of 
 	 * distance between incircle centers of bounding faces to length of

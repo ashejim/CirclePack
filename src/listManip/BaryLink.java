@@ -16,6 +16,8 @@ import util.MathUtil;
 import util.StringUtil;
 
 /**
+ * @brief Linked list of barycentric coordinate 'BaryPoint's
+ *
  * Linked list of barycentric coordinate 'BaryPoint's 
  * @author kens
  *
@@ -272,7 +274,7 @@ public class BaryLink extends LinkedList<BaryPoint> {
 		return count;
 	}
 	/**
-	 * Pick first bary point of list described in string.
+	 * @brief Pick first bary point of list described in string.
 	 * @param p PackData
 	 * @param str String
 	 * @return BaryPoint, null on error
@@ -285,7 +287,7 @@ public class BaryLink extends LinkedList<BaryPoint> {
 	}
 	
 	/**
-	 * Pick first bary point off first string of first vector of vector
+	 * @brief Pick first bary point off first string of first vector of vector
 	 * of string vectors. 
 	 * @param p PackData
 	 * @param flagsegs Vector<Vector<String>>
@@ -302,7 +304,7 @@ public class BaryLink extends LinkedList<BaryPoint> {
 	}
 		
 	/**
-	 * Make a distinct copy of this linked list; no check
+	 * @brief Make a distinct copy of this linked list; no check
 	 * of validity of the indices.
 	 * @return NodeLink
 	 */
@@ -316,7 +318,7 @@ public class BaryLink extends LinkedList<BaryPoint> {
 	}
 	
 	/**
-	 * Abut a 'BaryLink' to the end of this one.
+	 * @brief Abut a 'BaryLink' to the end of this one.
 	 * @param moreNL
 	 * @return count of new BaryPackets (some may be improper, 
 	 *  some redundant)
@@ -336,7 +338,7 @@ public class BaryLink extends LinkedList<BaryPoint> {
 	}
 
 	 /**
-	  * Set 'packData' (which helps determine eligibility of entries)
+	  * @brief Set 'packData' (which helps determine eligibility of entries)
 	  * @param p PackData
 	  */
 	 public void setPackData(PackData p) {

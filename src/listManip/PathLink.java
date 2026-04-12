@@ -15,6 +15,8 @@ import complex.Complex;
 import exceptions.ParserException;
 
 /**
+ * @brief Linked list of complex values representing an open or closed
+ *
  * Linked list of complex values representing an open or closed
  * polygonal path in the plane or on the sphere. Closure is
  * determined first from the data, but can be toggled independently;
@@ -80,7 +82,7 @@ public class PathLink extends LinkedList<Complex> {
 	}
 	
 	/**
-	 * Add links to this list. Note
+	 * @brief Add links to this list. Note
 	 * that argument should not be empty since "a" would have been
 	 * added as default.
 	 * @param datastr
@@ -140,7 +142,7 @@ public class PathLink extends LinkedList<Complex> {
 	}
 	
 	/**
-	 * Convert this linked list to a Java path
+	 * @brief Convert this linked list to a Java path
 	 * @return Path2D.Double, null on error or empty path
 	 */
 	public Path2D.Double toPath2D() {

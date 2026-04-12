@@ -1,6 +1,8 @@
 package exceptions;
 
 /**
+ * @brief For exceptions send by Native code using UMFPack libraries
+ *
  * For exceptions send by Native code using UMFPack libraries
  * @author kens
  *

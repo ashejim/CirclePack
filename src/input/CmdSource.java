@@ -1,6 +1,8 @@
 package input;
 
 /**
+ * @brief This is an abstract class encapsulating the various mechanisms for
+ *
  * This is an abstract class encapsulating the various mechanisms for
  * acquisition, execution, and reporting of CirclePack command strings
  * and for external data sockets. Various sources can be accommodated: 
@@ -41,7 +43,7 @@ public class CmdSource {
 	}
 	
 	/**
-	 * Set the name of the source, often a window name for
+	 * @brief Set the name of the source, often a window name for
 	 * 'MyConsole's or a Inet address for sockets.
 	 * @param name
 	 */

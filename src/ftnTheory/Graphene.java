@@ -32,6 +32,8 @@ import util.StringUtil;
 import util.UtilPacket;
 
 /**
+ * @brief Pack Extender to experiment with a "graphene" model of
+ *
  * Pack Extender to experiment with a "graphene" model of
  * circle packing. Here one considers the geometry that
  * nature imposes on carbon sheets --- graphene with
@@ -59,7 +61,6 @@ import util.UtilPacket;
  * 
  * @author kens, April 2011
  */
-
 public class Graphene extends PackExtender {
 
 	ArrayList<Integer> colorVec; // color by vertices
@@ -607,7 +608,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/** 
-	 * Compute various energy contributions, max contributors,
+	 * @brief Compute various energy contributions, max contributors,
 	 * set colors, report results.
 	 * CAUTION: calling routine must insure that 'CarbonEnergy'
 	 * data has been updated.
@@ -691,7 +692,7 @@ public class Graphene extends PackExtender {
 	}
 
 	/**
-	 * Total energy with current parameters and relaxedBond.
+	 * @brief Total energy with current parameters and relaxedBond.
 	 * fill 'colorVec' with ramp of energies by vertex.
 	 * @return double
 	 */
@@ -709,7 +710,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * Return energy for the ring of carbons around v. This is
+	 * @brief Return energy for the ring of carbons around v. This is
 	 * in bonds, angles at the carbons, and anglesum at v.
 	 * Use half the bond energy to compensate for double counting; 
 	 * use only the carbon angles toward v; include anglesum energy 
@@ -741,7 +742,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * Find the euclidean inradius for face f
+	 * @brief Find the euclidean inradius for face f
 	 * @param p
 	 * @param f
 	 * @return double
@@ -757,7 +758,7 @@ public class Graphene extends PackExtender {
 	// ********************* calculus stuff ********************************
 	
 	/**
-	 * Compute bond length for carbons associated with faces having 
+	 * @brief Compute bond length for carbons associated with faces having 
 	 * radii <r,s,t> and <r,t,u>.
 	 * @param r
 	 * @param s
@@ -770,7 +771,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * Cosine of bond angle at r, radii {r,t,u}
+	 * @brief Cosine of bond angle at r, radii {r,t,u}
 	 * @param r,t,u, radii 
 	 * @return double
 	 */
@@ -791,7 +792,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * Angle energy
+	 * @brief Angle energy
 	 * @param r, s, t, u, v radii
 	 * @return double
 	 */
@@ -886,7 +887,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * traditional, needs work to recall the computation
+	 * @brief traditional, needs work to recall the computation
 	 * 
 	 * Return array, gradient of energy w.r.t. radii.
 	 * @return double[nodeCount+1]
@@ -955,7 +956,7 @@ public class Graphene extends PackExtender {
 	/******************** stitch stuff ****************************/
 	
 	/**
-	 * Given a 'Stitch' (N or S, not P), then apply it to 
+	 * @brief Given a 'Stitch' (N or S, not P), then apply it to 
 	 * 'packData'. This may be called several times; ultimately
 	 * calling routine must update packData.
 	 * @param stitch Stitch
@@ -1071,7 +1072,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * Parse strings and create add-ons to vector of 'Stitch's. 
+	 * @brief Parse strings and create add-ons to vector of 'Stitch's. 
 	 * Calling routines checks if initial pasting is specified.
 	 * @param flagSegs Vector<Vector<String>>
 	 * @return Vector<Stitch>, new additions, exception or null on error
@@ -1114,7 +1115,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * Create and store 'stitchBase' packing and half-planes. The 'basePack'
+	 * @brief Create and store 'stitchBase' packing and half-planes. The 'basePack'
 	 * is n generations of hex. Cut two half planes 'leftPack' and 'rightPack' 
 	 * after rotating by phi1 and phi2, respectively. Adjoin these using 
 	 * alpha and the neighbors on either side, giving 'stitchBase'.
@@ -1194,7 +1195,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * Process a vector of stitches, which may start anew or 
+	 * @brief Process a vector of stitches, which may start anew or 
 	 * add to current stitches. Either way, return the full new 
 	 * stitch vector. Calling routine must update 'packData'.
 	 * @param stVec Vector<Stitch>
@@ -1267,7 +1268,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * We cut a "half-plane" out. Given a packing (laid out) 
+	 * @brief We cut a "half-plane" out. Given a packing (laid out) 
 	 * and with alpha = 1 at origin, rotate by 'angle', cut 
 	 * out below the x-axis, return the result as a new 
 	 * PackData; p itself is unchanged. On return, vertex 1
@@ -1359,7 +1360,9 @@ public class Graphene extends PackExtender {
 		return newPack;
 	}
 	
-	/********************************************
+	/**
+ * @brief /********************************************
+ *******************************************
 	 * Utility class:
 	 * Holds stitch instructions: 'key' is N or S for north/south 
 	 * pole, P for initial pasting. 'mode' is appropriate integer.
@@ -1414,7 +1417,7 @@ public class Graphene extends PackExtender {
 		}
 		
 		/**
-		 * What is the pole designation?
+		 * @brief What is the pole designation?
 		 * @return String, one of S N or P
 		 */
 		private char getKey() {
@@ -1422,7 +1425,7 @@ public class Graphene extends PackExtender {
 		}
 		
 		/**
-		 * What is the mode?
+		 * @brief What is the mode?
 		 * @return int 
 		 */
 		private int getMode() {
@@ -1443,7 +1446,9 @@ public class Graphene extends PackExtender {
 
 	}
 
-	/********************************************
+	/**
+ * @brief /********************************************
+ *******************************************
 	 * Utility class:
 	 * Holds data on atom in a molecule: bond lengths, bond angles,
 	 * angle energies. Have three bonds, hence three bond 
@@ -1527,7 +1532,7 @@ public class Graphene extends PackExtender {
 		}
 
 		/**
-		 * Each bond angle is the complement of a vertex angle in 
+		 * @brief Each bond angle is the complement of a vertex angle in 
 		 * the face, so their sum should always be 2pi.
 		 * @return double
 		 */
@@ -1536,7 +1541,7 @@ public class Graphene extends PackExtender {
 		}
 		
 		/**
-		 * The atom energy is the sum of 'angle' energies from 
+		 * @brief The atom energy is the sum of 'angle' energies from 
 		 * bond lengths and bond angles.
 		 * @return double
 		 */
@@ -1551,7 +1556,7 @@ public class Graphene extends PackExtender {
 		}
 		
 		/**
-		 * If v is a vert, return the associated bond length, namely,
+		 * @brief If v is a vert, return the associated bond length, namely,
 		 * that for dual to edge opposite v. 
 		 * @param v int
 		 * @return double, 0.0 on error
@@ -1565,7 +1570,7 @@ public class Graphene extends PackExtender {
 		}
 
 		/**
-		 * If v is a vert, return the associated bond energy
+		 * @brief If v is a vert, return the associated bond energy
 		 * @param v int
 		 * @return double, 0 on error
 		 */
@@ -1580,7 +1585,7 @@ public class Graphene extends PackExtender {
 		}
 		
 		/**
-		 * If v is a vert, return the associated angle energy in
+		 * @brief If v is a vert, return the associated angle energy in
 		 * this face.
 		 * @param v int
 		 * @return double, 0.0 on error

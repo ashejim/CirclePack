@@ -8,6 +8,8 @@ import java.util.Vector;
 import packing.PackData;
 
 /**
+ * @brief This handles various color-handling utilities, such as the creation
+ *
  * This handles various color-handling utilities, such as the creation 
  * of 'washed-out' colors, selection from a palette of "distinct" colors,
  * colors associated with complex arguments (a la Wegert), etc. 
@@ -42,7 +44,7 @@ public class ColorUtil {
     }
     
 	/**
-	 * background color
+	 * @brief background color
 	 * @return new Color
 	 */
 	public static Color getBGColor() {
@@ -50,7 +52,7 @@ public class ColorUtil {
 	}
 
 	/**
-	 * foreground color
+	 * @brief foreground color
 	 * @return new Color
 	 */
 	public static Color getFGColor() {
@@ -58,7 +60,7 @@ public class ColorUtil {
 	}
 
     /** 
-     * Note user has to set color_ramp_size, default 
+     * @brief Note user has to set color_ramp_size, default 
      * generally COLOR_RAMP. Here we set up color ramp, 
      * starting with dark blue, ending with dark red. 
      * Index color_ramp_size/2 is white.
@@ -155,7 +157,7 @@ public class ColorUtil {
 	} /* blue_to_red_ramp */
  
 	/**
-	 * There's a standard color wheel for the complex 
+	 * @brief There's a standard color wheel for the complex 
 	 * argument (used, eg., by Elias Wegert). This 
 	 * code returns that color.
 	 * @param tha double, argument in radians
@@ -209,7 +211,7 @@ public class ColorUtil {
 	}
 	
 	/**
-	 * There's a standard color wheel for the complex 
+	 * @brief There's a standard color wheel for the complex 
 	 * argument (used, eg., by Elias Wegert). This 
 	 * code returns that color with alpha set to 1.0.
 	 * @param tha double, argument in radians
@@ -220,7 +222,7 @@ public class ColorUtil {
 	}
 
 	/**
-	 * Converts normal to "washed out" colors for 
+	 * @brief Converts normal to "washed out" colors for 
 	 * use on back of the sphere when it is not 
 	 * completely opaque. 
 	 * @param color_in Color
@@ -235,7 +237,7 @@ public class ColorUtil {
 	}
 	
 	/**
-	 * Color tables have 16 fairly distinguishable 
+	 * @brief Color tables have 16 fairly distinguishable 
 	 * colors to use as a spread. Return new 'Color' 
 	 * object for one of colors indexed in [232,248).
 	 * @param i int
@@ -247,7 +249,7 @@ public class ColorUtil {
 	}
 	
 	/**
-	 * given a vector of real ratios between positive 
+	 * @brief given a vector of real ratios between positive 
 	 * quantities (e.g., radii of p compared to q) 
 	 * determine color ramp and return an equal sized 
 	 * vector of color indices.
@@ -335,7 +337,7 @@ public class ColorUtil {
 	}
 	
 	/**
-	 * Given vector of doubles, create vector of 
+	 * @brief Given vector of doubles, create vector of 
 	 * graduated color codes for a balanced 
 	 * blue-to-red ramp; more negative = more blue 
 	 * (down to 1), more positive = more red (up to 199). 
@@ -381,7 +383,7 @@ public class ColorUtil {
 	}
 	
 	/**
-	 * Given vector of doubles, return parallel vector 
+	 * @brief Given vector of doubles, return parallel vector 
 	 * of 'Color' objects, blue ramp for negative values, 
 	 * red ramp for positive: more negative = more blue 
 	 * (down to 1), more positive = more red (up to 199). 
@@ -421,7 +423,7 @@ public class ColorUtil {
 	}
 
 	/**
-	 * Convert 'Color' object to integer index in 'CirclePack' color tables.
+	 * @brief Convert 'Color' object to integer index in 'CirclePack' color tables.
 	 * @param color Color
 	 * @return int, color index
 	 */
@@ -432,7 +434,7 @@ public class ColorUtil {
 	}
 	
 	/**
-	 * Richter-type (logarithmic) red color ramp 
+	 * @brief Richter-type (logarithmic) red color ramp 
 	 * for real data. Transform data to x in [0,M], 
 	 * ramp on values log(x+1)/log(M+1). Outputs 
 	 * [0.0,0.01] set to white, 1.0 set to full red. 
@@ -477,7 +479,7 @@ public class ColorUtil {
 	}
 	
 	/** 
-	 * For converting r g b (0-255) colors into 
+	 * @brief For converting r g b (0-255) colors into 
 	 * index of "closest" color in current colortable. 
 	 *
 	 * TODO: This is temporary (9/05) until I get 
@@ -513,7 +515,7 @@ public class ColorUtil {
 	} 
 	
 	/**
-	 * Colors chosen for each integer n=2,....,12 
+	 * @brief Colors chosen for each integer n=2,....,12 
 	 * (e.g. for degree or number of sides of tile, etc.)
 	 * TODO: should extend the range beyond 12
 	 * @param n int
@@ -549,7 +551,7 @@ public class ColorUtil {
 	}
 	
 	/**
-	 * Compare rgb components of two 'Color's; 
+	 * @brief Compare rgb components of two 'Color's; 
 	 * 'alpha' is ignored.
 	 * @param c1 Color
 	 * @param c2 Color
@@ -562,7 +564,7 @@ public class ColorUtil {
 	}
 	
 	/**
-	 * Clone; return null if 'c' is null.
+	 * @brief Clone; return null if 'c' is null.
 	 * @param c Color
 	 * @return nrw Color
 	 */
@@ -573,7 +575,7 @@ public class ColorUtil {
 	}
 
 	/**
-	 * Create Color object using index to color table 
+	 * @brief Create Color object using index to color table 
 	 * and opacity
 	 * @param indx int, in [0,255]
 	 * @param opacity
@@ -586,7 +588,7 @@ public class ColorUtil {
 	}
 
 	/**
-	 * Create actual 'Color' object using CirclePack 
+	 * @brief Create actual 'Color' object using CirclePack 
 	 * index to color table 
 	 * @param indx int, in [0,255]
 	 * @return Color
@@ -598,7 +600,7 @@ public class ColorUtil {
 	}
 
 	/**
-	 * Create 'Color' using Integer (versus int) index 
+	 * @brief Create 'Color' using Integer (versus int) index 
 	 * to color table 
 	 * @param indx, Integer 
 	 * @return Color, default to FG_Color
@@ -609,7 +611,7 @@ public class ColorUtil {
 	}
 	
 	/** 
-	 * given x in [0,1], return the corresponding
+	 * @brief given x in [0,1], return the corresponding
 	 * red color between white and deep red.
 	 * @param x double
 	 * @return Color
@@ -624,7 +626,7 @@ public class ColorUtil {
 	}
 
 	/** 
-	 * given x in [0,1], return the corresponding
+	 * @brief given x in [0,1], return the corresponding
 	 * green color between white and deep green.
 	 * @param x double
 	 * @return Color
@@ -639,7 +641,7 @@ public class ColorUtil {
 	}
 	
 	/** 
-	 * given x in [0,1], return the corresponding
+	 * @brief given x in [0,1], return the corresponding
 	 * blue color between white and deep blue.
 	 * @param x double
 	 * @return Color

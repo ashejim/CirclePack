@@ -6,6 +6,8 @@ import input.CommandStrParser;
 import packing.PackData;
 
 /**
+ * @brief Spherical circle packing computations.
+ *
  * Spherical circle packing computations. Currently 
  * this is only for maximal packing of a sphere. 
  * 
@@ -46,7 +48,7 @@ public class SphPacker extends RePacker {
 	public int continueRiffle(int passNum) {return 1;}
 
 	/**
-	 * choose to puncture; if punc_vert is not zero, then
+	 * @brief choose to puncture; if punc_vert is not zero, then
 	 * use that, else try max index, but if degree is less
 	 * than 6, then look petal vert with largest degree.
 	 * @return int, vert index
@@ -69,7 +71,7 @@ public class SphPacker extends RePacker {
 	}
 	
 	/**
-	 * puncture, max_pack in hyp plane, but move to sphere is in
+	 * @brief puncture, max_pack in hyp plane, but move to sphere is in
 	 * 'reapResults', thus allowing chance to see intermediate stage.
 	 * @param pass_limit
 	 * @return

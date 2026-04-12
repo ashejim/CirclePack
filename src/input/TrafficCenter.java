@@ -23,6 +23,8 @@ import util.ResultPacket;
 import util.StringUtil;
 
 /**
+ * @brief Controls execution traffic for 'CirclePack'.
+ *
  * Controls execution traffic for 'CirclePack'. Intended as a
  * a thread handling essentially all execution calls so GUI can
  * continue operating on its thread. Handles: 
@@ -60,7 +62,7 @@ public class TrafficCenter {
 	}
 
 	/**
-	 * Top level for processing strings of commands, executed in
+	 * @brief Top level for processing strings of commands, executed in
 	 * the top level persistent thread of execution processing.
 	 *  * Find calls to 'for', 'FOR', '!!', or 'delay'; these 
 	 *    remain in this top thread so that effects are seen as
@@ -129,7 +131,7 @@ public class TrafficCenter {
 	}
 
 	/**
-	 * Parse a sequence of command strings, call 
+	 * @brief Parse a sequence of command strings, call 
 	 * for successive execution of individual commands, 
 	 * reap results, messages, etc. 
 	 * 
@@ -600,7 +602,7 @@ public class TrafficCenter {
 	}
 		
 	/**
-	 * Not yet sure when this will be used; in general, value returns are stored
+	 * @brief Not yet sure when this will be used; in general, value returns are stored
 	 * in the static 'CPBase.CallPacket', but there may be a way to get and
 	 * use them directly.
 	 * @param rP
@@ -617,7 +619,7 @@ public class TrafficCenter {
 	}
 	
 	/**
-	 * Wrapper to handle "if-then-else" commands. The functionality is basic,
+	 * @brief Wrapper to handle "if-then-else" commands. The functionality is basic,
 	 * not sophisticated. The form is: IF <condition> THEN <cmds> ELSE <cmds>
 	 * 
 	 * The <condition> is set by the string between IF and THEN and should
@@ -685,7 +687,7 @@ public class TrafficCenter {
 	}
 	
 	/**
-	 * Wrapper to handle "for" calls. Parse/execute strings of ';' separated
+	 * @brief Wrapper to handle "for" calls. Parse/execute strings of ';' separated
 	 * commands with for-loop structure. Sends commands for processing,
 	 * consolidates messages and/or errors, updates 'history' panel, counts
 	 * iterations. This runs its own execution thread, so user can see output as
@@ -851,7 +853,7 @@ public class TrafficCenter {
 	}	
 	
 	/**
-	 * Command that applies to the top level GUI -- as from menus and 
+	 * @brief Command that applies to the top level GUI -- as from menus and 
 	 * buttons. This run's in 'CirclePack's main thread, not execution
 	 * thread (though same 'cmd' might well be processed in other
 	 * threads)
@@ -871,7 +873,7 @@ public class TrafficCenter {
 	}
 	
 	/**
-	 * Command that applies to the top level GUI -- as from menus and 
+	 * @brief Command that applies to the top level GUI -- as from menus and 
 	 * buttons. This runs in 'CirclePack's main thread, not the 
 	 * execution thread, and applies to the 'active' packing.
 	 * TODO: for efficiency, try to move some of these to direct action.

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * @brief This code was needed for cross-platform access to the C/C++
+ *
  * This code was needed for cross-platform access to the C/C++ 
  * libraries when I was using JNI (Java Native Interface) calls. 
  * As of 3/2022 I've moved towards calls via 'ProcessBuilder'

@@ -20,7 +20,7 @@ public class GeneratorTypeGroup {
   }
 
   /**
-   * Adds a generator (and its inverse) to the table. Expects letters from A to
+   * @brief Adds a generator (and its inverse) to the table. Expects letters from A to
    * Z.
    *
    * @param m GroupElement
@@ -38,6 +38,11 @@ public class GeneratorTypeGroup {
     //groupValues.add(m);
     this.resetGroup();
   }
+  /**
+   * @brief TODO: Document addGeneratorWithInverse.
+   * @param m
+   * @param s
+   */
   public void addGeneratorWithInverse(GroupElement m, String s) {
     int ind=-1;
     if((ind=generatorKeys.indexOf(s))>=0) {
@@ -81,6 +86,11 @@ public class GeneratorTypeGroup {
   public GroupElement getGenerator(String s) {
     return (GroupElement)(generatorValues.get(generatorKeys.indexOf(s)));
   }
+  /**
+   * @brief TODO: Document addGroupElement.
+   * @param m
+   * @param s
+   */
   public void addGroupElement(GroupElement m, String s) {
     groupKeys.add(s);
     groupValues.add(m);
@@ -88,12 +98,17 @@ public class GeneratorTypeGroup {
   public void setGroupElement(GroupElement m, String s) {
     groupValues.set(groupKeys.indexOf(s),m);
   }
+  /**
+   * @brief TODO: Document index.
+   * @param s
+   * @return int
+   */
   public int index(String s) {
     return groupKeys.indexOf(s);
   }
 
   /**
-   * Divides string s into generators, multiples them and returns the value.
+   * @brief Divides string s into generators, multiples them and returns the value.
    * Doesn't affect the group anyhow. To be used only sporadically. For serious
    * computations the group must be computed.
    * @param s String
@@ -122,7 +137,7 @@ public class GeneratorTypeGroup {
 //  }
   // applies up to level
   /**
-   * Checks if the end of word has an inverse of generator. Returns true if it doesn't.
+   * @brief Checks if the end of word has an inverse of generator. Returns true if it doesn't.
    * @param word String
    * @param generator String
    * @return boolean
@@ -132,6 +147,9 @@ public class GeneratorTypeGroup {
       return false;
     return true;
   }
+  /**
+   * @brief TODO: Document computeGroup.
+   */
   public void computeGroup() {
     // go over every word in the current group and add a letter
     // let begin and end label the beginning and the end
@@ -241,9 +259,16 @@ public class GeneratorTypeGroup {
 
   public void setGroupElement(GroupElement m) {
   }
+  /**
+   * @brief TODO: Document numberOfGenerators.
+   * @return int
+   */
   public int numberOfGenerators() {
     return generatorValues.size();
   }
+  /**
+   * @brief TODO: Document reset.
+   */
   public void reset() {
     groupKeys.removeAllElements();
     groupValues.removeAllElements();
@@ -251,6 +276,9 @@ public class GeneratorTypeGroup {
     generatorValues.removeAllElements();
     isGroupComputed = false;
   }
+  /**
+   * @brief TODO: Document resetGroup.
+   */
   public void resetGroup() {
     groupKeys.removeAllElements();
     groupValues.removeAllElements();

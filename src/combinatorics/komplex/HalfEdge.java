@@ -8,24 +8,50 @@ import exceptions.ParserException;
 import komplex.EdgeSimple;
 import util.ColorUtil;
 
-/** 
- * DCEL HalfEdge. Its 'face' is on its left. As we transition to a DCEL
- * core model of packings, each edge will carry an 'inversive distance',
- * 'schwarzian', and color (though these will be redundant for now). 
- * Careful, as edges are not persistent. 
- * TODO: figure out how to transfer date when edges change.
- * @author kstephe2
+/**
+ * @brief DCEL half-edge: the fundamental directed-edge element of the
+ *        combinatorial structure.
  *
+ * In a doubly-connected edge list (DCEL), every undirected edge is
+ * represented by a pair of oppositely oriented half-edges linked via
+ * {@link #twin}.  The face to the <em>left</em> of each half-edge is
+ * stored in {@link #face}.  Half-edges around a face are linked by
+ * {@link #next} and {@link #prev} in counter-clockwise order.
+ *
+ * Each half-edge also carries per-edge packing data:
+ *   - {@link #invDist} — inversive distance (default 1.0 = tangency).
+ *   - {@link #schwarzian} — discrete Schwarzian derivative.
+ *   - {@link #color} — display color.
+ *
+ * @warning Half-edges are <em>not persistent</em> across combinatorial
+ *          modifications (flips, refinements, etc.).  Code that caches
+ *          pointers to half-edges must revalidate after any structural
+ *          change.
+ *
+ * @see Vertex      The origin vertex of a half-edge.
+ * @see DcelFace    The face to the left of a half-edge.
+ * @see RedEdge     "Red" boundary-tracking edge overlay.
+ * @see dcel.PackDCEL  The top-level DCEL structure for a packing.
+ *
+ * @author Ken Stephenson
  */
 public class HalfEdge {
 
+	/** The vertex this half-edge originates from. */
 	public Vertex origin;
+	/** The oppositely oriented half-edge sharing the same undirected edge. */
 	public HalfEdge twin;
+	/** The face to the left of this half-edge (may be null during construction). */
 	public DcelFace face;
+	/** Next half-edge around the same face (counter-clockwise). */
 	public HalfEdge next;
+	/** Previous half-edge around the same face (counter-clockwise). */
 	public HalfEdge prev;
+	/** Unique index for this half-edge (−1 if not yet assigned). */
 	public int edgeIndx;
+	/** General-purpose mark for algorithms. */
 	public int mark;
+	/** Associated red edge, set during construction finalization. */
 	public RedEdge myRedEdge; // set when finishing up construction.
 	
 	// TODO: figure out how to transfer this info as edges change.
@@ -72,7 +98,7 @@ public class HalfEdge {
 	}
 	
 	/**
-	 * Detach this edge: adjust so nothing refers to it,
+	 * @brief Detach this edge: adjust so nothing refers to it,
 	 * make 'prev' and 'next' null.
 	 * Calling routine can check 'maroon' to see if one or 
 	 * both ends are marooned (i.e., has 'halfedge' set to null);
@@ -118,7 +144,7 @@ public class HalfEdge {
 	}
 	
 	/**
-	 * This halfedge should be in a closed cycle of
+	 * @brief This halfedge should be in a closed cycle of
 	 * halfedges; return the count.
 	 * @return int
 	 */
@@ -137,7 +163,7 @@ public class HalfEdge {
 	}
 
 	/** 
-	 * CAUTION: faces are not always non-null. But ideal
+	 * @brief CAUTION: faces are not always non-null. But ideal
 	 * faces should be non-null and have index < 0. 
 	 * If 'face' or twin face is ideal (faceIndx<0), then 
 	 * this and its twin are "boundary" edges.
@@ -151,7 +177,7 @@ public class HalfEdge {
 	}
 	
 	/**
-	 * determines if origin is neighbor with vertex of index 'w'.
+	 * @brief determines if origin is neighbor with vertex of index 'w'.
 	 * @param w int
 	 * @return
 	 */
@@ -166,7 +192,7 @@ public class HalfEdge {
 	}
 	
 	/**
-	 * Return the next half-hex 'HalfEdge'; 
+	 * @brief Return the next half-hex 'HalfEdge'; 
 	 * if this edge is <v,w>, then pass by two 
 	 * intervening spokes to find <w,u>; that is, 
 	 * 3 clw around w from <w,v>. Return null on failure. 
@@ -194,7 +220,7 @@ public class HalfEdge {
 	}
 	
 	/**
-	 * Return the next half-hex 'HalfEdge'. That
+	 * @brief Return the next half-hex 'HalfEdge'. That
 	 * is, pass two intervening spokes on the right.
 	 * If this edge is <v,w>, then find edge <w,u> which is
 	 * 3 interior edges cclw around w from <w,v>. Return
@@ -226,7 +252,7 @@ public class HalfEdge {
 	}
 
 	/**
-	 * set schwarzian of this edge; user must 
+	 * @brief set schwarzian of this edge; user must 
 	 * handle setting of twin edge.
 	 * @param sch double
 	 */
@@ -255,7 +281,7 @@ public class HalfEdge {
 	}
 	
 	/**
-	 * Set legal 'invDist' for 'this' and 'this.twin'.
+	 * @brief Set legal 'invDist' for 'this' and 'this.twin'.
 	 * Legal values lie in [-1,infty): in [-1,1] circles 
 	 * overlapping with angle acos(invDist), so 1.0 is
 	 * default, tangency and 0.0 represnts orthogonality. 
@@ -284,7 +310,7 @@ public class HalfEdge {
 	}
 	
 	/**
-	 * return 1.0 unless 'invDist' differs from 1.0 by 
+	 * @brief return 1.0 unless 'invDist' differs from 1.0 by 
 	 * by more than .000001
 	 * @return double
 	 */
@@ -295,7 +321,7 @@ public class HalfEdge {
 	}
 	
 	/**
-	 * Return 'HalfEdge' opposite 'this'; i.e., 'this.origin'
+	 * @brief Return 'HalfEdge' opposite 'this'; i.e., 'this.origin'
 	 * must be even degree.
 	 * @return HalfEdge, null if not even degree
 	 */
@@ -312,7 +338,7 @@ public class HalfEdge {
 	}
 	
 	/**
-	 * Give oriented 'EdgeSimple' <v,w> of endpoints
+	 * @brief Give oriented 'EdgeSimple' <v,w> of endpoints
 	 * @param he HalfEdge
 	 * @return EdgeSimple, null on error
 	 */
@@ -323,7 +349,7 @@ public class HalfEdge {
 	}
 	
 	/**
-	 * clone: caution, pointers may be in conflict or outdated, 
+	 * @brief clone: caution, pointers may be in conflict or outdated, 
 	 * @return new HalfEdge
 	 */
 	public HalfEdge clone() {

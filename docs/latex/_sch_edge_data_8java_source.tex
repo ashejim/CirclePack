@@ -1,0 +1,170 @@
+\doxysection{Sch\+Edge\+Data.\+java}
+\hypertarget{_sch_edge_data_8java_source}{}\label{_sch_edge_data_8java_source}\index{src/schwarzWork/SchEdgeData.java@{src/schwarzWork/SchEdgeData.java}}
+\doxymbox{\hyperlink{_sch_edge_data_8java}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00001}\doxymbox{\hyperlink{namespaceschwarz_work}{00001}}\ \textcolor{keyword}{package\ }schwarzWork;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00002}00002\ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00003}00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00004}00004\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00005}00005\ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00006}00006\ \textcolor{keyword}{import}\ \doxymbox{\hyperlink{namespaceall_mains}{allMains}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00007}00007\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00008}00008\ \textcolor{keyword}{import}\ \doxymbox{\hyperlink{namespaceutil}{util}}.\doxymbox{\hyperlink{classutil_1_1_color_util}{ColorUtil}};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00009}00009\ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00024}\doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data}{00024}}\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data_a6e923142ca0b417935762b2ab9e2ceb2}{SchEdgeData}}\ \{}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00025}00025\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ sqrt3=Math.sqrt(3);}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00026}00026\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00027}00027\ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ myHEdge;\ \textcolor{comment}{//\ which\ edge\ is\ this?}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00028}00028\ \ \ \ \ \textcolor{keywordtype}{int}\ myN;\ \textcolor{comment}{//\ degree\ of\ 'Origin'\ of\ 'myHEdge'}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00029}00029\ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ startCCLW;\ \textcolor{comment}{//\ start\ of\ cclw\ N-\/3\ schwarzians}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00030}00030\ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ startCLW;\ \textcolor{comment}{//\ start\ of\ clw\ N-\/3\ schwarzians}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00031}00031\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00032}00032\ \ \ \ \ \textcolor{comment}{//\ compute\ remaining\ three\ schwarzians\ to\ form}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00033}00033\ \ \ \ \ \textcolor{comment}{//\ \ \ flower\ in\ both\ cclw\ and\ clw\ direction.}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00034}00034\ \ \ \ \ \textcolor{comment}{//\ \ +\ for\ cclw,\ myEdge\ and\ next\ two}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00035}00035\ \ \ \ \ \textcolor{comment}{//\ \ +\ for\ clw,\ myEdge\ and\ previous\ two}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00036}00036\ \ \ \ \ \textcolor{keywordtype}{double}[]\ newSch\_cclw;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00037}00037\ \ \ \ \ \textcolor{keywordtype}{double}[]\ newSch\_clw;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00038}00038\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00039}00039\ \ \ \ \ \textcolor{comment}{//\ NOTE:\ if\ a\ negative\ constraint\ is\ encountered,}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00040}00040\ \ \ \ \ \textcolor{comment}{//\ \ \ set\ 'allPosFlag'\ to\ false;\ means\ wecan't\ }}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00041}00041\ \ \ \ \ \textcolor{comment}{//\ \ \ complete\ an\ unbranched\ flower.\ Need\ to\ }}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00042}00042\ \ \ \ \ \textcolor{comment}{//\ \ \ work\ out\ what\ to\ do\ in\ branched\ cases.}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00043}00043\ \ \ \ \ Boolean\ allPosFlag;\ \textcolor{comment}{//\ null\ until\ computation\ is\ }}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00044}00044\ \ \ \ \ \textcolor{comment}{//\ carried\ out.}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00045}00045\ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00046}00046\ \ \ \ \ \textcolor{comment}{//\ constructor}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00047}\doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data_a6e923142ca0b417935762b2ab9e2ceb2}{00047}}\ \ \ \ \ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data_a6e923142ca0b417935762b2ab9e2ceb2}{SchEdgeData}}(\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ edge)\ \{}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00048}00048\ \ \ \ \ \ \ \ \ allPosFlag=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00049}00049\ \ \ \ \ \ \ \ \ myHEdge=edge;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00050}00050\ \ \ \ \ \ \ \ \ myN=edge.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ac50f20d2ba767cb67a800bb686db97dc}{origin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_vertex_a8baa694ef98cb360f8543c5c5f81682e}{getNum}}();}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00051}00051\ \ \ \ \ \ \ \ \ newSch\_cclw=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00052}00052\ \ \ \ \ \ \ \ \ newSch\_clw=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00053}00053\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00054}00054\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'startEdge'\ is\ N-\/3\ clockwise\ edges\ away,}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00055}00055\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ so\ move\ 3\ cclw.}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00056}00056\ \ \ \ \ \ \ \ \ startCCLW=edge;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00057}00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=3;j++)}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00058}00058\ \ \ \ \ \ \ \ \ \ \ \ \ startCCLW=startCCLW.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00059}00059\ \ \ \ \ \ \ \ \ startCLW=edge;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00060}00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=3;j++)}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00061}00061\ \ \ \ \ \ \ \ \ \ \ \ \ startCLW=startCLW.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00062}00062\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00063}00063\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00070}\doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data_a288ca7a36b1e002c1429962a594bb1aa}{00070}}\ \ \ \ \ \textcolor{keyword}{public}\ Boolean\ \doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data_a288ca7a36b1e002c1429962a594bb1aa}{finishFlower}}()\ \{}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00071}00071\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00072}00072\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ditch\ old\ results}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00073}00073\ \ \ \ \ \ \ \ \ newSch\_cclw=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00074}00074\ \ \ \ \ \ \ \ \ newSch\_clw=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00075}00075\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00076}00076\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ uz=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myN+1];}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00077}00077\ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00078}00078\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ cclw\ direction\ first}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00079}00079\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge}{HalfEdge}}\ he=startCCLW;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00080}00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=myN;j++)\ \{\ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00081}00081\ \ \ \ \ \ \ \ \ \ \ \ \ uz[j]=1.0-\/he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a0af89519188c604879335a55a7f0bc40}{getSchwarzian}}();}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00082}00082\ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab543b5039f5c326862301fa695429291}{prev}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00083}00083\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00084}00084\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00085}00085\ \ \ \ \ \ \ \ \ newSch\_cclw=\doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data_a7e418558d223908b22e68708a7217d3c}{comp3sch}}(uz);}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00086}00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newSch\_cclw==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00087}00087\ \ \ \ \ \ \ \ \ \ \ \ \ newSch\_clw=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00088}00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00089}00089\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00090}00090\ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00091}00091\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ clw\ direction}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00092}00092\ \ \ \ \ \ \ \ \ he=startCLW;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00093}00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=myN;j++)\ \{\ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00094}00094\ \ \ \ \ \ \ \ \ \ \ \ \ uz[j]=1.0-\/he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a0af89519188c604879335a55a7f0bc40}{getSchwarzian}}();}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00095}00095\ \ \ \ \ \ \ \ \ \ \ \ \ he=he.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_ab37a4ceb1fc3f962c4ab14c9427af714}{twin}}.\doxymbox{\hyperlink{classcombinatorics_1_1komplex_1_1_half_edge_a5767a3d5e5ec349fd34bf4ec753ce0a7}{next}};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00096}00096\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00097}00097\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00098}00098\ \ \ \ \ \ \ \ \ newSch\_clw=\doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data_a7e418558d223908b22e68708a7217d3c}{comp3sch}}(uz);}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00099}00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newSch\_clw==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00100}00100\ \ \ \ \ \ \ \ \ \ \ \ \ newSch\_cclw=\textcolor{keyword}{null};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00101}00101\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00102}00102\ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00103}00103\ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00104}00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00105}00105\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00106}00106\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00113}\doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data_a7e418558d223908b22e68708a7217d3c}{00113}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}[]\ \doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data_a7e418558d223908b22e68708a7217d3c}{comp3sch}}(\textcolor{keywordtype}{double}[]\ uzians)\ \{}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00114}00114\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ newsch=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00115}00115\ \ \ \ \ \ \ \ \ Boolean\ pflag=Boolean.valueOf(\textcolor{keyword}{true});}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00116}00116\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00117}00117\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ use\ copy\ of\ 'uzians'}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00118}00118\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ uz=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myN+1];}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00119}00119\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=myN+1;j++)}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00120}00120\ \ \ \ \ \ \ \ \ \ \ \ \ uz[j]=uzians[j];}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00121}00121\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00122}00122\ \ \ \ \ \ \ \ \ ArrayList<Double>\ uarray=\doxymbox{\hyperlink{classschwarz_work_1_1_sch_flower_data}{SchFlowerData}}.\doxymbox{\hyperlink{classschwarz_work_1_1_sch_flower_data_a5a718b5c9035f97f9c46b01070e8d20b}{constraints}}(uz,pflag);}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00123}00123\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ compU=((1.0+uarray.get(myN-\/3))/}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00124}00124\ \ \ \ \ \ \ \ \ \ \ \ \ (sqrt3*uarray.get(myN-\/2)));}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00125}00125\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ this\ in\ the\ list\ of\ uzians}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00126}00126\ \ \ \ \ \ \ \ \ uz[myN-\/2]=compU;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00127}00127\ \ \ \ \ \ \ \ \ newsch[0]=1.0-\/compU;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00128}00128\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00129}00129\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ shift\ for\ next\ uzian}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00130}00130\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=myN;j++)}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00131}00131\ \ \ \ \ \ \ \ \ \ \ \ \ uz[j-\/1]=uz[j];}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00132}00132\ \ \ \ \ \ \ \ \ uz[0]=0.0;\ \textcolor{comment}{//\ indexed\ from\ 1}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00133}00133\ \ \ \ \ \ \ \ \ uarray=\doxymbox{\hyperlink{classschwarz_work_1_1_sch_flower_data}{SchFlowerData}}.\doxymbox{\hyperlink{classschwarz_work_1_1_sch_flower_data_a5a718b5c9035f97f9c46b01070e8d20b}{constraints}}(uz,pflag);}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00134}00134\ \ \ \ \ \ \ \ \ compU=((1.0+uarray.get(myN-\/3))/}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00135}00135\ \ \ \ \ \ \ \ \ \ \ \ \ (sqrt3*uarray.get(myN-\/2)));}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00136}00136\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ this\ in\ the\ list\ of\ uzians}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00137}00137\ \ \ \ \ \ \ \ \ uz[myN-\/2]=compU;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00138}00138\ \ \ \ \ \ \ \ \ newsch[1]=1.0-\/compU;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00139}00139\ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00140}00140\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ shift\ for\ last\ uzian}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00141}00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=myN;j++)}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00142}00142\ \ \ \ \ \ \ \ \ \ \ \ \ uz[j-\/1]=uz[j];}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00143}00143\ \ \ \ \ \ \ \ \ uz[0]=0.0;\ \textcolor{comment}{//\ indexed\ from\ 1}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00144}00144\ \ \ \ \ \ \ \ \ uarray=\doxymbox{\hyperlink{classschwarz_work_1_1_sch_flower_data}{SchFlowerData}}.\doxymbox{\hyperlink{classschwarz_work_1_1_sch_flower_data_a5a718b5c9035f97f9c46b01070e8d20b}{constraints}}(uz,pflag);}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00145}00145\ \ \ \ \ \ \ \ \ compU=((1.0+uarray.get(myN-\/3))/}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00146}00146\ \ \ \ \ \ \ \ \ \ \ \ \ (sqrt3*uarray.get(myN-\/2)));}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00147}00147\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ this\ in\ the\ list}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00148}00148\ \ \ \ \ \ \ \ \ uz[myN-\/2]=compU;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00149}00149\ \ \ \ \ \ \ \ \ newsch[2]=1.0-\/compU;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00150}00150\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00151}00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ newsch;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00152}00152\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00153}00153\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00165}\doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data_aaeb5bd5f2aa55b447911c830f4209243}{00165}}\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data_aaeb5bd5f2aa55b447911c830f4209243}{colorEdge}}(\textcolor{keywordtype}{int}\ mode)\ \{}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00166}00166\ \ \ \ \ \ \ \ \ Boolean\ allpos=\doxymbox{\hyperlink{classschwarz_work_1_1_sch_edge_data_a288ca7a36b1e002c1429962a594bb1aa}{finishFlower}}();}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00167}00167\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!allpos\ ||\ newSch\_cclw==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00168}00168\ \ \ \ \ \ \ \ \ \ \ \ \ myHEdge.setColor(Color.yellow);}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00169}00169\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00170}00170\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00171}00171\ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00172}00172\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ errorCCLW=newSch\_cclw[0]-\/myHEdge.getSchwarzian();}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00173}00173\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ errorCLW=newSch\_clw[0]-\/myHEdge.getSchwarzian();}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00174}00174\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00175}00175\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ scherr=(errorCCLW+errorCLW)/2.0;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00176}00176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(scherr)<.0000001)\ \{}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00177}00177\ \ \ \ \ \ \ \ \ \ \ \ \ myHEdge.setColor(\doxymbox{\hyperlink{classall_mains_1_1_c_p_base}{CPBase}}.\doxymbox{\hyperlink{classall_mains_1_1_c_p_base_a28074206c8ffe1f2d6da345491bd5807}{DEFAULT\_CANVAS\_BACKGROUND}});}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00178}00178\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00179}00179\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00180}00180\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00181}00181\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ color\ green\ if\ opposite\ signs}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00182}00182\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((errorCCLW>0.0\ \&\&\ errorCLW<0.0)\ ||}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00183}00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorCCLW<0.0\ \&\&\ errorCLW>0.0)\ \{}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00184}00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=scherr/0.05;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00185}00185\ \ \ \ \ \ \ \ \ \ \ \ \ myHEdge.setColor(\doxymbox{\hyperlink{classutil_1_1_color_util}{ColorUtil}}.\doxymbox{\hyperlink{classutil_1_1_color_util_a3eb6681dd3c62489561a1902353e0bb6}{green\_interp}}(Math.abs(x)));}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00186}00186\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00187}00187\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00188}00188\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00189}00189\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ we're\ assuming\ values\ in\ [-\/.5,.5]\ }}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00190}00190\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=scherr/0.5;}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00191}00191\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ error\ is\ computed-\/current;}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00192}00192\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ blue\ means\ schwarzian\ needs\ to\ increase}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00193}00193\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (scherr>0.0)\ \textcolor{comment}{//\ increase\ schwarzian}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00194}00194\ \ \ \ \ \ \ \ \ \ \ \ \ myHEdge.setColor(\doxymbox{\hyperlink{classutil_1_1_color_util}{ColorUtil}}.\doxymbox{\hyperlink{classutil_1_1_color_util_a27c8ccee368aba1b77a74b27779bcf96}{blue\_interp}}(x));}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00195}00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{comment}{//\ decrease\ schwarzian}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00196}00196\ \ \ \ \ \ \ \ \ \ \ \ \ myHEdge.setColor(\doxymbox{\hyperlink{classutil_1_1_color_util}{ColorUtil}}.\doxymbox{\hyperlink{classutil_1_1_color_util_aa4d4f740a5b09d77e2863209292f371d}{red\_interp}}(-\/1.0*x));}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00197}00197\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00198}00198\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00199}00199\ \ \ \ \ \}}
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00200}00200\ \ \ \ \ }
+\DoxyCodeLine{\Hypertarget{_sch_edge_data_8java_source_l00201}00201\ \}}
+
+\end{DoxyCode}

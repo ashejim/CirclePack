@@ -19,6 +19,8 @@ import packing.CPdrawing;
 import util.ColorUtil;
 
 /**
+ * @brief CPFace. This is a persistent object, one for each pack; it is
+ *
  * CPFace. This is a persistent object, one for each pack; it is
  * reused by changing the data as needed. 
  * CPFace handles triangles (N=3) or more general polygons. 
@@ -68,7 +70,7 @@ public class CPFace extends Complex {
 	}
 
 	/**
-	 * set the 'x', 'y' face data
+	 * @brief set the 'x', 'y' face data
 	 * @param n
 	 * @param cnrs
 	 */
@@ -83,7 +85,7 @@ public class CPFace extends Complex {
 	}
 	
 	/**
-	 * Draw face, possibly filled, colored, etc.
+	 * @brief Draw face, possibly filled, colored, etc.
 	 * @param draw boolean
 	 * @param bcolor Color
 	 * @param fill boolean
@@ -94,7 +96,7 @@ public class CPFace extends Complex {
 	}
 	
 	/**
-	 * Draw face, possibly filled, colored, etc.
+	 * @brief Draw face, possibly filled, colored, etc.
 	 * @param draw boolean
 	 * @param bcolor Color
 	 * @param fill boolean
@@ -182,7 +184,7 @@ public class CPFace extends Complex {
 	} // end of drawIt
 		
 	/**
-	 * If face has all or part of it on front, then draw both
+	 * @brief If face has all or part of it on front, then draw both
 	 * front and back (if sphere is not too opaque).
 	 * @param draw boolean
 	 * @param bcolor Color
@@ -198,7 +200,7 @@ public class CPFace extends Complex {
 	}
 	
 	/**
-	 * If face has all or part of it on front, then draw both
+	 * @brief If face has all or part of it on front, then draw both
 	 * front and back (if sphere is not too opaque).
 	 * @param draw boolean
 	 * @param bcolor Color
@@ -285,7 +287,7 @@ public class CPFace extends Complex {
 	}		
 
 	/**
-	 * This adds a visible closed spherical polygon to 'gpath'.
+	 * @brief This adds a visible closed spherical polygon to 'gpath'.
 	 *  
 	 * Return 0 if everything is on front (i.e., one needn't do back); 
 	 * Return 1 if horizon segments were added; 
@@ -458,7 +460,7 @@ public class CPFace extends Complex {
 	}		
 	
 	/**
-	 * Returns visible segments of sph polygon as array of
+	 * @brief Returns visible segments of sph polygon as array of
 	 * Path2D.Double, for use, eg, when drawing polygon bdry.
 	 * (Compare to 'sphClosedPath' which adds segments of 
 	 * horizon and also puts results in 'gpath'.)
@@ -573,7 +575,7 @@ public class CPFace extends Complex {
 	}		
 	
 	/**
-	 * Append a hyperbolic geodesic segment to existing path
+	 * @brief Append a hyperbolic geodesic segment to existing path
 	 * @param path, Path2D.Double
 	 * @param geo, HypGeodesic
 	 * @param cpS, CPDrawing

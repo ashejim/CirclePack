@@ -1,0 +1,25 @@
+var classcombinatorics_1_1komplex_1_1_dcel_face =
+[
+    [ "DcelFace", "classcombinatorics_1_1komplex_1_1_dcel_face.html#a70e54c4eb5f7e4bbf70abe04d7b8d1cb", null ],
+    [ "DcelFace", "classcombinatorics_1_1komplex_1_1_dcel_face.html#a8b93daf66758e33644f0c19065f42326", null ],
+    [ "clone", "classcombinatorics_1_1komplex_1_1_dcel_face.html#a5ecbfd3bb50f523ea5cf20baa89841e2", null ],
+    [ "faceFlower", "classcombinatorics_1_1komplex_1_1_dcel_face.html#ab07cda7dc786ebb72e1f5ffc1f0fd926", null ],
+    [ "faceNghb", "classcombinatorics_1_1komplex_1_1_dcel_face.html#a889a583bc988d35c8eabae92ca182a41", null ],
+    [ "faceOpposite", "classcombinatorics_1_1komplex_1_1_dcel_face.html#a221d32a24fb4088e284095c94536d715", null ],
+    [ "getColor", "classcombinatorics_1_1komplex_1_1_dcel_face.html#af83f888f38da6ff4e94b303f44c5c7e6", null ],
+    [ "getEdges", "classcombinatorics_1_1komplex_1_1_dcel_face.html#aa4726d16f42da5c3be8a5c977655bd4b", null ],
+    [ "getEdges", "classcombinatorics_1_1komplex_1_1_dcel_face.html#ae36eaa7e110201bd2b15ff13be7f328f", null ],
+    [ "getNum", "classcombinatorics_1_1komplex_1_1_dcel_face.html#aa5224bb52c28a8286f48de4fad14fc77", null ],
+    [ "getVertIndx", "classcombinatorics_1_1komplex_1_1_dcel_face.html#a102c8964ce40fc9b2b1505c92b0d39f7", null ],
+    [ "getVerts", "classcombinatorics_1_1komplex_1_1_dcel_face.html#a60de327c44a8556b33cb32f424a878fe", null ],
+    [ "getVerts", "classcombinatorics_1_1komplex_1_1_dcel_face.html#aea55f9890955a1238dcefa110165d9be", null ],
+    [ "isIdeal", "classcombinatorics_1_1komplex_1_1_dcel_face.html#af683625ae940ddc50bfe631761da17e9", null ],
+    [ "isRed", "classcombinatorics_1_1komplex_1_1_dcel_face.html#af7fb7e0189f6978d67327c7cafafcb6d", null ],
+    [ "setColor", "classcombinatorics_1_1komplex_1_1_dcel_face.html#a249a7fa5f99ffdda514bad3108e41e35", null ],
+    [ "toString", "classcombinatorics_1_1komplex_1_1_dcel_face.html#ad9995fc83cdcdea14edf0954bfd6ea8d", null ],
+    [ "color", "classcombinatorics_1_1komplex_1_1_dcel_face.html#a532ebbdffde34a52232c04a842ea32bb", null ],
+    [ "edge", "classcombinatorics_1_1komplex_1_1_dcel_face.html#acce42f1d33f978183380fbfe2770284c", null ],
+    [ "faceIndx", "classcombinatorics_1_1komplex_1_1_dcel_face.html#abb13a4191f755ec807f9a6f5f01c6565", null ],
+    [ "futil", "classcombinatorics_1_1komplex_1_1_dcel_face.html#af70d01ec435b16f273b14bfb8f33be8d", null ],
+    [ "mark", "classcombinatorics_1_1komplex_1_1_dcel_face.html#a28ce831540dcbea60236939a3cc14323", null ]
+];
