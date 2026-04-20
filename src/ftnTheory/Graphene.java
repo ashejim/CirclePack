@@ -124,7 +124,8 @@ public class Graphene extends PackExtender {
 	}
 
 	/**
-	 * create and fill 'carbonEnergies' vector and update it
+	 * create and fill 'carbonEnergies' vector 
+	 * and update it
 	 */
 	public void createCarbons() {
 		carbonEnergies=new Vector<CarbonEnergy>(extenderPD.faceCount+1);
@@ -450,7 +451,8 @@ public class Graphene extends PackExtender {
 			if (duale==null)
 				return 0;
 			int ans=cpCommand("flip "+duale.v+" "+duale.w);
-			if (ans>0) createCarbons();
+			if (ans>0) 
+				createCarbons();
 			return ans;
 		}
 		
@@ -607,10 +609,10 @@ public class Graphene extends PackExtender {
 	}
 	
 	/** 
-	 * Compute various energy contributions, max contributors,
-	 * set colors, report results.
-	 * CAUTION: calling routine must insure that 'CarbonEnergy'
-	 * data has been updated.
+	 * Compute various energy contributions, max 
+	 * contributors, set colors, report results.
+	 * CAUTION: calling routine must insure that 
+	 * 'CarbonEnergy' data has been updated.
 	 * @return total energy
 	 */
 	public double reportEnergy() {
@@ -1445,22 +1447,20 @@ public class Graphene extends PackExtender {
 
 	/********************************************
 	 * Utility class:
-	 * Holds data on atom in a molecule: bond lengths, bond angles,
-	 * angle energies. Have three bonds, hence three bond 
-	 * angles/energies. Indexing is based on the associated face.
-	 * Note that for atoms associated with boundary faces, one
-	 * or two bonds are 'phantom' bonds to allow for the angle
+	 * Holds data on atom in a molecule: bond lengths, 
+	 * bond angles, angle energies. Have three bonds, 
+	 * hence three bond angles/energies. Indexing is 
+	 * based on the associated face. Note that for 
+	 * atoms associated with boundary faces, one or 
+	 * two bonds are 'phantom' bonds to allow for the angle
 	 * energy computation. Not yet settled on best approach; for 
-	 * now, assume phantom neighboring face has same inradius as
-	 * this face.
+	 * now, assume phantom neighboring face has 
+	 * same inradius as this face.
 	 * Note on indexing: vert[j] is the origin of edge[j], so
 	 * edge[(j+1)%3] is the edge opposite vert[j].
 	 */
 	class CarbonEnergy {
 		combinatorics.komplex.DcelFace face;  //  
-		
-		
-		
 		int faceIndx; // associated face index
 		int []verts=new int[3]; 
 		double []rad=new double[3]; // eucl

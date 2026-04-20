@@ -36,7 +36,7 @@ public class SchEdgeData {
 	double[] newSch_clw;
 	
 	// NOTE: if a negative constraint is encountered,
-	//   set 'allPosFlag' to false; means wecan't 
+	//   set 'allPosFlag' to false; means we can't 
 	//   complete an unbranched flower. Need to 
 	//   work out what to do in branched cases.
 	Boolean allPosFlag; // null until computation is 
@@ -105,7 +105,7 @@ public class SchEdgeData {
 	
 	/**
 	 * Given 'uzians' (indexed from 1), compute the
-	 * next three schwarzians base on u1,u2,...,u{n-3}
+	 * next three schwarzians based on u1,u2,...,u{n-3}
 	 * @param uzians double[], indexed from 1
 	 * @return double[3], null if constraint is <= 0.
 	 */
@@ -115,7 +115,7 @@ public class SchEdgeData {
 		
 		// use copy of 'uzians'
 		double[] uz=new double[myN+1];
-		for (int j=1;j<=myN+1;j++)
+		for (int j=1;j<=myN;j++)
 			uz[j]=uzians[j];
 		
 		ArrayList<Double> uarray=SchFlowerData.constraints(uz,pflag);

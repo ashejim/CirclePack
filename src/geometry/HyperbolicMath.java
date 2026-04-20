@@ -595,7 +595,7 @@ public class HyperbolicMath{
 		// find eucl circle image under remap
 
 /*
-// debuggin
+// debugging
 		Complex a=csIn.center.add(new Complex(csIn.rad,0));
 		Complex b=new Complex(csIn.center.x,1.0);
 		Complex c=csIn.center.minus(new Complex(csIn.rad,0));

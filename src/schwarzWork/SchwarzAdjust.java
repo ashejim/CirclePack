@@ -19,7 +19,7 @@ import util.CmdStruct;
  * may be used somehow with schwarzians.)
  * 
  * Will start small and work on small (nodecount < 26)
- * triangulations of the sphere or of s topological
+ * triangulations of the sphere or of a topological
  * disc. We insure that there are no interior vertices 
  * of degree 3 and no bdry vertices without interior
  * neighbor.

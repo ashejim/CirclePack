@@ -221,9 +221,9 @@ public class Schwarzian {
 	}
 	
 	/**
-	 * Get 4 radii for edge to use in calculating schwarzian.
-	 * Ordinary because there are no complications due to 
-	 * multi-connectedness.
+	 * Get the 4 radii for given edge that are used in 
+	 * calculating its schwarzian. "Ordinary" because there 
+	 * are no complications due to multi-connectedness.
 	 * @param p PackData
 	 * @param edge HalfEdge
 	 * @return double[]
@@ -410,7 +410,7 @@ public class Schwarzian {
 	 * so the complex Schwarzian derivative is real s and
 	 * the Mobius we return has the form 
 	 *    inv(bm_g)*bm_f = [1 + s, -s;s, 1-s]
-	 * Calling routine must insure g aligned with f before 
+	 * Calling routine must ensure g aligned with f before 
 	 * computing the baseMobius maps 'bm_g' and 'bm_f' (maps 
 	 * FROM the base equilateral TO f and g). 
 	 * @param bm_f Mobius
@@ -477,7 +477,7 @@ public class Schwarzian {
 	 * base equilateral TO the target face.
 	 * @param s double, schwarzian
 	 * @param j int, index of shared edge
-	 * @param bm_f Mbbius, map from base to f
+	 * @param bm_f Mbius, map from base to f
 	 * @param hes int, geometry
 	 * @return CircleSimple
 	 */
@@ -520,9 +520,10 @@ public class Schwarzian {
 	}
 	
 	/**
-	 * Develop various schemes to help understand schwarzians: e.g., 
-	 * draw circles with color blue-to-red based on sum of 
-	 * schwarzians; draw edges blue-to-red based on schwarzians.
+	 * Develop various schemes to help understand schwarzians: 
+	 * e.g., draw circles with color blue-to-red based on sum 
+	 * of schwarzians; draw edges blue-to-red based on 
+	 * schwarzians.
 	 * @param p PackData
 	 * @param flagsegs Vector<Vector<String>> options
 	 * @return
@@ -659,7 +660,7 @@ public class Schwarzian {
 	}
 	
 	/**
-	 * Fillin the 'SchwarzData' utility package
+	 * Fill in the 'SchwarzData' utility package
 	 * @param domf TriAspects
 	 * @param tmpg
 	 * @param rngF
@@ -893,13 +894,14 @@ public class Schwarzian {
 
 	/**
 	 * Compute the INtrinsic Schwarzian for edge shared by 
-	 * two face. Note that g should already have been
+	 * two faces. Note that g should already have been
 	 * adjusted to align along shared edge with f.
 	 * @param tri_f TriAspect
 	 * @param tri_g TriAspect
 	 * @return Double, null if 'baseMob's not set
 	 */
-	public static Double getIntrinsicSch(TriAspect tri_f,TriAspect tri_g) {
+	public static Double getIntrinsicSch(TriAspect tri_f,
+			TriAspect tri_g) {
 		Mobius dmf=new Mobius(tri_f.setBaseMobius());
 		Mobius dmg=new Mobius(tri_g.setBaseMobius());
 		if (dmf==null || dmg==null)
@@ -940,23 +942,6 @@ public class Schwarzian {
 		if (Math.abs(c.y)>.001) 
 			throw new MobException("intrinsic schwarzian has complex part");
 		return (Double)c.x;
-	}
-
-	/**
-	 * The 'uzian' is 1-s where s the intrinsic
-	 * schwarzian for some edge. The uzian is better
-	 * in many formulas. Typically, schvector is length
-	 * n for an n-flower, but often only need n-3 
-	 * schwarzians. 
-	 * @param schvector double[];
-	 * @return double[], same length as input
-	 */
-	public double[] uzianFunction(double[] schvector) {
-		int N=schvector.length-1;
-		double[] uzian=new double [N+1];
-		for (int j=1;j<=N;j++)
-			uzian[j]=1.0-schvector[j];
-		return uzian;
 	}
 	
 }

@@ -1163,7 +1163,7 @@ public class CombDCEL {
 	 * red chain and 'vertices' updated, we process to 
 	 * create 'faces', 'edges', 'layoutOrder', etc. 
 	 * This can be used when we modify the structure 
-	 * inside but can keep or modify the red chain, 
+	 * inside while keeping or modifying the red chain, 
 	 * e.g., when flipping an edge, adding an edge, etc. 
 	 * @param pdcel
 	 * @return PackDCEL
@@ -1179,6 +1179,7 @@ public class CombDCEL {
 		// DCELdebug.printRedChain(pdcel.redChain);
 		// we prefer that 'alpha' be set already with non-red 
 		//   origin; else choose an edge with non-red origin.
+		// pdcel.redChain=pdcel.redChain.nextRed;
 		if (pdcel.alpha!=null && pdcel.alpha.origin.redFlag)
 			pdcel.alpha=null;
 		if (pdcel.alpha==null) {
@@ -1371,65 +1372,124 @@ public class CombDCEL {
 		
 		// (B) --------------------------------------------------------
 
-		// Status: all 'orderEdges' entries have 'origin' in
-		//   non-red verts reachable from alpha.
-		// However, if not a sphere, may have red faces not yet reached.
-		//   We need to find these and set 'redChain' appropriately.
+		// Status: all 'orderEdges' entries have 'origin' 
+		//   in non-red verts reachable from alpha.
+		// However, if there's a bdry, We need to make
+		//   sure all red faces are laid out and we must
+		//   choose a good 'redChain'
 		if (pdcel.redChain!=null) {
-			RedEdge goodRed=null;
-			HalfEdge goodEdge=null;
-
-			// Find good place to start on red chain
-			if (pdcel.redChain.myEdge.eutil!=0) // first edge in 'orderEdges'
-				goodRed=pdcel.redChain;
+			// find a red face that is or can be laid out
+			RedEdge goodRed=null; 
+			
+			// first hope: some red edge been laid out
+			rtrace=pdcel.redChain;
+			do {
+				if (rtrace.myEdge.eutil!=0) 
+					goodRed=rtrace;
+				rtrace=rtrace.nextRed;
+			} while (rtrace!=pdcel.redChain);
 		
-			// else, have to find red face with non-red edge twin eutil set.
+			// second hope; some red face has a nghb
+			//   face laid out
 			if (goodRed==null) {
 				rtrace=pdcel.redChain;
-				
-				// best: has some red edge itself been hit?
+				// find edge whose twin can go in 'orderEdges'
 				do {
-					rtrace=rtrace.nextRed;
-					if (rtrace.myEdge.eutil!=0) {
-						goodRed=rtrace;
-						goodEdge=rtrace.myEdge;
-					}
-				} while (goodRed==null && rtrace.nextRed!=pdcel.redChain);
-				
-				// next best: has some red face non-red edge twin been hit?
-				if (goodRed==null) { 
-					rtrace=pdcel.redChain;
+					tr=rtrace.myEdge.next;
 					do {
-						tr=rtrace.myEdge.next;
-						do {
-							if (tr.myRedEdge==null && tr.twin.eutil!=0) {
-								goodRed=rtrace;
-								goodEdge=tr;
+						if (tr.myRedEdge==null && tr.twin.eutil!=0) {
+							goodRed=rtrace;
+							HalfEdge addedge=tr;
+							orderEdges.add(addedge);
+							if (debug) { // debug=true;
+								DCELdebug.drawEdgeFace(pdcel,addedge);
 							}
-							tr=tr.next;
-						} while (goodRed==null && tr!=rtrace.myEdge);
-						rtrace=rtrace.nextRed;
-					} while (goodRed==null && rtrace!=pdcel.redChain);
-				}
-				
-				if (goodRed==null)
-					throw new DCELException("redChain edges have no twins in 'orderEdges'");
-					
-				pdcel.redChain=goodRed;
-				orderEdges.add(goodEdge);
-				if (debug) { // debug=true;
-					DCELdebug.drawEdgeFace(pdcel,goodEdge);
-				}
-				ordertick++;
-					
-				// mark all the edges
-				tr=pdcel.redChain.myEdge;
-				do {
-					tr.eutil=1;
-					tr=tr.next;
-				} while (tr!=pdcel.redChain.myEdge);
+							ordertick++;
+						
+							// mark all the edges
+							tr=addedge;
+							do {
+								tr.eutil=1;
+								tr=tr.next;
+							} while (tr!=addedge);
+						}
+						tr=tr.next;
+					} while (goodRed==null && tr!=rtrace.myEdge);
+					rtrace=rtrace.nextRed;
+				} while (goodRed==null && rtrace!=pdcel.redChain);
 			}
-		
+
+			// Still not there? Last chance is to pass through 
+			//   redChain again, looking cclw for a face that 
+			//   can be laid out, then lay successive clw faces
+			//   until we create a 'goodRed'.
+			if (goodRed==null) {
+				rtrace=pdcel.redChain;
+				do {
+					HalfEdge goodspoke=null;
+					HalfEdge addedge=null;
+					HalfEdge spk=rtrace.myEdge.prev.twin;// move cclw 
+					while (spk!=rtrace.prevRed.myEdge.twin && 
+							goodspoke==null) {
+						// is a nghb face already laid out?
+						if (spk.next.next.twin.eutil!=0)
+							addedge=spk.next.next;
+						else if (spk.next.twin.eutil!=0)
+							addedge=spk.next;
+						if (addedge!=null) {
+							goodspoke=spk;
+							orderEdges.add(addedge);
+							if (debug) { // debug=true;
+								DCELdebug.drawEdgeFace(pdcel,addedge);
+							}
+							ordertick++;
+						
+							// mark all the edges
+							tr=addedge;
+							do {
+								tr.eutil=1;
+								tr=tr.next;
+							} while (tr!=addedge);
+						}
+						spk=spk.prev.twin; // next cclw spoke
+					}
+					
+					// If we found a goodspoke, its face is now
+					// in 'orderEdges' and we can we can lay 
+					// subsequent faces clw.
+					if (goodspoke!=null) {
+						spk=goodspoke;
+						do {
+							orderEdges.add(spk.twin);
+							if (debug) { // debug=true;
+								DCELdebug.drawEdgeFace(pdcel,spk.twin);
+							}
+							ordertick++;
+							
+							// mark all the edges
+							tr=spk;
+							do {
+								tr.eutil=1;
+								tr=tr.next;
+							} while (tr!=spk);
+							spk=spk.twin.next; // next clw
+						} while (spk!=rtrace.myEdge);
+						
+						// okay, this last spk should be 'goodRed'
+						if (spk.myRedEdge!=null) 
+							goodRed=spk.myRedEdge;
+					}
+					rtrace=rtrace.nextRed;
+				} while (goodRed==null && rtrace!=pdcel.redChain);
+			}
+				
+			// OK, we have failed.
+			if (goodRed==null) 
+				throw new DCELException("redChain edges have no twins in 'orderEdges'");
+
+			// OK, we have a goodRed!
+			pdcel.redChain=goodRed;
+
 			// Circulate clw around terminal vertex of successive red edges 
 			//   to get any remaining faces on left side of redchain. Note
 			//   that as we pivot clw, the next red edge's face is always

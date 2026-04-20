@@ -401,7 +401,7 @@ public class HypPacker extends RePacker {
 	
 	/**
 	 * Generic call; computes both radii and centers (use 'repack' 
-	 * for radii only). 
+	 * if you want radii only). 
 	 * @param cycles, int, limit on recompute cycles; no effect in Orick's method
 	 * @return int; may be number of cycles used.
 	 */

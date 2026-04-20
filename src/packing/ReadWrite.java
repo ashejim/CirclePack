@@ -49,11 +49,12 @@ public class ReadWrite {
 	public static int[] readOldNew;
 
 	/**
-	 * Read new circle packing (or data for existing packing) into pack
-	 * 'p' from an open file. Return 0 on error. Key "NODECOUNT:" or 
-	 * "TRIANTULATION:" indicates new packing, in which case basic 
-	 * combinatorics are read; "CHECKCOUNT:" indicates data for 'p'; 
-	 * "TILECOUNT:" indicates tiling information (tiles and their 
+	 * Read new circle packing (or data for existing packing) 
+	 * into pack 'p' from an open file. Return 0 on error. 
+	 * Key "NODECOUNT:" or "TRIANTULATION:" indicates new 
+	 * packing, in which case basic combinatorics are read; 
+	 * "CHECKCOUNT:" indicates data for 'p'; "TILECOUNT:" 
+	 * indicates tiling information (tiles and their 
 	 * surrounding vertex indices);* "TRIANGULATION:" indicates 
 	 * triples forming faces. (OBE: New packing in 'Lite' form
 	 * starts with magic number 1234321.)
@@ -2156,7 +2157,9 @@ public class ReadWrite {
 		
 	
 	/**
-	 * translation needed when reading "BOUQUET".
+	 * translation needed when reading "BOUQUET". (Not sure
+	 * this is still needed --- may have been from time of
+	 * conversion to DCEL structure.)
 	 * 
 	 * @param old_v int
 	 * @return int

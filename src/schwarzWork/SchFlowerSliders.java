@@ -25,7 +25,7 @@ import widgets.SliderFrame;
  * u=1-s, see "SchFlowerData", but these sliders 
  * controls the s's themselves.
  * 
- * Display will also so the "errors" in the effect
+ * Display will also show the "errors" in the effect
  * of the current schwarzians, see 'SchFlowerData.
  * euclFlower'.
  * 

@@ -31,7 +31,7 @@ public class Exponential {
 		for (int i=1;i<=p.nodeCount;i++) 
 			if (!p.isBdry(i) && p.countFaces(i)!=6) { 
 				CirclePack.cpb.myErrorMsg("usage: in 'spiral', packing must be hexagonal");
-				throw new CombException();
+				throw new CombException("usage: in 'spiral', packing must be hexagonal");
 			}
 		int[] util=new int[p.nodeCount+1];
 

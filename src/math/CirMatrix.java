@@ -10,9 +10,9 @@ import geometry.SphericalMath;
 
 /**
  * CirMatrix holds the representation of a circle as a 2x2
- * Hermitian complex matrix. This extends 'Mobius' because circles in
- * this form can be manipulated via compositions with Mobius
- * transformations. See, e.g., 'mobius_of_circle'.
+ * Hermitian complex matrix. This extends 'Mobius' because 
+ * circles in this form can be manipulated via compositions 
+ * with Mobius transformations. See, e.g., 'mobius_of_circle'.
  * 
  * Note: or purposes of drawing, all straight lines are 
  * stored in 'CircleSimple' objects as very large circles,
@@ -23,17 +23,23 @@ import geometry.SphericalMath;
  * -------------------------------
  * Math of 'CirMatrix':
  * 
- * * Straight line a*x+b*y+c=0 can be rewritten using B=(a-i*b)/2 as  
+ * * Straight line a*x+b*y+c=0 can be rewritten 
+ *   using B=(a-i*b)/2 as
+ *     
  *         B*z+conj(B)*conj(z)+c=0
- *   We can normalize by replacing (a,b) by (a,b)/sqrt(a^2+b^2)
- *   and c by c/sqrt(a^2+b^2), so |B|=1/2. 
+ *         
+ *   We can normalize by replacing (a,b) by 
+ *   (a,b)/sqrt(a^2+b^2) and c by c/sqrt(a^2+b^2), 
+ *   so |B|=1/2. 
  * 
  * * Circle with center z0, radius r is (z-z0)*conj(z-z0)=r^2.
- *   This can be written using B=-conj(z0) and g=z0*conj(z0)-r^2 as
+ *   This can be written using B=-conj(z0) and 
+ *   g=z0*conj(z0)-r^2 = |z0|^2-r^2 as this expression:
+ *   
  *         z*conj(z)+B*z+conj(B)*conj(z)+g=0.
  * 
- * * Both together: A*z*conj(z)+B*z+conj(B)*conj(z)+g=0 where A=+-1 
- *   for circle, a=0 for line.
+ * * Both together: A*z*conj(z)+B*z+conj(B)*conj(z)+g=0 
+ *   where A=+-1 for circle, a=0 for line.
  * 
  * So we represent all circles/lines by matrix M=[a,b;c,d], with
  * entry a is +-1 or 0.
@@ -65,8 +71,8 @@ import geometry.SphericalMath;
  *           d=0: line goes through the origin
  *           d>0: origin is on the interior
  *           d<0: origin is exterior
- * (These are not automatic, code has to keep track case-by-case and
- * adjust the matrix.)   
+ * (These are not automatic, code has to keep track 
+ * case-by-case and adjust the matrix.)   
  * 
  * @author kens
  *
@@ -112,13 +118,15 @@ public class CirMatrix extends Mobius {
 	}
 	
 	/** 
-	 * For C a 2x2 'CirMatrix', this returns its image under M 
-	 * (oriented true) or M^{-1} (oriented false). Returns a 2x2
-	 * 'CirMatrix' with the normalization conventions.
+	 * For C a 2x2 'CirMatrix', this returns its 
+	 * image under M (oriented true) or M^{-1} 
+	 * (oriented false). Returns a 2x2 'CirMatrix' 
+	 * with the normalization conventions.
 	 * 
-	 * The computation is: result = G^{t}*C*conj(G), where G = M^{-1}*det(M)
-	 * Note: If M = [a b;c d], then G=[d -b;-c a] and G^{t}=[d -c;-b a] (not
-	 * the hermitian transpose).
+	 * The computation is: result = G^{t}*C*conj(G), 
+	 * where G = M^{-1}*det(M) Note: If M = [a b;c d], 
+	 * then G=[d -b;-c a] and G^{t}=[d -c;-b a] (i.e.,
+	 * NOT the hermitian transpose).
 	 * 
 	 * @param M Mobius
 	 * @param C CirMatrix

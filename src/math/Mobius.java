@@ -603,9 +603,10 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create normalized Mobius mapping Complex pts x,y,z to X,Y,Z resp. 
-	 * (Depends on the two geometries; for sphere, points must be
-	 * stereo projected to the plane.)
+	 * Create normalized Mobius mapping Complex pts 
+	 * x,y,z to X,Y,Z resp. (Depends on the two 
+	 * geometries; for sphere, points must be stereo 
+	 * projected to the plane.)
 	 * @param x Complex
 	 * @param y Complex
 	 * @param z Complex
@@ -759,9 +760,10 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Given 3D point interior to unit sphere, create the Mobius in 3-space
-	 * which maps the sphere to itself, the point to the origin, while 
-	 * fixing the endpoints on the sphere of the vector through the point. 
+	 * Given 3D point interior to unit sphere, create
+	 * Mobius in 3-space which maps the sphere to itself, 
+	 * the point to the origin, while fixing the endpoints 
+	 * on the sphere of the vector through the point. 
 	 * @param pt Point3D
 	 * @return Mobius (normalized), identity if close to origin, null on error
 	 */
@@ -959,10 +961,13 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create automorphism of unit disc mapping a->A, b->B when a,b,A,B are all
-	 * on the unit circle. There is an additional degree of freedom, so also
-	 * match c->C (as closely as possible). If c or C is outside the disc, set
-	 * them both to 0. ignore them both. TODO: return not yet normalized
+	 * Create automorphism of unit disc mapping a->A, 
+	 * b->B when a,b,A,B are all on the unit circle. 
+	 * There is an additional degree of freedom, so also
+	 * match c->C (as closely as possible). If c or C 
+	 * is outside the disc, set them both to 0. 
+	 * ignore them both. 
+	 * TODO: return not yet normalized
 	 * 
 	 * @param a Complex
 	 * @param b Complex
@@ -1011,8 +1016,10 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create automorphism of unit disc carrying a to origin, b to positive
-	 * x-axis. If b and a are essentially equal, then don't do the rotation. 
+	 * Create automorphism of unit disc carrying 
+	 * a to origin, b to positive x-axis. If b and 
+	 * a are essentially equal, then don't do the 
+	 * rotation. 
 	 * Has form e^{it}(z-a)/(1-~az), where t=-arg((b-a)/(1-~ab)).
 	 * (~=conjugate)
 	 * @param a Complex, |a|<1.0
@@ -1057,12 +1064,15 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create an automorphism of the unit disc mapping a->1, b->-1, and c as
-	 * close as possible to the origin. a, b are on unit circle, c interior. On
-	 * error, throw MobException. Strategy: Map to right halfplane with R so
-	 * a->infty, b to imag axis; translate by -R(b) so image of b at origin;
-	 * divide by image of c to put on the unit circle; map back to disc with W
-	 * mapping infty->1, 0->-1, 1->0. Will end up with a->1, b->-1, c on
+	 * Create an automorphism of the unit disc 
+	 * mapping a->1, b->-1, and c as close as possible 
+	 * to the origin. a, b are on unit circle, c 
+	 * interior. On error, throw MobException. Strategy: 
+	 * Map to right halfplane with R so a->infty, b to 
+	 * imag axis; translate by -R(b) so image of b at 
+	 * origin; divide by image of c to put on the unit 
+	 * circle; map back to disc with W mapping infty->1, 
+	 * 0->-1, 1->0. Will end up with a->1, b->-1, c on
 	 * imaginary axis (hence closest to zero).
 	 * @param a Complex, |a|=1.0
 	 * @param b Complex, |b|=1.0
@@ -1179,14 +1189,14 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * Apply mobius ('oriented' true) or inverse ('oriented' false) 
-	 * to a single circle. Both csIn and csOut are in the specified 
-	 * geometry.
+	 * Apply mobius ('oriented' true) or inverse ('oriented' 
+	 * false) to a single circle. Both csIn and csOut are 
+	 * in the specified geometry.
 	 * Notes: 
-	 * + in eucl case, negative newr means use outside of circle; 
-	 *   calling routine must handle this.
-	 * + in hyp case, negative newr means horocycle, center should
-	 *   be on unit circle. 
+	 * + in eucl case, negative newr means use outside of 
+	 *   circle; calling routine must handle this.
+	 * + in hyp case, negative newr means horocycle, 
+	 *   center should be on unit circle. 
 	 * + calling routine instantiates csOut to return results.
 	 * @param mob Mobius
 	 * @param hes int, geometry
@@ -1576,9 +1586,11 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create Mobius mapping outside of eucl circle c1 onto inside of eucl
-	 * circle c2. Radius of c1 (resp. c2) may be negative meaning it contains
-	 * infinity: must move to unit circle, invert, move back, then proceed.
+	 * Create Mobius mapping outside of eucl circle c1 
+	 * onto inside of eucl circle c2. Radius of c1 
+	 * (resp. c2) may be negative meaning it contains 
+	 * infinity: must move to unit circle, invert, move 
+	 * back, then proceed.
 	 * 
 	 * @param ctrl Complex, center of c1
 	 * @param CPrad1 double, radius of c1
@@ -1620,9 +1632,10 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create Mobius giving (anticonformal) reflection in euclidean circle.
-	 * Given radius r may be negative for outside of the circle; this
-	 * doesn't affect the computations.
+	 * Create Mobius giving (anticonformal) reflection in 
+	 * euclidean circle. Given radius r may be negative 
+	 * for outside of the circle; this doesn't affect the 
+	 * computations.
 	 * @param ctr Complex
 	 * @param r double, |r| > .00000000001 (r may be negative for outside of eucl circle,
 	 *            but that doesn't change affect routine.

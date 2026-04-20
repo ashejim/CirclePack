@@ -184,7 +184,8 @@ public class PackDCEL {
 			  CombDCEL.redchain_by_edge(this,null,this.alpha,prune);
 		  } // DCELdebug.rededgecenters(this);
 		  // redChain should now exist, but can be in error, so take 
-		  //     two trys
+		  //     two trys: 
+		  // DCELdebug.printRedChain(redChain);
 		  try {
 			  CombDCEL.fillInside(this); // p.getCenter(300);
 		  }

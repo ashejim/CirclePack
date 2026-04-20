@@ -464,11 +464,15 @@ public class PackCreation {
 		// We're indexing everything from 0 during
 		//   layout; will adjust for vert indices 
 		//   as needed.
-		// start layout with B edge centered on 
+		// Start layout with B edge centered on 
 		//   positive axis, B-1 edge clw next to it,
 		//   both with radius of uniform n-flower.
-		// Then layout clw until 0 edge is in place,
-		//   then cclw until new 0 edge is computed.
+		//   (Will rotate later.)
+		// Since starting with B and B-1 edges, if B>1
+		//   we need to do layout in two directions:
+		//   first layout clw from B-1 edge until 0 edge 
+		//   is in place. Then go back to B edge and 
+		//   layout cclw until second 0 edge is computed.
 
 		// initialize 2 TriAspect's
 		TriAspect ftri=new TriAspect();
@@ -511,8 +515,9 @@ public class PackCreation {
 		double anglesum=2.0*a; // for accumulating total angle
 		int clwMoves=B-1;
 
-		// cross clwMoves edges clockwise
-		if (B>1) {
+		// May start in clw direction: do clwMoves computations 
+		//   across clw edge of ftri.
+		if (clwMoves>0) {
 			for (int j=1;j<=clwMoves;j++) {
 				double s=schvec.get(B-j);
 				// get next face angle
@@ -533,8 +538,8 @@ public class PackCreation {
 			} 
 		}
 		
-		// next cross edge 2 of ftri until done
-		//   with edge n-2.
+		// Typically have to finish by computing across 
+		//   cclw edges of ftri until done with edge n-2.
 		if (B<(n-1)) {
 			for (int j=B;j<n-1;j++) {
 				double s=schvec.get(j);
@@ -555,6 +560,7 @@ public class PackCreation {
 				ftri.setBaseMobius();
 			} 
 		}
+		
 		// layout c_1 again, based on c_{n-2} and c_{n-1},
 		//     but do not record in packdata
 		double s=schvec.get(n-1); // cs.center.arg() ftri.center[2].arg();
@@ -562,9 +568,9 @@ public class PackCreation {
 		double lastangle=tmpcs.center.divide(ftri.center[2]).arg();
 		anglesum +=lastangle;
 		
-		// the 'error' is complex:
+		// the 'error' is encoded as complex:
 		//   * x = relative change in radius
-		//   * y= relative change angle sum
+		//   * y = relative change angle sum
 		layoutErr.x=(tmpcs.rad-r)/r;
 		layoutErr.y=(anglesum-aim)/aim;
 		
@@ -659,7 +665,8 @@ public class PackCreation {
 	 *  "real axis" portion of the boundary in Rohde/Gill terminology.
 	 *  'gamma' is set to vert in middle of bdry edge of face 1. 
 	 */
-	public static PackData randNecklace(int n,int mode,Integer randSeed) {
+	public static PackData randNecklace(
+			int n,int mode,Integer randSeed) {
 		
 		// some defaults
 		if (n<1)

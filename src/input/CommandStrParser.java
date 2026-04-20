@@ -9733,7 +9733,7 @@ public class CommandStrParser {
     				  return count;
     			  }
     			  
-    			  // else set to current
+    			  // else set to current based on radii
    				  return Schwarzian.comp_schwarz(packData, hlink);
 	    	  }
 
