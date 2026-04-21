@@ -1,0 +1,292 @@
+\doxysection{File\+Util.\+java}
+\label{_file_util_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/util/FileUtil.java@{C:/Users/ashej/myGitRepos/CirclePack/src/util/FileUtil.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }util;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.net.HttpURLConnection;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.net.MalformedURLException;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.net.URI;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.net.URISyntaxException;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.net.URL;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.net.URLEncoder;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.nio.charset.StandardCharsets;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.nio.file.Files;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.nio.file.Paths;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.text.DecimalFormat;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ java.text.SimpleDateFormat;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ java.util.Date;}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ exceptions.InOutException;}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00026\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }FileUtil\ \{}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ String\ exciseHome(String\ origstr)\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ String\ newstr=origstr.toLowerCase().replace(\textcolor{stringliteral}{"{}\(\backslash\)\(\backslash\)"{}},\textcolor{stringliteral}{"{}/"{}});}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ String\ home=System.getProperty(\textcolor{stringliteral}{"{}user.home"{}}).}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ toLowerCase().replace(\textcolor{stringliteral}{"{}\(\backslash\)\(\backslash\)"{}},\textcolor{stringliteral}{"{}/"{}});}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=home.indexOf(\textcolor{charliteral}{'/'});}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k>0\ \&\&\ k<home.length()-\/1)}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ home=home.substring(k);}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ k=newstr.indexOf(\textcolor{stringliteral}{"{}:"{}});}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k>0\ \&\&\ k<newstr.length()-\/1)}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ newstr=newstr.substring(k+1);}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (newstr.startsWith(\textcolor{stringliteral}{"{}/"{}}))}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ newstr=newstr.substring(1);}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (home.startsWith(\textcolor{stringliteral}{"{}/"{}}))}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ home=home.substring(1);}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newstr.startsWith(home))}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ newstr=newstr.substring(home.length());}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ newstr;}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \ \ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ isLocal(String\ urlString)\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ URI\ uri\ =\ \textcolor{keyword}{new}\ URI(urlString);\ \textcolor{comment}{//\ Use\ URI\ for\ more\ robust\ parsing}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ String\ scheme\ =\ uri.getScheme();}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ String\ host\ =\ uri.getHost();}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (scheme\ ==\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Handle\ cases\ where\ the\ URL\ might\ be\ a\ simple\ file\ path}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ !urlString.contains(\textcolor{stringliteral}{"{}://"{}});\ \textcolor{comment}{//\ If\ there\ is\ no\ ://\ it\ is\ a\ local\ path}}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (scheme.equalsIgnoreCase(\textcolor{stringliteral}{"{}file"{}}))\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (host\ ==\ \textcolor{keyword}{null}\ ||\ host.equalsIgnoreCase(\textcolor{stringliteral}{"{}localhost"{}})\ ||\ host.equals(\textcolor{stringliteral}{"{}127.0.0.1"{}})\ ||\ host.equals(\textcolor{stringliteral}{"{}0:0:0:0:0:0:0:1"{}}))\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (URISyntaxException\ e)\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Handle\ invalid\ URL\ syntax}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};\ \textcolor{comment}{//\ Or\ throw\ an\ exception\ if\ appropriate}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00083\ \ \ \ \ \}}
+\DoxyCodeLine{00084\ \ \ \ \ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ URL\ tryURL(String\ \textcolor{keywordtype}{string})\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keywordtype}{string}==\textcolor{keyword}{null}\ ||\ \textcolor{keywordtype}{string}.length()==0)}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{string}=\textcolor{keywordtype}{string}.trim().replace(\textcolor{stringliteral}{"{}\%20"{}},\ \textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ URL\ outURL=\textcolor{keyword}{null};}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ outURL=(\textcolor{keyword}{new}\ URL(\textcolor{keywordtype}{string}));}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(MalformedURLException\ \ mex)\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ outURL;}
+\DoxyCodeLine{00105\ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \ \ }
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ URL\ parseURL(String\ urlString)\ \{}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ okay\ as\ is?}}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ URL\ dummy=\textcolor{keyword}{null};}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((dummy=tryURL(urlString))!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ dummy;}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ prepare\ input}}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ String\ inStr=urlString.replace(\textcolor{stringliteral}{"{}\%20"{}},\ \textcolor{stringliteral}{"{}\ "{}}).trim();}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ inStr=inStr.replace(\textcolor{stringliteral}{"{}\(\backslash\)\(\backslash\)"{}},\textcolor{stringliteral}{"{}/"{}});}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ inStr=inStr.toLowerCase();}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ String\ home=System.getProperty(}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}user.home"{}}).replace(\textcolor{stringliteral}{"{}\(\backslash\)\(\backslash\)"{}},\textcolor{stringliteral}{"{}/"{}});}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ inStr=cleardotdot(inStr);}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ protocol?\ try\ 'file'\ with\ home\ directory.\ }}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!inStr.startsWith(\textcolor{stringliteral}{"{}file"{}})\ \&\&\ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ !inStr.startsWith(\textcolor{stringliteral}{"{}htt"{}})\ \&\&}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ !inStr.startsWith(\textcolor{stringliteral}{"{}www"{}}))\ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ should\ be\ local\ file;\ start\ with\ HomeDirectory}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (inStr.startsWith(\textcolor{stringliteral}{"{}\string~"{}}))\ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inStr=home+inStr.substring(1);}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ clean\ beginning\ of\ urlString}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inStr=FileUtil.exciseHome(inStr);}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (inStr.startsWith(\textcolor{stringliteral}{"{}/"{}})\ ||\ }
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inStr.startsWith(\textcolor{stringliteral}{"{}:"{}}))\ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inStr\ =\ inStr.substring(1).trim();}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inStr=home+\textcolor{stringliteral}{"{}/"{}}+inStr;}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ dummy=FileUtil.tryURL(\textcolor{stringliteral}{"{}file:///"{}}\ +\ inStr);}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Quick\ and\ dirty:\ first,\ check\ for\ wrong\ }}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ number\ of\ slashes\ in\ file\ url's.\ }}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ The\ URL\ constructor\ doesn't\ seem\ to\ }}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ care\ about\ the\ wrong\ number\ of\ slashes,\ }}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ so\ this\ method\ wasn't\ catching\ that\ error\ }}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ when\ this\ next\ block\ was\ at\ the\ bottom\ of\ }}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ the\ method.}}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (inStr.startsWith(\textcolor{stringliteral}{"{}file"{}}))\ \{\ }
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ inStr\ =\ inStr.substring(4);}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (inStr.startsWith(\textcolor{stringliteral}{"{}/"{}})\ ||\ }
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inStr.startsWith(\textcolor{stringliteral}{"{}:"{}}))\ \ \ \ \ \ }
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inStr\ =\ inStr.substring(1).trim();}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ inStr=FileUtil.exciseHome(inStr);}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ dummy=FileUtil.tryURL(}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}file:///"{}}\ +\ home\ +\ inStr);}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Reaching\ here,\ assume\ the\ protocol\ is\ missing\ and\ }}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ HTTP\ protocol\ is\ intended,\ then\ check\ for\ validity.}}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((dummy=FileUtil.tryURL(\textcolor{stringliteral}{"{}http://"{}}\ +\ inStr))!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ dummy;}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ fall\ through}}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Reaching\ here,\ might\ be\ wrong\ number\ of\ slashes,}}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ which\ is\ fairly\ common.\ First\ check\ for\ leading\ }}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ symbol\ errors.}}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (inStr.startsWith(\textcolor{stringliteral}{"{}/"{}})\ ||\ inStr.startsWith(\textcolor{stringliteral}{"{}:"{}}))\ }
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ inStr\ =\ inStr.substring(1).trim();}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((dummy\ =FileUtil.tryURL(\textcolor{stringliteral}{"{}http://"{}}\ +\ inStr))!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ dummy;}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ fall\ through}}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Now\ check\ for\ indicated\ HTTP\ protocol,\ but\ }}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ wrong\ number\ of\ initial\ slashes.}}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (inStr.startsWith(\textcolor{stringliteral}{"{}htt"{}})\ ||}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inStr.startsWith(\textcolor{stringliteral}{"{}www"{}}))\ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (inStr.startsWith(\textcolor{stringliteral}{"{}http"{}}))\ \{}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inStr\ =\ inStr.substring(4);}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (inStr.startsWith(\textcolor{stringliteral}{"{}s"{}}))\ }
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inStr=inStr.substring(1);}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (inStr.startsWith(\textcolor{stringliteral}{"{}/"{}})\ ||\ inStr.startsWith(\textcolor{stringliteral}{"{}:"{}}))\ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ inStr\ =\ inStr.substring(1).trim();}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ if\ url\ seems\ valid}}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((dummy\ =FileUtil.tryURL(\textcolor{stringliteral}{"{}http://"{}}\ +\ inStr))!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ dummy;}
+\DoxyCodeLine{00212\ }
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Who\ knows\ what\ the\ user\ did:\ failure,\ return\ null}}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00215\ \ \ \ \ \}}
+\DoxyCodeLine{00216\ }
+\DoxyCodeLine{00223\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ String\ cleardotdot(String\ \textcolor{keywordtype}{string})\ \{}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ String\ str=\textcolor{keywordtype}{string}.replace(\textcolor{stringliteral}{"{}\(\backslash\)\(\backslash\)"{}},\textcolor{stringliteral}{"{}/"{}});}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (str.endsWith(\textcolor{stringliteral}{"{}/.."{}}))\ \{}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (str.endsWith(\textcolor{stringliteral}{"{}/.."{}}))\ }
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str=str.substring(0,str.length()-\/3);}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (str.endsWith(\textcolor{stringliteral}{"{}/"{}}))}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str=str.substring(0,str.length()-\/1);}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=str.lastIndexOf(\textcolor{stringliteral}{"{}/"{}});}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k>0)}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str=str.substring(0,k);}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (str.endsWith(\textcolor{stringliteral}{"{}/"{}}))}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str=str.substring(0,str.length()-\/1);}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ str;}
+\DoxyCodeLine{00237\ \ \ \ \ \}}
+\DoxyCodeLine{00238\ \ \ \ \ }
+\DoxyCodeLine{00245\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ String\ clearFileProtocol(String\ url)\ \{}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ String\ filepath=url;}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (url.startsWith(\textcolor{stringliteral}{"{}file"{}}))\ \{}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ filepath\ =\ url.substring(4);}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (filepath.startsWith(\textcolor{stringliteral}{"{}/"{}})\ ||\ url.startsWith(\textcolor{stringliteral}{"{}:"{}}))\ }
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ filepath\ =\ filepath.substring(1).trim();}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (filepath==\textcolor{keyword}{null}\ ||\ filepath.length()==0)}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ filepath;}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(url);}
+\DoxyCodeLine{00256\ \ \ \ \ \}}
+\DoxyCodeLine{00257\ \ \ \ \ }
+\DoxyCodeLine{00265\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ File\ clearPreName(File\ directory)\ \{}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ String\ str=directory.getPath();}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str.startsWith(\textcolor{stringliteral}{"{}file:\(\backslash\)\(\backslash\)"{}})\ ||\ }
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str.startsWith(\textcolor{stringliteral}{"{}file://"{}}))\ }
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ str=str.substring(6);}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (str.startsWith(\textcolor{stringliteral}{"{}http:\(\backslash\)\(\backslash\)"{}})\ ||}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ str.startsWith(\textcolor{stringliteral}{"{}http://"{}}))}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ str=str.substring(7);}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (str.startsWith(\textcolor{stringliteral}{"{}https:\(\backslash\)\(\backslash\)"{}})\ ||}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str.startsWith(\textcolor{stringliteral}{"{}https://"{}}))}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ str=str.substring(8);}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ File\ newfile;}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ newfile=\textcolor{keyword}{new}\ File(str);}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ iox)\ \{}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}problem\ clearing\ file\ prename.\ "{}}+iox.getMessage());}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ newfile;}
+\DoxyCodeLine{00285\ \ \ \ \ \}}
+\DoxyCodeLine{00286\ }
+\DoxyCodeLine{00290\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ File[]\ getFileList(File\ directory)\ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ File\ nfile=clearPreName(directory);}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ nfile.listFiles();}
+\DoxyCodeLine{00293\ \ \ \ \ \}}
+\DoxyCodeLine{00294\ \ \ \ \ }
+\DoxyCodeLine{00295\ \ \ \ \ }
+\DoxyCodeLine{00302\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ String[]\ getFilenameExtension(String\ filename)\ \{}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=-\/1;}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nn=0;}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((nn=filename.indexOf(\textcolor{charliteral}{'.'},(n+1)))>n)\ \{}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ n=nn;}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ String[]\ ans=\textcolor{keyword}{new}\ String[2];}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ '.'\ }}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n<0)\ \{}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ ans[0]=filename;}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ ans[1]=\textcolor{keyword}{null};}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n==filename.length()-\/1)\ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ ans[0]=filename.substring(0,filename.length());}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ ans[1]=\textcolor{keyword}{null};}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ ans[0]=filename.substring(0,n);}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ ans[1]=filename.substring(n+1);}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00324\ \ \ \ \ \}}
+\DoxyCodeLine{00325\ }
+\DoxyCodeLine{00335\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ isContactable(URL\ url)\ \{}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (url.getProtocol().startsWith(\textcolor{stringliteral}{"{}htt"{}}))\ \{}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HttpURLConnection\ huc\ =\ (HttpURLConnection)\ url.openConnection();}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ resCode;}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ resCode\ =\ huc.getResponseCode();}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (resCode==200)}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ e)\ \{}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}failed\ 'isContactable'\ attempt"{}});}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00350\ \ \ \ \ \}}
+\DoxyCodeLine{00351\ \ \ \ \ }
+\DoxyCodeLine{00361\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ String\ readableFileSize(\textcolor{keywordtype}{long}\ size)\ \{}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (size\ <=\ 0)\ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}0"{}};}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Prefixes\ are\ none,\ kilo,\ mega,\ giga,\ tera.}}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ String[]\ units\ =\ \textcolor{keyword}{new}\ String[]\ \{\textcolor{stringliteral}{"{}"{}},\ \textcolor{stringliteral}{"{}K"{}},\ \textcolor{stringliteral}{"{}M"{}},\ \textcolor{stringliteral}{"{}G"{}},\ \textcolor{stringliteral}{"{}T"{}}\};}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ digitGroups\ =\ (int)\ (Math.log10(size)\ /\ Math.log10(1024));}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ DecimalFormat(\textcolor{stringliteral}{"{}\#,\#\#0.\#"{}}).format(size\ /\ Math.pow(1024,\ digitGroups))\ +\ units[digitGroups];}
+\DoxyCodeLine{00368\ \ \ \ \ \}}
+\DoxyCodeLine{00369\ }
+\DoxyCodeLine{00378\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ String\ readableTimeStamp(\textcolor{keywordtype}{long}\ time)\ \{}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ This\ is\ matched\ to\ Apache.\ Example:\ 09-\/Mar-\/2009\ 20:37}}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ SimpleDateFormat(\textcolor{stringliteral}{"{}dd-\/MMM-\/yyyy\ HH:mm"{}}).format(\textcolor{keyword}{new}\ Date(time));}
+\DoxyCodeLine{00381\ \ \ \ \ \}}
+\DoxyCodeLine{00382\ \ \ \ \ }
+\DoxyCodeLine{00383\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ AddressReadable(String\ urlString)\ \{}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Files.isReadable(Paths.get(urlString));}
+\DoxyCodeLine{00385\ \ \ \ \ \}}
+\DoxyCodeLine{00386\ }
+\DoxyCodeLine{00387\ \}}
+
+\end{DoxyCode}

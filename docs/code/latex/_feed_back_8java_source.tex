@@ -1,0 +1,313 @@
+\doxysection{Feed\+Back.\+java}
+\label{_feed_back_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/FeedBack.java@{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/FeedBack.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }ftnTheory;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.util.StringTokenizer;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ util.CmdStruct;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }FeedBack\ \textcolor{keyword}{extends}\ PackExtender\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ PackData\ maxEucl;\ \textcolor{comment}{//\ hold\ the\ maximal\ packing,\ converted\ to\ euclidean}}
+\DoxyCodeLine{00036\ \ \ \ \ Vector<FeedPacket>\ depMatrix;\ \textcolor{comment}{//\ vector\ of\ dependencies}}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{int}\ bdryCount;}
+\DoxyCodeLine{00038\ \ \ \ \ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{public}\ FeedBack(PackData\ p)\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ extensionType=\textcolor{stringliteral}{"{}FEEDBACK"{}};}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ extensionAbbrev=\textcolor{stringliteral}{"{}FK"{}};}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ toolTip=\textcolor{stringliteral}{"{}'FeedBack'\ allows\ radii\ (eucl\ only)\ adjustments\ "{}}+}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}based\ on\ other\ radii.\ Matrix\ DM\ (dependency\ matrix,\ nonnegative\ "{}}\ +}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}entries)\ adjusts\ radii\ via\ vector\ mutlt\ NewR\ =\ DM*CurR,\ where\ "{}}\ +}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}CurR\ is\ vector\ of\ current\ radii\ ratios\ (vis-\/a-\/vis\ eucl\ max\ radii)\ "{}}+}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}and\ NewR\ is\ the\ vector\ of\ new\ radii\ ratios."{}};}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ registerXType();}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ convert\ packData\ to\ euclidean,\ record\ its\ maximal\ packing}}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ maxEucl=p.copyPackTo();}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(maxEucl,\textcolor{stringliteral}{"{}max\_pack\ 10000"{}});}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(maxEucl,\textcolor{stringliteral}{"{}geom\_to\_e"{}});}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(extenderPD,\textcolor{stringliteral}{"{}geom\_to\_e"{}});}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ running=\textcolor{keyword}{true};}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}FeedBack:\ error\ in\ preparing\ 'maxPack'"{}});}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ running=\textcolor{keyword}{false};}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ count\ boundary\ vertices}}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ bdryCount=0;}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.isBdry(v))}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bdryCount++;}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bdryCount==0)\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}FeedBack:\ packing\ has\ no\ boundary"{}});}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ running=\textcolor{keyword}{false};}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ yes,\ seems\ okay}}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (running)\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ depMatrix=\textcolor{keyword}{new}\ Vector<FeedPacket>(1);}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00077\ \ \ \ \ \}}
+\DoxyCodeLine{00078\ \ \ \ \ }
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cmdParser(String\ cmd,Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ Vector<String>\ items=\textcolor{keyword}{null};}
+\DoxyCodeLine{00082\ \ \ \ \ }
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ reset\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}reset"{}}))\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ depMatrix=\textcolor{keyword}{new}\ Vector<FeedPacket>(1);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00088\ \ \ \ \ }
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ }}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}radMult"{}}))\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=1.0;}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ sourceVerts=\textcolor{keyword}{null};}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ targetVerts=\textcolor{keyword}{null};}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ not\ a\ flag,\ should\ be\ a\ double}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!StringUtil.isFlag(items.get(0)))\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ x=Double.parseDouble(items.remove(0));}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flagSegs.remove(0);}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ should\ get\ -\/s\ and\ -\/t\ flag\ lists}}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<2;j++)\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.remove(0);}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ lead=items.get(0);}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lead.equals(\textcolor{stringliteral}{"{}-\/s"{}}))\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items.remove(0);}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sourceVerts=\textcolor{keyword}{new}\ NodeLink(extenderPD,items);}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (lead.equals(\textcolor{stringliteral}{"{}-\/t"{}}))\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items.remove(0);}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ targetVerts=\textcolor{keyword}{new}\ NodeLink(extenderPD,items);}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}didn't\ get\ data:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ snum=sourceVerts.size();}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tnum=targetVerts.size();}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ min=snum;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ min\ =\ (tnum<min)\ ?\ tnum:\ min;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<min;i++)\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=sourceVerts.get(i);}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=targetVerts.get(i);}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setRadius(w,x*extenderPD.getRadius(v));}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ============\ set\ Radii\ ========================}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}setRadii"{}}))\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ useRatio=\textcolor{keyword}{false};}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []newRad=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[extenderPD.nodeCount+1];}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ for\ 'r'\ flag\ to\ use\ ratios\ of\ radii;\ this\ is}}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ analogous\ to\ modifying\ the\ modulus\ of\ the\ derivative.}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.remove(0);}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items.get(0).contains(\textcolor{stringliteral}{"{}r"{}}))}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ useRatio=\textcolor{keyword}{true};}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{\}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ accumulate\ feedback}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<FeedPacket>\ fdpk=depMatrix.iterator();}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=0;}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=0;}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=1.0;}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fdpk.hasNext())\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FeedPacket\ packet=fdpk.next();}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=packet.toVert;}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=packet.fromVert;}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ x=packet.coeff;}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (useRatio)\ \ }
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newRad[v]\ +=x*extenderPD.getRadius(w)/maxEucl.getRadius(w);}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newRad[v]\ +=x*extenderPD.getRadius(w);}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ apply\ feedback}}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ icount=0;}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<=extenderPD.nodeCount;i++)\ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newRad[i]>0)\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setRadius(i,newRad[i]);}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ icount++;}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ icount;}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}setVW"{}}))\ \{}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=0;}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=0;}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=0.0;}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=NodeLink.grab\_one\_vert(extenderPD,items.get(0));}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=NodeLink.grab\_one\_vert(extenderPD,items.get(1));}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ x=Double.parseDouble(items.get(2));}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}usage:\ setVW\ v\ w\ \{x\}"{}});}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (x<0.0\ ||\ v<1\ ||\ w<1\ ||\ }
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v>extenderPD.nodeCount\ ||\ w>extenderPD.nodeCount)\ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}usage:\ setDep\ v\ w\ x\ (x>=0.0)"{}});}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00188\ }
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ FeedPacket\ curP=chkPacket(v,w);}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (curP==\textcolor{keyword}{null})}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ depMatrix.add(\textcolor{keyword}{new}\ FeedPacket(v,w,x));}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ curP.coeff=x;}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}swapVW"{}}))\ \{}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=0;}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=0;}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=0.0;}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=NodeLink.grab\_one\_vert(extenderPD,items.get(0));}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=NodeLink.grab\_one\_vert(extenderPD,items.get(1));}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ x=Double.parseDouble(items.get(2));}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}usage:\ setDep\ v\ w\ \{x\}"{}});}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (x<0.0\ ||\ v<1\ ||\ w<1\ ||\ }
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v>extenderPD.nodeCount\ ||\ w>extenderPD.nodeCount)\ \{}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}usage:\ setDep\ v\ w\ x\ (x>=0.0)"{}});}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ FeedPacket\ curP=chkPacket(v,w);}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (curP==\textcolor{keyword}{null})}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ depMatrix.add(\textcolor{keyword}{new}\ FeedPacket(v,w,x));}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ curP.coeff=x;}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}getDM"{}}))\ \{}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (depMatrix==\textcolor{keyword}{null}\ ||\ depMatrix.size()==0)}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<FeedPacket>\ fdpk=depMatrix.iterator();}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fdpk.hasNext())\ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FeedPacket\ packet=fdpk.next();}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packet.coeff>0.0)\ }
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this.msg(\textcolor{stringliteral}{"{}v="{}}+packet.toVert+\textcolor{stringliteral}{"{}\ w="{}}+packet.fromVert+\textcolor{stringliteral}{"{}\ x="{}}+packet.coeff+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}readDM"{}}))\ \{}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ script\_flag=\textcolor{keyword}{false};}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.remove(0);}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items.get(0).startsWith(\textcolor{stringliteral}{"{}-\/s"{}}))\ \{}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ script\_flag=\textcolor{keyword}{true};}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items.remove(0);}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ String\ filename=StringUtil.reconItem(items);}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ BufferedReader\ fp=\textcolor{keyword}{null};}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ File\ dir=\textcolor{keyword}{null};}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!script\_flag)\ \{}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dir=CPFileManager.PackingDirectory;}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (filename.startsWith(\textcolor{stringliteral}{"{}\string~/"{}}))\ }
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ filename=\textcolor{keyword}{new}\ String(CPFileManager.HomeDirectory+File.separator+filename.substring(2));}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dir=\textcolor{keyword}{new}\ File(filename);}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ filename=dir.getName();}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dir=\textcolor{keyword}{new}\ File(dir.getParent());}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}problem\ reading\ file"{}});}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00259\ }
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp=CPFileManager.openReadFP(dir,filename,script\_flag);}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ line=\textcolor{keyword}{null};}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}((line=StringUtil.ourNextLine(fp))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringTokenizer\ tok\ =\ \textcolor{keyword}{new}\ StringTokenizer(line);}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v;}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w;}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x;}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=Integer.parseInt(tok.nextToken());}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=Integer.parseInt(tok.nextToken());}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ x=Double.parseDouble(tok.nextToken());}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ depMatrix.add(\textcolor{keyword}{new}\ FeedPacket(v,w,x));}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.close();}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}read\ error\ of\ some\ sort"{}});}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00285\ \ \ \ \ \}}
+\DoxyCodeLine{00286\ }
+\DoxyCodeLine{00293\ \ \ \ \ \textcolor{keyword}{public}\ FeedPacket\ chkPacket(\textcolor{keywordtype}{int}\ v,\textcolor{keywordtype}{int}\ w)\ \{}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (depMatrix==\textcolor{keyword}{null}\ ||\ depMatrix.size()==0)}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ Iterator<FeedPacket>\ fdpk=depMatrix.iterator();}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fdpk.hasNext())\ \{}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ FeedPacket\ packet=fdpk.next();}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packet.toVert==v\ \&\&\ packet.fromVert==w)}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ packet;}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00303\ \ \ \ \ \}}
+\DoxyCodeLine{00304\ \ \ \ \ }
+\DoxyCodeLine{00308\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initCmdStruct()\ \{}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ super.initCmdStruct();}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}getDM"{}},\textcolor{stringliteral}{"{}v\ w"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}report\ DM(v,w)"{}}));}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}resetDM"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}set\ DM\ to\ identity"{}}));}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}readDM"{}},\textcolor{stringliteral}{"{}[-\/s]\ \{filename\}"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}load\ DM\ from\ a\ file\ ('-\/s'\ means\ in\ script)"{}}));}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}setRadii"{}},\textcolor{stringliteral}{"{}[-\/r]"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}set\ radii\ according\ to\ DM\ (dependency\ matrix)."{}}+}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}with\ -\/r,\ adjust\ according\ to\ radii\ ratio\ with\ eucl.\ max"{}}));}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}setVW"{}},\textcolor{stringliteral}{"{}v\ w\ \{x\}"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}set\ DM(v,w)=x\ (x>=0.0)"{}}));}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}swapVW"{}},\textcolor{stringliteral}{"{}v\ w\ \{x\}"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}set\ DM(v,w)=x\ and\ DM(v,v)=0.0"{}}));}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}radMult"{}},\textcolor{stringliteral}{"{}\{x\}\ -\/s\ \{v..\}\ -\/t\ \{v..\}"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}give\ 'source',\ 'target'\ vert\ lists,\ "{}}+}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}set\ radii\ of\ target\ by\ x*radii\ of\ source."{}}));}
+\DoxyCodeLine{00319\ \ \ \ \ \}}
+\DoxyCodeLine{00320\ }
+\DoxyCodeLine{00332\ \ \ \ \ \textcolor{keyword}{class\ }FeedPacket\ \{}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ toVert;\ \textcolor{comment}{//\ vert\ being\ affected}}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ fromVert;\ \textcolor{comment}{//\ vert\ having\ the\ effect}}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ coeff;\ \textcolor{comment}{//\ scale\ of\ the\ effect}}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ FeedPacket(\textcolor{keywordtype}{int}\ v,\textcolor{keywordtype}{int}\ w,\textcolor{keywordtype}{double}\ x)\ \{}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ toVert=v;}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ fromVert=w;}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ coeff=x;}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00342\ \ \ \ \ \}}
+\DoxyCodeLine{00343\ \}}
+
+\end{DoxyCode}

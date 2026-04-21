@@ -1,0 +1,113 @@
+\doxysection{Path\+Distance.\+java}
+\label{_path_distance_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/util/PathDistance.java@{C:/Users/ashej/myGitRepos/CirclePack/src/util/PathDistance.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }util;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.geom.Line2D;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.geom.Path2D;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.geom.PathIterator;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }PathDistance\ \{\ }
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ Path2D.Double\ myPath;}
+\DoxyCodeLine{00024\ \ \ \ \ ArrayList<Line2D.Double>\ polySegments;}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{double}\ thresh2;\ \textcolor{comment}{//\ square\ of\ the\ threshold\ (saves\ root,\ sign\ problems,\ etc.)}}
+\DoxyCodeLine{00026\ \ \ \ \ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{comment}{//\ constructor(s)}}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keyword}{public}\ PathDistance(Path2D.Double\ thePath,\textcolor{keywordtype}{double}\ thd)\ \{}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ myPath=thePath;}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPath==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \ \ \ \ myPath=CPBase.ClosedPath;}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ thresh2=thd*thd;}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ initData();}
+\DoxyCodeLine{00035\ \ \ \ \ \}}
+\DoxyCodeLine{00036\ \ \ \ \ }
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{public}\ PathDistance(\textcolor{keywordtype}{double}\ thd)\ \{}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(\textcolor{keyword}{null},thd);}
+\DoxyCodeLine{00039\ \ \ \ \ \}}
+\DoxyCodeLine{00040\ \ \ \ \ }
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{public}\ PathDistance()\ \{}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(\textcolor{keyword}{null},.01);}
+\DoxyCodeLine{00043\ \ \ \ \ \}}
+\DoxyCodeLine{00044\ \ \ \ \ }
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initData()\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPath==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ polySegments=\textcolor{keyword}{null};}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ polySegments\ =\ \textcolor{keyword}{new}\ ArrayList<Line2D.Double>();}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ ArrayList<double[]>\ polyPoints\ =\ \textcolor{keyword}{new}\ ArrayList<double[]>();}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ coords\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[6];}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (PathIterator\ pi\ =\ myPath.getPathIterator(\textcolor{keyword}{null});\ !pi.isDone();\ pi.next())\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ type\ will\ be\ SEG\_LINETO,\ SEG\_MOVETO,\ or\ SEG\_CLOSE}}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Because\ our\ path\ is\ composed\ of\ straight\ lines}}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ type\ =\ pi.currentSegment(coords);}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ We\ record\ a\ double\ array\ of\ \{segment\ type,\ x\ coord,\ y\ coord\}}}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ pathIteratorCoords\ =\ \{type,\ coords[0],\ coords[1]\};}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ polyPoints.add(pathIteratorCoords);}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ start\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];\ \textcolor{comment}{//\ To\ record\ where\ each\ polygon\ starts}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ polyPoints.size();\ i++)\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ we're\ not\ on\ the\ last\ point,\ return\ a\ line\ from\ this\ point\ to\ the\ next}}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ currentElement\ =\ polyPoints.get(i);}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ We\ need\ a\ default\ value\ in\ case\ we've\ reached\ the\ end\ of\ the\ ArrayList}}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ nextElement\ =\ \{-\/1,\ -\/1,\ -\/1\};}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i\ <\ polyPoints.size()\ -\/\ 1)\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextElement\ =\ polyPoints.get(i\ +\ 1);}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Make\ the\ lines}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currentElement[0]\ ==\ PathIterator.SEG\_MOVETO)\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start\ =\ currentElement;\ \textcolor{comment}{//\ Record\ where\ the\ polygon\ started\ to\ close\ it\ later}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00083\ \ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextElement[0]\ ==\ PathIterator.SEG\_LINETO)\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ polySegments.add(}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Line2D.Double(}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currentElement[1],\ currentElement[2],}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextElement[1],\ nextElement[2]}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (nextElement[0]\ ==\ PathIterator.SEG\_CLOSE)\ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ polySegments.add(}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Line2D.Double(}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currentElement[1],\ currentElement[2],}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start[1],\ start[2]}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ )}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ );}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00100\ \ \ \ \ \}}
+\DoxyCodeLine{00101\ \ \ \ \ }
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ distance(Complex\ z)\ \{}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Line2D.Double>\ pS=polySegments.iterator();}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (pS.hasNext())\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Line2D.Double\ line=pS.next();}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Line2D.Double.ptSegDistSq(line.getX1(),line.getY1(),line.getX2(),}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ line.getY2(),z.x,z.y)<thresh2)}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00122\ \ \ \ \ \}}
+\DoxyCodeLine{00123\ \ \ \ \ }
+\DoxyCodeLine{00124\ \}}
+\DoxyCodeLine{00125\ }
+
+\end{DoxyCode}

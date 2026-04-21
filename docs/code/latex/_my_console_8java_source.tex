@@ -1,0 +1,408 @@
+\doxysection{My\+Console.\+java}
+\label{_my_console_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/input/MyConsole.java@{C:/Users/ashej/myGitRepos/CirclePack/src/input/MyConsole.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }input;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.Component;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.Font;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.Point;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.Rectangle;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.event.ActionEvent;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.event.ActionListener;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.awt.event.KeyEvent;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.awt.event.KeyListener;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ java.io.InputStreamReader;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ java.net.URL;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ java.util.HashMap;}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ javax.swing.BorderFactory;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ javax.swing.Box;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ javax.swing.BoxLayout;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ javax.swing.JLabel;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ javax.swing.JToolTip;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ javax.swing.Popup;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ javax.swing.PopupFactory;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{import}\ javax.swing.Timer;}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00031\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00032\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00033\ \textcolor{keyword}{import}\ images.CPIcon;}
+\DoxyCodeLine{00034\ \textcolor{keyword}{import}\ mytools.MyTool;}
+\DoxyCodeLine{00035\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00049\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }MyConsole\ \textcolor{keyword}{extends}\ CmdSource\ implements\ KeyListener\ \{\ \textcolor{comment}{//\ ActionListener,}}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{public}\ JTextField\ cmdline;}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{public}\ JTextField\ numberShow;}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{public}\ JTextField\ consoleMsgs;}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{private}\ JLabel\ cmdLabel;}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{private}\ Popup\ compList;}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{private}\ Timer\ compTimer;}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{private}\ MyTool\ tipHover;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{boolean}\ fullConsole;}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{public}\ Box\ box;}
+\DoxyCodeLine{00059\ \ \ \ \ }
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{comment}{//\ for\ command\ completion\ when\ typing\ ('tab')}}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ HashMap<String,String>\ commandMap;}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{static}\ File\ completionFile;}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{//\ commandMap\ created\ only\ once;\ depends\ on\ 'CmdCompletion.txt',\ which}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ \ \ \ is\ created\ in\ the\ java\ program\ 'infoProcessing'.}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keyword}{static}\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ BufferedReader\ fp;}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ URL\ urlFile\ =\ CPBase.getResourceURL(\textcolor{stringliteral}{"{}/doc/CmdCompletion.txt"{}});}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ fp\ =\ \textcolor{keyword}{new}\ BufferedReader(\textcolor{keyword}{new}\ InputStreamReader(urlFile.openStream()));}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ iox)\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ fp\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ commandMap\ =\ \textcolor{keyword}{new}\ HashMap<String,\ String>();}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fp\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ line\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((line\ =\ StringUtil.ourNextLine(fp))\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ add2CmdCompletion(line);}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.close();}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ eio)\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{comment}{//\ static\ objects;\ there\ may\ be\ more\ than\ one\ }}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keyword}{static}\ String\ prompt\ =\ \textcolor{stringliteral}{"{}>\ "{}};\ \textcolor{comment}{//\ command\ prompt\ for\ history\ (could\ have,\ eg,\ icon)}}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keyword}{static}\ String\ shellText\ =\ \textcolor{stringliteral}{"{}"{}};\ \textcolor{comment}{//shell\ history\ string}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ myConsoleHeight=48;}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ myCmdLineHeight=24;}
+\DoxyCodeLine{00093\ \ \ \ \ }
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keyword}{public}\ MyConsole(\textcolor{keywordtype}{int}\ type,String\ name)\ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ super(type,name);}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ box\ =\ \textcolor{keyword}{new}\ Box(BoxLayout.PAGE\_AXIS);}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ These\ command\ lines\ also\ have\ a\ message\ line\ and\ count\ feedback}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (type==PACKCONTROL\ ||\ type==ACTIVE\_FRAME\ ||\ type==PAIR\_FRAME)}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ fullConsole=\textcolor{keyword}{true};}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ fullConsole=\textcolor{keyword}{false};}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ 'cmdline'\ for\ typing\ commands}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ cmdline\ =\ \textcolor{keyword}{new}\ JTextField();}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ cmdline.setFont(\textcolor{keyword}{new}\ Font(cmdline.getFont().toString(),}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Font.ROMAN\_BASELINE+Font.PLAIN,11+PackControl.fontIncrement));}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ cmdline.addKeyListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ cmdline.setFocusTraversalKeysEnabled(\textcolor{keyword}{false});\ \textcolor{comment}{//\ catch\ TABs\ \ \ \ \ \ }}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ util.EmacsBindings.addEmacsBindings(cmdline);}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ compList=\textcolor{keyword}{null};}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ compTimer\ =\ \textcolor{keyword}{new}\ Timer(5000,\ \textcolor{keyword}{new}\ ActionListener()\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ actionPerformed(ActionEvent\ e)\ \{\ }
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(compList!=\textcolor{keyword}{null})\ compList.hide();}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ compTimer.setRepeats(\textcolor{keyword}{false});}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ specified,\ create\ one-\/line\ 'msgLine'\ and\ count}}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fullConsole)\ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ numberShow=\textcolor{keyword}{new}\ JTextField();}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ numberShow.setBackground(\textcolor{keyword}{new}\ Color(255,180,180));}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ consoleMsgs\ =\ \textcolor{keyword}{new}\ JTextField();}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ consoleMsgs.setEditable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ consoleMsgs.setFont(\textcolor{keyword}{new}\ Font(consoleMsgs.getFont().toString(),Font.PLAIN,12));}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ consoleMsgs.setForeground(Color.red);}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ numberShow=\textcolor{keyword}{null};}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ consoleMsgs=\textcolor{keyword}{null};}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00134\ \ \ \ \ \}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initGUI(\textcolor{keywordtype}{int}\ wide)\ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Upper\ panel.}}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ Box\ upperPanel\ =\ Box.createHorizontalBox();}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Prepare\ MyTool\ for\ getting\ the\ shell\ to\ hover\ (note:\ used\ to\ use\ "{}hoverH.png"{}).}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fullConsole)\ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ tipHover\ =\ \textcolor{keyword}{new}\ MyTool(\textcolor{keyword}{new}\ CPIcon(\textcolor{stringliteral}{"{}GUI/commandIcon.png"{}}),\ \textcolor{keyword}{null},\ \textcolor{keyword}{null},\ \textcolor{keyword}{null},\ \textcolor{keyword}{null},\ \textcolor{stringliteral}{"{}MISC"{}},\ \textcolor{keyword}{false},\ \textcolor{keyword}{null},\ \textcolor{keyword}{null});}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Would\ like\ to\ catch\ for\ "{}toggle"{}\ command.}}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ tipHover.setPreferredSize(\textcolor{keyword}{new}\ Dimension(tipHover.cpIcon.getImageIcon().getIconWidth(),\ tipHover.cpIcon.getImageIcon().getIconHeight()));}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ tipHover.setMaximumSize(\textcolor{keyword}{new}\ Dimension(22,\ 22));}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ upperPanel.add(tipHover);}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ Add\ spacer\ after\ icon.}}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ upperPanel.add(Box.createHorizontalStrut(4));}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Prepare\ command\ label\ and\ entry\ line.}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ cmdLabel\ =\ \textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}Commands:"{}});}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ cmdLabel.setFont(cmdLabel.getFont().deriveFont(Font.BOLD,\ 11.0F));}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ Let\ the\ label\ size\ itself\ here,\ so\ different\ fonts\ don't\ get\ clipped.}}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \textcolor{comment}{//cmdLabel.setMinimumSize(new\ Dimension(82,\ 24));}}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \textcolor{comment}{//cmdLabel.setPreferredSize(new\ Dimension(82,\ 24));}}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \textcolor{comment}{//cmdLabel.setMaximumSize(new\ Dimension(82,\ 24));}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ cmdline.setMinimumSize(\textcolor{keyword}{new}\ Dimension(200,\ 24));}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ cmdline.setPreferredSize(\textcolor{keyword}{new}\ Dimension(wide\ -\/\ 100,\ 24));}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ cmdline.setMaximumSize(\textcolor{keyword}{new}\ Dimension(wide,\ 24));}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ upperPanel.add(cmdLabel);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ Add\ spacer\ after\ command\ label.}}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ upperPanel.add(Box.createHorizontalStrut(4));}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ upperPanel.add(cmdline);}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Add\ upper\ panel.}}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ Component\ filler\ =\ Box.createRigidArea(\textcolor{keyword}{new}\ Dimension(2,\ 2));}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ box.add(filler);}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ box.add(upperPanel);}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Add\ lower\ panel,\ if\ needed.}}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fullConsole)\ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ Box\ lowerPanel\ =\ Box.createHorizontalBox();}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ numberShow.setPreferredSize(\textcolor{keyword}{new}\ Dimension(45,\ 20));}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ lowerPanel.add(numberShow);}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ consoleMsgs.setPreferredSize(\textcolor{keyword}{new}\ Dimension(1000,\ 20));}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ lowerPanel.add(consoleMsgs);}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ lowerPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(wide,\ 21));}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ lowerPanel.setMaximumSize(\textcolor{keyword}{new}\ Dimension(1000,\ 21));}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ lowerPanel.setMinimumSize(\textcolor{keyword}{new}\ Dimension(200,\ 21));}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ box.add(lowerPanel);}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ overall\ size.}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ upperPanel.setMinimumSize(\textcolor{keyword}{new}\ Dimension(200,\ 21));}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ upperPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(wide,\ 21));}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ upperPanel.setMaximumSize(\textcolor{keyword}{new}\ Dimension(1000,\ 21));}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fullConsole)\ box.setPreferredSize(\textcolor{keyword}{new}\ Dimension(wide,\ myConsoleHeight));}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ box.setPreferredSize(\textcolor{keyword}{new}\ Dimension(wide,\ 28));}
+\DoxyCodeLine{00197\ \ \ \ \ \}}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00202\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setMouseLtnr()\ \{}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ tipHover.addMouseListener(PackControl.msgHover);}
+\DoxyCodeLine{00204\ \ \ \ \ \}}
+\DoxyCodeLine{00205\ \ \ \ \ }
+\DoxyCodeLine{00206\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ keyReleased(KeyEvent\ ke)\ \{}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ hide\ completion\ list\ if\ a\ key\ is\ hit}}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (compList\ !=\ \textcolor{keyword}{null})}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ compList.hide();}
+\DoxyCodeLine{00211\ }
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ code=ke.getKeyCode();}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ send\ command\ string\ for\ processing}}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(code)\ \{}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ KeyEvent.VK\_ENTER:\ \{\ \textcolor{comment}{//\ send\ command\ string\ for\ processing}}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ String\ cmd\ =\ cmdline.getText().trim();}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(cmd.length()==0)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00219\ \ \ \ \ }
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.trafficCenter.parseWrapper(cmd,CirclePack.cpb.getActivePackData(),}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{true},\textcolor{keyword}{true},0,\textcolor{keyword}{this});}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ leave\ and\ select\ the\ command\ for\ changes\ or\ to\ replace\ with\ new\ typing}}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ cmdline.selectAll();}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ the\ entry\ field\ text\ to\ next\ command}}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ KeyEvent.VK\_UP:\ \{}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ShellManager.cmdHistoryIndex\ <\ ShellManager.cmdHistory.size()-\/1)\ }
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ShellManager.cmdHistoryIndex++;}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ cmdline.setText(ShellManager.cmdHistory.get(ShellManager.cmdHistoryIndex));}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ the\ entry\ field\ text\ to\ previous\ command}}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ KeyEvent.VK\_DOWN:\ \{}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ShellManager.cmdHistoryIndex\ >\ -\/1)\ ShellManager.cmdHistoryIndex-\/-\/;}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ShellManager.cmdHistoryIndex\ ==\ -\/1)\ cmdline.setText(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ cmdline.setText(ShellManager.cmdHistory.get(ShellManager.cmdHistoryIndex));}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00243\ }
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ do\ command\ completion\ with\ TAB}}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ KeyEvent.VK\_TAB:\ \{}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ cmdbuf\ =\ \textcolor{keyword}{new}\ StringBuilder(cmdline.getText());}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ caret=cmdline.getCaretPosition();}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (caret<1)\ }
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ String\ preCaret=cmdbuf.substring(0,caret-\/1);}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ lastsemi=preCaret.lastIndexOf(\textcolor{charliteral}{';'});}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lastsemi==caret-\/1)}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ lastsemi=(lastsemi<0)\ ?\ 0:lastsemi;}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'hold'\ is\ for\ reinstating\ later;\ add\ a\ ';'}}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ String\ hold=cmdbuf.substring(0,lastsemi);}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hold==\textcolor{keyword}{null})}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hold=\textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hold.length()>0\ \&\&\ hold.charAt(hold.length()-\/1)!=\textcolor{charliteral}{';'})}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hold=hold+\textcolor{stringliteral}{"{};"{}};}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ String\ leadchars=\textcolor{keyword}{null};}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hold.length()==0)}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ leadchars=cmdbuf.substring(lastsemi,caret).trim();}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ leadchars=cmdbuf.substring(lastsemi+1,caret).trim();}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ there\ anything\ to\ complete?}}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (leadchars.length()==0)}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ String\ postCaret=cmdbuf.substring(caret);}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ String\ resp[]\ =\ complete(leadchars);}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ String\ cmd=resp[0];}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd==\textcolor{keyword}{null})}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd=\textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ build\ completed\ command\ with\ pre/post\ included}}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ cmdline.setText(hold+cmd+postCaret);}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ cmdline.setCaretPosition(hold.length()+cmd.length());}
+\DoxyCodeLine{00277\ }
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ creates\ a\ tooltip\ and\ places\ it\ directly\ below\ the\ cmdline\ box}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ JToolTip\ tip\ =\ cmdline.createToolTip();}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ tip.setTipText(\textcolor{stringliteral}{"{}<html>"{}}\ +\ resp[1]\ +\ \textcolor{stringliteral}{"{}</html>"{}});}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ Rectangle\ rect\ =\ cmdline.getBounds();}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ Point\ loc\ =\ cmdline.getLocationOnScreen();}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ compList\ =\ PopupFactory.getSharedInstance().getPopup(cmdline,\ tip,}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loc.x,\ loc.y\ +\ rect.height\ -\/\ 2);}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ compList.show();}
+\DoxyCodeLine{00286\ }
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ hide\ tip\ after\ 5\ secs}}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ compTimer.start();}
+\DoxyCodeLine{00289\ }
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00293\ \ \ \ \ \}}
+\DoxyCodeLine{00294\ \ \ \ \ }
+\DoxyCodeLine{00295\ \ \ \ \ \textcolor{comment}{//\ ignore\ these\ events\ (req'd\ for\ KeyListener)}}
+\DoxyCodeLine{00296\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ keyPressed(KeyEvent\ evt)\ \{\}}
+\DoxyCodeLine{00297\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ keyTyped(KeyEvent\ evt)\ \{\}}
+\DoxyCodeLine{00298\ }
+\DoxyCodeLine{00308\ \ \ \ \ \textcolor{keyword}{public}\ String\ []complete(String\ command)\ \{}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nFound=0;}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ String\ newcmd=\textcolor{keyword}{null};}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ String\ possible=\textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ String\ complist[]\ =\ \textcolor{keyword}{new}\ String[commandMap.size()];}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ commandMap.keySet().toArray(complist);}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cmdLength=command.length();}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ modify\ 'PackExtender'\ call\ prefixes\ to\ caps\ for\ lookup}}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdLength>1\ \&\&\ command.charAt(0)==\textcolor{charliteral}{'|'})\ \{}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ strbuf=\textcolor{keyword}{new}\ StringBuilder(command);}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdLength>2)}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.setCharAt(1,Character.toUpperCase(strbuf.charAt(1)));}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdLength>3)}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.setCharAt(2,Character.toUpperCase(strbuf.charAt(2)));}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ command=strbuf.toString();}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cut\ down\ length\ until\ you\ get\ a\ match}}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (cmdLength>0\ \&\&\ nFound==0)\ \{}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ command=command.substring(0,cmdLength);}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ i=0;\ i<complist.length;\ i++)\ \{}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(complist[i].startsWith(command))\ \{}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ possible+=\textcolor{stringliteral}{"{}\ "{}}+complist[i];}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nFound++;}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ newcmd\ ==\ \textcolor{keyword}{null}\ )\ \{}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newcmd=complist[i];}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ already\ found\ a\ match,\ now\ we\ only\ want\ max\ substring}}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ sz=complist[i].length();}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j=0;}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ newcmd.length()<sz\ )\ sz=newcmd.length();}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(j=0;\ j<sz;\ j++)\ \{}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ newcmd.charAt(j)\ !=\ complist[i].charAt(j)\ )}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newcmd=complist[i].substring(0,j);}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ for}}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdLength-\/-\/;}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while\ }}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ nFound==1\ )\ \{}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ gets\ a\ brief\ usage\ message}}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ possible\ =\ commandMap.get(newcmd);}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(possible.length()!=0)\ \{}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ possible\ =\ possible.replace(\textcolor{stringliteral}{"{}\ "{}}+newcmd,\textcolor{stringliteral}{"{}\ <b>"{}}+newcmd+\textcolor{stringliteral}{"{}</b>"{}}).substring(1);}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ possible\ =\ \textcolor{stringliteral}{"{}No\ completions\ available"{}};}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ String\ ret[]\ =\ \textcolor{keyword}{new}\ String[2];}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ ret[0]=newcmd;}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ ret[1]=possible;}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ret;}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00367\ \ \ \ \ }
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ add2CmdCompletion(String\ str)\ \{}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str==\textcolor{keyword}{null}\ ||\ str.trim().length()==0)\ }
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ String\ newstr=str.trim();}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=str.indexOf(\textcolor{charliteral}{'\ '});}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ spaces?\ then\ no\ complications}}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k<0)\ \{}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ commandMap.put(newstr,\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}<b>"{}}+newstr+\textcolor{stringliteral}{"{}</b>\ "{}}));}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ pick\ off\ possible\ prefix\ and\ 'info'}}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ String\ pref=\textcolor{keyword}{null};}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Is\ this\ a\ 'PackExtender'\ command:\ eg.\ "{}|as|\ dah"{}?}}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k>0\ \&\&\ newstr.charAt(k-\/1)==\textcolor{charliteral}{'|'})\ \{\ \textcolor{comment}{//\ get\ prefix}}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pref=newstr.substring(0,k);}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newstr=newstr.substring(k,newstr.length()).trim();}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ k=newstr.indexOf(\textcolor{charliteral}{'\ '});}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k<0)\ \{\ \textcolor{comment}{//\ }}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pref==\textcolor{keyword}{null})}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ commandMap.put(\textcolor{keyword}{new}\ String(newstr),\textcolor{stringliteral}{"{}<b>"{}}+newstr+\textcolor{stringliteral}{"{}</b>\ "{}});}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ commandMap.put(\textcolor{keyword}{new}\ String(pref+\textcolor{stringliteral}{"{}\ "{}}+newstr),\textcolor{stringliteral}{"{}<b>"{}}+newstr+\textcolor{stringliteral}{"{}</b>\ "{}});}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ String\ cmd=newstr.substring(0,k);}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ String\ info=newstr.substring(k,newstr.length());}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pref==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ commandMap.put(cmd,\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}<b>"{}}+cmd+\textcolor{stringliteral}{"{}</b>\ "{}}+info));}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ commandMap.put(\textcolor{keyword}{new}\ String(pref+\textcolor{stringliteral}{"{}\ "{}}+cmd),\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}<b>"{}}+}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pref+\textcolor{stringliteral}{"{}\ "{}}+cmd+\textcolor{stringliteral}{"{}</b>"{}}+info));}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ focusToCmdline()\ \{}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ cmdline.requestFocus();}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ }
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setBackgroundColor(Color\ color)\ \{}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ cmdline.setBackground(color);}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ }
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ fixBorder()\ \{}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//cmdline.setBorder(BorderFactory.createMatteBorder(1,\ 1,\ 0,\ 1,\ new\ Color(112,\ 112,\ 99)));}}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ cmdline.setBorder(BorderFactory.createEmptyBorder(0,\ 1,\ 0,\ 1));}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ showCmdCount(\textcolor{keywordtype}{int}\ count)\ \{}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (numberShow!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ numberShow.setText(\textcolor{keyword}{new}\ String(Integer.toString(count)));}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00443\ }
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ dispConsoleMsg(String\ msg)\ \{}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (consoleMsgs!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ consoleMsgs.setText(msg);}
+\DoxyCodeLine{00451\ \textcolor{comment}{//\ \ \ \ \ \ \ \ Toolkit.getDefaultToolkit().beep();}}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ }
+\DoxyCodeLine{00454\ \}}
+
+\end{DoxyCode}

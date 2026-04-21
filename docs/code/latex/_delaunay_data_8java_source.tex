@@ -1,0 +1,110 @@
+\doxysection{Delaunay\+Data.\+java}
+\label{_delaunay_data_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/JNI/DelaunayData.java@{C:/Users/ashej/myGitRepos/CirclePack/src/JNI/DelaunayData.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }JNI;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ geometry.SphericalMath;}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ combinatorics.komplex.Face;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ komplex.EdgeSimple;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ komplex.Triangulation;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ listManip.EdgeLink;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ math.Point3D;}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00025\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }DelaunayData\ \{}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ geometry;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0\ for\ eucl\ 2D,\ 1\ for\ spherical}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{comment}{//\ point\ info}}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ pointCount;\ \ \ \ \ \ \textcolor{comment}{//\ number\ of\ nodes\ of\ point\ set}}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}[]\ ptX;}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}[]\ ptY;}
+\DoxyCodeLine{00032\ \ \ \ \ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{comment}{//\ bdry\ info\ if\ there's\ a\ boundary;\ note,\ it\ must\ close\ up}}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ bdryCount;\ \ \ \textcolor{comment}{//\ edge\ count\ of\ closed\ bdry\ }}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[]\ edgeV;\ \ \ \ \ \textcolor{comment}{//\ indices\ of\ bdry\ edge\ starts}}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[]\ edgeW;\ \ \ \ \ \textcolor{comment}{//\ bdry\ edge\ ends}}
+\DoxyCodeLine{00037\ \ \ \ \ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{comment}{//\ face\ information}}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ myfaceCount;\ \textcolor{comment}{//\ number\ of\ faces\ on\ return}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[]\ triLite;\ \ \ \textcolor{comment}{//\ linearized\ array\ of\ face\ indices;\ }}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ face\ f\ use\ indices\ \{3*f,\ 3*f+1,\ 3*f+2\}}}
+\DoxyCodeLine{00042\ \ \ \ \ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{comment}{//\ constructor(s)}}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{public}\ DelaunayData()\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ geometry=0;}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ pointCount=0;}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ ptX=\textcolor{keyword}{null};}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ ptY=\textcolor{keyword}{null};}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ bdryCount=0;}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ myfaceCount=0;}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ edgeV=\textcolor{keyword}{null};}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ edgeW=\textcolor{keyword}{null};}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ triLite=\textcolor{keyword}{null};}
+\DoxyCodeLine{00054\ \ \ \ \ \}}
+\DoxyCodeLine{00055\ \ \ \ \ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{public}\ DelaunayData(\textcolor{keywordtype}{int}\ hes,Vector<Complex>\ Zvec)\ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}();}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ pointCount=Zvec.size();}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ ptX=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[pointCount+1];\ \textcolor{comment}{//\ indexed\ from\ 1}}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ ptY=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[pointCount+1];\ \textcolor{comment}{//\ indexed\ from\ 1}}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<pointCount;i++)\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ pz=Zvec.get(i);}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ ptX[i+1]=pz.x;}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ ptY[i+1]=pz.y;}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ geometry=hes;}
+\DoxyCodeLine{00067\ \ \ \ \ \}}
+\DoxyCodeLine{00068\ \ \ \ \ }
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{public}\ DelaunayData(\textcolor{keywordtype}{int}\ hes,Vector<Complex>\ Zvec,EdgeLink\ elink)\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(hes,Zvec);}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ bdryCount=0;}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (elink!=\textcolor{keyword}{null}\ \&\&\ elink.size()>0)}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ bdryCount=elink.size();}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ edgeV=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[bdryCount];}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ edgeW=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[bdryCount];}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (elink!=\textcolor{keyword}{null}\ \&\&\ elink.size()>0)\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<EdgeSimple>\ el=elink.iterator();}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (el.hasNext())\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ EdgeSimple\ edge=el.next();}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ edgeV[tick]=edge.v;}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ edgeW[tick++]=edge.w;}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ \}}
+\DoxyCodeLine{00086\ \ \ \ \ \ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keyword}{public}\ Triangulation\ getTriangulation()\ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myfaceCount<1\ ||\ triLite==\textcolor{keyword}{null}\ ||\ triLite.length<3*myfaceCount)}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ Triangulation\ tri=\textcolor{keyword}{new}\ Triangulation();}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ tri.faceCount=myfaceCount;}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ tri.nodeCount=pointCount;}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ tri.faces=\textcolor{keyword}{new}\ Face[tri.faceCount+1];}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ f=1;f<=tri.faceCount;f++)\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ tri.faces[f]=\textcolor{keyword}{new}\ Face(3);}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ tri.faces[f].vert[0]=triLite[tick++];}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ tri.faces[f].vert[1]=triLite[tick++];}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ tri.faces[f].vert[2]=triLite[tick++];}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ tri.nodes=\textcolor{keyword}{new}\ Point3D[tri.nodeCount+1];}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=tri.nodeCount;v++)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (geometry>0)\ \{\ \textcolor{comment}{//\ 3D\ point}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []svec=SphericalMath.s\_pt\_to\_vec(\textcolor{keyword}{new}\ Complex(ptX[v],ptY[v]));}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tri.nodes[v]=\textcolor{keyword}{new}\ Point3D(svec[0],svec[1],svec[2]);}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{comment}{//\ 2D\ point}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tri.nodes[v]=\textcolor{keyword}{new}\ Point3D(ptX[v],ptY[v],0.0);}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tri;}
+\DoxyCodeLine{00115\ \ \ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \}}
+
+\end{DoxyCode}

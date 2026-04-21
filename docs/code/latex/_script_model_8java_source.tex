@@ -1,0 +1,435 @@
+\doxysection{Script\+Model.\+java}
+\label{_script_model_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/script/ScriptModel.java@{C:/Users/ashej/myGitRepos/CirclePack/src/script/ScriptModel.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }script;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.io.FileWriter;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.io.InputStreamReader;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.io.PrintWriter;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.net.URL;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.util.Random;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ org.apache.xerces.parsers.DOMParser;}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ exceptions.InOutException;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ input.FileDialogs;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ util.Base64InOut;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ util.FileUtil;}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }ScriptModel\ \{}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{comment}{//\ holds\ the\ document\ obtained\ from\ the\ script}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ org.w3c.dom.Document\ doc=\textcolor{keyword}{null};}
+\DoxyCodeLine{00042\ \ \ \ \ File\ workingFile;\ \textcolor{comment}{//\ working\ copy\ of\ script}}
+\DoxyCodeLine{00043\ \ \ \ \ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{//\ Script\ data}}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{public}\ String\ scriptName;\ \textcolor{comment}{//\ name\ of\ current\ script\ (whether\ file\ or\ URL)}}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{public}\ String\ creationDate;\ \ \textcolor{comment}{//\ TODO:\ not\ yet\ implemented:\ null\ until\ first\ save,\ then\ fixed}}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{public}\ String\ scriptDescription;\ \textcolor{comment}{//\ from\ <description>\ element}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{//\ data\ files\ which\ are\ included\ in\ script}}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{public}\ Vector<IncludedFile>\ includedFiles=\textcolor{keyword}{new}\ Vector<IncludedFile>();}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{int}\ id;\ \textcolor{comment}{//\ random\ identifier\ for\ tmp\ file\ names}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{boolean}\ editEnabled;}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ hasChanged;}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{comment}{//\ Static\ variables}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ cmdCount=0;}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{comment}{//\ Constructors}}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{public}\ ScriptModel()\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ doc=\textcolor{keyword}{null};}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ scriptDescription=\textcolor{keyword}{null};}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ editEnabled\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{id}\ =\ \textcolor{keyword}{new}\ Random().nextInt(32000);}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ hasChanged\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00066\ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \ \ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keyword}{public}\ org.w3c.dom.Document\ loadScriptDOM(URL\ url)\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ org.w3c.dom.Document\ newDoc=\textcolor{keyword}{null};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ working\ copy\ 'manager.workingFile',\ pick\ off\ included\ data\ files}}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (createWorkingFile(url)==0)\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}Encountered\ error\ in\ loading\ the\ script."{}});}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ URL\ workingURL=FileUtil.tryURL(\textcolor{stringliteral}{"{}file:"{}}+\ workingFile.getCanonicalPath());}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (workingURL==\textcolor{keyword}{null})}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ DOMParser\ parser\ =\ \textcolor{keyword}{new}\ DOMParser();}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ newDoc=\textcolor{keyword}{null};}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ parser.parse(workingURL.toString());}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newDoc\ =\ parser.getDocument();}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(\textcolor{stringliteral}{"{}Caught\ (probably)\ SAXParseException\ (for\ XML\ parsing)\ in\ loadng\ script.\(\backslash\)n"{}}+\ \ }
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ex.getMessage());}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ex.printStackTrace(System.err);}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ exc)\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(\textcolor{stringliteral}{"{}Exception\ in\ loadScript\ on\ startup.\(\backslash\)n"{}}+exc.getMessage());}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ exc.printStackTrace(System.err);}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ appropriate,\ reset\ 'scriptDirectory'}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ past\ (?)\ problem:\ resets\ based\ on\ }}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ default\ loading\ of\ 'new\_script.cps'}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (url.getProtocol().equals(\textcolor{stringliteral}{"{}file"{}}))\ \{\ }
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ File\ cfile=\textcolor{keyword}{new}\ File(url.getFile());}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ File\ cpath=\textcolor{keyword}{new}\ File(url.getPath());}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ String\ cdir=url.getPath();}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!cfile.getName().startsWith(\textcolor{stringliteral}{"{}new\_script"{}}))\ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ change\ if\ it\ is\ not\ just\ /tmp}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!cdir.startsWith(System.getProperty(\textcolor{stringliteral}{"{}java.io.tmpdir"{}})))\ \ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ScriptDirectory\ =cpath;}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ newDoc;}
+\DoxyCodeLine{00123\ \ \ \ \ \}}
+\DoxyCodeLine{00124\ \ \ \ \ }
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ createWorkingFile(URL\ url)\ \{}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ BufferedReader\ reader;}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ reader\ =\ \textcolor{keyword}{new}\ BufferedReader(\textcolor{keyword}{new}\ InputStreamReader(url.openStream()));}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ e)\ \{}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}IOException\ in\ ScriptHandler.createWorkingFile()."{}});}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ workingFile\ =\ \textcolor{keyword}{new}\ File(System.getProperty(\textcolor{stringliteral}{"{}java.io.tmpdir"{}}),}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ String(\textcolor{keywordtype}{id}\ +\ scriptName));}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ workingFile.deleteOnExit();}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ writer\ =\ \textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ workingFile));}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ String\ line;}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ includedFiles.removeAllElements();}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((line\ =\ reader.readLine())\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (line.indexOf(\textcolor{stringliteral}{"{}<CPdata>"{}})\ !=\ -\/1)\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<CPdata>"{}});}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ processIncludedFiles(reader);}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writeFileNames(writer);}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}</CPdata>"{}});}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(line);}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ writer.flush();}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ writer.close();}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ e)\ \{}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}IOException\ in\ 'ScriptHandler.createWorkingFile()'"{}});}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00174\ \ \ \ \ \}}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \ \ }
+\DoxyCodeLine{00187\ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{void}\ processIncludedFiles(BufferedReader\ reader)}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throws}\ IOException\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ String\ line;}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ String\ orig\_name=\textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ String\ newName=\textcolor{keyword}{null};}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ File\ temp;}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safeID=\textcolor{keyword}{new}\ Random().nextInt(32000);}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((line\ =\ reader.readLine())\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ shuck\ lines\ until\ we\ reach\ a\ tagged\ line}}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (line!=\textcolor{keyword}{null}\ \&\&\ line.indexOf(\textcolor{stringliteral}{"{}<"{}})==-\/1)}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ line=reader.readLine();}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (line==\textcolor{keyword}{null}\ ||\ (line.indexOf(\textcolor{stringliteral}{"{}</CPdata>"{}}))\ !=\ -\/1)\ }
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else,\ starting\ with\ the\ tagged\ line}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ PrintWriter\ tempWriter;}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Have\ to\ check\ deprecated\ name\ style:\ i.e.,\ <name>..</name>\ tag}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (line.indexOf(\textcolor{stringliteral}{"{}<name>"{}})!=-\/1)\ \{}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ orig\_name\ =\ line.substring(line.indexOf(\textcolor{stringliteral}{"{}>"{}})\ +\ 1,\ }
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ line.indexOf(\textcolor{stringliteral}{"{}</"{}}));}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ orig\_name\ =\ orig\_name.trim();}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (orig\_name.length()==0)}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ orig\_name\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}notnamed"{}}+includedFiles.size());}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ read\ through\ whitespace\ lines}}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((line=reader.readLine())\ !=\textcolor{keyword}{null}\ \&\&\ line.indexOf(\textcolor{stringliteral}{"{}<"{}})==-\/1);}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ didn't\ find\ any\ subsequent\ tag?}}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (line==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reaching\ here,\ should\ have\ the\ initial\ tag\ line\ of\ tagged\ region.}}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ If\ it\ has\ 'name'\ attribute,\ that\ overrides\ any\ old\ style\ "{}name"{}\ info.}}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ indx=line.indexOf(\textcolor{stringliteral}{"{}<"{}});}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ newidx=line.indexOf(\textcolor{stringliteral}{"{}name="{}});}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newidx\ !=\ -\/1)\ \{\ \textcolor{comment}{//\ found\ name\ attribute}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newidx\ =\ newidx\ +\ 6;\ \textcolor{comment}{//\ move\ past\ the\ first\ "{}}}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ end\ =\ line.indexOf(\textcolor{stringliteral}{"{}\(\backslash\)"{}"{}},\ newidx);}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (end\ ==\ -\/1\ ||\ (end\ -\/\ 1)\ ==\ newidx)\ \{\ \textcolor{comment}{//\ default\ name}}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ orig\_name\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}notnamed"{}}+includedFiles.size());}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{comment}{//\ given\ name}}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ orig\_name\ =\ line.substring(newidx,\ end);}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (orig\_name.length()==0)}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ orig\_name\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}notnamed"{}}+includedFiles.size());}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ In\ any\ case,\ should\ now\ have\ name,\ be\ ready\ for\ data\ lines}}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ newName=\textcolor{keyword}{new}\ String(safeID\ +\ orig\_name);}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ temp\ =\ \textcolor{keyword}{new}\ File(System.getProperty(\textcolor{stringliteral}{"{}java.io.tmpdir"{}}),newName);}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ temp.createNewFile();}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ temp.deleteOnExit();}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ tempWriter\ =\ \textcolor{keyword}{new}\ PrintWriter(\textcolor{keyword}{new}\ FileWriter(temp));}
+\DoxyCodeLine{00242\ }
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ datatype=IncludedFile.RAW;\ \textcolor{comment}{//\ default}}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (line.length()>indx+14\ \&\&\ line.substring(indx+1,indx+14).equalsIgnoreCase(\textcolor{stringliteral}{"{}circlepacking"{}}))\ \{}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ datatype=IncludedFile.PACKING;}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(line.length()>indx+5\ \&\&\ line.substring(indx+1,indx+5).equalsIgnoreCase(\textcolor{stringliteral}{"{}path"{}}))\ \{}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ datatype=IncludedFile.PATH;}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(line.length()>indx+8\ \&\&\ line.substring(indx+1,indx+8).equalsIgnoreCase(\textcolor{stringliteral}{"{}xyzData"{}}))\ \{}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ datatype=IncludedFile.XYZ;}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (line.length()>indx+9\ \&\&\ line.substring(indx+1,indx+9).equalsIgnoreCase(\textcolor{stringliteral}{"{}commands"{}}))\ \{}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ datatype=IncludedFile.CMDS;}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (line.length()>indx+9\ \&\&\ line.substring(indx+1,indx+6).equalsIgnoreCase(\textcolor{stringliteral}{"{}image"{}}))\ \{}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ datatype=IncludedFile.IMAGE;}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (line.length()>indx+14\ \&\&\ line.substring(indx+1,indx+11).equalsIgnoreCase(\textcolor{stringliteral}{"{}aboutimage"{}}))\ \{}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ datatype=IncludedFile.ABOUT\_IMAGE;}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ base64\ encoded\ image\ files?\ read\ characters}}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (datatype==IncludedFile.IMAGE\ ||\ datatype==IncludedFile.ABOUT\_IMAGE)\ \{}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c;}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((c=(\textcolor{keywordtype}{char})\ reader.read())>0\ \&\&\ !(c==\textcolor{charliteral}{'<'}))\ \{}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tempWriter.write(c);}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ transfer\ lines\ until\ another\ tagged\ line\ is\ encountered;}}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ (last\ line\ should\ have\ 'END',\ but\ this\ isn't\ checked)}}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ don't\ know\ if\ '<'\ can\ occur\ in\ base64\ encoded\ image\ file.}}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ }
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((line=reader.readLine().trim())!=\textcolor{keyword}{null}\ \&\&\ !line.startsWith(\textcolor{stringliteral}{"{}<"{}}))\ \{\ }
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tempWriter.println(line);}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (line.length()!=0)\ count++;}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ tempWriter.flush();}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ tempWriter.close();}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ anything?\ add\ to\ vector\ of\ included\ files}}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (count>0)\ \{}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ IMAGE\ should\ be\ base64\ encoded,\ so\ decode}}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (datatype==IncludedFile.IMAGE\ ||\ datatype==IncludedFile.ABOUT\_IMAGE)\ \{\ }
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ temp=Base64InOut.fileOutof64(temp);}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ to\ 'includedFiles'\ list:\ duplicate\ names\ stored\ once,\ file\ contains\ last\ contents}}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ dup=\textcolor{keyword}{false};}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<includedFiles.size();i++)\ }
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (includedFiles.get(i).origName.equals(orig\_name))}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dup=\textcolor{keyword}{true};}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!dup)\ \{}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ includedFiles.add(\textcolor{keyword}{new}\ IncludedFile(datatype,orig\_name,temp));}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ orig\_name=\textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ main\ while\ loop}}
+\DoxyCodeLine{00306\ \ \ \ \ \}\ }
+\DoxyCodeLine{00307\ \ \ \ \ }
+\DoxyCodeLine{00315\ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{void}\ writeFileNames(BufferedWriter\ writer)\ \textcolor{keywordflow}{throws}\ IOException\ \{}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<includedFiles.size();j++)\ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ IncludedFile\ incFile=(IncludedFile)includedFiles.get(j);}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}<file>"{}}\ +\ incFile.origName\ +\ \textcolor{stringliteral}{"{}</file>"{}}));}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00321\ \ \ \ \ \}}
+\DoxyCodeLine{00322\ }
+\DoxyCodeLine{00327\ \ \ \ \ \textcolor{keyword}{public}\ String\ createDefaultScript()\ \{}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ File\ f=\textcolor{keyword}{null};}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ f\ =\ \textcolor{keyword}{new}\ File(System.getProperty(\textcolor{stringliteral}{"{}java.io.tmpdir"{}}),}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}new\_script.cps"{}}));}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ f.deleteOnExit();}
+\DoxyCodeLine{00333\ }
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ writer\ =\ \textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(f));}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<?xml\ version=\(\backslash\)"{}1.0\(\backslash\)"{}?>"{}});}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<CP\_Scriptfile>\(\backslash\)n"{}});}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\ \ <CPscript\ title=\(\backslash\)"{}Empty\ script\ for\ editing\(\backslash\)"{}>\(\backslash\)n"{}});}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ writer.write("{}<text>This\ is\ a\ starter\ script:\ add/edit\ elements\ as\ desired.</text>"{});}}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\ \ </CPscript>\(\backslash\)n"{}});}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\ \ <CPdata>\(\backslash\)n"{}});}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\ \ </CPdata>\(\backslash\)n"{}});}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}</CP\_Scriptfile>\(\backslash\)n"{}});}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ writer.flush();}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ writer.close();}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ e)\ \{}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ String\ errmsg=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}ScriptHandler.createNewDocument:\ "{}}+e.getMessage());}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(errmsg);}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ f.getAbsolutePath();}
+\DoxyCodeLine{00351\ \ \ \ \ \}}
+\DoxyCodeLine{00352\ }
+\DoxyCodeLine{00359\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ check4filename(String\ filename)\ \{}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<includedFiles.size();j++)}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (includedFiles.get(j).origName.equals(filename))}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ j;}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00364\ \ \ \ \ \}}
+\DoxyCodeLine{00365\ }
+\DoxyCodeLine{00372\ \ \ \ \ \ \textcolor{keyword}{public}\ File\ getTrueIncluded(String\ filename)\ \{}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ Iterator<IncludedFile>\ itf=includedFiles.iterator();}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (itf.hasNext())\ \{}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \ IncludedFile\ incfile=itf.next();}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (incfile.origName.equals(filename))}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ incfile.tmpFile;}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ \textcolor{comment}{//\ didn't\ find\ the\ named\ file}}
+\DoxyCodeLine{00380\ \ \ \ \ \ \}}
+\DoxyCodeLine{00381\ }
+\DoxyCodeLine{00391\ \ \ \ \ \ \textcolor{keyword}{public}\ URL\ getScriptURL(String\ namE)\ \{}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (namE==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ String\ name=namE.trim();}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name.startsWith(\textcolor{stringliteral}{"{}file:"{}}))\ \{}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name.length()==5)}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ name=name.substring(5);}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00400\ }
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name.startsWith(\textcolor{stringliteral}{"{}www."{}}))}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ \ name=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}http://"{}}+name);}
+\DoxyCodeLine{00403\ }
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ we\ are\ looking\ in\ the\ file\ system\ (versus\ web)}}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ URL\ url=\textcolor{keyword}{null};}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!name.startsWith(\textcolor{stringliteral}{"{}htt"{}})\ \&\&\ !name.startsWith(\textcolor{stringliteral}{"{}ftp"{}})\ \&\&\ !name.startsWith(\textcolor{stringliteral}{"{}gopher"{}}))\ \{}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ temp=\textcolor{keyword}{null};}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ other\ syntax\ for\ home?}}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name.startsWith(\textcolor{stringliteral}{"{}\string~"{}}))\ \{}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name=name.substring(1);}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ temp=\textcolor{keyword}{new}\ File(CPFileManager.HomeDirectory,name);}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ temp\ =\ \textcolor{keyword}{new}\ File(name);}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (temp==\textcolor{keyword}{null}\ ||\ !temp.exists())\ \{}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ next,\ try\ in\ 'ScriptDirectory':}}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ temp=\textcolor{keyword}{new}\ File(CPFileManager.ScriptDirectory,name);}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (temp.exists()\ ==\ \textcolor{keyword}{false})\ \{}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ errmsg=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}Requested\ script\ '"{}}+namE+\textcolor{stringliteral}{"{}'\ not\ found"{}});}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(errmsg);}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ \ name=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}file:"{}}+temp.toString());}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ if\ from\ web,\ need\ to\ pick\ off\ file\ name\ from\ end}}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ index=name.lastIndexOf(File.separatorChar);}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index<0)\ index=0;}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ nameonly=name.substring(index+1,name.length());}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nameonly.length()==0)}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00432\ }
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:}}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((url=FileUtil.tryURL(name))==\textcolor{keyword}{null})\ \{\ }
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ errmsg=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}failed\ to\ create\ URL\ for\ "{}}+name);}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(errmsg);}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ url=\textcolor{keyword}{null};}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ url;}
+\DoxyCodeLine{00440\ \ \ \ \ \ \}}
+\DoxyCodeLine{00441\ }
+\DoxyCodeLine{00455\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getScript(String\ filename,String\ origName,\textcolor{keywordtype}{boolean}\ keepname)\ \{}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ String\ oName=\textcolor{keyword}{null};}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (origName!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ \ oName=\textcolor{keyword}{new}\ String(origName);}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ name?\ pop\ up\ dialog}}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (filename==\textcolor{keyword}{null}\ ||\ filename.length()==0)\ \{\ }
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ f;}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((f=FileDialogs.loadDialog(FileDialogs.SCRIPT,\textcolor{keyword}{true}))!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ filename=f.getCanonicalPath();}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (filename==\textcolor{keyword}{null}\ ||\ filename.trim().length()==0)}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ oName=\textcolor{keyword}{new}\ String(filename);}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ iox)\ \{}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}dialog\ failed\ to\ get\ script\ name"{}});}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00472\ }
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reaching\ here,\ we\ have\ a\ filename\ and\ oName\ }}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ lf=CPBase.scriptManager.loadNamedScript(filename,oName,keepname);}
+\DoxyCodeLine{00476\ }
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Check\ for\ execute\_on\_load\ command.\ If\ next\ command\ is\ }}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ named\ "{}*"{},\ then\ execute\ it\ (and\ move\ next);\ else\ look}}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ for\ first\ "{}*"{}\ named\ command.}}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ more\ than\ one\ *\ command\ is\ allowed;\ do\ we\ only}}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ want\ to\ execute\ one?}}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lf>0)\ \{}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ ncn=CPBase.scriptManager.getNextCmdName();}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ncn!=\textcolor{keyword}{null}\ \&\&\ ncn.equals(\textcolor{stringliteral}{"{}*"{}}))\ }
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.scriptManager.executeNextCmd();}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ \ brktcmd\ =\ (String)CPBase.scriptManager.findCmdByName(\textcolor{stringliteral}{"{}*"{}},1);}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (brktcmd!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.trafficCenter.parseWrapper(brktcmd,}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.getActivePackData(),\textcolor{keyword}{true},\textcolor{keyword}{true},0,\textcolor{keyword}{null});}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ lf;}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}usage:\ <filename>:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \ \}\ \ }
+\DoxyCodeLine{00497\ \ \ \ \ \ \}}
+\DoxyCodeLine{00498\ }
+\DoxyCodeLine{00504\ \ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{boolean}\ dup\_name(String\ name)\ \{}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ i;}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (i=0;i<includedFiles.size();i++)\ \{}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \ \ \ \ \ IncludedFile\ icf=includedFiles.get(i);}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name.equals(icf.origName))\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00511\ \ \ \ \ \ \}}
+\DoxyCodeLine{00512\ }
+\DoxyCodeLine{00517\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ isScriptLoaded()\ \{}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (workingFile\ ==\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00522\ \ \ \ \ \ \}}
+\DoxyCodeLine{00523\ }
+\DoxyCodeLine{00524\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,310 @@
+\doxysection{Screen\+Shot\+Panel.\+java}
+\label{_screen_shot_panel_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/panels/ScreenShotPanel.java@{C:/Users/ashej/myGitRepos/CirclePack/src/panels/ScreenShotPanel.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }panels;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ images.ThumbNail;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ input.FileDialogs;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.BorderLayout;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.Component;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.FlowLayout;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.awt.Graphics2D;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.awt.Image;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.awt.event.ActionEvent;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.awt.event.ActionListener;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ java.awt.image.BufferedImage;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ java.awt.image.ImageObserver;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ java.util.Random;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ javax.imageio.ImageIO;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ javax.swing.ImageIcon;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ javax.swing.JLabel;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ javax.swing.JMenuItem;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ javax.swing.JOptionPane;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{import}\ javax.swing.JPopupMenu;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00032\ \textcolor{keyword}{import}\ printStuff.PrintUtil;}
+\DoxyCodeLine{00033\ \textcolor{keyword}{import}\ script.IncludedFile;}
+\DoxyCodeLine{00034\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{00035\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00036\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00038\ \textcolor{keyword}{import}\ exceptions.InOutException;}
+\DoxyCodeLine{00039\ \textcolor{keyword}{import}\ frames.AboutFrame;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }ScreenShotPanel\ \textcolor{keyword}{extends}\ JPanel\ implements\ ActionListener,\ ImageObserver\ \{}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00053\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00054\ \ \ \ \ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{static}\ JTextField\ nameField;}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{static}\ JTextField\ dirField;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{static}\ JPanel\ thumbPanel;}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ JScrollPaneVertical\ scrollPane;}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ imageCount;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Vector<ThumbNail>\ thumbNails;}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ id;\ \ \ \ \textcolor{comment}{//\ unique\ identifier\ for\ file\ names}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{public}\ JPopupMenu\ thumbMenu;}
+\DoxyCodeLine{00063\ \textcolor{comment}{//\ \ static\ private\ FileSystem\ fs\ =\ FileSystem.getFileSystem();}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ TODO:\ want\ 'gif'\ or\ 'jpg'\ options}}
+\DoxyCodeLine{00066\ \ \ \ \ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{public}\ ScreenShotPanel()\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ this.setLayout(\textcolor{keyword}{new}\ BorderLayout());}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ imageCount=0;}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ thumbNails=\textcolor{keyword}{new}\ Vector<ThumbNail>(5);}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ thumbMenu=createThumbMenu();}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ file\ name\ info}}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{id}\ =\ \textcolor{keyword}{new}\ Random().nextInt(32000);\ \textcolor{comment}{//\ random\ number\ for\ directory}}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ JPanel\ nP=\textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{new}\ FlowLayout());}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ nP.add(\textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}\ Dir:"{}}));}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ dirField=\textcolor{keyword}{new}\ JTextField(\textcolor{keyword}{new}\ String(System.getProperty(\textcolor{stringliteral}{"{}java.io.tmpdir"{}})+}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ File.separator+\textcolor{stringliteral}{"{}cp\_"{}}+\textcolor{keywordtype}{id}+File.separator),20);}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ nP.add(dirField);}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ nP.add(\textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}Base\ name:"{}}));}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ nameField=\textcolor{keyword}{new}\ JTextField(\textcolor{stringliteral}{"{}cpShot"{}},10);}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ nP.add(nameField);}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ add(nP,BorderLayout.NORTH);}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00088\ \textcolor{comment}{//\ \ \ \ \ \ thumbPanel=new\ JPanel(new\ FlowLayout(FlowLayout.LEFT));}}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ thumbPanel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ thumbPanel.setBackground(Color.LIGHT\_GRAY);}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ scrollPane=\textcolor{keyword}{new}\ JScrollPaneVertical(thumbPanel);}
+\DoxyCodeLine{00092\ \textcolor{comment}{//\ \ \ \ \ \ ,ScrollPaneConstants.VERTICAL\_SCROLLBAR\_ALWAYS,ScrollPaneConstants.HORIZONTAL\_SCROLLBAR\_NEVER);}}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ add(scrollPane,BorderLayout.CENTER);}
+\DoxyCodeLine{00094\ \ \ \ \ \}}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ storeCPImage(PackData\ p)\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ String\ num=String.format(\textcolor{stringliteral}{"{}\%03d"{}},imageCount);}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ String\ prefix=dirField.getText().trim();}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (prefix.startsWith(\textcolor{stringliteral}{"{}\string~"{}}))\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prefix=\textcolor{keyword}{new}\ String(CPFileManager.HomeDirectory.getCanonicalPath()+}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prefix.substring(1));}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ String\ tmpName=\textcolor{keyword}{new}\ String(prefix+File.separator+nameField.getText().trim()}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\textcolor{stringliteral}{"{}-\/"{}}+num+\textcolor{stringliteral}{"{}."{}}+CPBase.IMG);}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ File\ locFile\ =\ \textcolor{keyword}{new}\ File(tmpName);}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ BufferedImage\ bI;}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ any\ directories\ necessary}}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ File\ canonFile=\textcolor{keyword}{null};}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ canonFile\ =\ locFile.getCanonicalFile();}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ parent\ =\ canonFile.getParent();}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (parent!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ parentFile=\textcolor{keyword}{new}\ File(parent);}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!parentFile.exists())\ }
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!parentFile.mkdirs())}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}Couldn't\ create\ directory\ '"{}}+parent+\textcolor{stringliteral}{"{}'"{}});}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ e)\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p!=\textcolor{keyword}{null})\ \textcolor{comment}{//\ capture\ 'packImage'\ for\ this\ packing}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bI=p.cpDrawing.packImage;}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ capture\ Map\ frame\ 'pairPanel'\ of\ two\ packings}}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BufferedImage\ domPI=PackControl.mapPairFrame.getDomainCPS().packImage;}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BufferedImage\ rangePI=PackControl.mapPairFrame.getRangeCPS().packImage;}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pairWidth=domPI.getWidth()+9+rangePI.getWidth();\ \textcolor{comment}{//\ border:\ each\ end\ 2,\ mid\ 3}}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pairHeight=domPI.getHeight()+6;\ \textcolor{comment}{//\ border:\ 2\ top/bottom}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ in\ new\ BufferedImage}}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bI=\textcolor{keyword}{new}\ BufferedImage(pairWidth,pairHeight,BufferedImage.TYPE\_INT\_RGB);}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Graphics2D\ g2=(Graphics2D)bI.getGraphics();}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ domain\ }}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ g2.drawImage(domPI,3,3,domPI.getWidth(),domPI.getHeight(),\textcolor{keyword}{this});}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ range}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ g2.drawImage(rangePI,domPI.getWidth()+6,3,}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rangePI.getWidth(),rangePI.getHeight(),\textcolor{keyword}{null});}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ ImageIO.write(bI,CPBase.IMG,locFile);}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(\textcolor{stringliteral}{"{}Screen\ dump\ to\ '"{}}+tmpName+\textcolor{stringliteral}{"{}'\ has\ failed."{}});}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}Saved\ screendump\ to\ '"{}}+tmpName+\textcolor{stringliteral}{"{}'"{}});}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ ThumbNail\ tnail=\textcolor{keyword}{null};}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ tnail=\textcolor{keyword}{new}\ ThumbNail(locFile,thumbMenu);}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (InOutException\ ine)\ \{}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(ine.getMessage());}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ thumbNails.add(tnail);}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ thumbPanel.add(tnail);}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ scrollPane.revalidate();}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ imageCount++;}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00170\ \ \ \ \ \}}
+\DoxyCodeLine{00171\ \ \ \ \ }
+\DoxyCodeLine{00172\ \ \ \ \ \textcolor{keyword}{public}\ JPopupMenu\ createThumbMenu()\ \{\ \textcolor{comment}{//\ menu\ for\ the\ ThumbNail}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ JPopupMenu\ bMenu\ =\ \textcolor{keyword}{new}\ JPopupMenu(\textcolor{stringliteral}{"{}Managing"{}});}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ JMenuItem\ menuItem;}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ menuItem\ =\ \textcolor{keyword}{new}\ JMenuItem(\textcolor{stringliteral}{"{}Delete"{}});}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ menuItem.setActionCommand(\textcolor{stringliteral}{"{}delete\ thumb"{}});}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ menuItem.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ bMenu.add(menuItem);}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ menuItem\ =\ \textcolor{keyword}{new}\ JMenuItem(\textcolor{stringliteral}{"{}Set\ as\ 'About'"{}});}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ menuItem.setActionCommand(\textcolor{stringliteral}{"{}set\ about"{}});}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ menuItem.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ bMenu.add(menuItem);}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ menuItem\ =\ \textcolor{keyword}{new}\ JMenuItem(\textcolor{stringliteral}{"{}Export"{}});}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ menuItem.setActionCommand(\textcolor{stringliteral}{"{}copy\ snap"{}});}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ menuItem.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ bMenu.add(menuItem);}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ menuItem\ =\ \textcolor{keyword}{new}\ JMenuItem(\textcolor{stringliteral}{"{}Print"{}});}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ menuItem.setActionCommand(\textcolor{stringliteral}{"{}print\ (lpr)"{}});}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ menuItem.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ bMenu.add(menuItem);}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \textcolor{comment}{/*\ \ \ \ \ \ menuItem\ =\ new\ JMenuItem("{}Swap\ to\ right"{});}}
+\DoxyCodeLine{00198\ \textcolor{comment}{\ \ \ \ \ \ \ \ menuItem.setActionCommand("{}swap\_right"{});}}
+\DoxyCodeLine{00199\ \textcolor{comment}{\ \ \ \ \ \ \ \ menuItem.addActionListener(this);}}
+\DoxyCodeLine{00200\ \textcolor{comment}{\ \ \ \ \ \ \ \ bMenu.add(menuItem);}}
+\DoxyCodeLine{00201\ \textcolor{comment}{\ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00202\ \textcolor{comment}{\ \ \ \ \ \ \ \ menuItem\ =\ new\ JMenuItem("{}Swap\ to\ left"{});}}
+\DoxyCodeLine{00203\ \textcolor{comment}{\ \ \ \ \ \ \ \ menuItem.setActionCommand("{}swap\_left"{});}}
+\DoxyCodeLine{00204\ \textcolor{comment}{\ \ \ \ \ \ \ \ menuItem.addActionListener(this);}}
+\DoxyCodeLine{00205\ \textcolor{comment}{\ \ \ \ \ \ \ \ bMenu.add(menuItem);*/}}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ bMenu;}
+\DoxyCodeLine{00208\ \ \ \ \ \}}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setDirectory(String\ dir)\ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ File\ getdir\ =\textcolor{keyword}{new}\ File(dir.trim());}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ dirField.setText(getdir.getPath());}
+\DoxyCodeLine{00217\ \ \ \ \ \}}
+\DoxyCodeLine{00218\ \ \ \ \ }
+\DoxyCodeLine{00223\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setNameField(String\ nf)\ \{}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ String\ name=StringUtil.grabNext(nf);}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ nameField.setText(name);}
+\DoxyCodeLine{00226\ \ \ \ \ \}}
+\DoxyCodeLine{00227\ }
+\DoxyCodeLine{00228\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ actionPerformed(ActionEvent\ e)\ \{}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ JMenuItem\ source=(JMenuItem)e.getSource();}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ JPopupMenu\ jpm=(JPopupMenu)source.getParent();}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ ThumbNail\ whichThumb=(ThumbNail)jpm.getInvoker();}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ String\ command\ =\ e.getActionCommand();}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}delete\ thumb"{}}))\ \{}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ how\ do\ you\ kill\ yourself?}}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ thumbNails.remove((Object)whichThumb);}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ thumbPanel.remove((Component)whichThumb);}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}set\ about"{}}))\ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ String\ confirmDialogText\ =\ \textcolor{stringliteral}{"{}Set\ this\ as\ script\ 'About'\ image?"{}};}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ result\ =\ JOptionPane.showConfirmDialog(\textcolor{keyword}{null},\ confirmDialogText,\ \textcolor{stringliteral}{"{}Confirm"{}},\ JOptionPane.YES\_NO\_OPTION);}
+\DoxyCodeLine{00241\ }
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ User\ confirmed?\ then\ read\ file,\ store\ (not\ encoded)}}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (result\ ==\ JOptionPane.YES\_OPTION)\ \{}
+\DoxyCodeLine{00244\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ int\ tmp\_id=new\ Random().nextInt(10000);}}
+\DoxyCodeLine{00245\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ temp\_name=new\ String("{}AboutImage"{}+tmp\_id+"{}."{}+IMG);}}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ temp\_name=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}AboutImage."{}}+CPBase.IMG);}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ temp=\textcolor{keyword}{null};}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00249\ \ \ \ \ }
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ open\ new\ file}}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ temp=\textcolor{keyword}{new}\ File(System.getProperty(\textcolor{stringliteral}{"{}java.io.tmpdir"{}}),temp\_name);}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ temp.createNewFile();}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ temp.deleteOnExit();}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ into\ java\ image}}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BufferedImage\ img\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ img\ =\ ImageIO.read(whichThumb.imageFileName);}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ ex)\ \{}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}problem\ loading\ image"{}});}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ scale\ to\ size\ for\ saving}}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BufferedImage\ after=util.GetScaleImage.}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scaleBufferedImage(img,AboutFrame.ICONWIDTH,AboutFrame.ICONHEIGHT);}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ write\ scaled\ image\ to\ temp}}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ImageIO.write(after,CPBase.IMG,temp);}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ as\ About\ ImageIcon}}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.scriptManager.myScriptTag=\textcolor{keyword}{new}\ ImageIcon(after);}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.scriptManager.hasChanged=\textcolor{keyword}{true};}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.scriptTitle(CPBase.scriptManager.scriptName,\textcolor{keyword}{true});}
+\DoxyCodeLine{00274\ }
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}problem\ with\ 'AboutImage'"{}});}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ remove\ any\ previous\ AboutImage}}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=(CPBase.scriptManager.includedFiles.size()-\/1);i>=0;i-\/-\/)\ \{}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ IncludedFile\ nextfile=CPBase.scriptManager.includedFiles.get(i);}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextfile.dataType==IncludedFile.ABOUT\_IMAGE)\ \{}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextfile.tmpFile.delete();}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.scriptManager.includedFiles.remove(i);}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ this\ call\ adds\ id\ to\ name,\ stores,\ and\ repopulates\ data}}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.scriptManager.includeNewFile(temp\_name);}
+\DoxyCodeLine{00291\ }
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}print\ (lpr)"{}}))\ \{}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ how\ to\ set\ up\ printing}}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ PrintUtil.PrintJPG(whichThumb.imageFileName);}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}copy\ snap"{}}))\ \{}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ File\ jpgOutFile=\textcolor{keyword}{null};}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((jpgOutFile\ =\ FileDialogs.saveDialog(FileDialogs.JPG,\ \textcolor{keyword}{true}))\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.copyFile(whichThumb.imageFileName,jpgOutFile);}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}Failed\ in\ copying\ "{}}+whichThumb.imageFileName);}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}Saved\ JPG\ file\ to\ "{}}+jpgOutFile.getPath());}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ thumbPanel.repaint();}
+\DoxyCodeLine{00313\ \ \ \ \ \}}
+\DoxyCodeLine{00314\ \ \ \ \ }
+\DoxyCodeLine{00318\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ imageUpdate\ (Image\ img,\ \textcolor{keywordtype}{int}\ info\_flags,}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ x,\ \textcolor{keywordtype}{int}\ y,\ \textcolor{keywordtype}{int}\ w,\ \textcolor{keywordtype}{int}\ h)\ \{}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (info\_flags\ !=\ ALLBITS)\ \{}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Indicates\ image\ has\ not\ finished\ loading}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Returning\ true\ will\ tell\ the\ image\ loading}}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ thread\ to\ keep\ drawing\ until\ image\ fully}}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ drawn\ loaded.}}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ imageUpdate}}
+\DoxyCodeLine{00330\ \}}
+
+\end{DoxyCode}

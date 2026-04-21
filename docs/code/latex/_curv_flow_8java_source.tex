@@ -1,0 +1,828 @@
+\doxysection{Curv\+Flow.\+java}
+\label{_curv_flow_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/cpContributed/CurvFlow.java@{C:/Users/ashej/myGitRepos/CirclePack/src/cpContributed/CurvFlow.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }cpContributed;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ canvasses.DisplayParser;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ geometry.EuclMath;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ geometry.StreamLiner;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ listManip.BaryCoordLink;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ listManip.FaceLink;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ listManip.PointLink;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ util.CmdStruct;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }CurvFlow\ \textcolor{keyword}{extends}\ PackExtender\ \{}
+\DoxyCodeLine{00032\ \ \ \ \ PackData\ domainData;\ \ \ \ \textcolor{comment}{//\ starts\ with\ euclidean\ version\ of\ maximal\ packing}}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keywordtype}{double}\ []anglesumDiff;\ \ \textcolor{comment}{//\ anglesum\ differences:\ anglesums(packData)\ -\/\ anglesums(domainPack)}}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{double}\ []aimDiff;\ \ \ \ \ \ \ \textcolor{comment}{//\ aim\ differences:\ aim(packData)\ -\/\ aim(domainPack)}}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordtype}{double}\ []radRatio;\ \ \ \ \ \ \textcolor{comment}{//\ radii\ ratios:\ radii(packData)/radii(domainPack)}}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ []bdryCurv;\ \textcolor{comment}{//\ vector\ of\ boundary\ curvatures\ (Pi-\/anglesum);\ }}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{public}\ StreamLiner\ streamLiner;\ \ \textcolor{comment}{//\ }}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keywordtype}{double}\ []rad1;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ radii}}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keywordtype}{double}\ []rad2;}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keywordtype}{double}\ []logmod;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ logmod\ is\ analogue\ of\ log|phi'|,\ namely\ r2-\/r1/r1;}}
+\DoxyCodeLine{00041\ \ \ \ \ Vector<BaryCoordLink>\ curveVector;\ \ \textcolor{comment}{//\ utility\ vector\ of\ 'BaryCoordLink's\ for\ streamlines\ \ }}
+\DoxyCodeLine{00042\ \ \ \ \ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{comment}{//\ store\ a\ complex\ valued\ function\ on\ the\ unit\ circle;\ typically\ the\ }}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{//\ \ \ ratio\ function\ for\ packing\ with\ one\ complex\ for\ use\ with\ others.}}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{comment}{//\ \ \ (Last\ entry\ of\ vectors\ equals\ first,\ to\ help\ with\ interpolation.)}}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{int}\ drSize;\ \textcolor{comment}{//\ size\ of\ following\ vectors}}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{double}\ []domArgs;\ \textcolor{comment}{//\ arguments\ in\ [0,2pi]\ for\ centers\ of\ maximal\ pack\ bdry.}}
+\DoxyCodeLine{00048\ \ \ \ \ Complex\ []rangeZ;\ \ \ \textcolor{comment}{//\ function\ values\ -\/-\/-\/\ generally\ real}}
+\DoxyCodeLine{00049\ \ \ \ \ }
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{public}\ CurvFlow(PackData\ p)\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ extensionType=\textcolor{stringliteral}{"{}CURVATURE\_FLOW"{}};}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ extensionAbbrev=\textcolor{stringliteral}{"{}CF"{}};}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ toolTip=\textcolor{stringliteral}{"{}'CurvFlow'\ for\ manipulation\ of\ relative\ angle\ sums\ (resp.\ radii)\ of"{}}+}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ two\ packings\ (with\ identical\ combinatorics).\ By\ default,\ comparisons\ "{}}+}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}are\ made\ to\ stored\ 'domainData',\ which\ must\ be\ euclidean."{}};}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ registerXType();}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ up\ the\ local\ 'domainPack',\ max\ packing\ converted\ to\ euclidean}}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ domainData=p.copyPackTo();}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ used\ to\ store\ euclidean\ version\ of\ max\ packing,\ }}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ but\ problems\ have\ been\ encountered\ with\ max\ packing\ code.}}
+\DoxyCodeLine{00066\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ cpCommand(domainData,"{}max\_pack\ 10000"{});}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(domainData,\textcolor{stringliteral}{"{}geom\_to\_e"{}});}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ domainData.fillcurves();}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}CurvFlow:\ error\ in\ preparing\ 'domainPack'"{}});}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ running=\textcolor{keyword}{false};}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (running)\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ anglesumDiff=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[extenderPD.nodeCount+1];}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ radRatio=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[extenderPD.nodeCount+1];}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (setAngDiff(domainData,extenderPD)==0\ ||\ setRadRatio(domainData,extenderPD)==0)}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}CF:\ failed\ to\ initialize\ 'domainPack'"{}});}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ rad1=\textcolor{keyword}{null};}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ rad2=\textcolor{keyword}{null};}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ logmod=\textcolor{keyword}{null};}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ streamLiner=\textcolor{keyword}{null};}
+\DoxyCodeLine{00084\ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cmdParser(String\ cmd,Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ Vector<String>\ items=\textcolor{keyword}{null};}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ String\ str=\textcolor{keyword}{null};}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =============\ disp\ =================\ (pull\ off\ -\/b\ option)\ ======}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}disp"{}}))\ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ displayMe(flagSegs);}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =============\ set\_stre\ ======================}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_stre"{}}))\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (logmod==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}'logmod'\ is\ not\ yet\ set:\ see\ 'rad\_diff"{}});}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ PointLink\ zlink=\textcolor{keyword}{new}\ PointLink();}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ FaceLink\ flink=\textcolor{keyword}{null};}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ append=\textcolor{keyword}{false};}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ uphill=\textcolor{keyword}{true};}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flagSegs!=\textcolor{keyword}{null}\ \&\&\ flagSegs.size()>0)\ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Vector<String>>\ flgs=flagSegs.iterator();}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (flgs.hasNext())\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flgs.next();}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str=items.get(0);}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (StringUtil.isFlag(str))\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items.remove(0);\ \textcolor{comment}{//\ toss,\ still\ in\ 'str'}}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c=str.charAt(1);}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (c)\ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'a'}:\ \textcolor{comment}{//\ append}}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ append=\textcolor{keyword}{true};}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'d'}:\ \textcolor{comment}{//\ downhill}}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uphill=\textcolor{keyword}{false};}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'z'}:\ \textcolor{comment}{//\ points}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ zlink=\textcolor{keyword}{new}\ PointLink(items);}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'f'}:\ \textcolor{comment}{//\ faces}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flink=\textcolor{keyword}{new}\ FaceLink(extenderPD,items);}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ default\ to\ faces\ having\ an\ edge\ in\ the\ border}}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ flags,\ default\ to\ bdry\ faces}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flink=\textcolor{keyword}{new}\ FaceLink(extenderPD,\textcolor{stringliteral}{"{}Iv\ b"{}});}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ list\ of\ points}}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flink!=\textcolor{keyword}{null}\ \&\&\ flink.size()>0)\ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Integer>\ flst=flink.iterator();}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (flst.hasNext())\ \{}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ combinatorics.komplex.DcelFace\ face=extenderPD.packDCEL.faces[flst.next()];}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ vert=face.getVerts();}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ face\ barycenter\ in\ the\ list}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ zlink.add(EuclMath.eucl\_tri\_center(}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ domainData.getCenter(vert[0]),}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ domainData.getCenter(vert[1]),}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ domainData.getCenter(vert[2])));}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ initiate\ a\ new\ 'StreamLiner'?}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!append)\ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ streamLiner=\textcolor{keyword}{new}\ StreamLiner(domainData);}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ numb=streamLiner.setDataValues(logmod);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (numb<0)}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}problem\ setting\ 'streamLiner.dataValues'"{}});}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ streamLiner.setNormals();}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ old\ data\ is\ lost}}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ curveVector=\textcolor{keyword}{new}\ Vector<BaryCoordLink>();}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (streamLiner==\textcolor{keyword}{null}\ ||\ curveVector==\textcolor{keyword}{null}\ ||\ }
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ zlink==\textcolor{keyword}{null}\ ||\ zlink.size()==0)}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}'streamliner\ missing\ or\ no\ data\ given"{}});}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ go\ through\ list\ of\ points}}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Complex>\ zlst=zlink.iterator();}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (zlst.hasNext())\ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z=zlst.next();}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BaryCoordLink\ bcl=streamLiner.getStreamline(z,uphill);}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bcl!=\textcolor{keyword}{null}\ \&\&\ bcl.size()>0)\ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ curveVector.add(bcl);}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =====================\ set\_rad\_rat\ ====================}}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ radius\ ratio\ vector:\ use\ 'packData'\ as\ domain.\ If\ no}}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ flags,\ then\ 'domainData'\ is\ range.\ Flag\ -\/q\{n\}\ indicates\ pack[n]}}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ as\ the\ range,\ else\ -\/u\ to\ use\ stored\ 'utilDoubles'\ as\ the\ ratios}}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_rad\_rat"{}}))\ \{}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ default:\ compare\ to\ 'domainPack'}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flagSegs==\textcolor{keyword}{null}\ ||\ flagSegs.size()==0)\ \{\ }
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ setRadRatio(extenderPD,domainData);}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{\ \textcolor{comment}{//\ try\ to\ read\ -\/q\{p\}\ flag}}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)flagSegs.get(0);}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (StringUtil.isFlag(items.get(0)))\ \{}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c=items.get(0).charAt(1);}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(c)\ \{}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'y'}:\ \textcolor{comment}{//\ deprecated,\ fall\ through}}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'u'}:\ \textcolor{comment}{//\ get\ from\ packData.UtilDouble}}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.utilDoubles==\textcolor{keyword}{null})}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}'utilDoubles'\ was\ null"{}});}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v<=extenderPD.utilDoubles.size())}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ radRatio[v]=extenderPD.utilDoubles.get(v-\/1);}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'q'}:}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\ \textcolor{comment}{//\ compare\ to\ another\ packing}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ qnum=StringUtil.qFlagParse(items.get(0));}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (qnum<0)}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}failed\ to\ read\ 'q'\ flag"{}});}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ setRadRatio(extenderPD,PackControl.packings[qnum]);}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ========================\ set\_rad\ ================}}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_rad"{}}))\ \{}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ wr=Integer.parseInt(items.get(0));}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wr==1)\ \{}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rad1=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[domainData.nodeCount+1];}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ }
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v<=domainData.nodeCount)}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rad1[v]=extenderPD.getRadius(v);}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rad2=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[domainData.nodeCount+1];}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ }
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v<=domainData.nodeCount)}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rad2[v]=extenderPD.getRadius(v);}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}didn't\ get\ '1'\ or\ '2'"{}});}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =============\ logmod\ =================}}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}logmod"{}}))\ \{}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rad1==\textcolor{keyword}{null}\ ||\ rad1.length<domainData.nodeCount+1\ ||}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rad2==\textcolor{keyword}{null}\ ||\ rad2.length<domainData.nodeCount+1)}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}rad1/rad2\ don't\ have\ right\ size"{}});}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ logmod=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[domainData.nodeCount+1];}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v<=domainData.nodeCount)}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ logmod[v]=(rad2[v]-\/rad1[v])/rad1[v];}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ logmod.length;}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =========\ store\_rad/ang/aim\_diff\ =====}}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}store\_"{}}))\ \{}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ which\ type\ of\ data?\ radii\ or\ angles?}}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ angdata=\textcolor{keyword}{true};\ \textcolor{comment}{//\ default}}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ aimdata=\textcolor{keyword}{false};}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ raddata=\textcolor{keyword}{false};}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.contains(\textcolor{stringliteral}{"{}store\_rad"{}}))\ \{}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angdata=\textcolor{keyword}{false};}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ raddata=\textcolor{keyword}{true};}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.contains(\textcolor{stringliteral}{"{}store\_aim"{}}))\ \{}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angdata=\textcolor{keyword}{false};}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aimdata=\textcolor{keyword}{true};}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((angdata\ \&\&\ anglesumDiff!=\textcolor{keyword}{null})\ ||\ }
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (raddata\ \&\&\ radRatio!=\textcolor{keyword}{null})\ ||}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aimdata\ \&\&\ aimDiff!=\textcolor{keyword}{null})\ \{\ }
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.utilDoubles=\textcolor{keyword}{new}\ Vector<Double>(extenderPD.nodeCount);}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ data=0.0;}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (raddata)}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data=radRatio[v];}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (aimdata)}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data=aimDiff[v];}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data=anglesumDiff[v];}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.utilDoubles.add(Double.valueOf(data));}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00307\ }
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ============\ export\ ====\ (preempts\ PackExtender)}}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}export"{}}))\ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)flagSegs.get(0);}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pnum=Integer.parseInt((String)items.get(0));}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackData\ p=domainData.copyPackTo();}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.swapPackData(p,pnum,\textcolor{keyword}{false});}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ msg(\textcolor{stringliteral}{"{}put\ 'domainPack'\ in\ pack\ p"{}}+pnum);}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p.nodeCount;\ }
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ move\ by\ mean\ curvature\ ============}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}mmc"{}}))\ \{}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ want\ to\ provide\ more\ options}}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ total=fillBdryCurv(extenderPD);}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ @SuppressWarnings(\textcolor{stringliteral}{"{}unused"{}})}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ radsum=0.0;}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.isBdry(v))\ \{}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ radsum\ +=\ extenderPD.getRadius(v);}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00332\ }
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ adjust\ each\ radius\ by\ moderated\ proportion\ that\ }}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ that\ radius\ forms\ of\ total}}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.isBdry(v))\ \{}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ factor=.1;\ \textcolor{comment}{//\ moderating\ factor}}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ prad=extenderPD.getRadius(v);}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ adjustment=(-\/1.0)*(bdryCurv[v]/total)*prad;}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setRadius(v,prad+\ factor*adjustment);}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}repack\ 2000"{}});}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}layout"{}});}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}norm\_scale\ -\/c\ A\ .2"{}});}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}disp\ -\/wr"{}});}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ chg\_aims\ =============}}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Adjust\ 'packData'\ aims}}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}chg\_aims"{}}))\ \{}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ useUtilDoubles=\textcolor{keyword}{false};}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ incremental=\textcolor{keyword}{false};}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ vertlist=\textcolor{keyword}{null};}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ read\ the\ flag\ info}}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Vector<String>>\ fs=flagSegs.iterator();}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=0.0;}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fs.hasNext())\ \{}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)fs.next();}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str=(String)items.remove(0);}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (StringUtil.isFlag(str))\ \{}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c=str.charAt(1);\ }
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(c)\ \{}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'i'}:\ }
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ incremental=\textcolor{keyword}{true};\ \textcolor{comment}{//\ (fall\ thru)\ increment\ 'ratio';\ rad=rad*(ratio)\string^x\ }}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'t'}:\ \textcolor{comment}{//\ set\ by\ parameter:\ rad=domain\_rad*(ratio)\string^x}}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tstr=(String)items.remove(0);}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ factor}}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ x=Double.valueOf(tstr);}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}usage:\ -\/"{}}+c+\textcolor{stringliteral}{"{}\ \{x\}\ \{v..\}"{}});}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ vertices}}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items.size()==0)\ \{\ \textcolor{comment}{//\ no\ vertices\ given}}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vertlist=\textcolor{keyword}{new}\ NodeLink(extenderPD,\textcolor{stringliteral}{"{}a"{}});}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ vertlist=\textcolor{keyword}{new}\ NodeLink(extenderPD,items);}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vertlist==\textcolor{keyword}{null}\ ||\ vertlist.size()==0)\ \{}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}no\ vertices\ specified"{}});}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'u'}:\ \textcolor{comment}{//\ use\ 'utilDoubles'\ vector}}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.utilDoubles==\textcolor{keyword}{null}\ ||\ }
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.utilDoubles.size()!=extenderPD.nodeCount)\ \{}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}'utilDoubles'\ vector\ empty\ or\ wrong\ size"{}});}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ useUtilDoubles=\textcolor{keyword}{true};}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ flags}}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \textcolor{comment}{//\ end\ of\ while\ \ }}
+\DoxyCodeLine{00407\ }
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reaching\ here,\ should\ have\ vertlist}}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vertlist==\textcolor{keyword}{null}\ ||\ x==0.0)\ \{}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}No\ vertices\ specified,\ or\ increment\ is\ zero"{}});}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Integer>\ vlist=vertlist.iterator();}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=1;}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (vlist.hasNext())\ \{}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=(Integer)vlist.next();}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ curraim=0.0;}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (incremental)\ }
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ curraim=extenderPD.getAim(v);}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ curraim=domainData.getAim(v);}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ what\ data\ are\ we\ using?\ does\ it\ exist?}}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((!useUtilDoubles\ \&\&\ v<aimDiff.length)\ ||}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (useUtilDoubles\ \&\&\ v<=extenderPD.utilDoubles.size()))\ \{}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ term=0.0;}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (useUtilDoubles)}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ term=extenderPD.utilDoubles.get(v-\/1);}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ term=aimDiff[v];}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ apply}}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setAim(v,curraim+x*(term));}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00438\ }
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ chg\_ratios\ =============}}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ adjust\ 'packData'\ radii}}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}chg\_rad"{}}))\ \{}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Vector<String>>\ fs=flagSegs.iterator();}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ useUtilDoubles=\textcolor{keyword}{false};}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ incremental=\textcolor{keyword}{false};}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ vertlist=\textcolor{keyword}{null};}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=0.0;}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fs.hasNext())\ \{}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)fs.next();}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str=(String)items.remove(0);}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (StringUtil.isFlag(str))\ \{}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c=str.charAt(1);\ }
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(c)\ \{}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'i'}:\ }
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ incremental=\textcolor{keyword}{true};\ \textcolor{comment}{//\ (fall\ thru)\ increment\ 'ratio';\ rad=rad*(ratio)\string^x\ }}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'t'}:\ \textcolor{comment}{//\ set\ by\ parameter:\ rad=domain\_rad*(ratio)\string^x}}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tstr=(String)items.remove(0);}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ factor}}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ x=Double.valueOf(tstr);}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}usage:\ -\/"{}}+c+\textcolor{stringliteral}{"{}\ \{x\}\ \{v..\}"{}});}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ vertices}}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items.size()==0)\ \{\ \textcolor{comment}{//\ no\ vertices\ given}}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vertlist=\textcolor{keyword}{new}\ NodeLink(extenderPD,\textcolor{stringliteral}{"{}a"{}});}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ vertlist=\textcolor{keyword}{new}\ NodeLink(extenderPD,items);}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vertlist==\textcolor{keyword}{null}\ ||\ vertlist.size()==0)\ \{}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}no\ vertices\ specified"{}});}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'u'}:\ \textcolor{comment}{//\ use\ 'utilDoubles'\ vector}}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.utilDoubles==\textcolor{keyword}{null}\ ||\ extenderPD.utilDoubles.size()!=extenderPD.nodeCount)\ \{}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}'utilDoubles'\ vector\ is\ empty\ or\ size\ is\ too\ small"{}});}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ useUtilDoubles=\textcolor{keyword}{true};}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch\ }}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reaching\ here,\ should\ have\ vertlist}}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vertlist==\textcolor{keyword}{null}\ ||\ x==0.0)}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Integer>\ vlist=vertlist.iterator();}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=1;}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (vlist.hasNext())\ \{}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=(Integer)vlist.next();}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad=domainData.getRadius(v);}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (incremental)\ rad=extenderPD.getRadius(v);}
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ what\ data\ are\ we\ using?\ does\ it\ exist?}}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((!useUtilDoubles\ \&\&\ v<radRatio.length)\ ||}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (useUtilDoubles\ \&\&\ v<=extenderPD.utilDoubles.size()))\ \{}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ factor=radRatio[v];}
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (useUtilDoubles)}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ factor=extenderPD.utilDoubles.get(v-\/1);}
+\DoxyCodeLine{00511\ }
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ apply}}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setRadius(v,rad*(Math.exp(x*Math.log(factor))));}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00517\ }
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ====================\ set\_ang\_diff\ ==================}}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ curvature\ difference:\ use\ 'packData'\ as\ domain.\ If\ no}}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ flags,\ then\ 'domainData'\ is\ range.\ Flag\ -\/q\{p\}\ indicates\ pack[p]}}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ as\ the\ range,\ else\ -\/u\ to\ use\ stored\ 'utilDoubles'\ as\ the\ differences.}}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_ang\_dif"{}}))\ \{}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ default:\ compare\ to\ 'domainPack'\ comparison}}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flagSegs==\textcolor{keyword}{null}\ ||\ flagSegs.size()==0)\ \{\ }
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ setAngDiff(extenderPD,domainData);}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{\ \textcolor{comment}{//\ try\ to\ read\ -\/q\{p\}\ flag}}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)flagSegs.get(0);}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (StringUtil.isFlag(items.get(0)))\ \{}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c=items.get(0).charAt(1);}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(c)\ \{}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'y'}:\ \textcolor{comment}{//\ deprecated,\ fall\ through\ to\ 'u'}}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'u'}:}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\ \textcolor{comment}{//\ get\ from\ packData.UtilDouble}}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.utilDoubles==\textcolor{keyword}{null})}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}'utilDoubles'\ was\ null"{}});}
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v<=extenderPD.utilDoubles.size())}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ anglesumDiff[v]=extenderPD.utilDoubles.get(v-\/1);}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'q'}:}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\ \textcolor{comment}{//\ compare\ to\ another\ packing}}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ qnum=StringUtil.qFlagParse(items.get(0));}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (qnum<0)}
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}failed\ to\ read\ 'q'\ flag"{}});}
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ setAngDiff(extenderPD,PackControl.packings[qnum]);}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00558\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ====================\ set\_aim\_diff\ ==================}}
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ aim\ difference:\ use\ 'packData'\ as\ domain.\ If\ no}}
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ flags,\ then\ 'domainData'\ is\ range.\ Flag\ -\/q\{p\}\ indicates\ pack[p]}}
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ as\ the\ range,\ else\ -\/u\ to\ use\ stored\ 'utilDoubles'\ as\ the\ differences.}}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_aim\_dif"{}}))\ \{}
+\DoxyCodeLine{00564\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ default:\ compare\ to\ 'domainPack'\ comparison}}
+\DoxyCodeLine{00565\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flagSegs==\textcolor{keyword}{null}\ ||\ flagSegs.size()==0)\ \{\ }
+\DoxyCodeLine{00566\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ setAimDiff(extenderPD,domainData);}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00568\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{\ \textcolor{comment}{//\ try\ to\ read\ -\/q\{p\}\ flag}}
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)flagSegs.get(0);}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (StringUtil.isFlag(items.get(0)))\ \{}
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c=items.get(0).charAt(1);}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(c)\ \{}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'y'}:\ \textcolor{comment}{//\ deprecated,\ fall\ through\ to\ 'u'}}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'u'}:}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\ \textcolor{comment}{//\ get\ from\ packData.UtilDouble}}
+\DoxyCodeLine{00576\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.utilDoubles==\textcolor{keyword}{null})}
+\DoxyCodeLine{00577\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}'utilDoubles'\ was\ null"{}});}
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v<=extenderPD.utilDoubles.size())}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aimDiff[v]=extenderPD.utilDoubles.get(v-\/1);}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00583\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00584\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'q'}:}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{\ \textcolor{comment}{//\ compare\ to\ another\ packing}}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ qnum=StringUtil.qFlagParse(items.get(0));}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (qnum<0)}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}failed\ to\ read\ 'q'\ flag"{}});}
+\DoxyCodeLine{00589\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ setAimDiff(extenderPD,PackControl.packings[qnum]);}
+\DoxyCodeLine{00590\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00591\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00592\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00593\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00594\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00595\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00596\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00597\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ =======================\ adr\ ================================}}
+\DoxyCodeLine{00598\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ TODO:\ This\ routine\ is\ not\ functional\ yet\ -\/-\/-\/\ don't\ recall\ the\ intention?}}
+\DoxyCodeLine{00599\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ adr\ -\/q\{p1\}\ -\/q\{p2\}\ a}}
+\DoxyCodeLine{00600\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ \ \ p1\ is\ max\ packing\ domain,\ but\ euclidean,\ p2\ is\ for\ range\ packing.}}
+\DoxyCodeLine{00601\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ \ \ Interpolate\ domArgs/rangeZ\ function\ raised\ to\ power\ 'a'\ at\ bdry\ }}
+\DoxyCodeLine{00602\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ \ \ circles\ of\ p1\ to\ set\ radii\ of\ p2.\ User\ then\ can\ repack\ p2.}}
+\DoxyCodeLine{00603\ \textcolor{comment}{\ \ \ \ \ \ \ \ else\ if\ (cmd.startsWith("{}adr"{}))\ \{}}
+\DoxyCodeLine{00604\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ errorMsg("{}|cf|\ adr:\ command\ not\ yet\ implemented"{});}}
+\DoxyCodeLine{00605\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ return\ 0;}}
+\DoxyCodeLine{00606\ \textcolor{comment}{\ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00607\ \textcolor{comment}{/*\ \ \ \ \ \ \ \ \ \ int\ p1num,p2num;}}
+\DoxyCodeLine{00608\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ double\ a;}}
+\DoxyCodeLine{00609\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ try\ \{}}
+\DoxyCodeLine{00610\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ -\/q\{p1\}}}
+\DoxyCodeLine{00611\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)flagSegs.get(0);}}
+\DoxyCodeLine{00612\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p1num=StringUtil.qFlagParse(CPBase.NUM\_PACKS,(String)items.get(0));}}
+\DoxyCodeLine{00613\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ -\/q\{p2\}}}
+\DoxyCodeLine{00614\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)flagSegs.get(1);}}
+\DoxyCodeLine{00615\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p2num=StringUtil.qFlagParse(CPBase.NUM\_PACKS,(String)items.get(0));}}
+\DoxyCodeLine{00616\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ parameter\ at\ end\ of\ second\ flag\ sequence}}
+\DoxyCodeLine{00617\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ a=1;\ //\ default}}
+\DoxyCodeLine{00618\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (items.size()>1)}}
+\DoxyCodeLine{00619\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ a=Double.parseDouble((String)items.get(1));}}
+\DoxyCodeLine{00620\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \}\ catch\ (Exception\ ex)\ \{}}
+\DoxyCodeLine{00621\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ throw\ new\ ParserException("{}CurvFlow\ usage:\ adr\ -\/q\{p1\}\ -\/q\{p2\}\ a"{});}}
+\DoxyCodeLine{00622\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00623\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ PackData\ p1=PackControl.pack[p1num].packData;}}
+\DoxyCodeLine{00624\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ PackData\ p2=PackControl.pack[p2num].packData;}}
+\DoxyCodeLine{00625\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ bdry=new\ NodeLink(p1,"{}b"{});}}
+\DoxyCodeLine{00626\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ Iterator<Integer>\ blist=bdry.iterator();}}
+\DoxyCodeLine{00627\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ int\ w;}}
+\DoxyCodeLine{00628\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ Integer\ start=Integer.valueOf(0);}}
+\DoxyCodeLine{00629\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ double\ val;}}
+\DoxyCodeLine{00630\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ double\ t;}}
+\DoxyCodeLine{00631\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ int\ click=0;}}
+\DoxyCodeLine{00632\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ while\ (blist.hasNext())\ \{}}
+\DoxyCodeLine{00633\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=(int)blist.next();}}
+\DoxyCodeLine{00634\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t=p1.rData[w].center.arg();}}
+\DoxyCodeLine{00635\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ interpolate\ value\ from\ domArgs/rangeZ\ for\ argument\ t,}}
+\DoxyCodeLine{00636\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ \ \ suggested\ starting\ point\ index\ 'start'}}
+\DoxyCodeLine{00637\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ val=interp(t,start);}}
+\DoxyCodeLine{00638\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p2.rData[w].rad=p1.rData[w].rad*(Math.exp(a*val));}}
+\DoxyCodeLine{00639\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ click++;}}
+\DoxyCodeLine{00640\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00641\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ return\ click;}}
+\DoxyCodeLine{00642\ \textcolor{comment}{\ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00643\ \textcolor{comment}{*/}\ \ \ \ \ \ }
+\DoxyCodeLine{00644\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ super.cmdParser(cmd,\ flagSegs);}
+\DoxyCodeLine{00645\ \ \ \ \ \}}
+\DoxyCodeLine{00646\ \ \ \ \ }
+\DoxyCodeLine{00654\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ fillBdryCurv(PackData\ p)\ \{}
+\DoxyCodeLine{00655\ \ \ \ \ \ \ \ \ NodeLink\ bdryV=\textcolor{keyword}{new}\ NodeLink(p,\textcolor{stringliteral}{"{}b"{}});}
+\DoxyCodeLine{00656\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bdryV==\textcolor{keyword}{null}\ ||\ bdryV.size()==0)\ \{}
+\DoxyCodeLine{00657\ \ \ \ \ \ \ \ \ \ \ \ \ bdryCurv=\textcolor{keyword}{null};}
+\DoxyCodeLine{00658\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0.0;}
+\DoxyCodeLine{00659\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00660\ \ \ \ \ \ \ \ \ p.fillcurves();}
+\DoxyCodeLine{00661\ \ \ \ \ \ \ \ \ bdryCurv=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[p.nodeCount+1];}
+\DoxyCodeLine{00662\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ accum=0.0;}
+\DoxyCodeLine{00663\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ branchOrder=0;}
+\DoxyCodeLine{00664\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00665\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ collect\ info}}
+\DoxyCodeLine{00666\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=p.nodeCount;v++)\ \{}
+\DoxyCodeLine{00667\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.isBdry(v))\ \{}
+\DoxyCodeLine{00668\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bdryCurv[v]=Math.PI-\/p.getCurv(v);}
+\DoxyCodeLine{00669\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accum\ +=\ Math.abs(bdryCurv[v]);}
+\DoxyCodeLine{00670\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00671\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00672\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=(int)((p.getAim(v)+.01)/(2.0*Math.PI));}
+\DoxyCodeLine{00673\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n>1)}
+\DoxyCodeLine{00674\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ branchOrder\ +=\ n-\/1;}
+\DoxyCodeLine{00675\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00676\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00677\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00678\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (accum-\/2.0*(1.0+(\textcolor{keywordtype}{double})branchOrder));}
+\DoxyCodeLine{00679\ \ \ \ \ \}}
+\DoxyCodeLine{00680\ \ \ \ \ }
+\DoxyCodeLine{00691\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setAngDiff(PackData\ q,PackData\ p)\ \{}
+\DoxyCodeLine{00692\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (q==\textcolor{keyword}{null})}
+\DoxyCodeLine{00693\ \ \ \ \ \ \ \ \ \ \ \ \ q=domainData;}
+\DoxyCodeLine{00694\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (q==\textcolor{keyword}{null}\ ||\ p==\textcolor{keyword}{null}\ ||\ !q.status\ ||\ !p.status\ ||\ q.hes!=0\ ||\ p.hes!=0\ ||}
+\DoxyCodeLine{00695\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ q.nodeCount!=extenderPD.nodeCount\ ||\ q.nodeCount!=extenderPD.nodeCount)\ \{}
+\DoxyCodeLine{00696\ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}CF:\ set\_ang\_diff:\ nodeCount's\ not\ matching\ (or\ some\ other\ problem)"{}});}
+\DoxyCodeLine{00697\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00698\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00699\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ angle\ sums\ }}
+\DoxyCodeLine{00700\ \ \ \ \ \ \ \ \ p.fillcurves();}
+\DoxyCodeLine{00701\ \ \ \ \ \ \ \ \ q.fillcurves();}
+\DoxyCodeLine{00702\ \ \ \ \ \ \ \ \ anglesumDiff=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[p.nodeCount+1];}
+\DoxyCodeLine{00703\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=p.nodeCount;v++)\ \{}
+\DoxyCodeLine{00704\ \ \ \ \ \ \ \ \ \ \ \ \ anglesumDiff[v]=p.getCurv(v)-\/q.getCurv(v);}
+\DoxyCodeLine{00705\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00706\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00707\ \ \ \ \ \}}
+\DoxyCodeLine{00708\ \ \ \ \ }
+\DoxyCodeLine{00721\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setAimDiff(PackData\ q,PackData\ p)\ \{}
+\DoxyCodeLine{00722\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (q==\textcolor{keyword}{null})}
+\DoxyCodeLine{00723\ \ \ \ \ \ \ \ \ \ \ \ \ q=domainData;}
+\DoxyCodeLine{00724\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (q==\textcolor{keyword}{null}\ ||\ p==\textcolor{keyword}{null}\ ||\ !q.status\ ||\ !p.status\ ||\ q.hes!=0\ ||\ p.hes!=0\ ||}
+\DoxyCodeLine{00725\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ q.nodeCount!=extenderPD.nodeCount\ ||\ q.nodeCount!=extenderPD.nodeCount)\ \{}
+\DoxyCodeLine{00726\ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}CF:\ set\_ang\_diff:\ nodeCount's\ not\ matching\ (or\ some\ other\ problem)"{}});}
+\DoxyCodeLine{00727\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00728\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00729\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ angle\ sums\ }}
+\DoxyCodeLine{00730\ \ \ \ \ \ \ \ \ aimDiff=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[p.nodeCount+1];}
+\DoxyCodeLine{00731\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=p.nodeCount;v++)\ \{}
+\DoxyCodeLine{00732\ \ \ \ \ \ \ \ \ \ \ \ \ aimDiff[v]=p.getAim(v)-\/q.getAim(v);}
+\DoxyCodeLine{00733\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00734\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00735\ \ \ \ \ \}}
+\DoxyCodeLine{00736\ \ \ \ \ }
+\DoxyCodeLine{00749\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setRadRatio(PackData\ q,PackData\ p)\ \{}
+\DoxyCodeLine{00750\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (q==\textcolor{keyword}{null})}
+\DoxyCodeLine{00751\ \ \ \ \ \ \ \ \ \ \ \ \ q=domainData;}
+\DoxyCodeLine{00752\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (q==\textcolor{keyword}{null}\ ||\ p==\textcolor{keyword}{null}\ ||\ !q.status\ ||\ !p.status\ ||\ q.hes!=0\ ||\ p.hes!=0\ ||}
+\DoxyCodeLine{00753\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ q.nodeCount!=extenderPD.nodeCount\ ||\ q.nodeCount!=extenderPD.nodeCount)\ \{}
+\DoxyCodeLine{00754\ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}CF:\ set\_rad\_rat:\ nodeCount's\ not\ matching\ or\ other\ problem"{}});}
+\DoxyCodeLine{00755\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00756\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00757\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=p.nodeCount;v++)\ \{}
+\DoxyCodeLine{00758\ \ \ \ \ \ \ \ \ \ \ \ \ radRatio[v]=p.getRadius(v)/q.getRadius(v);}
+\DoxyCodeLine{00759\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00760\ \ \ \ \ \ \ \ \ NodeLink\ bdry=\textcolor{keyword}{new}\ NodeLink(q,\textcolor{stringliteral}{"{}b"{}});}
+\DoxyCodeLine{00761\ \ \ \ \ \ \ \ \ drSize=bdry.size()+1;}
+\DoxyCodeLine{00762\ \ \ \ \ \ \ \ \ domArgs=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[drSize];}
+\DoxyCodeLine{00763\ \ \ \ \ \ \ \ \ rangeZ=\textcolor{keyword}{new}\ Complex[drSize];}
+\DoxyCodeLine{00764\ \ \ \ \ \ \ \ \ Iterator<Integer>\ blist=bdry.iterator();}
+\DoxyCodeLine{00765\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w;}
+\DoxyCodeLine{00766\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00767\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (blist.hasNext())\ \{}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ \ \ \ \ \ \ w=(int)blist.next();}
+\DoxyCodeLine{00769\ \ \ \ \ \ \ \ \ \ \ \ \ domArgs[count]=q.getCenter(w).arg();}
+\DoxyCodeLine{00770\ \ \ \ \ \ \ \ \ \ \ \ \ rangeZ[count]=\textcolor{keyword}{new}\ Complex(p.getRadius(w)/q.getRadius(w));}
+\DoxyCodeLine{00771\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00772\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00773\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ close\ up}}
+\DoxyCodeLine{00774\ \ \ \ \ \ \ \ \ domArgs[count]=domArgs[0];}
+\DoxyCodeLine{00775\ \ \ \ \ \ \ \ \ rangeZ[count]=\textcolor{keyword}{new}\ Complex(rangeZ[0]);}
+\DoxyCodeLine{00776\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00777\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00778\ \ \ \ \ \}}
+\DoxyCodeLine{00779\ \ \ \ \ }
+\DoxyCodeLine{00788\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ displayMe(Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00789\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00790\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ b\_hit=\textcolor{keyword}{false};}
+\DoxyCodeLine{00791\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<flagSegs.size();j++)\ \{}
+\DoxyCodeLine{00792\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<String>\ items=flagSegs.get(j);}
+\DoxyCodeLine{00793\ \ \ \ \ \ \ \ \ \ \ \ \ String\ str=items.get(0);}
+\DoxyCodeLine{00794\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str.startsWith(\textcolor{stringliteral}{"{}-\/b"{}}))}
+\DoxyCodeLine{00795\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ b\_hit=\textcolor{keyword}{true};}
+\DoxyCodeLine{00796\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00797\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00798\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ save\ data,\ display,\ replace\ data}}
+\DoxyCodeLine{00799\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (b\_hit\ \&\&\ curveVector!=\textcolor{keyword}{null}\ \&\&\ curveVector.size()>0)\ \{}
+\DoxyCodeLine{00800\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<BaryCoordLink>\ holdVector=CPBase.gridLines;}
+\DoxyCodeLine{00801\ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.gridLines=curveVector;}
+\DoxyCodeLine{00802\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((count=DisplayParser.dispParse(extenderPD,flagSegs))>0)}
+\DoxyCodeLine{00803\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.canvasRedrawer.paintMyCanvasses(extenderPD,\textcolor{keyword}{false});}
+\DoxyCodeLine{00804\ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.gridLines=holdVector;}
+\DoxyCodeLine{00805\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00806\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00807\ \ \ \ \ \}}
+\DoxyCodeLine{00808\ \ \ \ \ }
+\DoxyCodeLine{00812\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initCmdStruct()\ \{}
+\DoxyCodeLine{00813\ \ \ \ \ \ \ \ \ super.initCmdStruct();}
+\DoxyCodeLine{00814\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}chg\_aims"{}},\textcolor{stringliteral}{"{}-\/[u]\ -\/[it]\ \{x\}\ \{v..\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{00815\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Adjust\ aims\ by\ adding\ 'x'\ times\ current\ 'ang\_diff'\ "{}}+}
+\DoxyCodeLine{00816\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}to\ current\ aims\ ('i'\ option)\ or\ to\ 'domainData'\ "{}}+}
+\DoxyCodeLine{00817\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}aims\ ('t'\ option);\ -\/u\ to\ use\ 'utilDoubles'"{}}));}
+\DoxyCodeLine{00818\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}chg\_rad"{}},\textcolor{stringliteral}{"{}-\/[u]\ -\/[it]\ \{x\}\ \{v..\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{00819\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Adjust\ radii\ to\ 'rad\_ratio'\ to\ 'x'\ power\ times\ "{}}+}
+\DoxyCodeLine{00820\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}current\ radii\ ('i'\ option)\ or\ 'domainData'\ "{}}+}
+\DoxyCodeLine{00821\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}radii\ ('t'\ option);\ -\/u\ to\ use\ 'utilDoubles'"{}}));}
+\DoxyCodeLine{00822\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_ang\_diff"{}},\textcolor{stringliteral}{"{}[-\/q\{q\}]\ [-\/u]"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{00823\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Set\ angle\ difference:\ 'q\ -\/\ parent'\ (default\ to\ "{}}+}
+\DoxyCodeLine{00824\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}'parent\ -\/\ domainPack');\ '-\/u'\ means\ use\ differences\ stored\ "{}}+}
+\DoxyCodeLine{00825\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}in\ 'utilDoubles'"{}}));}
+\DoxyCodeLine{00826\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_aim\_diff"{}},\textcolor{stringliteral}{"{}[-\/q\{q\}]\ [-\/u]"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{00827\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Set\ aim\ difference:\ 'q\ -\/\ parent'\ (default\ to\ "{}}+}
+\DoxyCodeLine{00828\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}'parent\ -\/\ domainPack');\ '-\/u'\ means\ use\ differences\ stored\ "{}}+}
+\DoxyCodeLine{00829\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}in\ 'utilDoubles'"{}}));}
+\DoxyCodeLine{00830\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_rad\_rat"{}},\textcolor{stringliteral}{"{}[-\/q\{q\}]\ [-\/u]"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{00831\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Set\ radius\ ratio:\ 'q/parent'\ (default\ to\ domainData/parent);\ "{}}+}
+\DoxyCodeLine{00832\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}'-\/u'\ means\ use\ ratio\ stored\ as\ 'utilDoubles'"{}}+}
+\DoxyCodeLine{00833\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}or'parent/q'\ (default\ is\ 'pack/domainPack')"{}}));}
+\DoxyCodeLine{00834\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}store\_ang\_diff"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}store\ vector\ of\ ang\_diff's\ in\ 'packData.utilDoubles'"{}}));}
+\DoxyCodeLine{00835\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}store\_rad\_rat"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}store\ vector\ of\ rad\_rat's\ in\ 'packData.utilDoubles'"{}}));}
+\DoxyCodeLine{00836\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}store\_aim\_diff"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}store\ vector\ of\ aim\_diff's\ in\ 'packData.utilDoubles'"{}}));}
+\DoxyCodeLine{00837\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}mmc"{}},\textcolor{stringliteral}{"{}-\/[]\ [x]"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{00838\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Move\ via\ mean\ curvature:\ not\ yet\ ready\ for\ prime\ time;\ see\ 'MeanMove.java'."{}}));}
+\DoxyCodeLine{00839\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_rad"{}},\textcolor{stringliteral}{"{}[12]"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Record\ radii,\ 1\ or\ 2,\ for\ use\ with\ 'logdiff'"{}}));}
+\DoxyCodeLine{00840\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}logmod"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Use\ rad1,\ rad2\ to\ compute\ logdiff\ values\ (r2-\/r1/r1)"{}}));}
+\DoxyCodeLine{00841\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_stream"{}},\textcolor{stringliteral}{"{}[-\/f\ \{f..\}]\ [-\/v\ \{z..\}]\ -\/[ad]"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Populate\ 'curveVector'\ with\ "{}}+}
+\DoxyCodeLine{00842\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}selected\ streamlines:\ '-\/f'\ (default),\ start\ at\ barycenters\ of\ given\ faces;\ "{}}\ +}
+\DoxyCodeLine{00843\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}'-\/z',\ from\ given\ points\ (relative\ to\ 'domainData';\ '-\/a'\ append\ to\ current;\ 'd'\ donwhill\ (up\ is\ default).\ "{}}+}
+\DoxyCodeLine{00844\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}(Must\ run\ 'set\_rad'\ and\ 'set\_diff'\ first.)"{}}));}
+\DoxyCodeLine{00845\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}disp"{}},\textcolor{stringliteral}{"{}-\/b\ \{f..\}\ [normal\ options\ ..]"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Pick\ off\ '-\/b'\ option\ to\ "{}}+}
+\DoxyCodeLine{00846\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}dispay\ one\ or\ more\ streamlines,\ set\ other\ options\ through\ normal\ processing.\ If\ no\ faces\ are\ "{}}+}
+\DoxyCodeLine{00847\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}given,\ display\ 'curveVector'\ entries\ (if\ any\ exist)."{}}));}
+\DoxyCodeLine{00848\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}export"{}},\textcolor{stringliteral}{"{}\{pnum\}"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}export\ a\ copy\ of\ 'domainData'\ (the\ max\ (eucl)\ "{}}+}
+\DoxyCodeLine{00849\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}packing\ behind\ the\ scenes)\ to\ pack\ pnum"{}}));}
+\DoxyCodeLine{00850\ \ \ \ \ \}}
+\DoxyCodeLine{00851\ \ \ \ \ }
+\DoxyCodeLine{00852\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ helpInfo()\ \{}
+\DoxyCodeLine{00853\ \ \ \ \ \ \ \ \ helpMsg(\textcolor{stringliteral}{"{}Commands\ for\ PackExtender\ "{}}+extensionAbbrev+\textcolor{stringliteral}{"{}\ (Curvature\ Flow)"{}});}
+\DoxyCodeLine{00854\ \ \ \ \ \ \ \ \ helpMsg(\textcolor{stringliteral}{"{}\ \ chg\_aims\ -\/[it]\ \{x\}\ \{v..\}\ \ \ \ Set\ by\ 'increment'\ or\ 'parameter'\ x\(\backslash\)n"{}}+}
+\DoxyCodeLine{00855\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ \(\backslash\)n"{}}+\ }
+\DoxyCodeLine{00856\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ \(\backslash\)n"{}}+}
+\DoxyCodeLine{00857\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ set\_rad\_rat\ -\/q\{p\}\ \ \ \ \ Set\ radius\ ratio\ vector\ 'parent/p'\ (default\ to\ 'domainPack')\(\backslash\)n"{}});}
+\DoxyCodeLine{00858\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ "{}\ \ adr\ -\/q\{p1\}\ -\/q\{p2\}\ a\ \ \ \ \ Setting\ radii\ using\ dom/range\ vector"{});}}
+\DoxyCodeLine{00859\ \ \ \ \ \}}
+\DoxyCodeLine{00860\ \ \ \ \ }
+\DoxyCodeLine{00861\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ StartUpMsg()\ \{}
+\DoxyCodeLine{00862\ \ \ \ \ \ \ \ \ helpMsg(\textcolor{stringliteral}{"{}\(\backslash\)nOverview\ of\ PackExtender\ "{}}+extensionAbbrev+\textcolor{stringliteral}{"{}\ (Curvature\ Flow):"{}});}
+\DoxyCodeLine{00863\ \ \ \ \ \ \ \ \ helpMsg(\textcolor{stringliteral}{"{}The\ goal\ is\ to\ manipulate\ the\ relative\ angle\ sums\ (resp.\ radii,\ aims)\ of"{}}+}
+\DoxyCodeLine{00864\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ two\ packings\ (with\ identical\ combinatorics).\ "{}}+}
+\DoxyCodeLine{00865\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}On\ startup,\ CF\ stores\ the\ parent\ packing\ as\ 'domainPack'\ "{}}\ +}
+\DoxyCodeLine{00866\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}(converted\ to\ euclidean)."{}}+}
+\DoxyCodeLine{00867\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Typically,\ the\ parent,\ 'packData',\ is\ then\ modified\ and\ angle\ sum,\ aim,\ or\ "{}}+}
+\DoxyCodeLine{00868\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}radii\ ratios\ are\ stored;\ e.g.,\ (angle\ sum\ in\ 'packData')\ -\/\ (ang\ sum\ in\ 'domainPack')."{}}+}
+\DoxyCodeLine{00869\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Calling\ 'chg\_aims',\ 'chg\_rad',\ or\ 'chg\_aim'\ will\ apply\ the\ vector\ of\ stored\ "{}}}
+\DoxyCodeLine{00870\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}changes\ to\ 'packData',\ after\ which\ the\ user\ applies\ additional\ manipulations,\ "{}}+}
+\DoxyCodeLine{00871\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}such\ as\ repacking.\ "{}}+}
+\DoxyCodeLine{00872\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ user\ can\ also\ reset\ the\ angle/radii/aim\ differences\ "{}}+}
+\DoxyCodeLine{00873\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}for\ comparison\ of\ 'packData'\ to\ pack\ p\ with\ call\ 'set\_ang\_diff'\ "{}}+}
+\DoxyCodeLine{00874\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}(resp.\ 'set\_rad\_rat',\ 'set\_aim\_diff').\ These\ calls\ default\ to\ the\ original\ "{}}}
+\DoxyCodeLine{00875\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}comparisons\ of\ 'packData'\ to\ 'domainPack'.\(\backslash\)n"{}});}
+\DoxyCodeLine{00876\ \ \ \ \ \ \ \ \ helpInfo();\ \textcolor{comment}{//\ print\ the\ commands}}
+\DoxyCodeLine{00877\ \ \ \ \ \}}
+\DoxyCodeLine{00878\ \ \ \ \ }
+\DoxyCodeLine{00879\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ interp(\textcolor{keywordtype}{double}\ t,Integer\ start)\ \{}
+\DoxyCodeLine{00880\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1.0;}
+\DoxyCodeLine{00881\ \ \ \ \ \}}
+\DoxyCodeLine{00882\ \}}
+
+\end{DoxyCode}

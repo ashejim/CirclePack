@@ -1,0 +1,278 @@
+\doxysection{packing.\+Read\+Write Class Reference}
+\label{classpacking_1_1_read_write}\index{packing.ReadWrite@{packing.ReadWrite}}
+
+
+Read Write.  
+
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static int \textbf{ readpack} (Buffered\+Reader fp, \textbf{ Pack\+Data} p, String filename)
+\begin{DoxyCompactList}\small\item\em Read new circle packing (or data for existing packing) into pack \textquotesingle{}p\textquotesingle{} from an open file. Return 0 on error. Key "{}\+NODECOUNT:\+"{} or "{}\+TRIANTULATION:\+"{} indicates new packing, in which case basic combinatorics are read; "{}\+CHECKCOUNT:\+"{} indicates data for \textquotesingle{}p\textquotesingle{}; "{}\+TILECOUNT:\+"{} indicates tiling information (tiles and their surrounding vertex indices);$\ast$ "{}\+TRIANGULATION:\+"{} indicates triples forming faces. (OBE:\+ New packing in \textquotesingle{}Lite\textquotesingle{} form starts with magic number 1234321.). \end{DoxyCompactList}\item 
+static int \textbf{ write\+Pack} (Buffered\+Writer file, \textbf{ Pack\+Data} p, int act, boolean append)  throws IOException 
+\begin{DoxyCompactList}\small\item\em Write circle packing p to an open \textquotesingle{}file\textquotesingle{}. Return 0 on error. If basic combinatoric data is to be included, use key "{}\+NODECOUNT:\+"{}; if only ancillary data is to be included, use "{}\+CHECKCOUNT:\+"{}. (Note:\+ specialized routines may be necessary:\+ eg., when aims are specified, only the non-\/default ones are included.). \end{DoxyCompactList}\item 
+static int \textbf{ write\+DCEL} (Buffered\+Writer fp, \textbf{ Pack\+DCEL} pdcel, boolean dual)  throws IOException 
+\begin{DoxyCompactList}\small\item\em Write $\ast$.dcel output; this format is tentative as of 4/\+2017. \end{DoxyCompactList}\item 
+static int \textbf{ r\+ON} (int old\+\_\+v)
+\begin{DoxyCompactList}\small\item\em translation needed when reading "{}\+BOUQUET"{}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static double \textbf{ TOLER} =.\+0000000001
+\item 
+static double \textbf{ OKERR} =.\+000000001
+\item 
+static final int \textbf{ MAX\+\_\+\+ACCUR} =15
+\item 
+static final int \textbf{ MAX\+\_\+\+PETALS} =1000
+\item 
+static int[$\,$] \textbf{ read\+Old\+New}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Read Write. 
+
+Definition at line \textbf{ 45} of file \textbf{ Read\+Write.\+java}.
+
+
+
+\label{doc-func-members}
+\doxysubsection{Member Function Documentation}
+\index{packing.ReadWrite@{packing.ReadWrite}!readpack@{readpack}}
+\index{readpack@{readpack}!packing.ReadWrite@{packing.ReadWrite}}
+\doxysubsubsection{readpack()}
+{\footnotesize\ttfamily \label{classpacking_1_1_read_write_a373d5c53b3bdac14eaee0678226d213d} 
+int packing.\+Read\+Write.\+readpack (\begin{DoxyParamCaption}\item[{Buffered\+Reader}]{fp}{, }\item[{\textbf{ Pack\+Data}}]{p}{, }\item[{String}]{filename}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Read new circle packing (or data for existing packing) into pack \textquotesingle{}p\textquotesingle{} from an open file. Return 0 on error. Key "{}\+NODECOUNT:\+"{} or "{}\+TRIANTULATION:\+"{} indicates new packing, in which case basic combinatorics are read; "{}\+CHECKCOUNT:\+"{} indicates data for \textquotesingle{}p\textquotesingle{}; "{}\+TILECOUNT:\+"{} indicates tiling information (tiles and their surrounding vertex indices);$\ast$ "{}\+TRIANGULATION:\+"{} indicates triples forming faces. (OBE:\+ New packing in \textquotesingle{}Lite\textquotesingle{} form starts with magic number 1234321.). 
+
+\begin{DoxyReturn}{Returns}
+bit-\/coded integer for what was read as follows:\+ \begin{DoxyVerb}    1: 00001 basic combinatorics (new pack) 
+    2: 00002 geometry 
+    3: 00004 non-default inv_dist & aimsinv_dist
+    4: 00010 radii 
+    5: 00020 centers 
+    6: 00040 angle sums
+    7: 00100 vertex_map (if it exists) 
+    8: 00200 non-empty lists vlist/flist/elist 
+    9: 00400 colors (circle or face, non-default)
+   10: 01000 vertex/face plotFlags 
+   11: 02000 xyz points 
+   12: 04000 edge-pairing Mobius transformations
+   13: 010000 triangles 
+   14: 020000 tiling data 
+   15: 040000 display flags
+   16: 0100000 non-empty global lists Vlist/Flist/Elist 
+   17: 0200000 dual tiling (only, and as 'TILECOUNT:' file) 
+   18: 0400000 misc other: interactions
+   19: 01000000 utility integers 
+   20: 02000000 utility double values 
+   21: 04000000 utility complex values
+   22: 010000000 neutral, 
+       and used so we can return non-zero 'flags'
+
+    CAUTION: responsibility of calling routine 
+    to update pack info (eg., aims, centers, etc) 
+    based on bits set in return value. For a new
+    pack, reading vertex_map, lists, or colors 
+    causes defaults to be set before info is 
+    read in. When pack is not new pack 
+    (CHECKCOUNT case), the info read in 
+    supercedes that in pack.
+
+    CAUTION: this may be instanceof 'TileData' 
+             without being a tiling.
+
+    In CHECKCOUNT case, return 0 if checkcount 
+    exceeds nodeCount; if checkcount <= nodeCount,
+    then FLOWER info could be inconsistent with
+    the packing.
+
+    NEUTRAL is for data that doesn't depend on 
+    nodeCount match.
+
+    4/2021: Processing dcel structure changes 
+    vertex indices, so we use 'readOldNew[]' 
+    and call 'rON' to read data based on 
+    old indices into appropriate new indices.
+\end{DoxyVerb}
+
+\end{DoxyReturn}
+
+\begin{DoxyParams}{Parameters}
+{\em fp} & Buffered\+Reader, (opened by calling routine) \\
+\hline
+{\em p} & \doxyref{Pack\+Data}{p.}{classpacking_1_1_pack_data}, (instantiated by calling routine) \\
+\hline
+{\em filename} & String \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int \textquotesingle{}flags\textquotesingle{} bit-\/encodes what was read, -\/1 or 0 on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 120} of file \textbf{ Read\+Write.\+java}.
+
+\index{packing.ReadWrite@{packing.ReadWrite}!rON@{rON}}
+\index{rON@{rON}!packing.ReadWrite@{packing.ReadWrite}}
+\doxysubsubsection{rON()}
+{\footnotesize\ttfamily \label{classpacking_1_1_read_write_a1b11e016ab07c49d230d47b21104bcf8} 
+int packing.\+Read\+Write.\+r\+ON (\begin{DoxyParamCaption}\item[{int}]{old\+\_\+v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+translation needed when reading "{}\+BOUQUET"{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em old\+\_\+v} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2167} of file \textbf{ Read\+Write.\+java}.
+
+\index{packing.ReadWrite@{packing.ReadWrite}!writeDCEL@{writeDCEL}}
+\index{writeDCEL@{writeDCEL}!packing.ReadWrite@{packing.ReadWrite}}
+\doxysubsubsection{writeDCEL()}
+{\footnotesize\ttfamily \label{classpacking_1_1_read_write_ac17d066cd0aa7aca307794e8c46cd722} 
+int packing.\+Read\+Write.\+write\+DCEL (\begin{DoxyParamCaption}\item[{Buffered\+Writer}]{fp}{, }\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{boolean}]{dual}{}\end{DoxyParamCaption}) throws IOException\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Write $\ast$.dcel output; this format is tentative as of 4/\+2017. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fp} & Buffered\+Writer \\
+\hline
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em dual} & boolean, if yes, write the dual dcel \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int, 0 on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2148} of file \textbf{ Read\+Write.\+java}.
+
+\index{packing.ReadWrite@{packing.ReadWrite}!writePack@{writePack}}
+\index{writePack@{writePack}!packing.ReadWrite@{packing.ReadWrite}}
+\doxysubsubsection{writePack()}
+{\footnotesize\ttfamily \label{classpacking_1_1_read_write_a83a1a32bf83b4b74260a1441491ff5ae} 
+int packing.\+Read\+Write.\+write\+Pack (\begin{DoxyParamCaption}\item[{Buffered\+Writer}]{file}{, }\item[{\textbf{ Pack\+Data}}]{p}{, }\item[{int}]{act}{, }\item[{boolean}]{append}{}\end{DoxyParamCaption}) throws IOException\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Write circle packing p to an open \textquotesingle{}file\textquotesingle{}. Return 0 on error. If basic combinatoric data is to be included, use key "{}\+NODECOUNT:\+"{}; if only ancillary data is to be included, use "{}\+CHECKCOUNT:\+"{}. (Note:\+ specialized routines may be necessary:\+ eg., when aims are specified, only the non-\/default ones are included.). 
+
+When \textquotesingle{}append\textquotesingle{} is set, just add specified data (without NODECOUNT or CHECKCOUNT) to existing file before \textquotesingle{}END\textquotesingle{} (assume file is open in "{}r+"{} read/\+write mode, positioned already, and will be closed by the calling routine; do not allow 0001 bit to be set in act).
+
+Data to write specified in \textquotesingle{}act\textquotesingle{} with bit-\/code as follows:\+
+
+basic combinatoric info:\+ ~\newline
+ 1:\+ 00001 nodecount, a/\+b/\+c, flowers, packname (else (if not append), CHECKCOUNT:\+ nodecount)
+
+default standard:\+ 2:\+ 00002 geometry 3:\+ 00004 non-\/default inv\+\_\+dist \& aims 4:\+ 00010 radii
+
+optional:\+ 5:\+ 00020 centers 6:\+ 00040 angle sums
+
+7:\+ 00100 vertex\+\_\+map (if it exists) 8:\+ 00200 lists of verts/\+faces/\+edges (non default) 9:\+ 00400 colors (non default)
+
+10:\+ 01000 nonzero vertex plot\+\_\+flags 11:\+ 02000 xyz data 12:\+ 04000 edge-\/pairing \doxyref{Mobius}{p.}{classmath_1_1_mobius} transformations
+
+13:\+ 010000 triangles 14:\+ 020000 tiling data 15:\+ 040000 display flags
+
+16:\+ 0100000 global list Verts/\+\+Faces/\+\+Edges (non default) 17:\+ 0200000 dual faces as a tiling 18:\+ 0400000 misc other:\+ interactions
+
+19:\+ 01000000 utility integers 20:\+ 02000000 utility double values 21:\+ 04000000 utility complex values
+
+22:\+ 010000000 neutral (if nothing else) 23:\+ 020000000 schwarzians, if they exist
+
+Note:\+ standard write would be act= 020017, max would be act=031777. 
+\begin{DoxyParams}{Parameters}
+{\em file} & Buffered\+Writer \\
+\hline
+{\em p} & \doxyref{Pack\+Data}{p.}{classpacking_1_1_pack_data} \\
+\hline
+{\em act} & int \\
+\hline
+{\em append} & boolean \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1661} of file \textbf{ Read\+Write.\+java}.
+
+
+
+\label{doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\index{packing.ReadWrite@{packing.ReadWrite}!MAX\_ACCUR@{MAX\_ACCUR}}
+\index{MAX\_ACCUR@{MAX\_ACCUR}!packing.ReadWrite@{packing.ReadWrite}}
+\doxysubsubsection{MAX\_ACCUR}
+{\footnotesize\ttfamily \label{classpacking_1_1_read_write_a6c742d720cad510a102a16b61056f65a} 
+final int packing.\+Read\+Write.\+MAX\+\_\+\+ACCUR =15\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \textbf{ 49} of file \textbf{ Read\+Write.\+java}.
+
+\index{packing.ReadWrite@{packing.ReadWrite}!MAX\_PETALS@{MAX\_PETALS}}
+\index{MAX\_PETALS@{MAX\_PETALS}!packing.ReadWrite@{packing.ReadWrite}}
+\doxysubsubsection{MAX\_PETALS}
+{\footnotesize\ttfamily \label{classpacking_1_1_read_write_adb91b3ed57e9462f19df53a679e6513c} 
+final int packing.\+Read\+Write.\+MAX\+\_\+\+PETALS =1000\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \textbf{ 50} of file \textbf{ Read\+Write.\+java}.
+
+\index{packing.ReadWrite@{packing.ReadWrite}!OKERR@{OKERR}}
+\index{OKERR@{OKERR}!packing.ReadWrite@{packing.ReadWrite}}
+\doxysubsubsection{OKERR}
+{\footnotesize\ttfamily \label{classpacking_1_1_read_write_a0b52c453a1cc3e89525ab818c50ee48d} 
+double packing.\+Read\+Write.\+OKERR =.\+000000001\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \textbf{ 48} of file \textbf{ Read\+Write.\+java}.
+
+\index{packing.ReadWrite@{packing.ReadWrite}!readOldNew@{readOldNew}}
+\index{readOldNew@{readOldNew}!packing.ReadWrite@{packing.ReadWrite}}
+\doxysubsubsection{readOldNew}
+{\footnotesize\ttfamily \label{classpacking_1_1_read_write_ae1f370439614262dd2f00b4aef5d8384} 
+int [$\,$] packing.\+Read\+Write.\+read\+Old\+New\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \textbf{ 52} of file \textbf{ Read\+Write.\+java}.
+
+\index{packing.ReadWrite@{packing.ReadWrite}!TOLER@{TOLER}}
+\index{TOLER@{TOLER}!packing.ReadWrite@{packing.ReadWrite}}
+\doxysubsubsection{TOLER}
+{\footnotesize\ttfamily \label{classpacking_1_1_read_write_a500ad92af2dc51614b32c314e04fb059} 
+double packing.\+Read\+Write.\+TOLER =.\+0000000001\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Definition at line \textbf{ 47} of file \textbf{ Read\+Write.\+java}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+C:\+/\+\+Users/\+ashej/\+my\+Git\+Repos/\+\+Circle\+Pack/\+src/\+packing/\+\textbf{ Read\+Write.\+java}\end{DoxyCompactItemize}

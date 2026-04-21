@@ -1,0 +1,292 @@
+\doxysection{Pack\+Extender.\+java}
+\label{_pack_extender_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/packing/PackExtender.java@{C:/Users/ashej/myGitRepos/CirclePack/src/packing/PackExtender.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }packing;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.Font;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.Graphics2D;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.Image;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.geom.AffineTransform;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.geom.Rectangle2D;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.image.BufferedImage;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ javax.swing.ImageIcon;}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ dcel.PackDCEL;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ exceptions.ExtenderException;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ exceptions.PackingException;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ images.CPIcon;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ input.CommandStrParser;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ input.MyConsole;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ mytools.MyTool;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ util.CmdStruct;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ util.PopupBuilder;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ util.UtilPacket;}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00058\ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keyword}{class\ }PackExtender\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{public}\ String\ extensionType;\ \textcolor{comment}{//\ 'PackExtender'\ type,\ e.g.,\ RIEMANN-\/HILBERT}}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{public}\ String\ extensionAbbrev;\ \textcolor{comment}{//\ Abbreviation,\ e.g.,'RH','rh',\ used\ in\ commands}}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{public}\ CPdrawing\ cpDrawing;\ \ \textcolor{comment}{//\ keep\ cpDrawing\ because\ 'PackData'\ can\ get\ swapped\ out.}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{public}\ PackData\ extenderPD;\ \ \textcolor{comment}{//\ every\ 'PackExtender'\ is\ associated\ with\ a\ single\ packing}}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keyword}{public}\ PackDCEL\ pdc;\ \ \ \ \ \ \ \textcolor{comment}{//\ convenience}}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{public}\ String\ iconName=\textcolor{stringliteral}{"{}GUI/Xtender.png"{}};\ \ \textcolor{comment}{//\ Extender\ icon\ in\ Resources/Icon}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{public}\ MyTool\ XtenderTool;}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keyword}{public}\ String\ toolTip;\ \ \textcolor{comment}{//\ for\ icon\ and\ startup\ message}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ running;}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{public}\ UtilPacket\ extUP;\ \ \textcolor{comment}{//\ 'UtilPacket'\ for\ capturing\ values\ from\ command\ calls}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (e.g.,\ see\ 'CommandStrParser.valueExecute')}}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{public}\ Vector<CmdStruct>\ cmdStruct;\ \textcolor{comment}{//\ catalog\ of\ commands,\ flags,\ descriptions}}
+\DoxyCodeLine{00071\ \ \ \ \ }
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keyword}{public}\ PackExtender(PackData\ p)\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ extenderPD=p;}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ pdc=p.packDCEL;}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ cpDrawing=p.cpDrawing;}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ running=\textcolor{keyword}{false};}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ toolTip=\textcolor{stringliteral}{"{}No\ startup\ information\ provided\ on\ this\ PackExtender"{}};}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ XtenderTool=\textcolor{keyword}{null};}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ extUP=\textcolor{keyword}{null};}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ initCmdStruct();}
+\DoxyCodeLine{00082\ \ \ \ \ \}}
+\DoxyCodeLine{00083\ \ \ \ \ }
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cmdParser(String\ cmd,Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ Vector<String>\ items=\textcolor{keyword}{null};}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ============\ help\ ===============}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}help"{}}))\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ helpInfo();}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ============\ export\ ============}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}export"{}}))\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)flagSegs.get(0);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pnum=Integer.parseInt((String)items.get(0));}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPdrawing\ cpS=CPBase.cpDrawing[pnum];}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cpS!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackData\ p=extenderPD.copyPackTo();}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ CirclePack.cpb.swapPackData(p,\ pnum,\ \textcolor{keyword}{false}).nodeCount;}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}|"{}}+extensionType+\textcolor{stringliteral}{"{}|\ command\ not\ found"{}});}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00115\ \ \ \ \ \}}
+\DoxyCodeLine{00116\ \ \ \ \ }
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keyword}{public}\ UtilPacket\ valueParser(String\ cmd,Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ nothing\ to\ do\ (yet);\ commands\ generally\ handled\ in\ the\ derived\ class\ }}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00126\ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \ \ }
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ swapExtenderPD(PackData\ newPD)\ \{}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newPD==\textcolor{keyword}{null})}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ CPdrawing\ holdcpS=extenderPD.cpDrawing;}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ holdpnum=extenderPD.packNum;}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ extenderPD=newPD.copyPackTo();}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ extenderPD.packNum=holdpnum;}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ extenderPD.packExtensions=\textcolor{keyword}{new}\ Vector<PackExtender>(1);}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ extenderPD.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ pdc=newPD.packDCEL;}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reconnect\ pack\ and\ screen}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ extenderPD.cpDrawing=holdcpS;}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ holdcpS.setPackData(extenderPD);}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ extenderPD.setGeometry(newPD.hes);}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ extenderPD.nodeCount;}
+\DoxyCodeLine{00155\ \ \ \ \ \}}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ helpInfo()\ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ helpMsg(\textcolor{stringliteral}{"{}Commands\ for\ PackExtender\ "{}}+extensionType);}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<cmdStruct.size();j++)\ \{}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ CmdStruct\ cS=cmdStruct.get(j);}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ bstr=\textcolor{keyword}{new}\ StringBuilder(cS.xCmd);}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cS.xFlags!=\textcolor{keyword}{null}\ \&\&\ cS.xFlags.length()>0)}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bstr.append(\textcolor{stringliteral}{"{}\ \ "{}}+cS.xFlags);}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cS.xHint!=\textcolor{keyword}{null}\ \&\&\ cS.xHint.length()>0)}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bstr.append(\textcolor{stringliteral}{"{}\ \ "{}}+cS.xHint);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cS.xDescription!=\textcolor{keyword}{null}\ \&\&\ cS.xDescription.length()>0)}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bstr.append(\textcolor{stringliteral}{"{}\ \ "{}}+cS.xDescription);}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ helpMsg(bstr.toString());}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00173\ \ \ \ \ \}}
+\DoxyCodeLine{00174\ \ \ \ \ }
+\DoxyCodeLine{00181\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ registerXType()\ \{}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ Iterator<PackExtender>\ pXs=extenderPD.packExtensions.iterator();}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (pXs.hasNext())\ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ PackExtender\ pext=(PackExtender)pXs.next();}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pext.extensionAbbrev==\textcolor{keyword}{this}.extensionAbbrev)\ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ running=\textcolor{keyword}{false};}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ PackingException(\textcolor{stringliteral}{"{}Packing\ "{}}+extenderPD.packNum+}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ already\ has\ a\ PackExtender\ "{}}+\textcolor{stringliteral}{"{}'"{}}+\textcolor{keyword}{this}.extensionAbbrev+\textcolor{stringliteral}{"{}'"{}});}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ makeXTool();}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ running=\textcolor{keyword}{true};}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ setHelpInfo();}
+\DoxyCodeLine{00194\ \ \ \ \ \}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ makeXTool()\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ XtenderTool=\textcolor{keyword}{new}\ MyTool(\textcolor{keyword}{new}\ CPIcon(iconName),\textcolor{keyword}{null},\textcolor{keyword}{null},extensionAbbrev,}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extensionAbbrev+\textcolor{stringliteral}{"{}:\ "{}}+toolTip,}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}XTEND:"{}},\textcolor{keyword}{false},\textcolor{keyword}{null},(PopupBuilder)\textcolor{keyword}{null});}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ embellish\ icon}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ ImageIcon\ startImg\ =XtenderTool.getCPIcon().getImageIcon();}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ Image\ img=startImg.getImage();}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ BufferedImage\ bufImage=\textcolor{keyword}{new}\ BufferedImage(img.getWidth(\textcolor{keyword}{null}),16,BufferedImage.TYPE\_INT\_ARGB);}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ Graphics2D\ g2d=bufImage.createGraphics();}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ g2d.drawImage(img,\textcolor{keyword}{new}\ AffineTransform(1,0,0,1,0,0),\textcolor{keyword}{null});}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ String\ abbrev=extensionAbbrev.trim();}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (abbrev.length()>=2)}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ abbrev=abbrev.substring(0,2);}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (abbrev.length()>0)}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ abbrev=abbrev.substring(0,1);}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ abbrev=abbrev.toLowerCase();}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ Rectangle2D.Double\ rect=\textcolor{keyword}{new}\ Rectangle2D.Double(14,1,18,14);}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ g2d.setColor(Color.WHITE);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ g2d.fill(rect);}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ g2d.setColor(Color.BLACK);}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ g2d.draw(rect);}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ g2d.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}Helvetica"{}},Font.ITALIC,10));}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ g2d.drawString(abbrev,18,11);}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ XtenderTool.getCPIcon().setImageIcon(\textcolor{keyword}{new}\ ImageIcon(bufImage));}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ XtenderTool.setButtonIcon();}
+\DoxyCodeLine{00232\ \ \ \ \ \}}
+\DoxyCodeLine{00233\ \ \ \ \ }
+\DoxyCodeLine{00238\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ xStatus()\ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ running;}
+\DoxyCodeLine{00240\ \ \ \ \ \}}
+\DoxyCodeLine{00241\ \ \ \ \ }
+\DoxyCodeLine{00242\ \ \ \ \ \textcolor{keyword}{public}\ String\ getType()\ \{}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(extensionType);}
+\DoxyCodeLine{00244\ \ \ \ \ \}}
+\DoxyCodeLine{00245\ \ \ \ \ }
+\DoxyCodeLine{00246\ \ \ \ \ \textcolor{keyword}{public}\ String\ getAbbrev()\ \{}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(extensionAbbrev);}
+\DoxyCodeLine{00248\ \ \ \ \ \}}
+\DoxyCodeLine{00249\ }
+\DoxyCodeLine{00254\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initCmdStruct()\ \{}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ cmdStruct\ =\ \textcolor{keyword}{new}\ Vector<CmdStruct>(5);}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}help"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}List\ extender\ commands\ in\ 'Message'\ panel"{}}));}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}export"{}},\textcolor{stringliteral}{"{}p"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Export\ a\ copy\ of\ the\ parent\ packing\ to\ pack\ p"{}}));}
+\DoxyCodeLine{00258\ \ \ \ \ \}}
+\DoxyCodeLine{00259\ \ \ \ \ }
+\DoxyCodeLine{00264\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ killMe()\ \{}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ extenderPD.packExtensions.remove((Object)\textcolor{keyword}{this});}
+\DoxyCodeLine{00266\ \ \ \ \ \}}
+\DoxyCodeLine{00267\ \ \ \ \ }
+\DoxyCodeLine{00271\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ helpMsg(String\ helpinfo)\ \{}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(helpinfo);}
+\DoxyCodeLine{00273\ \ \ \ \ \}}
+\DoxyCodeLine{00274\ \ \ \ \ }
+\DoxyCodeLine{00278\ \ \ \ \ \textcolor{keyword}{public}\ PackExtender\ transfer(\textcolor{keywordtype}{int}\ nodecount)\ \{}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nodecount!=extenderPD.nodeCount)\ \{}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}Note:\ "{}}+extensionAbbrev+\textcolor{stringliteral}{"{}\ 'PackExtender'\ is\ lost\ due\ to\ nodeCount\ mismatch"{}});}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{this};}
+\DoxyCodeLine{00284\ \ \ \ \ \}}
+\DoxyCodeLine{00285\ \ \ \ \ }
+\DoxyCodeLine{00289\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ repaintMe()\ \{}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ PackControl.canvasRedrawer.paintMyCanvasses(extenderPD,\textcolor{keyword}{false});\ \ }
+\DoxyCodeLine{00291\ \ \ \ \ \}}
+\DoxyCodeLine{00292\ \ \ \ \ }
+\DoxyCodeLine{00299\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cpCommand(String\ cmdstr)\ \{}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ count=CommandStrParser.jexecute(extenderPD,cmdstr);}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ Oops(ex.getMessage());}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00307\ \ \ \ \ \}}
+\DoxyCodeLine{00308\ \ \ \ \ }
+\DoxyCodeLine{00316\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cpCommand(PackData\ p,String\ cmdstr)\ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ count=CommandStrParser.jexecute(p,cmdstr);}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ Oops(ex.getMessage());}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00324\ \ \ \ \ \}}
+\DoxyCodeLine{00325\ \ \ \ \ }
+\DoxyCodeLine{00330\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ Oops(String\ exmsg)\ \{}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ String\ str=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}|"{}}+extensionAbbrev+\textcolor{stringliteral}{"{}|\ exception:\ "{}}+exmsg);}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ExtenderException(str);}
+\DoxyCodeLine{00333\ \ \ \ \ \}}
+\DoxyCodeLine{00334\ \ \ \ \ }
+\DoxyCodeLine{00338\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ errorMsg(String\ errmsg)\ \{}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(extensionAbbrev+\textcolor{stringliteral}{"{}\ p"{}}+extenderPD.packNum+\textcolor{stringliteral}{"{}\ error:\ "{}}+errmsg);}
+\DoxyCodeLine{00340\ \ \ \ \ \}}
+\DoxyCodeLine{00341\ \ \ \ \ }
+\DoxyCodeLine{00345\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ msg(String\ msG)\ \{}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ CirclePack.cpb.myMsg(extensionAbbrev+\textcolor{stringliteral}{"{}\ p"{}}+extenderPD.packNum+\textcolor{stringliteral}{"{}:\ "{}}+msG);}
+\DoxyCodeLine{00347\ \ \ \ \ \}}
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ \ \ \ \ \textcolor{comment}{//\ Can\ be\ overridden\ to\ give\ general\ info\ on\ the\ extender;\ }}
+\DoxyCodeLine{00350\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ StartUpMsg()\ \{}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ helpMsg(toolTip);}
+\DoxyCodeLine{00352\ \ \ \ \ \}}
+\DoxyCodeLine{00353\ \ \ \ \ }
+\DoxyCodeLine{00359\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setHelpInfo()\ \{}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdStruct==\textcolor{keyword}{null}\ ||\ cmdStruct.size()==0)}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ StringBuilder\ helpinfo=\textcolor{keyword}{new}\ StringBuilder(toolTip+\textcolor{stringliteral}{"{}<br>"{}});}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ String\ str=\textcolor{keyword}{null};}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ helpinfo.append(\textcolor{stringliteral}{"{}<table\ border=\(\backslash\)"{}1\(\backslash\)"{}\ width=\(\backslash\)"{}100\%\(\backslash\)"{}></p><tr>"{}}+}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}<td\ width=\(\backslash\)"{}20\%\(\backslash\)"{}\ align=\(\backslash\)"{}left\(\backslash\)"{}\ valign=\(\backslash\)"{}top\(\backslash\)"{}><strong>Command:</strong></td>"{}}+}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}<td\ width=\(\backslash\)"{}18\%\(\backslash\)"{}\ align=\(\backslash\)"{}left\(\backslash\)"{}\ valign=\(\backslash\)"{}top\(\backslash\)"{}><strong>Flags:</strong></td>"{}}+}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}<td\ align=\(\backslash\)"{}left\(\backslash\)"{}\ valign=\(\backslash\)"{}top\(\backslash\)"{}><strong>Description:</strong></td>"{}}+}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}</tr>"{}});}
+\DoxyCodeLine{00369\ }
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<cmdStruct.size();j++)\ \{}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ CmdStruct\ cstr=cmdStruct.get(j);}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ strbuf=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}|"{}}+extensionAbbrev+\textcolor{stringliteral}{"{}|\ "{}});}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ helpinfo.append(\textcolor{stringliteral}{"{}<tr><td\ width=\(\backslash\)"{}20\%\(\backslash\)"{}\ align=\(\backslash\)"{}left\(\backslash\)"{}\ valign=\(\backslash\)"{}top\(\backslash\)"{}>"{}});}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((str=cstr.getxCmd())!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(str);}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ helpinfo.append(\textcolor{stringliteral}{"{}<font\ color=\(\backslash\)"{}blue\(\backslash\)"{}><strong>"{}}+}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str+\textcolor{stringliteral}{"{}</strong></font>\ "{}});}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ helpinfo.append(\textcolor{stringliteral}{"{}</td>"{}});}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ helpinfo.append(\textcolor{stringliteral}{"{}<td\ width=\(\backslash\)"{}18\%\(\backslash\)"{}\ align=\(\backslash\)"{}left\(\backslash\)"{}\ valign=\(\backslash\)"{}top\(\backslash\)"{}>"{}});}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((str=cstr.getxFlags())!=\textcolor{keyword}{null})\ \{\ }
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ "{}}+str);}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ helpinfo.append(str);}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ helpinfo.append(\textcolor{stringliteral}{"{}</td>"{}});}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ helpinfo.append(\textcolor{stringliteral}{"{}<td\ align=\(\backslash\)"{}left\(\backslash\)"{}\ valign=\(\backslash\)"{}top\(\backslash\)"{}>"{}});}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((str=cstr.getxDescrip())!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ helpinfo.append(str);}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ helpinfo.append(\textcolor{stringliteral}{"{}</td>"{}});}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ helpinfo.append(\textcolor{stringliteral}{"{}</tr>"{}});}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ MyConsole.add2CmdCompletion(strbuf.toString());}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ helpinfo.append(\textcolor{stringliteral}{"{}</table>"{}});}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ PackControl.helpHover.AddXtendInfo(extensionType,extensionAbbrev,helpinfo.toString());}
+\DoxyCodeLine{00395\ \ \ \ \ \}}
+\DoxyCodeLine{00396\ \ \ \ \ }
+\DoxyCodeLine{00397\ \}}
+\DoxyCodeLine{00398\ }
+\DoxyCodeLine{00399\ }
+
+\end{DoxyCode}

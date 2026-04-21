@@ -1,0 +1,160 @@
+\doxysection{Schwarz\+Adjust.\+java}
+\label{_schwarz_adjust_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/schwarzWork/SchwarzAdjust.java@{C:/Users/ashej/myGitRepos/CirclePack/src/schwarzWork/SchwarzAdjust.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }schwarzWork;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ combinatorics.komplex.Vertex;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ listManip.HalfLink;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ util.CmdStruct;}
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }SchwarzAdjust\ \textcolor{keyword}{extends}\ PackExtender\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{comment}{//\ mode\ names}}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ STANDARD=1;}
+\DoxyCodeLine{00039\ \ \ \ \ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ UNIFORM3=1.0-\/1.0/Math.sqrt(3.0);}
+\DoxyCodeLine{00041\ \ \ \ \ }
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{public}\ HalfLink\ adjEdges;\ \textcolor{comment}{//\ edges\ subject\ to\ adjustment}}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ mode;\ \textcolor{comment}{//\ mode\ of\ repacking}}
+\DoxyCodeLine{00044\ \ \ \ \ }
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{public}\ SchwarzAdjust(PackData\ p)\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ extenderPD=p;}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ extensionType=\textcolor{stringliteral}{"{}SCHWARZADJUST"{}};}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ extensionAbbrev=\textcolor{stringliteral}{"{}SA"{}};}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ toolTip=\textcolor{stringliteral}{"{}'SchwarzAdjust'\ is\ a\ test\ bench\ "{}}+}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}for\ using\ (intrinsic)\ schwarzians\ to\ "{}}+}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}circle\ pack\ on\ the\ sphere."{}};}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ registerXType();}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ rslt=1;}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!extenderPD.status\ ||\ extenderPD.nodeCount<4)}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rslt=0;}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (extenderPD.hes<=0)\ }
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rslt=cpCommand(extenderPD,\textcolor{stringliteral}{"{}geom\_to\_s"{}});}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}SA:\ failed\ converting\ to\ sph\ geom,\ or\ "{}}}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}other\ problem"{}});}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ running=\textcolor{keyword}{false};}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rslt==0)}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ running=\textcolor{keyword}{false};}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ start\ with\ some\ basic\ checking:}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (running)\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rslt!=0\ \&\&\ extenderPD.nodeCount>25)\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}SchwarzAdjust:\ "{}}}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\textcolor{stringliteral}{"{}currently\ limited\ to\ nodecounts\ <\ 26)"{}});}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rslt=0;}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rslt!=0)\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ initEdgeList(\textcolor{stringliteral}{"{}a"{}});}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00083\ \ \ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cmdParser(String\ cmd,\ Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ Vector<String>\ items\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flagSegs!=\textcolor{keyword}{null}\ \&\&\ flagSegs.size()>0)\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}init"{}}))\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ str=items.get(0);}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ initEdgeList(str);}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count+=adjEdges.size();}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}restart"{}}))\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ mode=1;\ \textcolor{comment}{//\ default}}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tmode=1;}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmode=Integer.parseInt(items.get(0));}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}didn't\ get\ 'mode'.\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mode=tmode;}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=extenderPD.nodeCount;j++)\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vertex\ v=extenderPD.packDCEL.vertices[j];}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode==STANDARD)\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!v.isBdry())\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HalfLink\ flower=v.getEdgeFlower();}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<HalfEdge>\ fits=flower.iterator();}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fits.hasNext())\ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=fits.next();}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he.setSchwarzian(0.0);}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ other\ modes?\ May\ want\ bdry\ conditions}}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ on\ some\ edges.}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=extenderPD.nodeCount;j++)\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vertex\ v=extenderPD.packDCEL.vertices[j];}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v.getNum()==3)\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HalfLink\ flower=v.getEdgeFlower();}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<HalfEdge>\ fits=flower.iterator();}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fits.hasNext())\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=fits.next();}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he.setSchwarzian(UNIFORM3);}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00141\ \ \ \ \ \}}
+\DoxyCodeLine{00142\ \ \ \ \ }
+\DoxyCodeLine{00152\ \textcolor{comment}{//\ \ public\ static\ SchVertStatus\ vertSchStatus(PackData\ p,Vertex\ vert)\ \{}}
+\DoxyCodeLine{00153\ \textcolor{comment}{//\ \ \ \ \ \ double[]\ ans=new\ double[2];}}
+\DoxyCodeLine{00154\ \textcolor{comment}{//\ \ \}}}
+\DoxyCodeLine{00155\ \ \ \ \ }
+\DoxyCodeLine{00163\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initEdgeList(String\ spec)\ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ HalfLink\ tmpnl=\textcolor{keyword}{new}\ HalfLink(extenderPD,spec);}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ adjEdges=\textcolor{keyword}{null};}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ Iterator<HalfEdge>\ hel=tmpnl.iterator();}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (hel.hasNext())\ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=hel.next();}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (he.isBdry())}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (he.origin.getNum()<=3\ ||\ he.twin.origin.getNum()<=3)}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ adjEdges.add(he);}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00175\ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \ \ }
+\DoxyCodeLine{00177\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ killMe()\ \{}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ super.killMe();}
+\DoxyCodeLine{00179\ \ \ \ \ \}}
+\DoxyCodeLine{00180\ \ \ \ \ }
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initCmdStruct()\ \{}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ super.initCmdStruct();}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}init"{}},\textcolor{stringliteral}{"{}\{spec\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}creates\ list\ of\ edges\ subject\ to\ adjustment;\ spec\ defaults\ to\ 'a'"{}}));}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}restart"{}},\textcolor{stringliteral}{"{}m"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}restart\ by\ initiating\ the\ schwarzians"{}}));}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}iter"{}},\textcolor{stringliteral}{"{}\{N\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}start\ a\ cycle\ of\ N\ adjustments"{}}));}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}quality"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Display\ the\ status\ of\ interior\ vertices."{}}));}
+\DoxyCodeLine{00192\ \ \ \ \ \}}
+\DoxyCodeLine{00193\ \ \ \ \ }
+\DoxyCodeLine{00194\ \}}
+
+\end{DoxyCode}

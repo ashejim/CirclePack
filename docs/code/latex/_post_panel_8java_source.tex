@@ -1,0 +1,555 @@
+\doxysection{Post\+Panel.\+java}
+\label{_post_panel_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/panels/PostPanel.java@{C:/Users/ashej/myGitRepos/CirclePack/src/panels/PostPanel.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }panels;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ input.FileDialogs;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ input.TrafficCenter;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.FlowLayout;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.Font;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.awt.event.ActionEvent;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.awt.event.ActionListener;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.util.HashMap;}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ javax.imageio.ImageIO;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ javax.swing.BorderFactory;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ javax.swing.BoxLayout;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ javax.swing.ButtonGroup;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ javax.swing.JButton;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ javax.swing.JCheckBox;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ javax.swing.JLabel;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ javax.swing.JRadioButton;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ javax.swing.border.LineBorder;}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00035\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }PostPanel\ \textcolor{keyword}{extends}\ JPanel\ implements\ ActionListener\ \{}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00038\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{comment}{//\ three\ panels}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{private}\ JPanel\ actionPanel;}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{private}\ JPanel\ flagPanel;}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{private}\ JPanel\ jpgPanel;}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{private}\ JButton\ dumpButton;}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{private}\ JButton\ aboutButton;}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{private}\ JButton\ goCkButton;}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keyword}{private}\ JPanel\ Misc;}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{private}\ JButton\ goButton;}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{private}\ JTextField\ flagField;}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{private}\ JRadioButton\ printButton;}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{private}\ JRadioButton\ appendButton;}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{private}\ JRadioButton\ fileButton;}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{private}\ ButtonGroup\ optionGroup;}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ popupBox;}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ jpgBox;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ facelabelBox;}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ cirlabelBox;}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ pathBox;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ unitcirBox;}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ facefillBox;}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ facecolorBox;}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ faceBox;}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ cirfillBox;}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ circcolorBox;}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ cirBox;}
+\DoxyCodeLine{00067\ \ \ \ \ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{protected}\ StringBuilder\ buildCmd;}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{private}\ HashMap<String,Boolean>\ checks;}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keyword}{public}\ PostPanel()\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ initGUI();}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ map\ for\ checkboxes\ and\ their\ boolean\ states}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ checks=\textcolor{keyword}{new}\ HashMap<String,Boolean>();}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}circles"{}},Boolean.valueOf(\textcolor{keyword}{true}));}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}cirfill"{}},Boolean.valueOf(\textcolor{keyword}{false}));}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}circolor"{}},Boolean.valueOf(\textcolor{keyword}{false}));}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}faces"{}},Boolean.valueOf(\textcolor{keyword}{false}));}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}facefill"{}},Boolean.valueOf(\textcolor{keyword}{false}));}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}facecolor"{}},Boolean.valueOf(\textcolor{keyword}{false}));}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}cirlabels"{}},Boolean.valueOf(\textcolor{keyword}{false}));}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}facelabels"{}},Boolean.valueOf(\textcolor{keyword}{false}));}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}unitcir"{}},Boolean.valueOf(\textcolor{keyword}{false}));}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}path"{}},Boolean.valueOf(\textcolor{keyword}{false}));}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}popup"{}},Boolean.valueOf(\textcolor{keyword}{true}));}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}save"{}},Boolean.valueOf(\textcolor{keyword}{true}));}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}append"{}},Boolean.valueOf(\textcolor{keyword}{false}));}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}print"{}},Boolean.valueOf(\textcolor{keyword}{false}));}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ checks.put(\textcolor{stringliteral}{"{}jpg"{}},Boolean.valueOf(\textcolor{keyword}{false}));}
+\DoxyCodeLine{00094\ \ \ \ \ \}}
+\DoxyCodeLine{00095\ \ \ \ \ }
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ initGUI()\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ setLayout(\textcolor{keyword}{new}\ BoxLayout(\textcolor{keyword}{this},BoxLayout.Y\_AXIS));}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ parts\ for\ top\ panel}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ JPanel\ topPanel=getCheckPanel();\ \textcolor{comment}{//\ put\ circle/face\ choices\ in}}
+\DoxyCodeLine{00101\ \textcolor{comment}{//\ \ \ \ \ \ topPanel.setPreferredSize(new\ Dimension(PackControl.ControlDim1.width-\/2,400));}}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ add(topPanel);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ advanced\ flag\ panel}}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ flagPanel\ =\ \textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{new}\ FlowLayout(FlowLayout.LEFT));}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ flagPanel.setBorder(BorderFactory.createTitledBorder(\textcolor{stringliteral}{"{}PostScript:\ explicit\ flags\ (advanced)"{}}));}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ flagField\ =\ \textcolor{keyword}{new}\ JTextField();}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ flagField.setPreferredSize(\textcolor{keyword}{new}\ Dimension(PackControl.ControlDim1.width-\/120,24));}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ goCkButton\ =\ \textcolor{keyword}{new}\ JButton(\textcolor{stringliteral}{"{}GO"{}});}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ goCkButton.setActionCommand(\textcolor{stringliteral}{"{}useFlags"{}});}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ goCkButton.setToolTipText(\textcolor{stringliteral}{"{}PostScript\ using\ the\ flags\ given\ to\ the\ right\ (see\ 'post'\ in\ Help)"{}});}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ goCkButton.setBackground(\textcolor{keyword}{new}\ Color(0,255,255));}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ goCkButton.setFont(\textcolor{keyword}{new}\ java.awt.Font(\textcolor{stringliteral}{"{}TrueType"{}},Font.ITALIC,14));}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ goCkButton.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.black,1,\textcolor{keyword}{false}));}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ goCkButton.setPreferredSize(\textcolor{keyword}{new}\ Dimension(30,24));}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ goCkButton.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ flagPanel.add(goCkButton);}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ flagPanel.add(flagField);}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ flagPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(PackControl.ControlDim1.width-\/2,60));\ \ \textcolor{comment}{//\ 45));}}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ add(flagPanel);}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ panel\ with\ buttons\ for\ JPG\ output}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ jpgPanel\ =\ \textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{new}\ FlowLayout(FlowLayout.LEADING));}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ dumpButton\ =\ \textcolor{keyword}{new}\ JButton(\textcolor{stringliteral}{"{}ScreenDump\ (JPG)"{}});}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ dumpButton.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ dumpButton.setActionCommand(\textcolor{stringliteral}{"{}canvas2JPG"{}});}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ dumpButton.setToolTipText(\textcolor{stringliteral}{"{}Dump\ the\ current\ screen\ as\ *.jpg"{}});}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ dumpButton.setPreferredSize(\textcolor{keyword}{new}\ Dimension(165,20));}
+\DoxyCodeLine{00131\ \textcolor{comment}{//\ \ \ \ \ \ dumpButton.setBounds(2,66,130,20);}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ aboutButton\ =\ \textcolor{keyword}{new}\ JButton(\textcolor{stringliteral}{"{}AboutImage\ (JPG)"{}});}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ aboutButton.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ aboutButton.setActionCommand(\textcolor{stringliteral}{"{}aboutJPG"{}});}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ aboutButton.setToolTipText(\textcolor{stringliteral}{"{}Save\ the\ 'About'\ image\ as\ *.jpg"{}});}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ aboutButton.setPreferredSize(\textcolor{keyword}{new}\ Dimension(165,20));}
+\DoxyCodeLine{00138\ \textcolor{comment}{//\ \ \ \ \ \ aboutButton.setBounds(2,46,130,20);}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ jpgPanel.add(dumpButton);}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ jpgPanel.add(aboutButton);\ \ \ \ \ \ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ jpgPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(PackControl.ControlDim1.width-\/2,35));}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ add(jpgPanel);}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ options\ button\ group,\ action\ panel}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ actionPanel\ =\ \textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{new}\ FlowLayout(FlowLayout.CENTER));}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ actionPanel.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.red,2,\textcolor{keyword}{false}));}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ JLabel\ actLabel=\textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}Action:"{}});}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ actLabel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(80,20));}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ fileButton\ =\ \textcolor{keyword}{new}\ JRadioButton();}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ fileButton.setText(\textcolor{stringliteral}{"{}Save"{}});}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ fileButton.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},Font.ITALIC,12));}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ fileButton.setSelected(\textcolor{keyword}{true});}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ fileButton.setActionCommand(\textcolor{stringliteral}{"{}save"{}});}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ fileButton.setPreferredSize(\textcolor{keyword}{new}\ Dimension(100,20));}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ appendButton\ =\ \textcolor{keyword}{new}\ JRadioButton();}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ appendButton.setText(\textcolor{stringliteral}{"{}Append"{}});}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ appendButton.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},Font.ITALIC,12));}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ appendButton.setActionCommand(\textcolor{stringliteral}{"{}append"{}});}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ appendButton.setPreferredSize(\textcolor{keyword}{new}\ Dimension(100,20));}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ printButton\ =\ \textcolor{keyword}{new}\ JRadioButton();}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ printButton.setText(\textcolor{stringliteral}{"{}Print"{}});}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ printButton.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},Font.ITALIC,12));}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ printButton.setActionCommand(\textcolor{stringliteral}{"{}print"{}});}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ printButton.setPreferredSize(\textcolor{keyword}{new}\ Dimension(100,20));}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ form\ button\ group}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ optionGroup\ =\ \textcolor{keyword}{new}\ ButtonGroup();}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ optionGroup.add(fileButton);}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ optionGroup.add(appendButton);}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ optionGroup.add(printButton);}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ actionPanel.add(actLabel);}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ actionPanel.add(fileButton);}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ actionPanel.add(appendButton);}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ actionPanel.add(printButton);}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ actionPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(400,30));}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ add(actionPanel);}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ \ \ \ \ \}}
+\DoxyCodeLine{00186\ \ \ \ \ }
+\DoxyCodeLine{00187\ \ \ \ \ \textcolor{keyword}{private}\ JPanel\ getCheckPanel()\ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ yval\ =\ 2;}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ JPanel\ checkPanel\ =\ \textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{new}\ FlowLayout(FlowLayout.LEFT));}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ checkPanel.setBorder(BorderFactory}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .createTitledBorder(\textcolor{stringliteral}{"{}PostScript:\ choose\ objects"{}}));}
+\DoxyCodeLine{00192\ }
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ JPanel\ circleData\ =\ \textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{null});}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ circleData.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.black,\ 1,\ \textcolor{keyword}{false}));}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ cirBox\ =\ \textcolor{keyword}{new}\ JCheckBox();}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ cirBox.setText(\textcolor{stringliteral}{"{}Circles"{}});}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ cirBox.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},\ Font.BOLD,\ 12));}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ cirBox.setSelected(\textcolor{keyword}{true});}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ cirBox.setActionCommand(\textcolor{stringliteral}{"{}circles"{}});}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ cirBox.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ cirBox.setToolTipText(\textcolor{stringliteral}{"{}include\ all\ circles"{}});}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ cirBox.setBounds(2,\ yval,\ 80,\ 20);}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ yval\ +=\ 20;}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ circcolorBox\ =\ \textcolor{keyword}{new}\ JCheckBox();}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ circcolorBox.setText(\textcolor{stringliteral}{"{}color?"{}});}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ circcolorBox.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},\ Font.PLAIN,\ 10));}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ circcolorBox.setActionCommand(\textcolor{stringliteral}{"{}circolor"{}});}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ circcolorBox.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ circcolorBox.setBounds(15,\ yval,\ 70,\ 18);}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ yval\ +=\ 20;}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ cirfillBox\ =\ \textcolor{keyword}{new}\ JCheckBox();}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ cirfillBox.setText(\textcolor{stringliteral}{"{}filled?"{}});}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ cirfillBox.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},\ Font.PLAIN,\ 10));}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ cirfillBox.setActionCommand(\textcolor{stringliteral}{"{}cirfill"{}});}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ cirfillBox.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ cirfillBox.setBounds(15,\ yval,\ 70,\ 18);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ yval\ +=\ 20;}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ cirlabelBox\ =\ \textcolor{keyword}{new}\ JCheckBox();}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ cirlabelBox.setText(\textcolor{stringliteral}{"{}label?"{}});}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ cirlabelBox.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},\ Font.PLAIN,\ 10));}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ cirlabelBox.setActionCommand(\textcolor{stringliteral}{"{}cirlabels"{}});}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ cirlabelBox.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ cirlabelBox.setBounds(15,\ yval,\ 70,\ 18);}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ yval\ +=\ 20;}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ circleData.add(cirBox);}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ circleData.add(circcolorBox);}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ circleData.add(cirfillBox);}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ circleData.add(cirlabelBox);}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ circleData.setPreferredSize(\textcolor{keyword}{new}\ Dimension(100,90));\ \textcolor{comment}{//88));}}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ checkPanel.add(circleData);}
+\DoxyCodeLine{00239\ }
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ JPanel\ faceData\ =\ \textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{null});}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ yval\ =\ 2;}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ faceData.setBorder(\textcolor{keyword}{new}\ LineBorder(\textcolor{keyword}{new}\ java.awt.Color(0,\ 0,\ 0),\ 1,\ \textcolor{keyword}{false}));}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ faceBox\ =\ \textcolor{keyword}{new}\ JCheckBox();}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ faceBox.setText(\textcolor{stringliteral}{"{}Faces"{}});}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ faceBox.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},\ Font.BOLD,\ 12));}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ faceBox.setActionCommand(\textcolor{stringliteral}{"{}faces"{}});}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ faceBox.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ faceBox.setToolTipText(\textcolor{stringliteral}{"{}include\ all\ faces\ of\ the\ carrier"{}});}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ faceBox.setBounds(2,\ yval,\ 70,\ 20);}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ yval\ +=\ 20;}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ facecolorBox\ =\ \textcolor{keyword}{new}\ JCheckBox();}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ facecolorBox.setText(\textcolor{stringliteral}{"{}color?"{}});}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ facecolorBox.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},\ Font.PLAIN,\ 10));}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ facecolorBox.setActionCommand(\textcolor{stringliteral}{"{}facecolor"{}});}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ facecolorBox.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ facecolorBox.setBounds(15,\ yval,\ 70,\ 18);}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ yval\ +=\ 20;}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ facefillBox\ =\ \textcolor{keyword}{new}\ JCheckBox();}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ facefillBox.setText(\textcolor{stringliteral}{"{}filled?"{}});}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ facefillBox.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},\ Font.PLAIN,\ 10));}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ facefillBox.setActionCommand(\textcolor{stringliteral}{"{}facefill"{}});}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ facefillBox.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ facefillBox.setBounds(15,\ yval,\ 70,\ 18);}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ yval\ +=\ 20;}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ facelabelBox\ =\ \textcolor{keyword}{new}\ JCheckBox();}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ facelabelBox.setText(\textcolor{stringliteral}{"{}label?"{}});}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ facelabelBox.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},\ Font.PLAIN,\ 10));}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ facelabelBox.setActionCommand(\textcolor{stringliteral}{"{}facelabels"{}});}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ facelabelBox.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ facelabelBox.setBounds(15,\ yval,\ 70,\ 18);}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ yval\ +=\ 20;}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ faceData.add(faceBox);}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ faceData.add(facecolorBox);}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ faceData.add(facefillBox);}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ faceData.add(facelabelBox);}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ faceData.setPreferredSize(\textcolor{keyword}{new}\ Dimension(100,\ 90));\ \ \textcolor{comment}{//88));}}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ checkPanel.add(faceData);}
+\DoxyCodeLine{00286\ }
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ Misc\ =\ \textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{null});}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ yval\ =\ 2;}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ Misc.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.black,\ 1,\ \textcolor{keyword}{false}));}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ unitcirBox\ =\ \textcolor{keyword}{new}\ JCheckBox();}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ unitcirBox.setText(\textcolor{stringliteral}{"{}Unit\ circle"{}});}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ unitcirBox.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},\ Font.PLAIN,\ 10));}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ unitcirBox.setActionCommand(\textcolor{stringliteral}{"{}unitcir"{}});}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ unitcirBox.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ unitcirBox.setBounds(5,yval,\ 110,\ 18);}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ yval+=20;}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ yval+=20;}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ pathBox\ =\ \textcolor{keyword}{new}\ JCheckBox();}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ pathBox.setText(\textcolor{stringliteral}{"{}Path"{}});}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ pathBox.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},Font.BOLD,12));}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ pathBox.setActionCommand(\textcolor{stringliteral}{"{}path"{}});}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ pathBox.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ pathBox.setBounds(5,yval,110,20);}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ yval+=20;}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00309\ \textcolor{comment}{//\ \ \ \ \ \ \{}}
+\DoxyCodeLine{00310\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ popupBox\ =\ new\ JCheckBox();}}
+\DoxyCodeLine{00311\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ popupBox.setText("{}GV\ popup"{});}}
+\DoxyCodeLine{00312\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ popupBox.setFont(new\ Font("{}TrueType"{},Font.PLAIN,12));}}
+\DoxyCodeLine{00313\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ popupBox.setActionCommand("{}popup"{});}}
+\DoxyCodeLine{00314\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ popupBox.addActionListener(this);}}
+\DoxyCodeLine{00315\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ popupBox.setBounds(5,yval,110,20);}}
+\DoxyCodeLine{00316\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ yval+=20;}}
+\DoxyCodeLine{00317\ \textcolor{comment}{//\ \ \ \ \ \ \}}}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ jpgBox\ =\ \textcolor{keyword}{new}\ JCheckBox();}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ jpgBox.setText(\textcolor{stringliteral}{"{}JPG\ output"{}});}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ jpgBox.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},Font.BOLD,12));}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ jpgBox.setActionCommand(\textcolor{stringliteral}{"{}jpg"{}});}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ jpgBox.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ jpgBox.setBounds(5,yval,110,20);}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ Misc.add(pathBox);}
+\DoxyCodeLine{00327\ \textcolor{comment}{//\ \ \ \ \ \ Misc.add(popupBox);}}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ Misc.add(jpgBox);}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ Misc.add(unitcirBox);}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ Misc.setPreferredSize(\textcolor{keyword}{new}\ Dimension(130,90));\ \textcolor{comment}{//\ 88));}}
+\DoxyCodeLine{00331\ }
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ checkPanel.add(Misc);}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ PostScript\ options}}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ JPanel\ goPanel=\textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{null});}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ goButton\ =\ \textcolor{keyword}{new}\ JButton();}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ goButton.setText(\textcolor{stringliteral}{"{}GO"{}});}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ goButton.setActionCommand(\textcolor{stringliteral}{"{}GO"{}});}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ goButton.setToolTipText(\textcolor{stringliteral}{"{}Go\ with\ PostScript,\ options\ as\ specified\ in\ checkboxes"{}});}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ goButton.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ goButton.setFont(\textcolor{keyword}{new}\ java.awt.Font(\textcolor{stringliteral}{"{}TrueType"{}},Font.ITALIC,14));}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ goButton.setBackground(\textcolor{keyword}{new}\ Color(255,255,0));}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ goButton.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.black,1,\textcolor{keyword}{false}));}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ goButton.setBounds(2,2,30,24);}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ goPanel.add(goButton);}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ goPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(40,90));\ \textcolor{comment}{//\ (134,88));}}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ checkPanel.add(goPanel);}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ checkPanel;}
+\DoxyCodeLine{00351\ \ \ \ \ \}}
+\DoxyCodeLine{00352\ }
+\DoxyCodeLine{00358\ \ \ \ \ \textcolor{keyword}{public}\ String\ formPostFlags()\ \{}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ StringBuilder\ flags=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ StringBuilder\ frag=\textcolor{keyword}{null};}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}unitcir"{}}))).booleanValue())\ }
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ flags.append(\textcolor{stringliteral}{"{}\ -\/u"{}});}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}circles"{}}))).booleanValue())\ \{}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ frag=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}circolor"{}}))).booleanValue())\ }
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ frag.append(\textcolor{stringliteral}{"{}c"{}});}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}cirfill"{}}))).booleanValue())\ }
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ frag.append(\textcolor{stringliteral}{"{}f"{}});}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ flags.append(\textcolor{stringliteral}{"{}\ -\/c"{}}+frag.toString()+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}faces"{}}))).booleanValue())\ \{}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ frag=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}facecolor"{}}))).booleanValue())\ }
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ frag.append(\textcolor{stringliteral}{"{}c"{}});}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}facefill"{}}))).booleanValue())\ }
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ frag.append(\textcolor{stringliteral}{"{}f"{}});}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ flags.append(\textcolor{stringliteral}{"{}\ -\/f"{}}+frag.toString()+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ frag=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}cirlabels"{}}))).booleanValue())\ }
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ frag.append(\textcolor{stringliteral}{"{}\ -\/cn"{}});}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}facelabels"{}}))).booleanValue())\ }
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ frag.append(\textcolor{stringliteral}{"{}\ -\/fn"{}});}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}path"{}}))).booleanValue())\ }
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ flags.append(\textcolor{stringliteral}{"{}\ -\/g"{}});}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flags.length()==0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ \textcolor{comment}{//\ didn't\ get\ any\ flags}}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (flags.toString());}
+\DoxyCodeLine{00389\ \ \ \ \ \}}
+\DoxyCodeLine{00390\ \ \ \ \ }
+\DoxyCodeLine{00395\ \ \ \ \ \textcolor{keyword}{public}\ String\ createSuffix()\ \{}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ StringBuilder\ frag=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ 'g'\ popup\ isn't\ working}}
+\DoxyCodeLine{00398\ \textcolor{comment}{\ \ \ \ \ \ \ \ if\ (((Boolean)(checks.get("{}popup"{}))).booleanValue())\ }}
+\DoxyCodeLine{00399\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ frag.append("{}g"{});*/}}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}print"{}}))).booleanValue())\ }
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ frag.append(\textcolor{stringliteral}{"{}l"{}});}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}jpg"{}}))).booleanValue())\ }
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ frag.append(\textcolor{stringliteral}{"{}jpg"{}});}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ -\/x"{}}+frag.toString());}
+\DoxyCodeLine{00405\ \ \ \ \ \}}
+\DoxyCodeLine{00406\ \ \ \ \ }
+\DoxyCodeLine{00412\ \ \ \ \ \textcolor{keyword}{public}\ StringBuilder\ createPrefix(String\ name)\ \{}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ StringBuilder\ bc=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}post\ "{}});}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}append"{}}))).booleanValue())\ }
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ bc.append(\textcolor{stringliteral}{"{}-\/oa\ "{}}+name);}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ bc.append(\textcolor{stringliteral}{"{}-\/o\ "{}}+name);}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ bc;}
+\DoxyCodeLine{00418\ \ \ \ \ \}}
+\DoxyCodeLine{00419\ \ \ \ \ }
+\DoxyCodeLine{00420\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ actionPerformed(ActionEvent\ e)\{}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ String\ command\ =\ e.getActionCommand();}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ File\ aboutFile=\textcolor{keyword}{null};}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}canvas2JPG"{}}))\ \{}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ String\ []jpgFileName=jpgOutputDialog();}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (jpgFileName==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ file\ =\ \textcolor{keyword}{new}\ File(CPFileManager.ImageDirectory,jpgFileName[1]);}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ImageIO.write(PackControl.getActiveCPDrawing().packImage,\ \textcolor{stringliteral}{"{}jpg"{}},\ file);}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ exc)\ \{}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}aboutJPG"{}})\ \&\&\ }
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (aboutFile=PackControl.scriptManager.getAboutTmpFile())!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ String\ []jpgFileName=aboutOutputDialog();}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (jpgFileName==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ File\ file=\textcolor{keyword}{null};}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ file\ =\ \textcolor{keyword}{new}\ File(CPFileManager.ImageDirectory,jpgFileName[1]);}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.copyFile(aboutFile,\ file);}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ exc)\ \{}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}problem\ copying\ 'AboutImage'\ to\ "{}}+file);}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}GO"{}})}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ (command.equals(\textcolor{stringliteral}{"{}useFlags"{}})\ \&\&\ flagField.getText().trim().length()>0))\ \{}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ String\ []psFileInfo=\textcolor{keyword}{new}\ String[2];}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ psFileInfo[1]=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ some\ commands\ need\ us\ to\ open\ file}}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (((Boolean)(checks.get(\textcolor{stringliteral}{"{}save"{}}))).booleanValue()}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ ((Boolean)(checks.get(\textcolor{stringliteral}{"{}append"{}}))).booleanValue()}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ ((Boolean)(checks.get(\textcolor{stringliteral}{"{}print"{}}))).booleanValue())\ \{}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ psFileInfo=postOutputDialog();}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (psFileInfo==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ psFileInfo[1]\ should\ have\ just\ the\ file\ name;\ 'PostDirectory'\ should\ have}}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ been\ set\ in\ chooser\ call.}}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ buildCmd=\textcolor{keyword}{new}\ StringBuilder(createPrefix(psFileInfo[1]));}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ String\ flags;}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}useFlags"{}}))\ flags=flagField.getText();}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ flags=formPostFlags();}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flags.length()<1)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \ \ \ \ buildCmd.append(\textcolor{stringliteral}{"{}\ "{}}+flags+\textcolor{stringliteral}{"{}\ "{}}+createSuffix());}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TrafficCenter.cmdGUI(buildCmd.toString());}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\textcolor{keywordflow}{return};\}}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ Object\ obj=e.getSource();}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (obj\ instanceof\ JCheckBox)\ \{}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ JCheckBox\ jbox=(JCheckBox)e.getSource();}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ checks.put(jbox.getActionCommand(),Boolean.valueOf(jbox.isSelected()));}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00479\ \ \ \ \ \}}
+\DoxyCodeLine{00480\ }
+\DoxyCodeLine{00489\ \ \ \ \ \textcolor{keyword}{private}\ String\ []postOutputDialog()\ \{}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ File\ theFile;}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((theFile=FileDialogs.saveDialog(FileDialogs.POSTSCRIPT,\textcolor{keyword}{true}))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ String\ []fileInfo=\textcolor{keyword}{new}\ String[2];}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ fileInfo[0]=\textcolor{keyword}{null};}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ fileInfo[1]=\textcolor{keyword}{null};}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ \ \ fileInfo[0]=theFile.getParent();}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fileInfo[0]!=\textcolor{keyword}{null}\ \&\&\ fileInfo[0].length()>0)}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ImageDirectory=\textcolor{keyword}{new}\ File(fileInfo[0]);}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \ \ \ \ fileInfo[1]=theFile.getName();}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fileInfo[1].length()==0)\ }
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}error:\ post:\ no\ file\ name\ given"{}});}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fileInfo;}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00504\ \ \ \ \ \}}
+\DoxyCodeLine{00505\ }
+\DoxyCodeLine{00514\ \ \ \ \ \textcolor{keyword}{private}\ String\ []jpgOutputDialog()\ \{}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ File\ theFile;}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((theFile=FileDialogs.saveDialog(FileDialogs.JPG,\textcolor{keyword}{true}))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \ \ \ \ String\ []fileInfo=\textcolor{keyword}{new}\ String[2];}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \ \ \ \ fileInfo[0]=\textcolor{keyword}{null};}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \ \ \ \ fileInfo[1]=\textcolor{keyword}{null};}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \ \ \ \ fileInfo[0]=theFile.getParent();}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fileInfo[0]!=\textcolor{keyword}{null}\ \&\&\ fileInfo[0].length()>0)}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ImageDirectory=\textcolor{keyword}{new}\ File(fileInfo[0]);}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \ \ \ \ fileInfo[1]=theFile.getName();}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fileInfo[1].length()==0)\ }
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}error:\ jpg:\ no\ file\ name\ given"{}});}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fileInfo;}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00529\ \ \ \ \ \}}
+\DoxyCodeLine{00530\ }
+\DoxyCodeLine{00539\ \ \ \ \ \textcolor{keyword}{private}\ String\ []aboutOutputDialog()\ \{}
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \ \ File\ theFile;}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((theFile=FileDialogs.saveDialog(FileDialogs.ABOUT,\textcolor{keyword}{true}))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ String\ []fileInfo=\textcolor{keyword}{new}\ String[2];}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ fileInfo[0]=\textcolor{keyword}{null};}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ \ \ fileInfo[1]=\textcolor{keyword}{null};}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \ \ \ \ fileInfo[0]=theFile.getParent();}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fileInfo[0]!=\textcolor{keyword}{null}\ \&\&\ fileInfo[0].length()>0)}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ImageDirectory=\textcolor{keyword}{new}\ File(fileInfo[0]);}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \ \ fileInfo[1]=theFile.getName();}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fileInfo[1].length()==0)\ }
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}error:\ jpg:\ no\ file\ name\ given"{}});}
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fileInfo;}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00554\ \ \ \ \ \}}
+\DoxyCodeLine{00555\ }
+\DoxyCodeLine{00559\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ update(\textcolor{keywordtype}{int}\ old\_pnum)\ \{}
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ PackControl.cpDrawing[old\_pnum].postOptions.storeTailored(flagField.getText());}
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ flagField.setText(PackControl.getActiveCPDrawing().postOptions.tailored);}
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ Boolean[]\ bools=\ PackControl.getActiveCPDrawing().postOptions.getSavedStates();}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \ \ cirBox.setSelected(bools[0].booleanValue());}
+\DoxyCodeLine{00564\ \ \ \ \ \ \ \ \ circcolorBox.setSelected(bools[1].booleanValue());}
+\DoxyCodeLine{00565\ \ \ \ \ \ \ \ \ cirfillBox.setSelected(bools[2].booleanValue());}
+\DoxyCodeLine{00566\ \ \ \ \ \ \ \ \ faceBox.setSelected(bools[3].booleanValue());}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ \ \ facecolorBox.setSelected(bools[4].booleanValue());}
+\DoxyCodeLine{00568\ \ \ \ \ \ \ \ \ facefillBox.setSelected(bools[5].booleanValue());}
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ cirlabelBox.setSelected(bools[6].booleanValue());}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \ \ facelabelBox.setSelected(bools[7].booleanValue());\ \ \ \ \ \ }
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ unitcirBox.setSelected(bools[8].booleanValue());}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ pathBox.setSelected(bools[9].booleanValue());}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ popupBox.setSelected(bools[10].booleanValue());}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ jpgBox.setSelected(bools[14].booleanValue());}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00576\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ??\ not\ sure\ what\ will\ happen\ here,\ only\ one\ can\ be\ true}}
+\DoxyCodeLine{00577\ \ \ \ \ \ \ \ \ fileButton.setSelected(bools[11].booleanValue());}
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ appendButton.setSelected(bools[12].booleanValue());}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ printButton.setSelected(bools[13].booleanValue());}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00581\ \ \ \ \ \}}
+\DoxyCodeLine{00582\ \ \ \ \ }
+\DoxyCodeLine{00583\ \ \ \ \ \textcolor{keyword}{public}\ JButton\ getJButton2()\ \{}
+\DoxyCodeLine{00584\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(dumpButton\ ==\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ dumpButton;}
+\DoxyCodeLine{00587\ \ \ \ \ \}}
+\DoxyCodeLine{00588\ \ \ \ \ }
+\DoxyCodeLine{00589\ \ \ \ \ \textcolor{keyword}{public}\ String\ getFlags()\ \{}
+\DoxyCodeLine{00590\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ flagField.getText();}
+\DoxyCodeLine{00591\ \ \ \ \ \}}
+\DoxyCodeLine{00592\ }
+\DoxyCodeLine{00593\ \}}
+
+\end{DoxyCode}

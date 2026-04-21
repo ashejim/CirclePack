@@ -1,0 +1,311 @@
+\doxysection{My\+Canvas\+Mode.\+java}
+\label{_my_canvas_mode_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/canvasses/MyCanvasMode.java@{C:/Users/ashej/myGitRepos/CirclePack/src/canvasses/MyCanvasMode.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }canvasses;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ handlers.ACTIVEHandler;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ images.CPIcon;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ input.TrafficCenter;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.Cursor;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.Point;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.event.MouseEvent;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.awt.geom.Point2D;}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ math.Matrix3D;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ math.Point3D;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ mytools.MyTool;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ packing.CPdrawing;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ util.ModeMenuItem;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }MyCanvasMode\ \textcolor{keyword}{extends}\ MyTool\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00041\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{public}\ Cursor\ modeCursor;\ \textcolor{comment}{//\ canvas\ active\ cursor}}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{public}\ CPIcon\ cursorIcon;}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ handy;\ \textcolor{comment}{//\ if\ true,\ mouse\ drag\ translations\ is\ on}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{//\ there\ may\ be\ a\ command\ associated\ with\ each\ mouse\ button}}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keyword}{public}\ String\ cmd2,cmd3;\ \textcolor{comment}{//}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{public}\ String\ shortTip;\ \textcolor{comment}{//\ short\ version\ of\ tip\ for\ popup\ menu}}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{public}\ Point\ hotPoint;\ \ \textcolor{comment}{//\ cursor\ hot\ point:\ null\ unless\ explicitly\ }}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ for\ a\ special\ cursor}}
+\DoxyCodeLine{00052\ \ \ \ \ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{public}\ ModeMenuItem\ menuItem;\ \textcolor{comment}{//\ to\ appear\ in\ cursor\ choice\ menus}}
+\DoxyCodeLine{00054\ \ \ \ \ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{public}\ MyCanvasMode()\ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ cursorIcon=\textcolor{keyword}{null};}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ modeCursor=\textcolor{keyword}{null};}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ handy=\textcolor{keyword}{true};}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ cmd2=\textcolor{keyword}{null};}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ cmd3=\textcolor{keyword}{null};}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ shortTip=\textcolor{keyword}{null};}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ hotPoint=\textcolor{keyword}{null};}
+\DoxyCodeLine{00065\ \ \ \ \ \}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{public}\ MyCanvasMode(String\ modename,CPIcon\ cpIc,Point\ hotpt,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ String\ cmdstr,String\ cd2,String\ cd3,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ String\ shorttip,String\ tip,String\ tool\_type,\textcolor{keywordtype}{boolean}\ hndy)\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ super(cpIc,cmdstr,\textcolor{keyword}{null},modename,tip,tool\_type,\textcolor{keyword}{true},\textcolor{keyword}{null},\textcolor{keyword}{null});}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (modename==\textcolor{keyword}{null}\ ||\ modename.trim().length()==0)}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ nameString=Integer.toString(CursorCtrl.N++);}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ nameString=\textcolor{keyword}{new}\ String(modename);}
+\DoxyCodeLine{00075\ }
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ cursor\ icon;\ default\ is\ to\ copy\ that\ of\ cpIcon}}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ setCursor(hotpt);}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Are\ there\ commands?\ \ }}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ setCmd(cmdstr);}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ setCmd2(cd2);}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ setCmd3(cd3);}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ setShortTip(shorttip);}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ setToolTip(tip);\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ menuItem=\textcolor{keyword}{null};}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ handy=hndy;}
+\DoxyCodeLine{00087\ \ \ \ \ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ updateMenuItem()\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ CursorCtrl.canvasModes.remove(\textcolor{keyword}{this});}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ CursorCtrl.scriptModes.remove(\textcolor{keyword}{this});}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ CursorCtrl.userModes.remove(\textcolor{keyword}{this});}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ menuItem=\textcolor{keyword}{new}\ ModeMenuItem(\textcolor{keyword}{this},shortTip,cursorIcon);}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (toolType.startsWith(\textcolor{stringliteral}{"{}MAIN"{}}))}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ CursorCtrl.canvasModes.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (toolType.startsWith(\textcolor{stringliteral}{"{}SCRIPT"{}}))}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ CursorCtrl.scriptModes.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ CursorCtrl.userModes.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00104\ \ \ \ \ \}\ \ \ \ \ \ \ }
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ moreReset()\ \{\}\ \textcolor{comment}{//\ can\ be\ overriden,\ e.g.,\ 'PATHmode'}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \ \ }
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setCursor(Point\ tmpHotPt)\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ cursorIcon=\textcolor{keyword}{new}\ CPIcon(cpIcon.getIconName());}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ make\ sure\ hotpoint\ is\ set}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmpHotPt==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ tmpHotPt\ =\ \textcolor{keyword}{new}\ Point(4,}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cursorIcon.getImageIcon().getImage().getHeight(\textcolor{keyword}{null})-\/4);}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ modeCursor=CursorCtrl.createScaledCursor(cpIcon.getBaseIcon(),tmpHotPt);}
+\DoxyCodeLine{00122\ \ \ \ \ \}}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setCmd(String\ cmdstr)\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdstr!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ cmdstr=cmdstr.trim();}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdstr.length()==0)}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdstr=\textcolor{keyword}{null};}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ this.setCommand(cmdstr);}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ this.setCommand(\textcolor{keyword}{null});}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00135\ \ \ \ \ \}}
+\DoxyCodeLine{00136\ \ \ \ \ }
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setCmd2(String\ cd2)\ \{}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cd2!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ cmd2=\textcolor{keyword}{new}\ String(cd2.trim());}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd2.length()==0)}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd2=\textcolor{keyword}{null};}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ cmd2=\textcolor{keyword}{null};}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00147\ \ \ \ \ \}}
+\DoxyCodeLine{00148\ \ \ \ \ }
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setCmd3(String\ cd3)\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cd3!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ cmd3=\textcolor{keyword}{new}\ String(cd3.trim());}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd3.length()==0)}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd3=\textcolor{keyword}{null};}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ cmd3=\textcolor{keyword}{null};}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00159\ \ \ \ \ \}}
+\DoxyCodeLine{00160\ \ \ \ \ }
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setShortTip(String\ shorttip)\ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (shorttip==\textcolor{keyword}{null})\ shortTip=\textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (shorttip.length()>20)\ }
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ shortTip=shorttip.substring(0,19);}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ shortTip=\textcolor{keyword}{new}\ String(shorttip);}
+\DoxyCodeLine{00171\ \ \ \ \ \}}
+\DoxyCodeLine{00172\ \ \ \ \ }
+\DoxyCodeLine{00173\ \ \ \ \ \textcolor{keyword}{public}\ CPIcon\ getCursorIcon()\ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cursorIcon;}
+\DoxyCodeLine{00175\ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \ \ }
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ execute(String\ cmd,ActiveWrapper\ aW,Point\ point,\textcolor{keywordtype}{boolean}\ rep)\ \{}
+\DoxyCodeLine{00187\ \textcolor{comment}{//\ \ \ \ \ \ String\ []rst;\ //\ what\ was\ this\ to\ be\ for?}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ans=0;}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd==\textcolor{keyword}{null}\ ||\ cmd.length()==0)}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.contains(\textcolor{stringliteral}{"{}\#XY"{}})\ ||\ cmd.contains(\textcolor{stringliteral}{"{}\#xy"{}}))\ \{}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (point==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}No\ 'point'\ for\ mode\ execution"{}});}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ CPdrawing\ cpS=aW.getCPDrawing();}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ Dimension\ dim=aW.getSize();}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ Point2D.Double\ pt2D=cpS.pt2RealPt(point,dim.width,dim.height);}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ cmd=cmd.replace(\textcolor{stringliteral}{"{}\#XY"{}},\textcolor{stringliteral}{"{}\ "{}}+pt2D.x+\textcolor{stringliteral}{"{}\ "{}}+pt2D.y+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ cmd=cmd.replace(\textcolor{stringliteral}{"{}\#xy"{}},\textcolor{stringliteral}{"{}\ "{}}+pt2D.x+\textcolor{stringliteral}{"{}\ "{}}+pt2D.y+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ ans=CPBase.trafficCenter.parseWrapper(cmd,aW.cpDrawing.getPackData(),\textcolor{keyword}{false},\textcolor{keyword}{false},0,\textcolor{keyword}{null});}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}myCursor\ execution\ failed"{}});}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ rePaint(aW);}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00209\ \ \ \ \ \}}
+\DoxyCodeLine{00210\ \ \ \ \ }
+\DoxyCodeLine{00211\ \ \ \ \ \textcolor{comment}{//\ rotate\ sphere:\ 'ACTIVEHandler'\ holds\ data;\ this\ rotates\ so\ }}
+\DoxyCodeLine{00212\ \ \ \ \ \textcolor{comment}{//\ \ \ \ handStartX/Y\ becomes\ handX/Y}}
+\DoxyCodeLine{00213\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ rotate(ActiveWrapper\ aW)\ \{}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ CPdrawing\ cpS=aW.getCPDrawing();}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ ACTIVEHandler\ mH=aW.activeHandler;}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ Dimension\ dim=aW.getSize();}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ Point2D.Double\ pt1=cpS.pt2RealPt(\textcolor{keyword}{new}\ Point(mH.handStartX,mH.handStartY),\ dim.width,dim.height);}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ Point2D.Double\ pt2=cpS.pt2RealPt(\textcolor{keyword}{new}\ Point(mH.handX,mH.handY),\ dim.width,dim.height);}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pt1.x\ *\ pt1.x\ +\ pt1.y\ *\ pt1.y\ >\ 1\ ||\ pt2.x\ *\ pt2.x\ +\ pt2.y\ *\ pt2.y\ >\ 1)}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x1\ =\ Math.sqrt(1\ -\/\ pt1.x\ *\ pt1.x\ -\/\ pt1.y\ *\ pt1.y);}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x2\ =\ Math.sqrt(1\ -\/\ pt2.x\ *\ pt2.x\ -\/\ pt2.y\ *\ pt2.y);}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ double\ theta1=Math.atan2(y1,x1);}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ double\ theta2=Math.atan2(y2,x2);}}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ rotate\ by}}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ pnt1\ =\ \textcolor{keyword}{new}\ Point3D(x1,\ pt1.x,\ pt1.y);}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ pnt2\ =\ \textcolor{keyword}{new}\ Point3D(x2,\ pt2.x,\ pt2.y);}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ n\ =\ math.Point3D.CrossProduct(pnt1,\ pnt2);}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ n\ =\ n.divide(n.norm());}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ theta\ =\ n.getTheta();}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ phi\ =\ n.getPhi();}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ alpha\ =\ Math.acos(Point3D.DotProduct(pnt1,\ pnt2));}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ Matrix3D\ matrixTheta\ =\ Matrix3D.FromEulerAnglesXYZ(0,\ 0,\ theta);}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ Matrix3D\ matrixPhi\ =\ Matrix3D.FromEulerAnglesXYZ(0,\ phi,\ 0);}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ Matrix3D\ part2\ =\ Matrix3D.times(matrixTheta,\ matrixPhi);}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ Matrix3D\ part1\ =\ Matrix3D.Inverse(part2);}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ Matrix3D\ rot\ =\ Matrix3D.times(part2,\ Matrix3D.times(Matrix3D}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .FromEulerAnglesXYZ(0,\ 0,\ alpha),\ part1));}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ Matrix3D\ matrix=Matrix3D.times(rot,cpS.sphView.viewMatrix);}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!Matrix3D.isNaN(matrix))\ \{}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cpS.sphView.viewMatrix=\textcolor{keyword}{new}\ Matrix3D(matrix);}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TrafficCenter.cmdGUI(cpS.getPackData(),\textcolor{stringliteral}{"{}disp\ -\/wr"{}});}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\textcolor{keywordflow}{return};\}}
+\DoxyCodeLine{00246\ \ \ \ \ \}}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00255\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ execute(String\ cmd,ActiveWrapper\ aW,Point\ point)\ \{}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ execute(cmd,aW,point,\textcolor{keyword}{true});}
+\DoxyCodeLine{00257\ \ \ \ \ \}}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00263\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ clicked1(ActiveWrapper\ aW,MouseEvent\ e)\ \{}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ String\ cmdstr=this.getCommand();}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ Point\ point=e.getPoint();}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdstr!=\textcolor{keyword}{null}\ \&\&\ cmdstr.length()>0)\ \{}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ execute(cmdstr,aW,point);}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ Dimension\ dim=aW.getSize();}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ Point2D.Double\ pt=aW.cpDrawing.pt2RealPt(point,\ dim.width,dim.height);}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ans=0;}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ ans=TrafficCenter.cmdGUI(aW.cpDrawing.getPackData(),\textcolor{stringliteral}{"{}locate\ -\/c\ "{}}\ +\ pt.x\ +\ \textcolor{stringliteral}{"{}\ "{}}\ +\ pt.y);}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\textcolor{keywordflow}{return};\}}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ans>0)\ }
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ rePaint(aW);}
+\DoxyCodeLine{00278\ \ \ \ \ \}}
+\DoxyCodeLine{00279\ }
+\DoxyCodeLine{00284\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ clicked2(ActiveWrapper\ aW,MouseEvent\ e)\ \{}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ Point\ point=e.getPoint();}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd2!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ execute(cmd2,aW,point);}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ Dimension\ dim=aW.getSize();}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ Point2D.Double\ pt=aW.cpDrawing.pt2RealPt(point,\ dim.width,dim.height);}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ans=0;}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ ans=TrafficCenter.cmdGUI(}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aW.cpDrawing.getPackData(),\textcolor{stringliteral}{"{}locate\ -\/f\ "{}}\ +\ pt.x\ +\ \textcolor{stringliteral}{"{}\ "{}}\ +\ pt.y);}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\textcolor{keywordflow}{return};\}}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ans>0)\ }
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ rePaint(aW);}
+\DoxyCodeLine{00299\ \ \ \ \ \}}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00306\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ clicked3(ActiveWrapper\ aW,MouseEvent\ e)\ \{}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ Point\ point=e.getPoint();}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd3!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ execute(cmd3,aW,point);}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (aW.button3Popup!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ aW.button3Popup.show(aW,point.x,point.y);}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00315\ \ \ \ \ \}}
+\DoxyCodeLine{00316\ \ \ \ \ }
+\DoxyCodeLine{00317\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ pressed1(ActiveWrapper\ aW,MouseEvent\ e)\ \{}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (handy)\ \{}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ Point\ point=e.getPoint();}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ ACTIVEHandler\ mH=aW.activeHandler;}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ mH.handStartX=point.x;}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ mH.handStartY=point.y;}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00324\ \ \ \ \ \}}
+\DoxyCodeLine{00325\ \ \ \ \ }
+\DoxyCodeLine{00326\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ pressed2(ActiveWrapper\ aW,MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00327\ }
+\DoxyCodeLine{00328\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ pressed3(ActiveWrapper\ aW,MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00329\ }
+\DoxyCodeLine{00330\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ dragged(ActiveWrapper\ aW,MouseEvent\ e)\ \{}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!handy)\ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ CPdrawing\ cpS=aW.getCPDrawing();}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ ACTIVEHandler\ mH=aW.activeHandler;}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ Point\ point=e.getPoint();}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cpS.getGeom()>0)\ \{\ \textcolor{comment}{//\ sphere}}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ mH.handX=point.x;}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ mH.handY=point.y;}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ rotate(aW);}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ hyp\ and\ eucl,\ convert\ to\ real\ world\ translation.}}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ cpS.realBox.transView((}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mH.handStartX-\/point.x)*cpS.XWidth/aW.getWidth(),}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (point.y-\/mH.handStartY)*cpS.YHeight/aW.getHeight());}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TrafficCenter.cmdGUI(cpS.getPackData(),\textcolor{stringliteral}{"{}disp\ -\/wr"{}});\ \textcolor{comment}{//\ repaint\ only\ active\ screen}}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ mH.handStartX\ =\ point.x;}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ mH.handStartY=\ point.y;}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00351\ \ \ \ \ \}}
+\DoxyCodeLine{00352\ }
+\DoxyCodeLine{00353\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ release1(ActiveWrapper\ aW,MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00354\ }
+\DoxyCodeLine{00355\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ release2(ActiveWrapper\ aW,MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00356\ }
+\DoxyCodeLine{00357\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ release3(ActiveWrapper\ aW,MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00358\ }
+\DoxyCodeLine{00363\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ rePaint(ActiveWrapper\ aW)\ \{}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ PackControl.canvasRedrawer.paintMyCanvasses(aW.cpDrawing,\textcolor{keyword}{false});}
+\DoxyCodeLine{00365\ \ \ \ \ \}}
+\DoxyCodeLine{00366\ }
+\DoxyCodeLine{00367\ \}}
+
+\end{DoxyCode}

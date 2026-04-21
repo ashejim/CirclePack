@@ -1,0 +1,898 @@
+\doxysection{CPdrawing.\+java}
+\label{_c_pdrawing_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/packing/CPdrawing.java@{C:/Users/ashej/myGitRepos/CirclePack/src/packing/CPdrawing.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }packing;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.BasicStroke;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.Font;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.Graphics;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.Graphics2D;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.Image;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.Point;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.Rectangle;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.awt.RenderingHints;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.awt.Shape;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.awt.Stroke;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.awt.dnd.DropTarget;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ java.awt.event.MouseEvent;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ java.awt.event.MouseListener;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ java.awt.geom.AffineTransform;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ java.awt.geom.Path2D;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ java.awt.geom.Point2D;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ java.awt.geom.Rectangle2D;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ java.awt.image.BufferedImage;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ javax.swing.border.LineBorder;}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00031\ \textcolor{keyword}{import}\ dragdrop.ToolDropListener;}
+\DoxyCodeLine{00032\ \textcolor{keyword}{import}\ exceptions.InOutException;}
+\DoxyCodeLine{00033\ \textcolor{keyword}{import}\ geometry.CircleSimple;}
+\DoxyCodeLine{00034\ \textcolor{keyword}{import}\ geometry.EuclMath;}
+\DoxyCodeLine{00035\ \textcolor{keyword}{import}\ geometry.HyperbolicMath;}
+\DoxyCodeLine{00036\ \textcolor{keyword}{import}\ geometry.SphericalMath;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{import}\ graphObjects.CPCircle;}
+\DoxyCodeLine{00038\ \textcolor{keyword}{import}\ graphObjects.CPEdge;}
+\DoxyCodeLine{00039\ \textcolor{keyword}{import}\ graphObjects.CPFace;}
+\DoxyCodeLine{00040\ \textcolor{keyword}{import}\ graphObjects.CPTrinket;}
+\DoxyCodeLine{00041\ \textcolor{keyword}{import}\ mytools.MyTool;}
+\DoxyCodeLine{00042\ \textcolor{keyword}{import}\ tiling.SubdivisionRules;}
+\DoxyCodeLine{00043\ \textcolor{keyword}{import}\ tiling.TileRule;}
+\DoxyCodeLine{00044\ \textcolor{keyword}{import}\ util.ColorUtil;}
+\DoxyCodeLine{00045\ \textcolor{keyword}{import}\ util.DataFormater;}
+\DoxyCodeLine{00046\ \textcolor{keyword}{import}\ util.DispFlags;}
+\DoxyCodeLine{00047\ \textcolor{keyword}{import}\ util.DispOptions;}
+\DoxyCodeLine{00048\ \textcolor{keyword}{import}\ util.PostOptions;}
+\DoxyCodeLine{00049\ \textcolor{keyword}{import}\ util.SphView;}
+\DoxyCodeLine{00050\ \textcolor{keyword}{import}\ util.ViewBox;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00079\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }CPdrawing\ \textcolor{keyword}{extends}\ JPanel\ implements\ MouseListener\ \{}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00082\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{comment}{//\ screen\ setting\ defaults}}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ defaultthickness=CPBase.DEFAULT\_LINETHICKNESS;}
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ linethickness;}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ fillOpacity;}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ sphereOpacity;}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ textSize;\ \textcolor{comment}{//\ for\ packing\ canvasses}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{comment}{//\ global\ default\ file\ for\ PostScript}}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ String\ customGlobal=\textcolor{stringliteral}{"{}CP\_custom.ps"{}};}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{comment}{//\ default\ PostScript\ file\ chosen\ for\ this\ packing;\ may\ be\ null.}}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keyword}{public}\ String\ customPS;\ }
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keyword}{public}\ PackData\ drawingPD;}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordtype}{int}\ screenNum;\ \textcolor{comment}{//\ normally\ aligns\ with\ packData.packNum}}
+\DoxyCodeLine{00098\ \ \ \ \ }
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{comment}{//\ instance\ variables}}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keyword}{public}\ DispOptions\ dispOptions;}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keyword}{public}\ PostOptions\ postOptions;}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keyword}{public}\ DataFormater\ dataFormater;\ \textcolor{comment}{//\ for\ 'output'\ operation}}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ XMin;}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ YMin;}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ XMax;}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ YMax;}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ XWidth;}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ YHeight;}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ pixFactor;\ \textcolor{comment}{//\ pixels\ per\ real\ world\ unit}}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keyword}{public}\ Stroke\ defaultStroke;\ \textcolor{comment}{//\ for\ axis,\ unit\ sph/disc,\ etc.}}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keyword}{public}\ Stroke\ stroke;}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keyword}{public}\ Rectangle2D.Double\ canvasRect;\ \textcolor{comment}{//\ for\ drawing\ screen\ background}}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keyword}{public}\ ViewBox\ realBox;\ \textcolor{comment}{//\ for\ canvas\ info}}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keyword}{public}\ SphView\ sphView;\ \textcolor{comment}{//\ for\ spherical\ info}}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keyword}{public}\ Font\ indexFont;}
+\DoxyCodeLine{00116\ \ \ \ \ }
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{comment}{//\ canvas\ info}}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keyword}{public}\ BufferedImage\ packImage;\ \textcolor{comment}{//\ image\ is\ buffered\ here}}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keyword}{public}\ Graphics2D\ imageContextReal;\ \textcolor{comment}{//\ for\ drawing\ circles/etc.\ real\ world}}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keywordtype}{boolean}\ antialiasing\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ showAxis\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00122\ \ \ \ \ }
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{comment}{//\ these\ objects\ persist:\ we\ just\ change\ data\ and\ call\ methods}}
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keyword}{public}\ CPCircle\ circle;}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keyword}{public}\ CPFace\ face;}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keyword}{public}\ CPEdge\ edge;}
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keyword}{public}\ CPTrinket\ trinket;}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keyword}{public}\ Color\ color;}
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keyword}{public}\ Color\ fillColor;}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{comment}{//\ utility:\ holds\ data\ until\ restored}}
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keyword}{private}\ Color\ tmpcolor;\ }
+\DoxyCodeLine{00134\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{int}\ tmpthick;}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{comment}{//\ GUI\ ????}}
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keyword}{public}\ AffineTransform\ trans2pix;\ \textcolor{comment}{//\ keep\ updated\ for\ real-\/to-\/pix}}
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ pixXMin;}
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ pixYMin;}
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ pixWidth=PackControl.getActiveCanvasSize();}
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ pixHeight=PackControl.getActiveCanvasSize();}
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{keyword}{static}\ String\ []geomAbbrev=\{\textcolor{stringliteral}{"{}\ (hyp)"{}},\textcolor{stringliteral}{"{}\ (eucl)"{}},\textcolor{stringliteral}{"{}\ (sph)"{}}\};\ \ }
+\DoxyCodeLine{00143\ \ \ \ \ }
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{comment}{//\ Constructors\ \ \ \ }}
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keyword}{public}\ CPdrawing()\ \{}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(0);}
+\DoxyCodeLine{00147\ \ \ \ \ \}}
+\DoxyCodeLine{00148\ \ \ \ \ }
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keyword}{public}\ CPdrawing(\textcolor{keywordtype}{int}\ screennum)\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (screennum<0\ ||\ screennum>=CPBase.NUM\_PACKS)\ }
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ screennum=0;}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ screenNum=screennum;}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ customPS=\textcolor{keyword}{null};}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ GUI}}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ this.setFocusable(\textcolor{keyword}{true});}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ this.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.BLACK,2,\textcolor{keyword}{false}));}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ this.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ prepare\ for\ graphing}}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ realBox=\textcolor{keyword}{new}\ ViewBox();}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ sphView=\textcolor{keyword}{new}\ SphView();}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ canvasRect=\textcolor{keyword}{new}\ Rectangle2D.Double();}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ linethickness=defaultthickness;}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ defaultStroke=\textcolor{keyword}{new}\ BasicStroke((\textcolor{keywordtype}{float})(defaultthickness),\ \textcolor{comment}{//\ /pixFactor),}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BasicStroke.CAP\_ROUND,BasicStroke.JOIN\_ROUND);}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ stroke=\textcolor{keyword}{new}\ BasicStroke((\textcolor{keywordtype}{float})(defaultthickness),\ \textcolor{comment}{//\ /pixFactor),}}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BasicStroke.CAP\_ROUND,BasicStroke.JOIN\_ROUND);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ persistent\ graphing\ objects:\ change\ data\ and\ reuse}}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ circle=\textcolor{keyword}{new}\ CPCircle();\ }
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ face=\textcolor{keyword}{new}\ CPFace();}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ edge=\textcolor{keyword}{new}\ CPEdge();}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ trinket=\textcolor{keyword}{new}\ CPTrinket();}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ screen\ display\ options}}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ dispOptions=\textcolor{keyword}{new}\ DispOptions(\textcolor{keyword}{this});}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ postOptions=\textcolor{keyword}{new}\ PostOptions(\textcolor{keyword}{this});}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ dataFormater=\textcolor{keyword}{new}\ DataFormater();}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ memory\ buffered\ image}}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ packImage\ =\ resetCanvasSize(PackControl.getActiveCanvasSize(),}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.getActiveCanvasSize());}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ reset(\textcolor{keyword}{true});}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ GUI}}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ DropTarget(\textcolor{keyword}{this},\textcolor{keyword}{new}\ ToolDropListener(\textcolor{keyword}{this},screenNum,\textcolor{keyword}{false}));}
+\DoxyCodeLine{00188\ }
+\DoxyCodeLine{00189\ \ \ \ \ \}}
+\DoxyCodeLine{00190\ \ \ \ \ }
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ reset()\ \{}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ reset(\textcolor{keyword}{false});}
+\DoxyCodeLine{00193\ \ \ \ \ \}}
+\DoxyCodeLine{00194\ \ \ \ \ }
+\DoxyCodeLine{00201\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ reset(\textcolor{keywordtype}{boolean}\ startup)\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ setAntialiasing(\textcolor{keyword}{true});}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ setAxisMode(\textcolor{keyword}{false});}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ realBox.reset();}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ sphView.defaultView();}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ fillOpacity\ =\ CPBase.DEFAULT\_FILL\_OPACITY;}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ sphereOpacity\ =\ CPBase.DEFAULT\_SPHERE\_OPACITY;}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ textSize=CPBase.DEFAULT\_INDEX\_FONT.getSize();}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ setLineThickness(CPBase.DEFAULT\_LINETHICKNESS);}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ dispOptions.reset();}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ fillColor=CPBase.defaultFillColor;}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ imageContextReal.setColor(CPBase.defaultCircleColor);}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ GUI}}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reset\ 'flagField'\ in\ "{}Screen"{}\ panel}}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ this\ is\ active,\ reset\ current\ settings}}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!startup\ \&\&\ CPBase.GUImode!=0)\ \{\ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ setPackName();}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{this}==PackControl.getActiveCPDrawing())\ \{\ }
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.screenCtrlFrame.screenPanel.resetSliders();}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.screenCtrlFrame.displayPanel.flagField.setText(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.screenCtrlFrame.displayPanel.setFlagBox(\textcolor{keyword}{false});}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reset\ to\ default\ screen}}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ update(2);\ }
+\DoxyCodeLine{00229\ \ \ \ \ \}}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \ \ \ \ \textcolor{comment}{/*\ DISP\_CHOICE\ -\/-\/\ this\ is\ called\ when\ 'activeScreen'\ size\ is\ allowed}}
+\DoxyCodeLine{00232\ \textcolor{comment}{\ \ \ \ \ *\ to\ change;\ 'packImage'\ buffer\ is\ resized.\ Call\ for\ approp\ repaint}}
+\DoxyCodeLine{00233\ \textcolor{comment}{\ \ \ \ \ *\ @param\ wide;\ int\ pixel\ width}}
+\DoxyCodeLine{00234\ \textcolor{comment}{\ \ \ \ \ *\ @param\ high;\ int\ pixel\ height}}
+\DoxyCodeLine{00235\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{keyword}{public}\ BufferedImage\ resetCanvasSize(\textcolor{keywordtype}{int}\ wide,\textcolor{keywordtype}{int}\ high)\ \{}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ BufferedImage\ bI=\textcolor{keyword}{new}\ BufferedImage(wide,high,BufferedImage.TYPE\_INT\_RGB);\ \ \ }
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packImage!=\textcolor{keyword}{null})\ \textcolor{comment}{//\ copy\ in\ old\ image}}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ bI.createGraphics().}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drawImage(packImage.getScaledInstance(wide,high,}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Image.SCALE\_SMOOTH),\textcolor{keyword}{new}\ AffineTransform(),\textcolor{keyword}{null});}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ bI.createGraphics().fillRect(0,0,wide,high);}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ imageContextReal=(Graphics2D)\ bI.createGraphics();}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ imageContextReal.clip(\textcolor{keyword}{new}\ Rectangle(0,0,wide,high));}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ imageContextReal.setColor(Color.white);}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ imageContextReal.setColor(ColorUtil.getFGColor());}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ imageContextReal.setFont(indexFont);}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ imageContextReal.setStroke(stroke);}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ pixWidth=wide;}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ pixHeight=high;}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ setAntialiasing(antialiasing);}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ update(2);}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ bI;}
+\DoxyCodeLine{00256\ \ \ \ \ \}}
+\DoxyCodeLine{00257\ \ \ \ \ }
+\DoxyCodeLine{00263\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ update(\textcolor{keywordtype}{int}\ option)\ \{}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ XMin=realBox.lz.x;}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ YMin=realBox.lz.y;}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ XMax=realBox.rz.x;}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ YMax=realBox.rz.y;}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ XWidth=realBox.rz.x-\/realBox.lz.x;\ }
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ YHeight=realBox.rz.y-\/realBox.lz.y;}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ canvasRect.setRect(0,0,pixWidth,pixHeight);}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ indexFont=CPBase.DEFAULT\_INDEX\_FONT;}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ pixFactor=pixWidth/XWidth;}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ pixXMin=(int)(XMin*pixFactor);}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ pixYMin=(int)(YMin*pixFactor);}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ trans2pix=\textcolor{keyword}{new}\ AffineTransform(pixFactor,0.0,0.0,-\/pixFactor,}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pixWidth/2.0,pixHeight/2.0);}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ size\ has\ changed,\ too}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (option>1)\ \{}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ stroke=\textcolor{keyword}{new}\ BasicStroke((\textcolor{keywordtype}{float})(linethickness),}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BasicStroke.CAP\_ROUND,BasicStroke.JOIN\_ROUND);}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setStroke(stroke);}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00284\ \ \ \ \ \}}
+\DoxyCodeLine{00285\ \ \ \ \ }
+\DoxyCodeLine{00286\ \ \ \ \ \textcolor{comment}{//\ GUI}}
+\DoxyCodeLine{00287\ \ \ \ \ \textcolor{comment}{//\ Some\ mouse\ events\ may\ first\ be\ picked\ off\ by\ parents\ of\ this\ CPcanvas}}
+\DoxyCodeLine{00288\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseReleased(MouseEvent\ e)\ \{}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (e.getClickCount()\ >=\ 2)\ \{\ \textcolor{comment}{//\ double\ click\ to\ change\ active\ packing}}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.switchActivePack(this.getPackNum());}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\textcolor{keywordflow}{return};\}}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ doesn't\ seem\ to\ work\ to\ bring\ activeFrame\ to\ the\ top}}
+\DoxyCodeLine{00295\ \textcolor{comment}{//\ \ \ \ \ \ else\ if\ (e.getClickCount()>=1)\ \{\ //\ click\ active\ screen\ to\ top}}
+\DoxyCodeLine{00296\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ PackControl.activeFrame.toFront();}}
+\DoxyCodeLine{00297\ \textcolor{comment}{//\ \ \ \ \ \ \}}}
+\DoxyCodeLine{00298\ \ \ \ \ \}}
+\DoxyCodeLine{00299\ }
+\DoxyCodeLine{00300\ \ \ \ \ \textcolor{comment}{//\ methods\ required\ for\ MouseListener\ }}
+\DoxyCodeLine{00301\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseClicked(MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00302\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseEntered(MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00303\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseExited(MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00304\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mousePressed(MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00305\ }
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ getAntialiasing()\ \{}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ antialiasing;}
+\DoxyCodeLine{00309\ \ \ \ \ \}}
+\DoxyCodeLine{00310\ \ \ \ \ }
+\DoxyCodeLine{00311\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setAntialiasing(\textcolor{keywordtype}{boolean}\ b)\ \{}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ antialiasing\ =\ b;}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (antialiasing)\ \{}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setRenderingHint(}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RenderingHints.KEY\_ANTIALIASING,}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RenderingHints.VALUE\_ANTIALIAS\_ON);}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setRenderingHint(}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RenderingHints.KEY\_ANTIALIASING,}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RenderingHints.VALUE\_ANTIALIAS\_OFF);}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00323\ \ \ \ \ \}}
+\DoxyCodeLine{00324\ }
+\DoxyCodeLine{00325\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ toggleAxisMode()\ \{}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ showAxis\ =\ !showAxis;}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ repaint();}
+\DoxyCodeLine{00328\ \ \ \ \ \}}
+\DoxyCodeLine{00329\ }
+\DoxyCodeLine{00331\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ isAxisMode()\ \{}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ this.showAxis;}
+\DoxyCodeLine{00333\ \ \ \ \ \}}
+\DoxyCodeLine{00334\ }
+\DoxyCodeLine{00335\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setAxisMode(\textcolor{keywordtype}{boolean}\ mode)\ \{}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ this.showAxis=mode;}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ repaint();}
+\DoxyCodeLine{00338\ \ \ \ \ \}}
+\DoxyCodeLine{00339\ }
+\DoxyCodeLine{00348\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawIndex(Complex\ z,\ \textcolor{keywordtype}{int}\ n,\ \textcolor{keywordtype}{int}\ msg\_flag)\ \{}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ Integer\ N\ =\ Integer.valueOf(n);}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (msg\_flag\ ==\ 2\ ||\ msg\_flag\ ==\ 3)}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ circlePack.PackControl.displayScratch(N.toString());}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (msg\_flag\ ==\ 1\ ||\ msg\_flag\ ==\ 3)\ \{}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes>0)\ \{\ \textcolor{comment}{//\ sph}}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z=sphView.toApparentSph(z);}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.cos(z.x)<0)\ \textcolor{keywordflow}{return};\ \textcolor{comment}{//\ on\ back}}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z=SphView.s\_pt\_to\_visual\_plane(z);\ }
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ tmpcolor=imageContextReal.getColor();}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setColor(Color.BLUE);}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.drawString(N.toString(),}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ real\_to\_pix\_x(z.x),\ real\_to\_pix\_y(z.y));}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setColor(tmpcolor);}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.packNum==CirclePack.cpb.getActivePackNum())}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.activeFrame.reDisplay();}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ repaint();}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00368\ \ \ \ \ \}}
+\DoxyCodeLine{00369\ \ \ \ \ }
+\DoxyCodeLine{00378\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawStr(Complex\ z,String\ str)\ \{}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes>0)\ \{\ \textcolor{comment}{//\ sph}}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ z=sphView.toApparentSph(z);}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.cos(z.x)<0)\ \textcolor{keywordflow}{return};\ \textcolor{comment}{//\ on\ back}}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ z=SphView.s\_pt\_to\_visual\_plane(z);\ }
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ tmpcolor=imageContextReal.getColor();}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ imageContextReal.setColor(Color.BLUE);}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ len=str.length();}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (len>12)\ len=12;}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ imageContextReal.drawString(str.substring(0,len),}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ real\_to\_pix\_x(z.x),\ real\_to\_pix\_y(z.y));}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ imageContextReal.setColor(tmpcolor);}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.packNum==CirclePack.cpb.getActivePackNum())}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.activeFrame.reDisplay();}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ repaint();}
+\DoxyCodeLine{00394\ \ \ \ \ \}}
+\DoxyCodeLine{00395\ }
+\DoxyCodeLine{00400\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ clearCanvas(\textcolor{keywordtype}{boolean}\ repaint)\ \{}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes==0)\ imageContextReal.setColor(Color.white);}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ imageContextReal.setColor(CPBase.DEFAULT\_SphDisc\_BACKGROUND);}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ imageContextReal.fill(canvasRect);}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes!=0)\ circle.drawSphDisc(\textcolor{keyword}{true});\ \textcolor{comment}{//\ blank\ the\ sphere/disc}}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ imageContextReal.setColor(Color.black);}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (repaint)\ \{}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.packNum==CirclePack.cpb.getActivePackNum())}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.activeFrame.reDisplay();}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.packNum==PackControl.mapPairFrame.getDomainNum())}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.mapPairFrame.domainScreen.repaint();}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.packNum==PackControl.mapPairFrame.getRangeNum())}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.mapPairFrame.rangeScreen.repaint();}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00414\ \ \ \ \ \}}
+\DoxyCodeLine{00415\ \ \ \ \ }
+\DoxyCodeLine{00424\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawArc(Complex\ z,\textcolor{keywordtype}{double}\ rad,\textcolor{keywordtype}{double}\ ang1,}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ extent,DispFlags\ dflags)\ \{}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes!=0)}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ circle.x=z.x;}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ circle.y=z.y;}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ circle.radius=rad;}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ circle.start=Double.valueOf(ang1);}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ circle.extent=Double.valueOf(extent);}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ Color\ fcolor=\textcolor{keyword}{null};}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ Color\ bcolor=\textcolor{keyword}{null};}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.getColor()!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.fill)}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fcolor=dflags.getFillColor();}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.draw\ \&\&\ dflags.colBorder)}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bcolor=dflags.getColor();}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ draw\ it}}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ circle.drawIt(dflags.draw,bcolor,dflags.fill,fcolor);}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ circle.start=\textcolor{keyword}{null};}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ circle.extent=\textcolor{keyword}{null};}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00449\ \ \ \ \ \}}
+\DoxyCodeLine{00450\ }
+\DoxyCodeLine{00458\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawCircle(Complex\ z,\textcolor{keywordtype}{double}\ rad,DispFlags\ dflags)\ \{}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ drawCircle(\textcolor{keyword}{new}\ CircleSimple(z,rad),dflags);}
+\DoxyCodeLine{00460\ \ \ \ \ \}}
+\DoxyCodeLine{00461\ \ \ \ \ }
+\DoxyCodeLine{00468\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawCircle(CircleSimple\ cs,DispFlags\ dflags)\ \{}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ Complex\ z=cs.center;}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes>0)}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z=sphView.toApparentSph(z);}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \ \ \ circle.x\ =\ z.x;}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \ \ circle.y\ =\ z.y;}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ circle.radius\ =\ cs.rad;}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ Color\ fcolor=\textcolor{keyword}{null};}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \ \ \ \ Color\ bcolor=\textcolor{keyword}{null};}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags!=\textcolor{keyword}{null}\ \&\&\ dflags.getColor()!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.fill)}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fcolor=dflags.getFillColor();}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.draw\ \&\&\ dflags.colBorder)}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bcolor=dflags.getColor();}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ thickness?}}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ tmpthick=-\/1;}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags!=\textcolor{keyword}{null}\ \&\&\ dflags.thickness\ >\ 0)\ \{}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmpthick\ =\ getLineThickness();}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setLineThickness(dflags.thickness);}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ draw\ it\ (principal\ color\ is\ set,\ bcOl\ =\ bdry\ color)}}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ circle.drawIt(dflags.draw,bcolor,dflags.fill,fcolor);}
+\DoxyCodeLine{00495\ }
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ label?}}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags!=\textcolor{keyword}{null}\ \&\&\ dflags.label\ \&\&\ dflags.getLabel()!=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00498\ }
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes\ <=\ 0\ ||\ Math.cos(z.x)\ >=\ 0)\ \{}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes\ >\ 0)}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z\ =\ SphView.s\_pt\_to\_visual\_plane(z);}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmpcolor\ =\ imageContextReal.getColor();}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setColor(Color.BLUE);}
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.drawString(dflags.getLabel(),}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ real\_to\_pix\_x(z.x),\ real\_to\_pix\_y(z.y));}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setColor(tmpcolor);}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00509\ }
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ restore\ thickness}}
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmpthick\ >=\ 0)}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setLineThickness(tmpthick);}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00515\ \ \ \ \ \}}
+\DoxyCodeLine{00516\ }
+\DoxyCodeLine{00528\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawFace(Complex\ z0,Complex\ z1,Complex\ z2,}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ \ \ \ \ Double\ r0,Double\ r1,Double\ r2,DispFlags\ dflags)\ \{}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes\ >\ 0)\ \{}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z0\ =\ sphView.toApparentSph(z0);}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z1\ =\ sphView.toApparentSph(z1);}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z2\ =\ sphView.toApparentSph(z2);}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ cnrs\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[6];}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ cnrs[0]\ =\ z0.x;}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \ \ \ \ cnrs[1]\ =\ z0.y;}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ \ \ \ \ cnrs[2]\ =\ z1.x;}
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \ \ \ \ \ \ cnrs[3]\ =\ z1.y;}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \ \ \ \ cnrs[4]\ =\ z2.x;}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ cnrs[5]\ =\ z2.y;}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ face.setData(3,\ cnrs);}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \ \ \ \ Color\ fcolor=\textcolor{keyword}{null};}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \ \ \ \ Color\ bcolor=\textcolor{keyword}{null};}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.getColor()!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.fill)}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fcolor=dflags.getFillColor();}
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.draw\ \&\&\ dflags.colBorder)}
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bcolor=dflags.getColor();}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ }
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \ \ \ \ tmpthick=-\/1;}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.thickness\ >\ 0)\ \{}
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmpthick\ =\ getLineThickness();}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setLineThickness(dflags.thickness);}
+\DoxyCodeLine{00558\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \ \ \ \ face.drawIt(dflags.draw,bcolor,dflags.fill,fcolor);}
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ label?}}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.label\ \&\&\ dflags.getLabel()!=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00564\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ sc=\textcolor{keyword}{null};}
+\DoxyCodeLine{00565\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes<0)}
+\DoxyCodeLine{00566\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sc=HyperbolicMath.hyp\_tang\_incircle(z0,z1,z2,r0,r1,r2);}
+\DoxyCodeLine{00567\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sc=HyperbolicMath.hyp\_tri\_incircle(z1,z2,z3);}}
+\DoxyCodeLine{00568\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (drawingPD.hes>0)\ }
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sc=SphericalMath.sph\_tri\_incircle(z0,z1,z2);}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sc=EuclMath.eucl\_tri\_incircle(z0,z1,z2);}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z=sc.center;}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes\ <=\ 0\ ||\ Math.cos(z.x)\ >=\ 0)\ \{}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes\ >\ 0)}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z\ =\ SphView.s\_pt\_to\_visual\_plane(z);}
+\DoxyCodeLine{00576\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmpcolor\ =\ imageContextReal.getColor();}
+\DoxyCodeLine{00577\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setColor(Color.BLUE);}
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.drawString(dflags.getLabel(),\ }
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ real\_to\_pix\_x(z.x),\ real\_to\_pix\_y(z.y));}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setColor(tmpcolor);}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00583\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00584\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ restore\ thickness}}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmpthick\ >=\ 0)}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setLineThickness(tmpthick);}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00589\ \ \ \ \ \}}
+\DoxyCodeLine{00590\ \ \ \ \ }
+\DoxyCodeLine{00597\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawClosedPoly(\textcolor{keywordtype}{int}\ N,\ \textcolor{keywordtype}{double}[]\ corners,\ DispFlags\ dflags)\ \{}
+\DoxyCodeLine{00598\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00599\ \ \ \ \ \ \ \ \ \ \ \ \ face.setData(N,\ corners);}
+\DoxyCodeLine{00600\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes\ >\ 0)\ \{}
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ N;\ j++)\ \{}
+\DoxyCodeLine{00602\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z\ =\ sphView.}
+\DoxyCodeLine{00603\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ toApparentSph(\textcolor{keyword}{new}\ Complex(corners[j\ *\ 2],}
+\DoxyCodeLine{00604\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ corners[j\ *\ 2\ +\ 1]));}
+\DoxyCodeLine{00605\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ face.corners[j\ *\ 2]\ =\ z.x;}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ face.corners[j\ *\ 2\ +\ 1]\ =\ z.y;}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00608\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00609\ }
+\DoxyCodeLine{00610\ \ \ \ \ \ \ \ \ \ \ \ \ Color\ fcolor\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00611\ \ \ \ \ \ \ \ \ \ \ \ \ Color\ bcolor\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00612\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.getColor()\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00613\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.fill)}
+\DoxyCodeLine{00614\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fcolor\ =\ dflags.getFillColor();}
+\DoxyCodeLine{00615\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.draw\ \&\&\ dflags.colBorder)}
+\DoxyCodeLine{00616\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bcolor\ =\ dflags.getColor();}
+\DoxyCodeLine{00617\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00618\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00619\ \ \ \ \ \ \ \ \ \ \ \ \ tmpthick=-\/1;}
+\DoxyCodeLine{00620\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.thickness\ >\ 0)\ \{}
+\DoxyCodeLine{00621\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmpthick\ =\ getLineThickness();}
+\DoxyCodeLine{00622\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setLineThickness(dflags.thickness);}
+\DoxyCodeLine{00623\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00624\ }
+\DoxyCodeLine{00625\ \ \ \ \ \ \ \ \ \ \ \ \ face.drawIt(dflags.draw,\ bcolor,\ dflags.fill,\ fcolor);}
+\DoxyCodeLine{00626\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00627\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ restore\ thickness}}
+\DoxyCodeLine{00628\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmpthick\ >=\ 0)}
+\DoxyCodeLine{00629\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setLineThickness(tmpthick);}
+\DoxyCodeLine{00630\ }
+\DoxyCodeLine{00631\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00632\ \ \ \ \ \}}
+\DoxyCodeLine{00633\ }
+\DoxyCodeLine{00640\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawOpenPoly(\textcolor{keywordtype}{int}\ N,\ \textcolor{keywordtype}{double}[]\ corners,\ DispFlags\ dflags)\ \{}
+\DoxyCodeLine{00641\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00642\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ []pts=\textcolor{keyword}{new}\ Complex[N];}
+\DoxyCodeLine{00643\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<N;j++)\ \{}
+\DoxyCodeLine{00644\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pts[j]=\textcolor{keyword}{new}\ Complex(corners[j*2],corners[j*2+1]);}
+\DoxyCodeLine{00645\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00646\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00647\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<N-\/1;j++)\ \{}
+\DoxyCodeLine{00648\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drawEdge(pts[j],pts[j+1],dflags);}
+\DoxyCodeLine{00649\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00650\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00651\ \ \ \ \ \}}
+\DoxyCodeLine{00652\ }
+\DoxyCodeLine{00659\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawEdge(Complex\ z1,Complex\ z2,DispFlags\ dflags)\ \{}
+\DoxyCodeLine{00660\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00661\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes>0)\ \{}
+\DoxyCodeLine{00662\ \ \ \ \ \ \ \ \ \ \ \ \ z1=sphView.toApparentSph(z1);}
+\DoxyCodeLine{00663\ \ \ \ \ \ \ \ \ \ \ \ \ z2=sphView.toApparentSph(z2);}
+\DoxyCodeLine{00664\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00665\ \ \ \ \ \ \ \ \ edge.setData(z1.x,z1.y,z2.x,z2.y);}
+\DoxyCodeLine{00666\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00667\ \ \ \ \ \ \ \ \ tmpthick=-\/1;}
+\DoxyCodeLine{00668\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.thickness\ >\ 0)\ \{}
+\DoxyCodeLine{00669\ \ \ \ \ \ \ \ \ \ \ \ \ tmpthick\ =\ getLineThickness();}
+\DoxyCodeLine{00670\ \ \ \ \ \ \ \ \ \ \ \ \ setLineThickness(dflags.thickness);}
+\DoxyCodeLine{00671\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00672\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.getColor()!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00673\ \ \ \ \ \ \ \ \ \ \ \ \ tmpcolor=imageContextReal.getColor();}
+\DoxyCodeLine{00674\ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setColor(dflags.getColor());}
+\DoxyCodeLine{00675\ \ \ \ \ \ \ \ \ \ \ \ \ edge.drawIt();}
+\DoxyCodeLine{00676\ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setColor(tmpcolor);}
+\DoxyCodeLine{00677\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00678\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00679\ \ \ \ \ \ \ \ \ \ \ \ \ edge.drawIt();}
+\DoxyCodeLine{00680\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00681\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ restore\ thickness}}
+\DoxyCodeLine{00682\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmpthick\ >=\ 0)}
+\DoxyCodeLine{00683\ \ \ \ \ \ \ \ \ \ \ \ \ setLineThickness(tmpthick);}
+\DoxyCodeLine{00684\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00685\ \ \ \ \ \}}
+\DoxyCodeLine{00686\ \ \ \ \ }
+\DoxyCodeLine{00694\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawTrinket(\textcolor{keywordtype}{int}\ trinkIndx,Complex\ z,DispFlags\ dflags)\ \{}
+\DoxyCodeLine{00695\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00696\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.hes>0)\ \{\ }
+\DoxyCodeLine{00697\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z=sphView.toApparentSph(z);}
+\DoxyCodeLine{00698\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.cos(z.x)<0.0)\ \textcolor{keywordflow}{return};\ \textcolor{comment}{//\ on\ back}}
+\DoxyCodeLine{00699\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ conversion\ to\ visual\ plane\ is\ in\ 'drawIt'}}
+\DoxyCodeLine{00700\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00701\ \ \ \ \ \ \ \ \ \ \ \ \ trinket.x=z.x;}
+\DoxyCodeLine{00702\ \ \ \ \ \ \ \ \ \ \ \ \ trinket.y=z.y;}
+\DoxyCodeLine{00703\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ scale=(int)Math.pow(2.0,dflags.thickness);}
+\DoxyCodeLine{00704\ \ \ \ \ \ \ \ \ \ \ \ \ trinket.drawIt(dflags.fill,trinkIndx,dflags.getColor(),scale);}
+\DoxyCodeLine{00705\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00706\ \ \ \ \ \}}
+\DoxyCodeLine{00707\ }
+\DoxyCodeLine{00714\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawPath(Path2D.Double\ path)\ \{}
+\DoxyCodeLine{00715\ \ \ \ \ \ \ \ \ AffineTransform\ tmp2pix=(AffineTransform)trans2pix.clone();}
+\DoxyCodeLine{00716\ \textcolor{comment}{//\ \ \ \ \ \ double\ half=XWidth/2.0;}}
+\DoxyCodeLine{00717\ \ \ \ \ \ \ \ \ tmp2pix.concatenate(\textcolor{keyword}{new}\ AffineTransform(1.0,0.0,0.0,1.0,}
+\DoxyCodeLine{00718\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ -\/(XMax+XMin)/2.0,-\/(YMax+YMin)/2.0));}
+\DoxyCodeLine{00719\ \ \ \ \ \ \ \ \ imageContextReal.draw(\textcolor{keyword}{new}\ Path2D.Double(path,tmp2pix));}
+\DoxyCodeLine{00720\ \ \ \ \ \}}
+\DoxyCodeLine{00721\ \ \ \ \ }
+\DoxyCodeLine{00728\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawShape(Shape\ shape,Color\ color,Stroke\ stroke)\ \{}
+\DoxyCodeLine{00729\ \ \ \ \ \ \ \ \ Stroke\ old\_stroke=imageContextReal.getStroke();}
+\DoxyCodeLine{00730\ \ \ \ \ \ \ \ \ Color\ old\_color\ =\ imageContextReal.getColor();}
+\DoxyCodeLine{00731\ \ \ \ \ \ \ \ \ imageContextReal.setStroke(stroke);}
+\DoxyCodeLine{00732\ \ \ \ \ \ \ \ \ imageContextReal.setColor(color);}
+\DoxyCodeLine{00733\ \ \ \ \ \ \ \ \ imageContextReal.draw(shape);}
+\DoxyCodeLine{00734\ \ \ \ \ \ \ \ \ imageContextReal.setStroke(old\_stroke);}
+\DoxyCodeLine{00735\ \ \ \ \ \ \ \ \ imageContextReal.setColor(old\_color);}
+\DoxyCodeLine{00736\ \ \ \ \ \}}
+\DoxyCodeLine{00737\ \ \ \ \ }
+\DoxyCodeLine{00748\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ drawTileRecurs(SubdivisionRules\ sRules,}
+\DoxyCodeLine{00749\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tiletype,Complex\ []base,\textcolor{keywordtype}{int}\ depth,DispFlags\ dflags)\ \{}
+\DoxyCodeLine{00750\ \ \ \ \ \ \ \ \ TileRule\ topRule=sRules.tileRules.get(tiletype-\/4);}
+\DoxyCodeLine{00751\ }
+\DoxyCodeLine{00752\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ transformations}}
+\DoxyCodeLine{00753\ \ \ \ \ \ \ \ \ Complex\ origin=base[0];}
+\DoxyCodeLine{00754\ \ \ \ \ \ \ \ \ Complex\ basedir=base[1].minus(base[0]);}
+\DoxyCodeLine{00755\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00756\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ draw\ yourself,\ then\ position,\ recursively\ draw\ children}}
+\DoxyCodeLine{00757\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []stdC=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[2*topRule.stdCorners.length];}
+\DoxyCodeLine{00758\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<topRule.stdCorners.length;j++)\ \{}
+\DoxyCodeLine{00759\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z=\textcolor{keyword}{new}\ Complex(topRule.stdCorners[j].}
+\DoxyCodeLine{00760\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ times(basedir).add(origin));}
+\DoxyCodeLine{00761\ \ \ \ \ \ \ \ \ \ \ \ \ stdC[2*j]=z.x;}
+\DoxyCodeLine{00762\ \ \ \ \ \ \ \ \ \ \ \ \ stdC[2*j+1]=z.y;}
+\DoxyCodeLine{00763\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00764\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00765\ \ \ \ \ \ \ \ \ \ \ \ \ drawClosedPoly(topRule.stdCorners.length,stdC,dflags);}
+\DoxyCodeLine{00766\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00767\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}failed\ in\ drawing\ polygon."{}});}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00769\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=1;}
+\DoxyCodeLine{00770\ }
+\DoxyCodeLine{00771\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ recurse\ through\ children}}
+\DoxyCodeLine{00772\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (depth\ >\ 0)\ \{}
+\DoxyCodeLine{00773\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n\ =\ 1;\ n\ <=\ topRule.childCount;\ n++)\ \{}
+\DoxyCodeLine{00774\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ []subtileBase=\textcolor{keyword}{new}\ Complex[2];}
+\DoxyCodeLine{00775\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subtileBase[0]\ =\ \textcolor{keyword}{new}\ Complex(topRule.tileBase[n][0].}
+\DoxyCodeLine{00776\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ times(basedir).add(origin));}
+\DoxyCodeLine{00777\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subtileBase[1]\ =\ \textcolor{keyword}{new}\ Complex(topRule.tileBase[n][1].}
+\DoxyCodeLine{00778\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ times(basedir).add(origin));}
+\DoxyCodeLine{00779\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ rslt\ =\ drawTileRecurs(sRules,\ topRule.childType[n],}
+\DoxyCodeLine{00780\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subtileBase,\ depth\ -\/\ 1,dflags);}
+\DoxyCodeLine{00781\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rslt\ <=\ 0)}
+\DoxyCodeLine{00782\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00783\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count\ +=\ rslt;}
+\DoxyCodeLine{00784\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00785\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00786\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00787\ \ \ \ \ \}}
+\DoxyCodeLine{00788\ \ \ \ \ \ }
+\DoxyCodeLine{00798\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawXAxis(Graphics2D\ g)\ \{}
+\DoxyCodeLine{00799\ \ \ \ \ \ \ \ \ g.setColor(Color.black);}
+\DoxyCodeLine{00800\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ number\ of\ marks\ we\ want\ to\ see\ on\ the\ axis}}
+\DoxyCodeLine{00801\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ K\ =\ 40;}
+\DoxyCodeLine{00802\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ yPos;}
+\DoxyCodeLine{00803\ \ \ \ \ \ \ \ \ yPos\ =\ real\_to\_pix\_y(0);}
+\DoxyCodeLine{00804\ \ \ \ \ \ \ \ \ g.drawLine(0,\ yPos,pixWidth,\ yPos);}
+\DoxyCodeLine{00805\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ l\ =\ (int)\ (Math.round(Math.log(XWidth/K)\ /\ Math.log(10d)));}
+\DoxyCodeLine{00806\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ L\ =\ Math.pow(10,\ l);}
+\DoxyCodeLine{00807\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k1\ =\ (int)\ (Math.floor(XMin\ /\ L));}
+\DoxyCodeLine{00808\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k2\ =\ (int)\ (Math.floor(XMax\ /\ L));}
+\DoxyCodeLine{00809\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ starting\ x}}
+\DoxyCodeLine{00810\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\ =\ k1;\ k\ <=\ k2;\ k++)\ \{}
+\DoxyCodeLine{00811\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ xG\ =\ real\_to\_pix\_x(k\ *\ L);}
+\DoxyCodeLine{00812\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (xG\ >=\ 0)\ \{}
+\DoxyCodeLine{00813\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k\ \%\ 10\ !=\ 0)}
+\DoxyCodeLine{00814\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ g.drawLine(xG,\ yPos,\ xG,\ yPos\ -\/\ 7);}
+\DoxyCodeLine{00815\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00816\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ g.drawLine(xG,\ yPos,\ xG,\ yPos\ -\/\ 14);}
+\DoxyCodeLine{00817\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ g.drawString(}
+\DoxyCodeLine{00818\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ util.MathUtil.d2StringNew(k\ *\ Math.pow(10,\ l)),}
+\DoxyCodeLine{00819\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ xG\ +\ 7,\ yPos\ -\/\ 10);}
+\DoxyCodeLine{00820\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00821\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00822\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00823\ \ \ \ \ \}}
+\DoxyCodeLine{00824\ }
+\DoxyCodeLine{00834\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drawYAxis(Graphics2D\ g)\ \{}
+\DoxyCodeLine{00835\ \ \ \ \ \ \ \ \ g.setColor(Color.black);}
+\DoxyCodeLine{00836\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ number\ of\ marks\ we\ want\ to\ see\ on\ the\ axis}}
+\DoxyCodeLine{00837\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ K\ =\ 40;}
+\DoxyCodeLine{00838\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ xPos;}
+\DoxyCodeLine{00839\ \ \ \ \ \ \ \ \ xPos\ =\ real\_to\_pix\_x(0);}
+\DoxyCodeLine{00840\ \ \ \ \ \ \ \ \ g.drawLine(xPos,\ 0,\ xPos,\ pixHeight);}
+\DoxyCodeLine{00841\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ l\ =\ (int)\ (Math.round(Math.log(YHeight/K)\ /\ Math.log(10d)));}
+\DoxyCodeLine{00842\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ L\ =\ Math.pow(10,\ l);}
+\DoxyCodeLine{00843\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k1\ =\ (int)\ (Math.floor(YMin\ /\ L));}
+\DoxyCodeLine{00844\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k2\ =\ (int)\ (Math.floor(YMax\ /\ L));}
+\DoxyCodeLine{00845\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\ =\ k1;\ k\ <=\ k2;\ k++)\ \{}
+\DoxyCodeLine{00846\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ yG\ =\ real\_to\_pix\_y(k\ *\ L);}
+\DoxyCodeLine{00847\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k\ \%\ 10\ !=\ 0)}
+\DoxyCodeLine{00848\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ g.drawLine(xPos,\ yG,\ xPos\ -\/\ 7,\ yG);}
+\DoxyCodeLine{00849\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00850\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ g.drawLine(xPos,\ yG,\ xPos\ -\/\ 14,\ yG);}
+\DoxyCodeLine{00851\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ g.drawString(util.MathUtil.d2StringNew(k\ *\ Math.pow(10,\ l)),}
+\DoxyCodeLine{00852\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{int})xPos\ -\/\ 25,\ yG\ -\/\ 3);}
+\DoxyCodeLine{00853\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00854\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00855\ \ \ \ \ \}}
+\DoxyCodeLine{00856\ \ \ \ \ }
+\DoxyCodeLine{00862\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ rePaintAll()\ \{}
+\DoxyCodeLine{00863\ \ \ \ \ \ \ \ \ PackControl.canvasRedrawer.paintMyCanvasses(\textcolor{keyword}{this},\textcolor{keyword}{false});}
+\DoxyCodeLine{00864\ \ \ \ \ \}}
+\DoxyCodeLine{00865\ }
+\DoxyCodeLine{00875\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ paintComponent(Graphics\ g)\ \{}
+\DoxyCodeLine{00876\ \textcolor{comment}{//\ \ \ \ \ \ super.paintComponent(g);}}
+\DoxyCodeLine{00877\ \ \ \ \ \ \ \ \ g.drawImage(getThumbnailImage(),0,0,}
+\DoxyCodeLine{00878\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this.getWidth(),this.getHeight(),\textcolor{keyword}{this});}
+\DoxyCodeLine{00879\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this.showAxis)\ \{}
+\DoxyCodeLine{00880\ \ \ \ \ \ \ \ \ \ \ \ \ Graphics2D\ g2\ =\ (Graphics2D)\ g;}
+\DoxyCodeLine{00881\ \ \ \ \ \ \ \ \ \ \ \ \ this.drawXAxis(g2);}
+\DoxyCodeLine{00882\ \ \ \ \ \ \ \ \ \ \ \ \ this.drawYAxis(g2);}
+\DoxyCodeLine{00883\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00884\ \ \ \ \ \}}
+\DoxyCodeLine{00885\ }
+\DoxyCodeLine{00890\ \ \ \ \ \textcolor{keyword}{public}\ PackData\ getPackData()\ \{}
+\DoxyCodeLine{00891\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ drawingPD;}
+\DoxyCodeLine{00892\ \ \ \ \ \}}
+\DoxyCodeLine{00893\ \ \ \ \ }
+\DoxyCodeLine{00902\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setPackData(PackData\ p)\ \{}
+\DoxyCodeLine{00903\ \ \ \ \ \ \ \ \ p.packNum=screenNum;}
+\DoxyCodeLine{00904\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD!=\textcolor{keyword}{null}\ \&\&\ drawingPD!=p)\ \{\ \textcolor{comment}{//\ a\ different\ packing?}}
+\DoxyCodeLine{00905\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.radiiSliders!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00906\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drawingPD.radiiSliders.dispose();}
+\DoxyCodeLine{00907\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drawingPD.radiiSliders=\textcolor{keyword}{null};}
+\DoxyCodeLine{00908\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00909\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.schFlowerSliders!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00910\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drawingPD.schFlowerSliders.dispose();}
+\DoxyCodeLine{00911\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drawingPD.schFlowerSliders=\textcolor{keyword}{null};}
+\DoxyCodeLine{00912\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00913\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.angSumSliders!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00914\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drawingPD.angSumSliders.dispose();}
+\DoxyCodeLine{00915\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drawingPD.angSumSliders=\textcolor{keyword}{null};}
+\DoxyCodeLine{00916\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00917\ \ \ \ \ \ \ \ \ \ \ \ \ drawingPD.smoother=\textcolor{keyword}{null};}
+\DoxyCodeLine{00918\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00919\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ handshake}}
+\DoxyCodeLine{00920\ \ \ \ \ \ \ \ \ drawingPD=p;}
+\DoxyCodeLine{00921\ \ \ \ \ \ \ \ \ p.cpDrawing=\textcolor{keyword}{this};}
+\DoxyCodeLine{00922\ \ \ \ \ \ \ \ \ this.setGeometry(p.hes);}
+\DoxyCodeLine{00923\ \ \ \ \ \ \ \ \ this.setPackName();}
+\DoxyCodeLine{00924\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ drawingPD.nodeCount;}
+\DoxyCodeLine{00925\ \ \ \ \ \}}
+\DoxyCodeLine{00926\ \ \ \ \ }
+\DoxyCodeLine{00932\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ updateXtenders()\ \{}
+\DoxyCodeLine{00933\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ remove\ all\ Xtender\ tools}}
+\DoxyCodeLine{00934\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pnum=getPackNum();}
+\DoxyCodeLine{00935\ \ \ \ \ \ \ \ \ panels.SmallCanvasPanel\ scp=PackControl.smallCanvasPanel;}
+\DoxyCodeLine{00936\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (scp.cpInfo[pnum].getComponentCount()>1)}
+\DoxyCodeLine{00937\ \ \ \ \ \ \ \ \ \ \ \ \ scp.cpInfo[pnum].remove(1);}
+\DoxyCodeLine{00938\ \ \ \ \ \ \ \ \ scp.cpInfo[pnum].revalidate();}
+\DoxyCodeLine{00939\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ re-\/add\ those\ for\ this\ packing}}
+\DoxyCodeLine{00940\ \ \ \ \ \ \ \ \ Vector<PackExtender>\ Xvec=drawingPD.packExtensions;}
+\DoxyCodeLine{00941\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<Xvec.size();i++)\ \{}
+\DoxyCodeLine{00942\ \ \ \ \ \ \ \ \ \ \ \ \ PackExtender\ pX=Xvec.get(i);}
+\DoxyCodeLine{00943\ \ \ \ \ \ \ \ \ \ \ \ \ MyTool\ Xtool=pX.XtenderTool;}
+\DoxyCodeLine{00944\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Xtool!=\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00945\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scp.cpInfo[pnum].add(Xtool);}
+\DoxyCodeLine{00946\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00947\ \ \ \ \ \ \ \ \ scp.cpInfo[pnum].revalidate();}
+\DoxyCodeLine{00948\ \ \ \ \ \ \ \ \ scp.cpInfo[pnum].repaint();}
+\DoxyCodeLine{00949\ \ \ \ \ \}}
+\DoxyCodeLine{00950\ \ \ \ \ }
+\DoxyCodeLine{00951\ \ \ \ \ \textcolor{keyword}{public}\ Image\ getThumbnailImage()\{}
+\DoxyCodeLine{00952\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(packImage\ !=\ \textcolor{keyword}{null})}
+\DoxyCodeLine{00953\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ packImage.getScaledInstance(}
+\DoxyCodeLine{00954\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this.getWidth(),this.getHeight(),Image.SCALE\_SMOOTH);}
+\DoxyCodeLine{00955\ }
+\DoxyCodeLine{00956\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Return\ an\ empty\ image}}
+\DoxyCodeLine{00957\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ BufferedImage(}
+\DoxyCodeLine{00958\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this.getWidth(),this.getHeight(),BufferedImage.TYPE\_INT\_RGB);}
+\DoxyCodeLine{00959\ \ \ \ \ \}}
+\DoxyCodeLine{00960\ }
+\DoxyCodeLine{00967\ \ \ \ \ \textcolor{keyword}{public}\ String\ getGeomAbbrev()\{}
+\DoxyCodeLine{00968\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (drawingPD.hes)\ \{}
+\DoxyCodeLine{00969\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ -\/1:\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ (hyp)"{}});}
+\DoxyCodeLine{00970\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 0:\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ (eucl)"{}});}
+\DoxyCodeLine{00971\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ (sph)"{}});}
+\DoxyCodeLine{00972\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00973\ \ \ \ \ \}}
+\DoxyCodeLine{00974\ \ \ \ \ }
+\DoxyCodeLine{00979\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getGeom()\{}
+\DoxyCodeLine{00980\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ drawingPD.hes;}
+\DoxyCodeLine{00981\ \ \ \ \ \}}
+\DoxyCodeLine{00982\ \ \ \ \ }
+\DoxyCodeLine{00983\ }
+\DoxyCodeLine{00989\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setPackName()\ \{}
+\DoxyCodeLine{00990\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD.fileName==\ \textcolor{keyword}{null}\ ||\ drawingPD.fileName.trim().length()==0)\ }
+\DoxyCodeLine{00991\ \ \ \ \ \ \ \ \ \ \ \ \ drawingPD.setName(\textcolor{stringliteral}{"{}NoName"{}});}
+\DoxyCodeLine{00992\ \ \ \ \ \ \ \ \ PackControl.smallCanvasPanel.packName[getPackNum()].}
+\DoxyCodeLine{00993\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setText(\textcolor{stringliteral}{"{}P"{}}+getPackNum()+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00994\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ drawingPD.fileName+geomAbbrev[drawingPD.hes+1]);}
+\DoxyCodeLine{00995\ \ \ \ \ \}}
+\DoxyCodeLine{00996\ }
+\DoxyCodeLine{01001\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setGeometry(\textcolor{keywordtype}{int}\ geom)\ \{}
+\DoxyCodeLine{01002\ \ \ \ \ \ \ \ \ circle.resetGeom(geom);}
+\DoxyCodeLine{01003\ \ \ \ \ \ \ \ \ face.resetGeom(geom);}
+\DoxyCodeLine{01004\ \ \ \ \ \ \ \ \ edge.resetGeom(geom);}
+\DoxyCodeLine{01005\ \ \ \ \ \ \ \ \ trinket.resetGeom(geom);}
+\DoxyCodeLine{01006\ \ \ \ \ \}}
+\DoxyCodeLine{01007\ \ \ \ \ }
+\DoxyCodeLine{01012\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getPackNum()\ \{}
+\DoxyCodeLine{01013\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (drawingPD==\textcolor{keyword}{null})}
+\DoxyCodeLine{01014\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{01015\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ drawingPD.packNum;}
+\DoxyCodeLine{01016\ \ \ \ \ \}}
+\DoxyCodeLine{01017\ \ \ \ \ }
+\DoxyCodeLine{01022\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ emptyScreen()\ \{}
+\DoxyCodeLine{01023\ \ \ \ \ \ \ \ \ reset();}
+\DoxyCodeLine{01024\ \ \ \ \ \ \ \ \ sphView.defaultView();}
+\DoxyCodeLine{01025\ \ \ \ \ \ \ \ \ clearCanvas(\textcolor{keyword}{true});}
+\DoxyCodeLine{01026\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{01027\ \ \ \ \ \}}
+\DoxyCodeLine{01028\ \ \ \ \ \ }
+\DoxyCodeLine{01029\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getLineThickness()\ \{}
+\DoxyCodeLine{01030\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ linethickness;}
+\DoxyCodeLine{01031\ \ \ \ \ \}}
+\DoxyCodeLine{01032\ }
+\DoxyCodeLine{01038\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setLineThickness(\textcolor{keywordtype}{int}\ thickness)\ \{}
+\DoxyCodeLine{01039\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (thickness!=linethickness)\ \{}
+\DoxyCodeLine{01040\ \ \ \ \ \ \ \ \ \ \ \ \ linethickness=thickness;}
+\DoxyCodeLine{01041\ \ \ \ \ \ \ \ \ \ \ \ \ stroke=\textcolor{keyword}{new}\ BasicStroke((\textcolor{keywordtype}{float})(thickness),\ \textcolor{comment}{//\ /pixFactor)}}
+\DoxyCodeLine{01042\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BasicStroke.CAP\_ROUND,BasicStroke.JOIN\_ROUND);}
+\DoxyCodeLine{01043\ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setStroke(stroke);}
+\DoxyCodeLine{01044\ \ \ \ \ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{01045\ \ \ \ \ \}}
+\DoxyCodeLine{01046\ \ }
+\DoxyCodeLine{01047\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getFillOpacity()\ \{}
+\DoxyCodeLine{01048\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fillOpacity;}
+\DoxyCodeLine{01049\ \ \ \ \ \}}
+\DoxyCodeLine{01050\ }
+\DoxyCodeLine{01057\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setFillOpacity(\textcolor{keywordtype}{int}\ t)\ \{}
+\DoxyCodeLine{01058\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (t\ >=\ 0\ \&\&\ t\ <=\ 255)}
+\DoxyCodeLine{01059\ \ \ \ \ \ \ \ \ \ \ \ \ fillOpacity\ =\ t;}
+\DoxyCodeLine{01060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ fillOpacity=CPBase.DEFAULT\_FILL\_OPACITY;}
+\DoxyCodeLine{01061\ \ \ \ \ \}}
+\DoxyCodeLine{01062\ }
+\DoxyCodeLine{01063\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getSphereOpacity()\ \{}
+\DoxyCodeLine{01064\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sphereOpacity;}
+\DoxyCodeLine{01065\ \ \ \ \ \}}
+\DoxyCodeLine{01066\ \ \ \ \ }
+\DoxyCodeLine{01072\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setSphereOpacity(\textcolor{keywordtype}{int}\ t)\ \{}
+\DoxyCodeLine{01073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (t\ >=\ 0\ \&\&\ t\ <=\ 255)}
+\DoxyCodeLine{01074\ \ \ \ \ \ \ \ \ \ \ \ \ sphereOpacity\ =\ t;}
+\DoxyCodeLine{01075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ sphereOpacity=CPBase.DEFAULT\_SPHERE\_OPACITY;}
+\DoxyCodeLine{01076\ \ \ \ \ \}}
+\DoxyCodeLine{01077\ \ \ \ \ }
+\DoxyCodeLine{01078\ \ \ \ \ \textcolor{keyword}{public}\ Font\ getIndexFont()\ \{}
+\DoxyCodeLine{01079\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ indexFont;}
+\DoxyCodeLine{01080\ \ \ \ \ \}}
+\DoxyCodeLine{01081\ \ \ \ \ }
+\DoxyCodeLine{01086\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setIndexFont(\textcolor{keywordtype}{int}\ t)\ \{}
+\DoxyCodeLine{01087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (t>=0\ \&\&\ t<=\ 30)\ \{}
+\DoxyCodeLine{01088\ \ \ \ \ \ \ \ \ \ \ \ \ textSize=t;}
+\DoxyCodeLine{01089\ \ \ \ \ \ \ \ \ \ \ \ \ indexFont=\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}Sarif"{}},Font.ITALIC,t);}
+\DoxyCodeLine{01090\ \ \ \ \ \ \ \ \ \ \ \ \ imageContextReal.setFont(indexFont);}
+\DoxyCodeLine{01091\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ indexFont=CPBase.DEFAULT\_INDEX\_FONT;}
+\DoxyCodeLine{01093\ \ \ \ \ \}}
+\DoxyCodeLine{01094\ }
+\DoxyCodeLine{01100\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ real\_to\_pix\_x(\textcolor{keywordtype}{double}\ x)\ \{}
+\DoxyCodeLine{01101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keywordtype}{int})(.5+(x-\/XMin)*pixFactor);}
+\DoxyCodeLine{01102\ \ \ \ \ \}}
+\DoxyCodeLine{01103\ }
+\DoxyCodeLine{01108\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ toPixX(\textcolor{keywordtype}{double}\ x)\ \{}
+\DoxyCodeLine{01109\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (x-\/XMin)*pixFactor;}
+\DoxyCodeLine{01110\ \ \ \ \ \}}
+\DoxyCodeLine{01111\ }
+\DoxyCodeLine{01116\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ toPixY(\textcolor{keywordtype}{double}\ y)\ \{}
+\DoxyCodeLine{01117\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/(y-\/YMin-\/YHeight)*pixFactor;}
+\DoxyCodeLine{01118\ \ \ \ \ \}}
+\DoxyCodeLine{01119\ }
+\DoxyCodeLine{01125\ \ \ \ \ \textcolor{keyword}{public}\ \ \textcolor{keywordtype}{int}\ real\_to\_pix\_y(\textcolor{keywordtype}{double}\ y)\ \{}
+\DoxyCodeLine{01126\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keywordtype}{int})(.5+(y-\/(YMin+YHeight))*-\/pixFactor);\ \ \textcolor{comment}{//\ -\/\ due\ to\ y\ flip}}
+\DoxyCodeLine{01127\ \ \ \ \ \}}
+\DoxyCodeLine{01128\ }
+\DoxyCodeLine{01135\ \ \ \ \ \textcolor{keyword}{public}\ Point2D.Double\ pt2RealPt(Point\ pt,\textcolor{keywordtype}{int}\ wide,\textcolor{keywordtype}{int}\ high)\ \{}
+\DoxyCodeLine{01136\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=XMin\ +(double)pt.x*XWidth/(\textcolor{keywordtype}{double})wide;}
+\DoxyCodeLine{01137\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ y=YMin+YHeight-\/(double)pt.y*YHeight/(\textcolor{keywordtype}{double})high;}
+\DoxyCodeLine{01138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Point2D.Double(x,y);}
+\DoxyCodeLine{01139\ \ \ \ \ \}}
+\DoxyCodeLine{01140\ \ \ \ \ }
+\DoxyCodeLine{01145\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ getCenterX()\ \{}
+\DoxyCodeLine{01146\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ XMin+XWidth/2.0;}
+\DoxyCodeLine{01147\ \ \ \ \ \}}
+\DoxyCodeLine{01148\ }
+\DoxyCodeLine{01153\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ getCenterY()\ \{}
+\DoxyCodeLine{01154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ YMin+YHeight/2.0;}
+\DoxyCodeLine{01155\ \ \ \ \ \}}
+\DoxyCodeLine{01156\ \ \ \ \ }
+\DoxyCodeLine{01157\ }
+\DoxyCodeLine{01158\ \}\ }
+
+\end{DoxyCode}

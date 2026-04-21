@@ -1,0 +1,104 @@
+\doxysection{My\+Tool\+Listener.\+java}
+\label{_my_tool_listener_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/listeners/MyToolListener.java@{C:/Users/ashej/myGitRepos/CirclePack/src/listeners/MyToolListener.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }listeners;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Component;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.event.ActionEvent;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.event.ActionListener;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ javax.swing.JMenuItem;}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ mytools.MyPopupMenu;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ mytools.MyTool;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ mytools.MyToolHandler;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ util.ModeMenuItem;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00032\ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keyword}{class\ }MyToolListener\ \textcolor{keyword}{implements}\ ActionListener\ \{}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{public}\ MyToolHandler\ parentHandler;}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keyword}{public}\ MyPopupMenu\ barMenu;}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keyword}{public}\ MyPopupMenu\ toolMenu;}
+\DoxyCodeLine{00036\ \ \ \ \ }
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{public}\ MyToolListener(MyToolHandler\ tH)\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ parentHandler=tH;}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ prepare\ bar\ menu}}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ barMenu=createBarMenu();}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (barMenu!=\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ parentHandler.toolBar.setPopupMenu(barMenu);}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ prepare\ menu\ for\ tools\ on\ the\ bar}}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ toolMenu=createToolMenu();}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (toolMenu!=\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ parentHandler.setButtonMenu(toolMenu);}
+\DoxyCodeLine{00050\ \ \ \ \ \}}
+\DoxyCodeLine{00051\ \ \ \ \ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{//\ subclasses\ must\ supply\ these\ methods}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ MyPopupMenu\ createBarMenu();\ \textcolor{comment}{//\ menu\ for\ the\ JPanel\ }}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ MyPopupMenu\ createToolMenu();\ \textcolor{comment}{//\ menu\ for\ the\ tools\ on\ the\ JPanel}}
+\DoxyCodeLine{00055\ \ \ \ \ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{comment}{//\ Most\ MyTools\ execute\ their\ own\ commands,\ but\ some\ (particularly\ on\ the}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{comment}{//\ \ \ MAIN\ menu)\ must\ be\ sorted\ by\ the\ 'name'\ in\ their\ CmdString.}}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keywordtype}{void}\ sortByName(String\ cname);\ \textcolor{comment}{//\ sort\ by\ CmdString\ name}}
+\DoxyCodeLine{00059\ \ \ \ \ }
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{comment}{//\ Other\ actions\ result\ from\ selecting\ MenuItems\ (on\ either\ menu):\ those}}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{comment}{//\ \ \ are\ directed\ from\ here.}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keywordtype}{void}\ sortByAction(String\ cmd);\ \textcolor{comment}{//\ sort\ by\ CmdString\ name}}
+\DoxyCodeLine{00063\ \ \ \ \ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{//\ For\ 'ACTIVEListeners'\ there\ are\ also\ popup\ cursor\ menu\ choices}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keywordtype}{void}\ sortCursorCtrl(ActionEvent\ e);}
+\DoxyCodeLine{00066\ \ \ \ \ }
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ actionPerformed\ (ActionEvent\ e)\{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ String\ command\ =\ e.getActionCommand();}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ have\ to\ fix\ up\ tools\ to\ get\ the\ dropable\ property\ here.}}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ MyTool\ mt=(MyTool)CPBase.hashedTools.get(command);}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00078\ \textcolor{comment}{/*\ ================\ this\ is\ recognized\ as\ a\ hashed\ command\ =================\ */}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ not\ dropable\ (e.g.,\ cursor\ changes),\ try\ self\ executing\ first,\ }}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ then\ search\ by\ name.\ If\ dropable,\ skip\ self\ execution\ since\ drop}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ target\ will\ handle\ it.}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mt!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ ========\ check\ for\ popup\ menu\ ====================\ */}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mt.popUpMenu!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Component\ cpt=(Component)e.getSource();}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mt.popUpMenu.show(cpt,24,24);\ \textcolor{comment}{//\ x,y\ relative\ to\ cpt}}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ ==========\ Contains\ a\ command?\ =======\ */}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ String\ cpcmd=mt.getCommand();}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!mt.isDropable()\ \&\&\ cpcmd!=\textcolor{keyword}{null}\ \&\&\ cpcmd.length()!=0)\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mt.execute();\ }
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ ==========\ else,\ try\ sorting\ on\ CmdString\ name\ ========\ */}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ String\ cpname=mt.getName();}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cpname==\textcolor{keyword}{null}\ ||\ cpname.length()==0)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ sortByName(cpname);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00107\ \textcolor{comment}{/*\ ==================\ the\ rest\ come\ from\ MenuItems\ =====================\ */}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Sort\ by\ ActionCommand:\ parentHandler\ should\ handle\ the\ action.\ }}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ Object\ obj=e.getSource();}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (obj\ instanceof\ ModeMenuItem)\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ sortCursorCtrl(e);}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!(obj\ instanceof\ JMenuItem))\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ sortByAction(command);}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00118\ \ \ \ \ \}}
+\DoxyCodeLine{00119\ \}}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ }
+
+\end{DoxyCode}

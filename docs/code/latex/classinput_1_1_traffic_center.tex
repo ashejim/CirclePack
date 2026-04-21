@@ -1,0 +1,301 @@
+\doxysection{input.\+Traffic\+Center Class Reference}
+\label{classinput_1_1_traffic_center}\index{input.TrafficCenter@{input.TrafficCenter}}
+
+
+Controls execution traffic for \textquotesingle{}\doxyref{Circle\+Pack}{p.}{classall_mains_1_1_circle_pack}\textquotesingle{}.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Traffic\+Center} ()
+\item 
+int \textbf{ parse\+Wrapper} (String cmd, \textbf{ Pack\+Data} p, boolean remember, boolean use\+Thread, int dep, \textbf{ My\+Console} myc)
+\begin{DoxyCompactList}\small\item\em Top level for processing strings of commands, executed in the top level persistent thread of execution processing. \end{DoxyCompactList}\item 
+void \textbf{ parse\+Cmd\+Seq} (\textbf{ Result\+Packet} rP, int depth, \textbf{ My\+Console} mcs)
+\begin{DoxyCompactList}\small\item\em Parse a sequence of command strings, call for successive execution of individual commands, reap results, messages, etc. \end{DoxyCompactList}\item 
+\textbf{ Call\+Packet} \textbf{ parse\+Value\+Call} (\textbf{ Result\+Packet} rP, int depth, \textbf{ My\+Console} mcs)
+\begin{DoxyCompactList}\small\item\em Not yet sure when this will be used; in general, value returns are stored in the static \textquotesingle{}CPBase.\+Call\+Packet\textquotesingle{}, but there may be a way to get and use them directly. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static int \textbf{ if\+Then\+Wrapper} (\textbf{ Pack\+Data} p, String whole\+Str, \textbf{ My\+Console} myc, \textbf{ Result\+Packet} rP)
+\begin{DoxyCompactList}\small\item\em Wrapper to handle "{}if-\/then-\/else"{} commands. The functionality is basic, not sophisticated. The form is:\+ IF $<$condition$>$ THEN $<$cmds$>$ ELSE $<$cmds$>$. \end{DoxyCompactList}\item 
+static int \textbf{ for\+Wrapper} (\textbf{ Pack\+Data} p, String whole\+Str, \textbf{ My\+Console} myc)
+\begin{DoxyCompactList}\small\item\em Wrapper to handle "{}for"{} calls. Parse/\+execute strings of \textquotesingle{};\textquotesingle{} separated commands with for-\/loop structure. Sends commands for processing, consolidates messages and/\+or errors, updates \textquotesingle{}history\textquotesingle{} panel, counts iterations. This runs its own execution thread, so user can see output as it occurs; whether it blocks until finished depends on call from \textquotesingle{}parse\+Wrapper\textquotesingle{}. \end{DoxyCompactList}\item 
+static int \textbf{ cmd\+GUI} (\textbf{ Pack\+Data} p, String cmd)
+\begin{DoxyCompactList}\small\item\em Command that applies to the top level GUI -- as from menus and buttons. This run\textquotesingle{}s in \textquotesingle{}\doxyref{Circle\+Pack}{p.}{classall_mains_1_1_circle_pack}\textquotesingle{}s main thread, not execution thread (though same \textquotesingle{}cmd\textquotesingle{} might well be processed in other threads) TODO:\+ for efficiency, try to move some of these to direct action. \end{DoxyCompactList}\item 
+static int \textbf{ cmd\+GUI} (String cmd)
+\begin{DoxyCompactList}\small\item\em Command that applies to the top level GUI -- as from menus and buttons. This runs in \textquotesingle{}\doxyref{Circle\+Pack}{p.}{classall_mains_1_1_circle_pack}\textquotesingle{}s main thread, not the execution thread, and applies to the \textquotesingle{}active\textquotesingle{} packing. TODO:\+ for efficiency, try to move some of these to direct action. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+String \textbf{ last\+Cmd}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static final int \textbf{ MAX\+\_\+\+DEPTH} =5
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Controls execution traffic for \textquotesingle{}\doxyref{Circle\+Pack}{p.}{classall_mains_1_1_circle_pack}\textquotesingle{}. 
+
+Controls execution traffic for \textquotesingle{}\doxyref{Circle\+Pack}{p.}{classall_mains_1_1_circle_pack}\textquotesingle{}. Intended as a a thread handling essentially all execution calls so GUI can continue operating on its thread. Handles:\+ 1) immediate GUI, housecleaning, etc. (where efficiency important) 2) Main work, pick off individual commands from strings, and send them to \textquotesingle{}\doxyref{Command\+Str\+Parser.\+jexecute}{p.}{classinput_1_1_command_str_parser_ad2c354ce742f567dba1b7cd963fb0323}\textquotesingle{}.
+
+Preprocessing includes (can be sensitive to order of processing and must avoid infinite recursion):\+
+
+
+\begin{DoxyItemize}
+\item resolving \textquotesingle{}script\textquotesingle{} named commands
+\item finding double quoted strings
+\item processes "{}-\/p?"{} packing number flags
+\item processes "{}:\+="{} variable assignment
+\item processes "{}\+\_\+$\ast$"{} variable substitution
+\item processes !! repeats, recursive calls
+\item catches \textquotesingle{}\doxyref{Circle\+Pack}{p.}{classall_mains_1_1_circle_pack}\textquotesingle{} "{}for/\+\+FOR"{} loops
+\item handles "{}delay"{} calls (in appropriate thread)
+\item manages \textquotesingle{}\doxyref{Pack\+Extender}{p.}{classpacking_1_1_pack_extender}\textquotesingle{} handoffs
+\end{DoxyItemize}
+
+3) "{}background"{} thread (or those likely to last long?) Might want separate progress indicator? stop button?
+
+NOTE:\+ Lots of issues on self/\+cross-\/reference, sequence of processing, sequence of execution, result/\+error reporting, history, etc. 
+
+Definition at line \textbf{ 54} of file \textbf{ Traffic\+Center.\+java}.
+
+
+
+\label{doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\index{input.TrafficCenter@{input.TrafficCenter}!TrafficCenter@{TrafficCenter}}
+\index{TrafficCenter@{TrafficCenter}!input.TrafficCenter@{input.TrafficCenter}}
+\doxysubsubsection{TrafficCenter()}
+{\footnotesize\ttfamily \label{classinput_1_1_traffic_center_a25418e7406b84a4bc6ee8b71f4e63bd8} 
+input.\+Traffic\+Center.\+Traffic\+Center (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \textbf{ 60} of file \textbf{ Traffic\+Center.\+java}.
+
+
+
+\label{doc-func-members}
+\doxysubsection{Member Function Documentation}
+\index{input.TrafficCenter@{input.TrafficCenter}!cmdGUI@{cmdGUI}}
+\index{cmdGUI@{cmdGUI}!input.TrafficCenter@{input.TrafficCenter}}
+\doxysubsubsection{cmdGUI()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classinput_1_1_traffic_center_a5336c1099dc0a7a42d6aa2484b294750} 
+int input.\+Traffic\+Center.\+cmd\+GUI (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+Data}}]{p}{, }\item[{String}]{cmd}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Command that applies to the top level GUI -- as from menus and buttons. This run\textquotesingle{}s in \textquotesingle{}\doxyref{Circle\+Pack}{p.}{classall_mains_1_1_circle_pack}\textquotesingle{}s main thread, not execution thread (though same \textquotesingle{}cmd\textquotesingle{} might well be processed in other threads) TODO:\+ for efficiency, try to move some of these to direct action. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em p,\textquotesingle{}\+Pack\+Data\textquotesingle{}} & \\
+\hline
+{\em cmd,String} & (single command) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+normally $<$= 0 on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 866} of file \textbf{ Traffic\+Center.\+java}.
+
+\index{input.TrafficCenter@{input.TrafficCenter}!cmdGUI@{cmdGUI}}
+\index{cmdGUI@{cmdGUI}!input.TrafficCenter@{input.TrafficCenter}}
+\doxysubsubsection{cmdGUI()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classinput_1_1_traffic_center_ae220e3259529c40b6e809d8abe5d2bdb} 
+int input.\+Traffic\+Center.\+cmd\+GUI (\begin{DoxyParamCaption}\item[{String}]{cmd}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Command that applies to the top level GUI -- as from menus and buttons. This runs in \textquotesingle{}\doxyref{Circle\+Pack}{p.}{classall_mains_1_1_circle_pack}\textquotesingle{}s main thread, not the execution thread, and applies to the \textquotesingle{}active\textquotesingle{} packing. TODO:\+ for efficiency, try to move some of these to direct action. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em cmd,single} & command \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 883} of file \textbf{ Traffic\+Center.\+java}.
+
+\index{input.TrafficCenter@{input.TrafficCenter}!forWrapper@{forWrapper}}
+\index{forWrapper@{forWrapper}!input.TrafficCenter@{input.TrafficCenter}}
+\doxysubsubsection{forWrapper()}
+{\footnotesize\ttfamily \label{classinput_1_1_traffic_center_adfa4fc2b19ae2392e4a4deb03e84a257} 
+int input.\+Traffic\+Center.\+for\+Wrapper (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+Data}}]{p}{, }\item[{String}]{whole\+Str}{, }\item[{\textbf{ My\+Console}}]{myc}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Wrapper to handle "{}for"{} calls. Parse/\+execute strings of \textquotesingle{};\textquotesingle{} separated commands with for-\/loop structure. Sends commands for processing, consolidates messages and/\+or errors, updates \textquotesingle{}history\textquotesingle{} panel, counts iterations. This runs its own execution thread, so user can see output as it occurs; whether it blocks until finished depends on call from \textquotesingle{}parse\+Wrapper\textquotesingle{}. 
+
+For-\/loop usage:\+ if delta$>$0, increment \textquotesingle{}start\textquotesingle{} while $<$= \textquotesingle{}end\textquotesingle{}. if delta$<$0, decrement \textquotesingle{}start\textquotesingle{} while $>$= \textquotesingle{}end\textquotesingle{}. delta=0 is error. 
+\begin{DoxyParams}{Parameters}
+{\em p,\textquotesingle{}\+Pack\+Data\textquotesingle{}} & \\
+\hline
+{\em whole\+Str,full} & string, starting with "{}for"{} or "{}\+FOR"{} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1, since we\textquotesingle{}re firing off new thread 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 703} of file \textbf{ Traffic\+Center.\+java}.
+
+\index{input.TrafficCenter@{input.TrafficCenter}!ifThenWrapper@{ifThenWrapper}}
+\index{ifThenWrapper@{ifThenWrapper}!input.TrafficCenter@{input.TrafficCenter}}
+\doxysubsubsection{ifThenWrapper()}
+{\footnotesize\ttfamily \label{classinput_1_1_traffic_center_a490e3646d1b08f4c76ff79b20e9b7cac} 
+int input.\+Traffic\+Center.\+if\+Then\+Wrapper (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+Data}}]{p}{, }\item[{String}]{whole\+Str}{, }\item[{\textbf{ My\+Console}}]{myc}{, }\item[{\textbf{ Result\+Packet}}]{rP}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Wrapper to handle "{}if-\/then-\/else"{} commands. The functionality is basic, not sophisticated. The form is:\+ IF $<$condition$>$ THEN $<$cmds$>$ ELSE $<$cmds$>$. 
+
+The $<$condition$>$ is set by the string between IF and THEN and should contain no \textquotesingle{};\textquotesingle{}. It must evaluate to true/\+false, possibly with reference to the active pack and static variables and commands that return some value, e.\+g. a boolean or a double.
+
+THEN is followed by a named command [.]. ELSE is optional and also followed by a named command; default is to issue a \textquotesingle{}break\textquotesingle{}.
+
+These structures can be nested only to the extent that the named commands might themselves contain IF-\/\+THEN-\/\+ELSE.
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \doxyref{Pack\+Data}{p.}{classpacking_1_1_pack_data} \\
+\hline
+{\em whole\+Str} & String \\
+\hline
+{\em myc} & \doxyref{My\+Console}{p.}{classinput_1_1_my_console} \\
+\hline
+{\em rP} & \doxyref{Result\+Packet}{p.}{classutil_1_1_result_packet}, only to transmit \textquotesingle{}interrupt\textquotesingle{}, if appropriate \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 641} of file \textbf{ Traffic\+Center.\+java}.
+
+\index{input.TrafficCenter@{input.TrafficCenter}!parseCmdSeq@{parseCmdSeq}}
+\index{parseCmdSeq@{parseCmdSeq}!input.TrafficCenter@{input.TrafficCenter}}
+\doxysubsubsection{parseCmdSeq()}
+{\footnotesize\ttfamily \label{classinput_1_1_traffic_center_a763987eab837c447234e2a37af67c891} 
+void input.\+Traffic\+Center.\+parse\+Cmd\+Seq (\begin{DoxyParamCaption}\item[{\textbf{ Result\+Packet}}]{rP}{, }\item[{int}]{depth}{, }\item[{\textbf{ My\+Console}}]{mcs}{}\end{DoxyParamCaption})}
+
+
+
+Parse a sequence of command strings, call for successive execution of individual commands, reap results, messages, etc. 
+
+\textquotesingle{}\doxyref{Result\+Packet}{p.}{classutil_1_1_result_packet}\textquotesingle{} is provided by the calling routine for carrying information both ways:\+ command string, command count, error messages, memory\+Flag, packing, etc. 
+\begin{DoxyParams}{Parameters}
+{\em rP} & \doxyref{Result\+Packet}{p.}{classutil_1_1_result_packet} \\
+\hline
+{\em depth} & int; used in recursive calls \\
+\hline
+{\em mcs} & \doxyref{My\+Console}{p.}{classinput_1_1_my_console}, where to report some results \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 146} of file \textbf{ Traffic\+Center.\+java}.
+
+\index{input.TrafficCenter@{input.TrafficCenter}!parseValueCall@{parseValueCall}}
+\index{parseValueCall@{parseValueCall}!input.TrafficCenter@{input.TrafficCenter}}
+\doxysubsubsection{parseValueCall()}
+{\footnotesize\ttfamily \label{classinput_1_1_traffic_center_a857c111ba1487d01670c927949690fc6} 
+\textbf{ Call\+Packet} input.\+Traffic\+Center.\+parse\+Value\+Call (\begin{DoxyParamCaption}\item[{\textbf{ Result\+Packet}}]{rP}{, }\item[{int}]{depth}{, }\item[{\textbf{ My\+Console}}]{mcs}{}\end{DoxyParamCaption})}
+
+
+
+Not yet sure when this will be used; in general, value returns are stored in the static \textquotesingle{}CPBase.\+Call\+Packet\textquotesingle{}, but there may be a way to get and use them directly. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rP} & \\
+\hline
+{\em depth} & \\
+\hline
+{\em mcs} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Call\+Packet}{p.}{classutil_1_1_call_packet} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 613} of file \textbf{ Traffic\+Center.\+java}.
+
+\index{input.TrafficCenter@{input.TrafficCenter}!parseWrapper@{parseWrapper}}
+\index{parseWrapper@{parseWrapper}!input.TrafficCenter@{input.TrafficCenter}}
+\doxysubsubsection{parseWrapper()}
+{\footnotesize\ttfamily \label{classinput_1_1_traffic_center_a0caede66cc8cbcd37d67d515ff312f7f} 
+int input.\+Traffic\+Center.\+parse\+Wrapper (\begin{DoxyParamCaption}\item[{String}]{cmd}{, }\item[{\textbf{ Pack\+Data}}]{p}{, }\item[{boolean}]{remember}{, }\item[{boolean}]{use\+Thread}{, }\item[{int}]{dep}{, }\item[{\textbf{ My\+Console}}]{myc}{}\end{DoxyParamCaption})}
+
+
+
+Top level for processing strings of commands, executed in the top level persistent thread of execution processing. 
+
+
+\begin{DoxyItemize}
+\item Find calls to \textquotesingle{}for\textquotesingle{}, \textquotesingle{}FOR\textquotesingle{}, \textquotesingle{}!!\textquotesingle{}, or \textquotesingle{}delay\textquotesingle{}; these remain in this top thread so that effects are seen as they happen
+\item Other calls are passed to \textquotesingle{}parse\+Cmd\+Seq\textquotesingle{} after starting another, temporary thread.
+\item Sends results[] to \textquotesingle{}Msg\+Frame.\+process\+Cmd\+Results\textquotesingle{}. Gather messages and/\+or errors, update \textquotesingle{}history\textquotesingle{} panel. TODO:\+ plan to objectify this with \textquotesingle{}\doxyref{Result\+Packet}{p.}{classutil_1_1_result_packet}\textquotesingle{}s
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em cmd} & String, the command string \\
+\hline
+{\em p} & \doxyref{Pack\+Data}{p.}{classpacking_1_1_pack_data} \\
+\hline
+{\em remember} & boolean:\+ if true, keep this as past command \\
+\hline
+{\em use\+Thread} & boolean:\+ true, then run in thread and don\textquotesingle{}t wait \\
+\hline
+{\em dep} & int, recursion depth \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int:\+ $<$=0 on error, 1 for going to another thread, n for number of successful commands. 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 84} of file \textbf{ Traffic\+Center.\+java}.
+
+
+
+\label{doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\index{input.TrafficCenter@{input.TrafficCenter}!lastCmd@{lastCmd}}
+\index{lastCmd@{lastCmd}!input.TrafficCenter@{input.TrafficCenter}}
+\doxysubsubsection{lastCmd}
+{\footnotesize\ttfamily \label{classinput_1_1_traffic_center_a1e83a9e624c1bf9622c3d20eb8dbcfb0} 
+String input.\+Traffic\+Center.\+last\+Cmd\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Definition at line \textbf{ 56} of file \textbf{ Traffic\+Center.\+java}.
+
+\index{input.TrafficCenter@{input.TrafficCenter}!MAX\_DEPTH@{MAX\_DEPTH}}
+\index{MAX\_DEPTH@{MAX\_DEPTH}!input.TrafficCenter@{input.TrafficCenter}}
+\doxysubsubsection{MAX\_DEPTH}
+{\footnotesize\ttfamily \label{classinput_1_1_traffic_center_aa653147706645e3b94310377ee08f908} 
+final int input.\+Traffic\+Center.\+MAX\+\_\+\+DEPTH =5\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [protected]}}
+
+
+
+Definition at line \textbf{ 57} of file \textbf{ Traffic\+Center.\+java}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+C:\+/\+\+Users/\+ashej/\+my\+Git\+Repos/\+\+Circle\+Pack/\+src/\+input/\+\textbf{ Traffic\+Center.\+java}\end{DoxyCompactItemize}

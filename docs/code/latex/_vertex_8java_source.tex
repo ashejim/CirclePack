@@ -1,0 +1,305 @@
+\doxysection{Vertex.\+java}
+\label{_vertex_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/combinatorics/komplex/Vertex.java@{C:/Users/ashej/myGitRepos/CirclePack/src/combinatorics/komplex/Vertex.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }combinatorics.komplex;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ exceptions.CombException;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ exceptions.DCELException;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ geometry.CircleSimple;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ listManip.HalfLink;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ util.ColorUtil;}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }Vertex\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ }
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{public}\ HalfEdge\ halfedge;}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ vertIndx;}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ bdryFlag;}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ redFlag;}
+\DoxyCodeLine{00044\ \ \ \ \ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{public}\ Complex\ center;}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ rad;}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ aim;}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ curv;\ }
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{comment}{//\ other}}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{public}\ Color\ color;}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ mark;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ plotFlag;\ \ \ \ \textcolor{comment}{//\ often\ OBE}}
+\DoxyCodeLine{00061\ \ \ \ \ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{comment}{//\ for\ temporary\ data\ during\ various\ processing}}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ vutil;}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{public}\ HalfEdge[]\ spokes;}
+\DoxyCodeLine{00065\ \ \ \ \ }
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{public}\ Vertex(\textcolor{keywordtype}{int}\ v)\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ vertIndx=v;}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ halfedge=\textcolor{keyword}{null};}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ redFlag=\textcolor{keyword}{false};}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ spokes=\textcolor{keyword}{null};}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ center=\textcolor{keyword}{new}\ Complex(0.0);}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ rad=.49;}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ color=ColorUtil.getFGColor();}
+\DoxyCodeLine{00075\ \ \ \ \ \}}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getNum()\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ HalfEdge\ he=halfedge;}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ he=he.prev.twin;}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (he!=halfedge);}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tick-\/bdryFlag;\ \textcolor{comment}{//\ subtract\ 1\ for\ bdry\ vertex}}
+\DoxyCodeLine{00091\ \ \ \ \ \}}
+\DoxyCodeLine{00092\ \ \ \ \ }
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ HalfEdge\ oppSpoke(HalfEdge\ spoke,\textcolor{keywordtype}{boolean}\ hexflag)\ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ Vertex\ vert=spoke.origin;}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety=2000;}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ HalfEdge\ cclw=spoke;}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ HalfEdge\ clw=spoke;}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=vert.getNum();}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ interior\ case}}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vert.bdryFlag==0)\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hexflag\ \&\&\ N!=6)}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ safety-\/-\/;}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cclw=cclw.prev.twin;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ clw=clw.twin.next;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cclw==clw\ \&\&\ cclw!=spoke)}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cclw;}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (cclw!=spoke\ \&\&\ clw!=spoke\ \&\&\ safety>0);}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (safety==0)}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}safety\ value\ blew\ in\ looking\ for\ opposite\ to\ "{}}+spoke);}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hexflag\ \&\&\ (N!=3\ ||\ !spoke.isBdry()))\ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00133\ }
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ 'vert'\ is\ bdry:\ first\ check\ if\ 'spoke'\ is\ bdry}}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (spoke==vert.halfedge)\ \textcolor{comment}{//\ downstream\ bdry\ edge?}}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ spoke.twin.next.twin;\ \textcolor{comment}{//\ upstream\ bdry}}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (spoke.twin.isBdry())\ \textcolor{comment}{//\ upstream\ bdry\ edge?}}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vert.halfedge;\ \textcolor{comment}{//\ downstream\ bdry}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ spoke\ points\ to\ interior}}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ safety-\/-\/;}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ cclw=cclw.prev.twin;}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ clw=clw.twin.next;}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cclw.origin.bdryFlag>0)}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vert.halfedge;}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (clw.origin.bdryFlag>0)}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vert.halfedge.twin.next.twin;}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (safety>0);}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (safety==0)}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}inconsistency\ looking\ for\ bdry\ oppSpoke"{}});}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00153\ \ \ \ \ \}}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ isBdry()\ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ HalfLink\ flower=getEdgeFlower();}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ Iterator<HalfEdge>\ fit=flower.iterator();}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fit.hasNext())\ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=fit.next();}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (he.isBdry())}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00169\ \ \ \ \ \}}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[]\ getPetals()\ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ getFlower(\textcolor{keyword}{false});}
+\DoxyCodeLine{00178\ \ \ \ \ \}}
+\DoxyCodeLine{00179\ \ \ \ \ }
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[]\ getFlower(\textcolor{keywordtype}{boolean}\ closeInt)\ \{}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ ArrayList<Integer>\ vlist=\textcolor{keyword}{new}\ ArrayList<Integer>();}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ HalfEdge\ he=halfedge;}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety=1010;}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ vlist.add(he.twin.origin.vertIndx);}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ he=he.prev.twin;}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ safety-\/-\/;}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (he!=halfedge\ \&\&\ safety>0);}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (safety==0)\ }
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DCELException(\textcolor{stringliteral}{"{}triggered\ safety\ exit."{}});}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ close\ up\ interior\ flowers?}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (closeInt\ \&\&\ bdryFlag==0)}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ vlist.add(halfedge.twin.origin.vertIndx);\ }
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[vlist.size()];}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ Iterator<Integer>\ vit=vlist.iterator();}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (vit.hasNext())\ \{}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ flower[tick++]=vit.next();}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ flower;}
+\DoxyCodeLine{00215\ \ \ \ \ \}}
+\DoxyCodeLine{00216\ \ \ \ \ }
+\DoxyCodeLine{00226\ \ \ \ \ \textcolor{keyword}{public}\ HalfLink\ getOuterFan(HalfEdge\ hedge)\ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ HalfLink\ hlink=\textcolor{keyword}{new}\ HalfLink();}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ HalfEdge\ spoke=hedge.prev;\ \textcolor{comment}{//\ a\ spoke}}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ not\ red}}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!redFlag)\ \{}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=spoke.next;}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hlink.add(he);}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ spoke=he.next.twin;}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}(spoke!=hedge.prev);}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ hlink;}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ red,\ rotate\ clw\ until\ finding\ red\ edge}}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (spoke.myRedEdge==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ spoke=spoke.twin.next;\ \textcolor{comment}{//\ search\ clw}}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ HalfEdge\ stopspoke=spoke.myRedEdge.prevRed.myEdge.twin;}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=spoke.next;}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ hlink.add(he);}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ spoke=he.next.twin;}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}(spoke!=stopspoke);}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ hlink;}
+\DoxyCodeLine{00251\ \ \ \ \ \}}
+\DoxyCodeLine{00252\ \ \ \ \ }
+\DoxyCodeLine{00259\ \ \ \ \ \textcolor{keyword}{public}\ HalfLink\ getSpokes(HalfEdge\ start)\ \{}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ HalfEdge\ he=halfedge;}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (start!=\textcolor{keyword}{null}\ \&\&\ start.origin==\textcolor{keyword}{this})}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ he=start;}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=getNum();}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (he.origin.bdryFlag>0)\ \textcolor{comment}{//\ bdry?}}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ num++;}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ HalfLink\ ans=\textcolor{keyword}{new}\ HalfLink();}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ ans.add(he);}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ he=he.prev.twin;}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00272\ \ \ \ \ \}}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00281\ \ \ \ \ \textcolor{keyword}{public}\ HalfLink\ getEdgeFlower()\ \{}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (halfedge==\textcolor{keyword}{null})}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}Vertex\ has\ no\ 'halfedge'"{}});}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ getEdgeFlower(halfedge,\textcolor{keyword}{null});}
+\DoxyCodeLine{00285\ \ \ \ \ \}}
+\DoxyCodeLine{00286\ \ \ \ \ }
+\DoxyCodeLine{00295\ \ \ \ \ \textcolor{keyword}{public}\ HalfLink\ getEdgeFlower(HalfEdge\ start,HalfEdge\ stop)\ \{}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (start==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ getEdgeFlower();\ \textcolor{comment}{//\ full\ flower,\ start\ at\ its\ 'halfedge'}}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (start.origin==\textcolor{keyword}{null}\ ||\ start.origin!=\textcolor{keyword}{this})}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}'start'\ not\ appropriate"{}});}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (stop==\textcolor{keyword}{null})}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ stop=start;}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ spokes\ including\ 'start',\ up\ to,\ not\ including\ 'stop'}}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ HalfLink\ eflower=\textcolor{keyword}{new}\ HalfLink();}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ HalfEdge\ nxtedge=start;}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety=1010;}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ eflower.add(nxtedge);}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ nxtedge=nxtedge.prev.twin;}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ safety-\/-\/;}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (nxtedge!=stop\ \&\&\ safety>0);}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (safety==0)\ }
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}loop\ in\ getEdgeFlower\ for\ vert\ "{}}+vertIndx);}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ eflower;}
+\DoxyCodeLine{00316\ \ \ \ \ \}}
+\DoxyCodeLine{00317\ \ \ \ \ }
+\DoxyCodeLine{00324\ \ \ \ \ \textcolor{keyword}{public}\ HalfLink\ getOuterEdges()\ \{}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ HalfLink\ eflower=getEdgeFlower();}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ HalfLink\ outer=\textcolor{keyword}{new}\ HalfLink();}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ Iterator<HalfEdge>\ eit=eflower.iterator();}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety=100*eflower.size();}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (eit.hasNext()\ \&\&\ safety>0)\ \{}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ spoke=eit.next();}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=spoke.next;}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (he.twin.origin==\textcolor{keyword}{this})}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outer.add(he);}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.next;}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ safety-\/-\/;}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (he!=spoke.next);}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (safety==0)}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}looped\ in\ 'getOuterEdges'"{}});}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ outer;}
+\DoxyCodeLine{00343\ \ \ \ \ \}}
+\DoxyCodeLine{00344\ \ \ \ \ }
+\DoxyCodeLine{00353\ \ \ \ \ \textcolor{keyword}{public}\ ArrayList<DcelFace>\ getFaceFlower()\ \{}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ ArrayList<DcelFace>\ fflower=\textcolor{keyword}{new}\ ArrayList<DcelFace>();}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ HalfEdge\ nxtedge=halfedge;}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ fflower.add(nxtedge.face);}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ nxtedge=nxtedge.prev.twin;}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (nxtedge!=halfedge);}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fflower;}
+\DoxyCodeLine{00361\ \ \ \ \ \}}
+\DoxyCodeLine{00362\ }
+\DoxyCodeLine{00366\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getOpposite()\ \{}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ halfedge.next.twin.origin.vertIndx;}
+\DoxyCodeLine{00368\ \ \ \ \ \}}
+\DoxyCodeLine{00369\ }
+\DoxyCodeLine{00374\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setColor(Color\ col)\ \{}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col==\textcolor{keyword}{null})}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ color=\textcolor{keyword}{null};}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ color=ColorUtil.cloneMe(col);}
+\DoxyCodeLine{00379\ \ \ \ \ \}}
+\DoxyCodeLine{00380\ \ \ \ \ }
+\DoxyCodeLine{00385\ \ \ \ \ \textcolor{keyword}{public}\ Color\ getColor()\ \{}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ColorUtil.cloneMe(color);}
+\DoxyCodeLine{00387\ \ \ \ \ \}}
+\DoxyCodeLine{00388\ \ \ \ \ }
+\DoxyCodeLine{00393\ \ \ \ \ \textcolor{keyword}{public}\ CircleSimple\ getCircleSimple()\ \{}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CircleSimple(center,rad);}
+\DoxyCodeLine{00395\ \ \ \ \ \}}
+\DoxyCodeLine{00396\ \ \ \ \ }
+\DoxyCodeLine{00401\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setCircleSimple(CircleSimple\ cS)\ \{}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ center=cS.center;}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ rad=cS.rad;}
+\DoxyCodeLine{00404\ \ \ \ \ \}}
+\DoxyCodeLine{00405\ \ \ \ \ }
+\DoxyCodeLine{00406\ \ \ \ \ \textcolor{keyword}{public}\ String\ toString()\ \{}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}"{}}+vertIndx);}
+\DoxyCodeLine{00408\ \ \ \ \ \}}
+\DoxyCodeLine{00409\ \ \ \ \ }
+\DoxyCodeLine{00414\ \ \ \ \ \textcolor{keyword}{public}\ Vertex\ clone()\ \{}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ Vertex\ nv=\textcolor{keyword}{new}\ Vertex(vertIndx);}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ nv.halfedge=halfedge;}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ nv.bdryFlag=bdryFlag;}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ nv.redFlag=redFlag;}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ nv.center=\textcolor{keyword}{new}\ Complex(center);}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ nv.rad=rad;}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ nv.aim=aim;}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ nv.color=ColorUtil.cloneMe(color);}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ nv.mark=mark;}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ nv.curv=curv;}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ nv.plotFlag=plotFlag;}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ nv.vutil=vutil;}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ nv;}
+\DoxyCodeLine{00428\ \ \ \ \ \}}
+\DoxyCodeLine{00429\ \ \ \ \ }
+\DoxyCodeLine{00434\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ cloneData(Vertex\ sourceV)\ \{}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ center=\textcolor{keyword}{new}\ Complex(sourceV.center);}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ rad=sourceV.rad;}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ aim=sourceV.aim;}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ curv=sourceV.curv;}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ mark=sourceV.mark;}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ color=ColorUtil.cloneMe(sourceV.color);}
+\DoxyCodeLine{00441\ \ \ \ \ \}}
+\DoxyCodeLine{00442\ }
+\DoxyCodeLine{00443\ \}}
+
+\end{DoxyCode}

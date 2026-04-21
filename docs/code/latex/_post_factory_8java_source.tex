@@ -1,0 +1,1141 @@
+\doxysection{Post\+Factory.\+java}
+\label{_post_factory_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/posting/PostFactory.java@{C:/Users/ashej/myGitRepos/CirclePack/src/posting/PostFactory.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }posting;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.geom.Path2D;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ exceptions.DrawingException;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ exceptions.InOutException;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ geometry.CircleSimple;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ geometry.HypGeodesic;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ geometry.HyperbolicMath;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ geometry.SphGeodesic;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ geometry.SphericalMath;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ graphObjects.CPEdge;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ math.Point3D;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ packing.CPdrawing;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ tiling.SubdivisionRules;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ tiling.TileRule;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ util.ColorUtil;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ util.DispFlags;}
+\DoxyCodeLine{00026\ \ \ \ \ }
+\DoxyCodeLine{00039\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }PostFactory\ \{}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ rad2deg=180/Math.PI;}
+\DoxyCodeLine{00042\ \ \ \ \ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{comment}{//\ pointer\ to\ PostManager.BufferedWriter;\ updated\ whenever\ fp\ is\ created}}
+\DoxyCodeLine{00044\ \ \ \ \ BufferedWriter\ fp;\ \textcolor{comment}{//\ RandomAccessFile\ fp;}}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ DEGPI=180/Math.PI;}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ MAX\_BOTTOM\_TEXT\_LENGTH=300;}
+\DoxyCodeLine{00047\ \ \ \ \ }
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{public}\ PostFactory()\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ fp=\textcolor{keyword}{null};}
+\DoxyCodeLine{00051\ \ \ \ \ \}}
+\DoxyCodeLine{00052\ \ \ \ \ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postCircle(\textcolor{keywordtype}{int}\ hes,Complex\ z,\textcolor{keywordtype}{double}\ rad)\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ postCircle(hes,z,rad,\textcolor{keyword}{null},\textcolor{keyword}{null},-\/1.0);}
+\DoxyCodeLine{00061\ \ \ \ \ \}}
+\DoxyCodeLine{00062\ \ \ \ \ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postCircle(\textcolor{keywordtype}{int}\ hes,Complex\ z,\textcolor{keywordtype}{double}\ rad,\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ postCircle(hes,z,rad,\textcolor{keyword}{null},\textcolor{keyword}{null},tx);}
+\DoxyCodeLine{00072\ \ \ \ \ \}}
+\DoxyCodeLine{00073\ \ \ \ \ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postFilledCircle(\textcolor{keywordtype}{int}\ hes,Complex\ z,\textcolor{keywordtype}{double}\ rad,Color\ col)\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ postCircle(hes,z,rad,col,\textcolor{keyword}{null},-\/1.0);\ }
+\DoxyCodeLine{00083\ \ \ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postFilledCircle(\textcolor{keywordtype}{int}\ hes,Complex\ z,\textcolor{keywordtype}{double}\ rad,Color\ col,\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ postCircle(hes,z,rad,col,\textcolor{keyword}{null},tx);\ }
+\DoxyCodeLine{00095\ \ \ \ \ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postColorCircle(\textcolor{keywordtype}{int}\ hes,Complex\ z,\textcolor{keywordtype}{double}\ rad,Color\ bcol)\ \{}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ postCircle(hes,z,rad,\textcolor{keyword}{null},bcol,-\/1.0);}
+\DoxyCodeLine{00106\ \ \ \ \ \}}
+\DoxyCodeLine{00107\ \ \ \ \ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postColorCircle(\textcolor{keywordtype}{int}\ hes,Complex\ z,\textcolor{keywordtype}{double}\ rad,Color\ bcol,\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ postCircle(hes,z,rad,\textcolor{keyword}{null},bcol,tx);}
+\DoxyCodeLine{00118\ \ \ \ \ \}}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postFilledColorCircle(\textcolor{keywordtype}{int}\ hes,Complex\ z,\textcolor{keywordtype}{double}\ rad,Color\ col,Color\ bcol)\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ postCircle(hes,z,rad,col,bcol,-\/1.0);}
+\DoxyCodeLine{00130\ \ \ \ \ \}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postFilledColorCircle(\textcolor{keywordtype}{int}\ hes,Complex\ z,\textcolor{keywordtype}{double}\ rad,Color\ col,Color\ bcol,\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ postCircle(hes,z,rad,col,bcol,tx);}
+\DoxyCodeLine{00143\ \ \ \ \ \}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postCircle(\textcolor{keywordtype}{int}\ hes,Complex\ z,\textcolor{keywordtype}{double}\ rad,}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ Color\ col,Color\ bcol,\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ handle\ sphere\ separately}}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)\ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ needfill=\textcolor{keyword}{false};}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col!=\textcolor{keyword}{null})\ needfill=\textcolor{keyword}{true};}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ pathstr=sphCirclePath(z,rad,needfill);}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pathstr!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}gs\ "{}}+pathstr);}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tx>0)}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}getlinewidth\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},tx)+}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ mul\ ourlinewidth\(\backslash\)n"{}});}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col!=\textcolor{keyword}{null})\ \textcolor{comment}{//\ fill\ with\ given\ color}}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ gs\ "{}}+postRGBsrgb(col)+\textcolor{stringliteral}{"{}\ fill\ gr\(\backslash\)n"{}});\ }
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bcol!=\textcolor{keyword}{null})\ \textcolor{comment}{//\ stroke\ with\ given\ boundary\ color}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ gs\ "{}}+postRGBsrgb(bcol)+\textcolor{stringliteral}{"{}\ s\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ fp.write(\textcolor{stringliteral}{"{}\ s\ "{}});\ \textcolor{comment}{//\ stroke}}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ gr\(\backslash\)n"{}});\ }
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ hyp?\ convert\ data\ to\ euclidean}}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)\ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ sc=HyperbolicMath.h\_to\_e\_data(z,rad);}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z=sc.center;}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rad=sc.rad;}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tx>0)}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ gs\ getlinewidth\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},tx)+}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ mul\ ourlinewidth\(\backslash\)n"{}});}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col!=\textcolor{keyword}{null})\ \textcolor{comment}{//\ fill\ with\ given\ color}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(postRGB(col)+z.x+\textcolor{stringliteral}{"{}\ "{}}+z.y+\textcolor{stringliteral}{"{}\ "{}}+rad+\textcolor{stringliteral}{"{}\ cd\ \(\backslash\)n"{}});}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bcol!=\textcolor{keyword}{null})\ \textcolor{comment}{//\ stroke\ with\ given\ boundary\ color}}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(postRGB(bcol)+z.x+\textcolor{stringliteral}{"{}\ "{}}+z.y+\textcolor{stringliteral}{"{}\ "{}}+rad+\textcolor{stringliteral}{"{}\ cc\ \(\backslash\)n"{}});}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ fp.write(z.x+\textcolor{stringliteral}{"{}\ "{}}+z.y+\textcolor{stringliteral}{"{}\ "{}}+rad+\textcolor{stringliteral}{"{}\ c\(\backslash\)n"{}});}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tx>0)\ fp.write(\textcolor{stringliteral}{"{}\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(IOException\ iox)\ \{\}}
+\DoxyCodeLine{00194\ \ \ \ \ \}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00202\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postUnitCircle(\textcolor{keywordtype}{int}\ hes,Complex\ z)\ \{}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}gs\ 1.0\ ourlinewidth\ "{}});}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)\ postCircle(hes,z,Math.PI/2.0);}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ postCircle(hes,z,1.0);}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(IOException\ iox)\ \{\}}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00210\ \ \ \ \ \}}
+\DoxyCodeLine{00211\ \ \ \ \ }
+\DoxyCodeLine{00221\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postSector(Complex\ z,\textcolor{keywordtype}{double}\ rad,\textcolor{keywordtype}{double}\ arg1,\textcolor{keywordtype}{double}\ extent,Color\ col)\ \{}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=z.x+rad*Math.cos(arg1);}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ y=z.y+rad*Math.sin(arg1);}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}n\ "{}}+z.x+\textcolor{stringliteral}{"{}\ "{}}+z.y+\textcolor{stringliteral}{"{}\ m\(\backslash\)n"{}}+x+\textcolor{stringliteral}{"{}\ "{}}+y+\textcolor{stringliteral}{"{}\ l\(\backslash\)n"{}});}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(z.x+\textcolor{stringliteral}{"{}\ "{}}+z.y+\textcolor{stringliteral}{"{}\ "{}}+rad+\textcolor{stringliteral}{"{}\ "{}}+arg1*180.0/Math.PI+\textcolor{stringliteral}{"{}\ "{}}+(arg1+extent)*180.0/Math.PI+\textcolor{stringliteral}{"{}\ a\ cp\ "{}});}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col!=\textcolor{keyword}{null})\ \textcolor{comment}{//\ fill\ with\ given\ color}}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ gs"{}}+postRGBsrgb(col)+\textcolor{stringliteral}{"{}\ fill\ gr\ "{}});}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ s\(\backslash\)n"{}});}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(IOException\ iox)\ \{\}}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00232\ \ \ \ \ \}}
+\DoxyCodeLine{00233\ \ \ \ \ }
+\DoxyCodeLine{00241\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postEdge(\textcolor{keywordtype}{int}\ hes,Complex\ p1,Complex\ p2)\ \{}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ postColorEdge(hes,p1,p2,ColorUtil.FG\_Color,-\/1.0);}
+\DoxyCodeLine{00243\ \ \ \ \ \}}
+\DoxyCodeLine{00244\ \ \ \ \ }
+\DoxyCodeLine{00253\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postEdge(\textcolor{keywordtype}{int}\ hes,Complex\ p1,Complex\ p2,\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ postColorEdge(hes,p1,p2,ColorUtil.FG\_Color,tx);}
+\DoxyCodeLine{00255\ \ \ \ \ \}}
+\DoxyCodeLine{00256\ \ \ \ \ }
+\DoxyCodeLine{00266\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postColorEdge(\textcolor{keywordtype}{int}\ hes,Complex\ p1,Complex\ p2,Color\ col,\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}gs\ n\ "{}});}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tx>0.0)\ }
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ getlinewidth\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},tx)+\textcolor{stringliteral}{"{}\ mul\ ourlinewidth\(\backslash\)n"{}});}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ sphere\ first}}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)\ \{}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ start=\textcolor{keyword}{new}\ Point3D(p1.x,p1.y);}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ SphGeodesic\ sg=\textcolor{keyword}{new}\ SphGeodesic(start,\textcolor{keyword}{new}\ Point3D(p2.x,p2.y));}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg.isVisible())\ \{}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ a=SphericalMath.sphToVisualPlane(sg.z1.x,sg.z1.y);}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(a.x+\textcolor{stringliteral}{"{}\ "{}}+a.y+\textcolor{stringliteral}{"{}\ m\ "{}});\ \textcolor{comment}{//\ move\ to\ first\ end}}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ pathstr=sphEdgePath(sg);}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(pathstr);}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col!=ColorUtil.FG\_Color)\ }
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ "{}}+postRGBsrgb(col));}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hes<0)\ \{\ \textcolor{comment}{//\ hyp}}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HypGeodesic\ geo\ =\ \textcolor{keyword}{new}\ HypGeodesic(p1,p2);}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(postRGBsrgb(col)+p1.x+\textcolor{stringliteral}{"{}\ "{}}+p1.y+\textcolor{stringliteral}{"{}\ m\ "{}});}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(hg2PS(geo));}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(postRGBsrgb(col)+p1.x+\textcolor{stringliteral}{"{}\ "{}}+p1.y+\textcolor{stringliteral}{"{}\ m\(\backslash\)n"{}}+p2.x+\textcolor{stringliteral}{"{}\ "{}}+p2.y+\textcolor{stringliteral}{"{}\ l\ "{}});}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ s\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(IOException\ iox)\ \{\}}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00296\ \ \ \ \ \}}
+\DoxyCodeLine{00297\ }
+\DoxyCodeLine{00298\ \ \ \ \ \textcolor{comment}{//\ TODO:\ rationalize\ face/poly\ posting\ routines\ (parallel\ to\ drawing)}}
+\DoxyCodeLine{00299\ \ \ \ \ }
+\DoxyCodeLine{00309\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ post\_Poly(\textcolor{keywordtype}{int}\ hes,Complex\ []Z,Color\ fcol,Color\ bcol,\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ sph\ requires\ more\ work}}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)\ \{}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=Z.length;}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []crns=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[n*2+2];}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<n;j++)\ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crns[2*j]=Z[j].x;}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crns[2*j+1]=Z[j].y;}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ close\ up}}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crns[n*2]=crns[0];}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ crns[n*2+1]=crns[1];}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ visible\ path(s);\ size\ 0\ means\ nothing\ shows}}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<String>\ paths=sphPolyPath(crns);}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (paths.size()==0)}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00329\ }
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ linewidth\ specification?}}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ gs\ "{}}+getThickStr(tx)+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00332\ }
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ to\ be\ filled,\ do\ that\ first\ (create\ one\ path)}}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fcol!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}gs\ "{}}+sph\_closed\_Poly(crns)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ postRGBsrgb(fcol)+\textcolor{stringliteral}{"{}fill\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bcol!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<String>\ pit=paths.iterator();}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (pit.hasNext())\ \{}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ pth=pit.next();}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}gs\ "{}}+pth+\textcolor{stringliteral}{"{}\ "{}}+postRGBsrgb(bcol)+\textcolor{stringliteral}{"{}s\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ gr\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fcol!=\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}gs\ "{}}+poly\_outline(hes,Z,\textcolor{keyword}{true})+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ postRGBsrgb(fcol)+\textcolor{stringliteral}{"{}\ fill\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bcol!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}gs\ "{}}+poly\_outline(hes,Z,\textcolor{keyword}{false})+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ postRGBsrgb(bcol)+\textcolor{stringliteral}{"{}\ s\ \(\backslash\)n"{}});}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ gr\(\backslash\)n\(\backslash\)n"{}});\ \textcolor{comment}{//\ matched\ with\ gs\ for\ linewidth}}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ iox)\ \{}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00363\ \ \ \ \ \}}
+\DoxyCodeLine{00364\ }
+\DoxyCodeLine{00365\ \ \ \ \ }
+\DoxyCodeLine{00373\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postPoly(\textcolor{keywordtype}{int}\ hes,\textcolor{keywordtype}{int}\ N,Complex\ []Z)\ \{}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ postFilledColorPoly(hes,N,Z,\textcolor{keyword}{null},\textcolor{keyword}{null},-\/1.0);}
+\DoxyCodeLine{00375\ \ \ \ \ \}}
+\DoxyCodeLine{00376\ }
+\DoxyCodeLine{00385\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postPoly(\textcolor{keywordtype}{int}\ hes,\textcolor{keywordtype}{int}\ N,Complex\ []Z,\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ postFilledColorPoly(hes,N,Z,\textcolor{keyword}{null},\textcolor{keyword}{null},tx);}
+\DoxyCodeLine{00387\ \ \ \ \ \}}
+\DoxyCodeLine{00388\ }
+\DoxyCodeLine{00397\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postColorPoly(\textcolor{keywordtype}{int}\ hes,\textcolor{keywordtype}{int}\ N,Complex\ []Z,Color\ bcol)\ \{}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ postFilledColorPoly(hes,N,Z,\textcolor{keyword}{null},bcol,-\/1.0);}
+\DoxyCodeLine{00399\ \ \ \ \ \}}
+\DoxyCodeLine{00400\ }
+\DoxyCodeLine{00410\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postColorPoly(\textcolor{keywordtype}{int}\ hes,\textcolor{keywordtype}{int}\ N,Complex\ []Z,Color\ bcol,\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ postFilledColorPoly(hes,N,Z,\textcolor{keyword}{null},bcol,tx);}
+\DoxyCodeLine{00412\ \ \ \ \ \}}
+\DoxyCodeLine{00413\ }
+\DoxyCodeLine{00422\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postFilledPoly(\textcolor{keywordtype}{int}\ hes,\textcolor{keywordtype}{int}\ N,}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ []Z,Color\ col)\ \{}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ postFilledColorPoly(hes,N,Z,col,\textcolor{keyword}{null},-\/1.0);}
+\DoxyCodeLine{00425\ \ \ \ \ \}}
+\DoxyCodeLine{00426\ \ \ \ \ }
+\DoxyCodeLine{00436\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postFilledPoly(\textcolor{keywordtype}{int}\ hes,\textcolor{keywordtype}{int}\ N,}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ []Z,Color\ col,\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ postFilledColorPoly(hes,N,Z,col,\textcolor{keyword}{null},tx);}
+\DoxyCodeLine{00439\ \ \ \ \ \}}
+\DoxyCodeLine{00440\ \ \ \ \ }
+\DoxyCodeLine{00441\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postFilledColorPoly(\textcolor{keywordtype}{int}\ hes,\textcolor{keywordtype}{int}\ N,}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ []Z,Color\ col,Color\ bcol,\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ more\ work\ needed\ in\ sph\ case\ if\ goes\ over\ horizon}}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}gs\ "{}});}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tx>0.0)\ }
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}getlinewidth\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},tx)+}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ mul\ ourlinewidth\(\backslash\)n"{}});}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col!=\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}gs\ "{}}+poly\_outline(hes,Z,\textcolor{keyword}{true})+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ postRGB(col)+\textcolor{stringliteral}{"{}\ srgb\ fill\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(poly\_outline(hes,Z,\textcolor{keyword}{false})+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bcol!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(postRGB(bcol)+\ \textcolor{stringliteral}{"{}\ srgb\ "{}});}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ s\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ iox)\ \{}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00461\ \ \ \ \ \}}
+\DoxyCodeLine{00462\ \ \ \ \ }
+\DoxyCodeLine{00475\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Vector<Path2D.Double>\ sphPolyBdry(\textcolor{keywordtype}{double}\ []crns,\textcolor{keywordtype}{int}\ N,CPdrawing\ cpS)\ }
+\DoxyCodeLine{00476\ \ \ \ \ \textcolor{keywordflow}{throws}\ DrawingException\ \{}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ Vector<Path2D.Double>\ paths=\textcolor{keyword}{new}\ Vector<Path2D.Double>();}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Cheap\ check:\ are\ all\ points\ invisible?\ Just\ check\ x-\/coords}}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ hit=\textcolor{keyword}{false};}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;(j<N\ \&\&\ !hit);j++)}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.cos(crns[2*j])>0.0)\ hit=\textcolor{keyword}{true};}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!hit)\ \textcolor{keywordflow}{return}\ paths;\ \textcolor{comment}{//\ nothing\ on\ front}}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ Point3D\ []pts=\textcolor{keyword}{new}\ Point3D[N];}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<N;j++)}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ pts[j]=\textcolor{keyword}{new}\ Point3D(crns[2*j],crns[2*j+1]);}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ SphGeodesic[]\ sg=\textcolor{keyword}{new}\ SphGeodesic[N];}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ hit=\textcolor{keyword}{false};}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ allFront=\textcolor{keyword}{true};}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ allHorizon=\textcolor{keyword}{true};}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ firstX=-\/1;}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=N-\/1;j>=0;j-\/-\/)\ \{}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \ \ \ \ sg[j]=\textcolor{keyword}{new}\ SphGeodesic(pts[j],pts[(j+1)\%N]);}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg[j].isVisible())\ \{}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hit=\textcolor{keyword}{true};}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ firstX=j;}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg[j].hitHorizon())}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ allFront=\textcolor{keyword}{false};}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg[j].followHorizon()!=1)\ \{\ \textcolor{comment}{//\ not\ horizon\ or\ clockwise}}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ allHorizon=\textcolor{keyword}{false};}
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!hit)\ \textcolor{keywordflow}{return}\ paths;\ \textcolor{comment}{//\ nothing\ on\ front}}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ everything\ on\ front\ or\ around\ horizon\ (counterclockwise)}}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (allFront\ ||\ allHorizon)\ \{}
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ \ \ \ \ Path2D.Double\ oneseg=\textcolor{keyword}{new}\ Path2D.Double();}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \ \ \ \ CPEdge.sphCreateEdge(oneseg,\ sg[0],\ cpS);}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<N;i++)\ }
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPEdge.sphCreateEdge(oneseg,\ sg[i],\ cpS);}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Note,\ we\ don't\ close\ up}}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \ \ \ \ paths.add(oneseg);}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ paths;\ \textcolor{comment}{//\ signals\ calling\ routine\ that\ there's\ nothing\ on\ back}}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (firstX<0)\ }
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DrawingException(\textcolor{stringliteral}{"{}Didn't\ find\ visible\ geodesic"{}});}
+\DoxyCodeLine{00522\ }
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ SphGeodesic\ firstSG=sg[firstX];}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ SphGeodesic\ nextSG=firstSG;}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ i=firstX;}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ needNew=\textcolor{keyword}{true};}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ Path2D.Double\ newseg=\textcolor{keyword}{new}\ Path2D.Double();}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ on\ each\ reentry,\ nextSG\ is\ visible\ but\ not\ yet\ added\ to\ path}}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (nextSG.isVisible()\ \&\&\ i<N)\ \{}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (needNew)\ \{}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newseg=\textcolor{keyword}{new}\ Path2D.Double();}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ needNew=\textcolor{keyword}{false};}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00536\ }
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ geodesics\ until\ you\ get\ 'horizonEnd'\ (they\ should\ be\ visible)}}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (i<(N-\/1)\ \&\&\ !nextSG.horizonEnd)\ \{}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPEdge.sphCreateEdge(newseg,\ nextSG,\ cpS);}
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i++;}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextSG=sg[i];}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ it\ went\ beyond\ horizon,\ store\ this\ path}}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextSG.horizonEnd)\ \{}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ paths.add(newseg);}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ needNew=\textcolor{keyword}{true};}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00549\ }
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ next\ segment\ if\ there\ is\ one}}
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i<(N-\/1))\ \{}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i++;}
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextSG=sg[i];}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ignore\ geodesics\ until\ one\ becomes\ visible}}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (i<(N-\/1)\ \&\&\ !nextSG.isVisible())\ \{}
+\DoxyCodeLine{00558\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i++;}
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextSG=sg[i];}
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00561\ }
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ have\ last\ segment}}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i==(N-\/1))\ \{}
+\DoxyCodeLine{00564\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i=N;\ \textcolor{comment}{//\ kick\ out}}
+\DoxyCodeLine{00565\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!nextSG.isVisible())\ \{}
+\DoxyCodeLine{00566\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ paths;}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00568\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ visible,\ must\ have\ come\ from\ the\ back}}
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newseg=\textcolor{keyword}{new}\ Path2D.Double();}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPEdge.sphCreateEdge(newseg,\ nextSG,\ cpS);}
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ paths.add(newseg);}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while\ \ \ }}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ paths;}
+\DoxyCodeLine{00576\ \ \ \ \ \}\ \ \ \ \ \ \ }
+\DoxyCodeLine{00577\ }
+\DoxyCodeLine{00578\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postIndex(Complex\ z,\textcolor{keywordtype}{int}\ n)\ \{}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{keyword}{new}\ String(z.x+\textcolor{stringliteral}{"{}\ "{}}+z.y+\textcolor{stringliteral}{"{}\ moveto\(\backslash\)n("{}}+n+\textcolor{stringliteral}{"{})show\(\backslash\)n"{}}));}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(IOException\ iox)\ \{\}}
+\DoxyCodeLine{00582\ \ \ \ \ \}}
+\DoxyCodeLine{00583\ \ \ \ \ }
+\DoxyCodeLine{00584\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postStr(Complex\ z,String\ str)\ \{}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{keyword}{new}\ String(z.x+\textcolor{stringliteral}{"{}\ "{}}+z.y+\textcolor{stringliteral}{"{}\ moveto\(\backslash\)n("{}}+str+\textcolor{stringliteral}{"{})show\(\backslash\)n"{}}));}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(IOException\ iox)\ \{\}}
+\DoxyCodeLine{00588\ \ \ \ \ \}}
+\DoxyCodeLine{00589\ \ \ \ \ }
+\DoxyCodeLine{00590\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postLine(\textcolor{keywordtype}{int}\ hes,Complex\ z,Complex\ w)\ \{}
+\DoxyCodeLine{00591\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ have\ to\ do\ other\ geometries}}
+\DoxyCodeLine{00592\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00593\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes==0)\ fp.write(\textcolor{stringliteral}{"{}n\ "{}}+z.x+\textcolor{stringliteral}{"{}\ "{}}+z.y+\textcolor{stringliteral}{"{}\ moveto\(\backslash\)n"{}}+w.x+\textcolor{stringliteral}{"{}\ "{}}+w.y+\textcolor{stringliteral}{"{}\ l\ \ s\(\backslash\)n"{}});}
+\DoxyCodeLine{00594\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(IOException\ iox)\ \{\}}
+\DoxyCodeLine{00595\ \ \ \ \ \}}
+\DoxyCodeLine{00596\ \ \ \ \ }
+\DoxyCodeLine{00605\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postPath(Vector<Vector<Complex>>\ zpath,Color\ col,\textcolor{keywordtype}{double}\ tx,\textcolor{keywordtype}{boolean}\ clsd)\ \{}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zpath==\textcolor{keyword}{null}\ ||\ zpath.size()<1)}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00608\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00609\ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}gs\ n\ \(\backslash\)n"{}});}
+\DoxyCodeLine{00610\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tx>0)}
+\DoxyCodeLine{00611\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}getlinewidth\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},tx)+}
+\DoxyCodeLine{00612\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ mul\ ourlinewidth\(\backslash\)n"{}});}
+\DoxyCodeLine{00613\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col!=\textcolor{keyword}{null})\ \textcolor{comment}{//\ stroke\ with\ given\ color}}
+\DoxyCodeLine{00614\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(postRGBsrgb(col)+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00615\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<zpath.size();i++)\ \{}
+\DoxyCodeLine{00616\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<Complex>\ loc\_path=zpath.get(i);}
+\DoxyCodeLine{00617\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Complex>\ zp=loc\_path.iterator();}
+\DoxyCodeLine{00618\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1=(Complex)zp.next();}
+\DoxyCodeLine{00619\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z=\textcolor{keyword}{null};}
+\DoxyCodeLine{00620\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(+z1.x+\textcolor{stringliteral}{"{}\ "{}}+z1.y+\textcolor{stringliteral}{"{}\ m\(\backslash\)n"{}});}
+\DoxyCodeLine{00621\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (zp.hasNext())\ \{}
+\DoxyCodeLine{00622\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z=(Complex)zp.next();}
+\DoxyCodeLine{00623\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(z.x+\textcolor{stringliteral}{"{}\ "{}}+z.y+\textcolor{stringliteral}{"{}\ l\(\backslash\)n"{}});}
+\DoxyCodeLine{00624\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00625\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ intended\ to\ be\ closed?}}
+\DoxyCodeLine{00626\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (clsd\ ||\ z1.minus(z).abs()<.000001)\ fp.write(\textcolor{stringliteral}{"{}cp\ \(\backslash\)n"{}});}
+\DoxyCodeLine{00627\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00628\ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ s\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00629\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ iox)\ \{}
+\DoxyCodeLine{00630\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}Posting\ error:\ "{}}+iox.getMessage());}
+\DoxyCodeLine{00631\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00632\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00633\ \ \ \ \ \}}
+\DoxyCodeLine{00634\ }
+\DoxyCodeLine{00648\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ post\_Path(Vector<Vector<Complex>>\ zlists,DispFlags\ dflags,\textcolor{keywordtype}{double}\ tx,\textcolor{keywordtype}{boolean}\ cp)\ \{}
+\DoxyCodeLine{00649\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00650\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zlists==\textcolor{keyword}{null}\ ||\ zlists.size()<1)}
+\DoxyCodeLine{00651\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00652\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00653\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00654\ \ \ \ \ \ \ \ \ Color\ fcolor=\textcolor{keyword}{null};}
+\DoxyCodeLine{00655\ \ \ \ \ \ \ \ \ Color\ bcolor=\textcolor{keyword}{null};}
+\DoxyCodeLine{00656\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.getColor()!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00657\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.fill)}
+\DoxyCodeLine{00658\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fcolor=dflags.getFillColor();}
+\DoxyCodeLine{00659\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.draw\ \&\&\ dflags.colBorder)}
+\DoxyCodeLine{00660\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bcolor=dflags.getColor();}
+\DoxyCodeLine{00661\ \ \ \ \ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{00662\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00663\ \ \ \ \ \ \ \ \ Iterator<Vector<Complex>>\ outVec=zlists.iterator();}
+\DoxyCodeLine{00664\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (outVec.hasNext())\ \{}
+\DoxyCodeLine{00665\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<Complex>\ loc\_path=outVec.next();}
+\DoxyCodeLine{00666\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00667\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ fill\ first}}
+\DoxyCodeLine{00668\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.fill\ \&\&\ fcolor!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00669\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}gs\ n\ \(\backslash\)n"{}});}
+\DoxyCodeLine{00670\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(postRGBsrgb(fcolor)+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00671\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Complex>\ zp=loc\_path.iterator();}
+\DoxyCodeLine{00672\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1=(Complex)zp.next();}
+\DoxyCodeLine{00673\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z=\textcolor{keyword}{null};}
+\DoxyCodeLine{00674\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(+z1.x+\textcolor{stringliteral}{"{}\ "{}}+z1.y+\textcolor{stringliteral}{"{}\ m\(\backslash\)n"{}});}
+\DoxyCodeLine{00675\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (zp.hasNext())\ \{}
+\DoxyCodeLine{00676\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z=(Complex)zp.next();}
+\DoxyCodeLine{00677\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(z.x+\textcolor{stringliteral}{"{}\ "{}}+z.y+\textcolor{stringliteral}{"{}\ l\(\backslash\)n"{}});}
+\DoxyCodeLine{00678\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00679\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ cp\ fill\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00680\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00681\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dflags.draw)\ \{}
+\DoxyCodeLine{00682\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}gs\ n\ \(\backslash\)n"{}});}
+\DoxyCodeLine{00683\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tx>0)}
+\DoxyCodeLine{00684\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}getlinewidth\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},tx)+}
+\DoxyCodeLine{00685\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ mul\ ourlinewidth\(\backslash\)n"{}});}
+\DoxyCodeLine{00686\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bcolor!=\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00687\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(postRGBsrgb(fcolor)+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00688\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Complex>\ zp=loc\_path.iterator();}
+\DoxyCodeLine{00689\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1=(Complex)zp.next();}
+\DoxyCodeLine{00690\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z=\textcolor{keyword}{null};}
+\DoxyCodeLine{00691\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(+z1.x+\textcolor{stringliteral}{"{}\ "{}}+z1.y+\textcolor{stringliteral}{"{}\ m\(\backslash\)n"{}});}
+\DoxyCodeLine{00692\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (zp.hasNext())\ \{}
+\DoxyCodeLine{00693\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z=(Complex)zp.next();}
+\DoxyCodeLine{00694\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(z.x+\textcolor{stringliteral}{"{}\ "{}}+z.y+\textcolor{stringliteral}{"{}\ l\(\backslash\)n"{}});}
+\DoxyCodeLine{00695\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00696\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}\ s\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00697\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00698\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00699\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ iox)\ \{}
+\DoxyCodeLine{00700\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}Posting\ error:\ "{}}+iox.getMessage());}
+\DoxyCodeLine{00701\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00702\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00703\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00704\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00705\ \ \ \ \ \}}
+\DoxyCodeLine{00706\ \ \ \ \ }
+\DoxyCodeLine{00714\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postTrinket(Complex\ z,\textcolor{keywordtype}{double}\ diam)\ \{}
+\DoxyCodeLine{00715\ \ \ \ \ \ \ \ \ postColorTrinket(z,diam,ColorUtil.BG\_Color);}
+\DoxyCodeLine{00716\ \ \ \ \ \}}
+\DoxyCodeLine{00717\ \ \ \ \ }
+\DoxyCodeLine{00721\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postStroke()\ \{}
+\DoxyCodeLine{00722\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00723\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}s\(\backslash\)n"{}});}
+\DoxyCodeLine{00724\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ iox)\ \{\textcolor{keywordflow}{return};\}}
+\DoxyCodeLine{00725\ \ \ \ \ \}}
+\DoxyCodeLine{00726\ \ \ \ \ }
+\DoxyCodeLine{00734\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postColorTrinket(Complex\ z,\textcolor{keywordtype}{double}\ diam,Color\ color)\ \{}
+\DoxyCodeLine{00735\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00736\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{keyword}{new}\ String(postRGB(color)+diam+\textcolor{stringliteral}{"{}\ "{}}+diam+\textcolor{stringliteral}{"{}\ \ "{}}+z.x+\textcolor{stringliteral}{"{}\ "{}}+z.y+\textcolor{stringliteral}{"{}\ mark\(\backslash\)n"{}}));}
+\DoxyCodeLine{00737\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ iox)\ \{\}}
+\DoxyCodeLine{00738\ \ \ \ \ \}}
+\DoxyCodeLine{00739\ \ \ \ \ }
+\DoxyCodeLine{00740\ \ \ \ \ \textcolor{comment}{/*\ Place\ a\ predefined\ 'trinket'\ shape\ in\ postscript\ file,\ position\ and}}
+\DoxyCodeLine{00741\ \textcolor{comment}{\ \ \ \ \ *\ (optional)\ color\ determined\ by\ vertex\ info.\ For\ the\ -\/t\ options:\ }}
+\DoxyCodeLine{00742\ \textcolor{comment}{\ \ \ \ \ *\ -\/t\ -\/tc\ -\/t?\ -\/t?c,\ where\ '?'\ denotes\ an\ integer\ code\ of\ trinket\ }}
+\DoxyCodeLine{00743\ \textcolor{comment}{\ \ \ \ \ *\ shape\ (parallel\ to\ screen\ trinkets\ in\ 'CPTrinket.java')\ and\ 'c'}}
+\DoxyCodeLine{00744\ \textcolor{comment}{\ \ \ \ \ *\ for\ color\ (defaults\ to\ grey).\ }}
+\DoxyCodeLine{00745\ \textcolor{comment}{\ \ \ \ \ *\ Current\ shape\ options:\ 0=dot,1=square,2=triangle,3=plus,4=diamond.}}
+\DoxyCodeLine{00746\ \textcolor{comment}{\ \ \ \ \ *\ Trinkets\ are\ created\ with\ diameter\ about\ 2;\ they\ are\ scaled\ for\ screen}}
+\DoxyCodeLine{00747\ \textcolor{comment}{\ \ \ \ \ *\ size\ in\ calls\ to\ 'post\_trinket'.\ Calls\ are\ 'r\ g\ b\ s\ s\ x\ y\ mark',\ }}
+\DoxyCodeLine{00748\ \textcolor{comment}{\ \ \ \ \ *\ (r=g=b=.5\ for\ default\ grey),\ s\ =\ screenwidth*10/1200\ (to\ get\ roughly\ the\ }}
+\DoxyCodeLine{00749\ \textcolor{comment}{\ \ \ \ \ *\ same\ proportions\ as\ on\ the\ canvas),\ and\ x\ y\ is\ real\ world\ center\ in}}
+\DoxyCodeLine{00750\ \textcolor{comment}{\ \ \ \ \ *\ the\ visual\ plane..}}
+\DoxyCodeLine{00751\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{00752\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ post\_shape(\textcolor{keywordtype}{int}\ trink)\ \{}
+\DoxyCodeLine{00753\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00754\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(trink)\ \{}
+\DoxyCodeLine{00755\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 0:\ }
+\DoxyCodeLine{00756\ \ \ \ \ \ \ \ \ \{\ }
+\DoxyCodeLine{00757\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}/mark\ \{gs\ tr\ sc\ n\ 0\ 0\ 1\ 0\ 360\ a\ srgb\ gs\ fill\ gr\ 0\ sg\ 30\ ourlinewidth\ s\ gr\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00758\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00759\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00760\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 1:\ }
+\DoxyCodeLine{00761\ \ \ \ \ \ \ \ \ \{\ }
+\DoxyCodeLine{00762\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}/mark\ \{gs\ tr\ sc\ srgb\ n\ 1\ 1\ moveto\ -\/2\ 0\ "{}}+}
+\DoxyCodeLine{00763\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rlineto\ 0\ -\/2\ rlineto\ 2\ 0\ rlineto\ cp\ gs\ fill\ gr\ "{}}+}
+\DoxyCodeLine{00764\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}0\ sg\ 30\ ourlinewidth\ s\ gr\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00765\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00766\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00767\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 2:\ \textcolor{comment}{//\ triangle}}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00769\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}/mark\ \{gs\ tr\ sc\ srgb\ n\ 0\ 1\ moveto\ -\/1\ -\/2\ "{}}+}
+\DoxyCodeLine{00770\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rlineto\ 2\ 0\ rlineto\ cp\ gs\ fill\ gr\ 0\ sg\ "{}}+}
+\DoxyCodeLine{00771\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}30\ ourlinewidth\ s\ gr\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00772\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00773\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00774\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 3:\ \textcolor{comment}{//\ plus}}
+\DoxyCodeLine{00775\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00776\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}/mark\ \{gs\ tr\ sc\ srgb\ n\ 1\ .33\ moveto\ -\/.67\ 0\ "{}}+}
+\DoxyCodeLine{00777\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rlineto\ 0\ .67\ rlineto\ -\/.67\ 0\ rlineto\ "{}}+}
+\DoxyCodeLine{00778\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}0\ -\/.67\ rlineto\ -\/.67\ 0\ rlineto\ 0\ -\/.67\ "{}}+}
+\DoxyCodeLine{00779\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rlineto\ .67\ 0\ rlineto\ 0\ -\/.67\ rlineto\ .67\ 0\ "{}}+}
+\DoxyCodeLine{00780\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rlineto\ 0\ .67\ rlineto\ .67\ 0\ rlineto\ cp\ "{}}+}
+\DoxyCodeLine{00781\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}gs\ fill\ gr\ 0\ sg\ 30\ ourlinewidth\ s\ gr\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00782\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};\ \ \ \ \ \ }
+\DoxyCodeLine{00783\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00784\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 4:\ \textcolor{comment}{//\ diamond}}
+\DoxyCodeLine{00785\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00786\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}/mark\ \{gs\ tr\ sc\ srgb\ n\ 0\ 1\ moveto\ -\/1\ -\/1\ "{}}+}
+\DoxyCodeLine{00787\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}rlineto\ 1\ -\/1\ rlineto\ 1\ 1\ rlineto\ cp\ "{}}+}
+\DoxyCodeLine{00788\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}gs\ fill\ gr\ 0\ sg\ 30\ ourlinewidth\ s\ gr\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00789\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};\ \ \ \ \ \ }
+\DoxyCodeLine{00790\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00791\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ x\ shape\ not\ yet\ in\ postscript\ (4/2013)}}
+\DoxyCodeLine{00792\ \textcolor{comment}{//\ \ \ \ \ \ case\ 5:\ //\ xshape}}
+\DoxyCodeLine{00793\ \textcolor{comment}{//\ \ \ \ \ \ \{}}
+\DoxyCodeLine{00794\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00795\ \textcolor{comment}{//\ \ \ \ \ \ \}}}
+\DoxyCodeLine{00796\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00797\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00798\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ iox)\ \{\textcolor{keywordflow}{return}\ 0;\}}
+\DoxyCodeLine{00799\ \ \ \ \ \}\ }
+\DoxyCodeLine{00800\ }
+\DoxyCodeLine{00804\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postGSave()\ \{\textcolor{keywordflow}{try}\ \{\ fp.write(\textcolor{stringliteral}{"{}\ gs\ "{}});\}\textcolor{keywordflow}{catch}(Exception\ ex)\{\}\}\ }
+\DoxyCodeLine{00805\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postGRestore()\ \ \{\textcolor{keywordflow}{try}\ \{\ fp.write(\textcolor{stringliteral}{"{}\ gr\ "{}});\}\textcolor{keywordflow}{catch}(Exception\ ex)\{\}\}}
+\DoxyCodeLine{00806\ }
+\DoxyCodeLine{00811\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postLineThickness(\textcolor{keywordtype}{int}\ n)\ \{}
+\DoxyCodeLine{00812\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n<0\ ||\ n>12)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00813\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00814\ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{keyword}{new}\ String((\textcolor{keywordtype}{double})(n*PostManager.PS\_UNIT\_LINEWIDTH)+\textcolor{stringliteral}{"{}\ ourlinewidth\(\backslash\)n"{}}));}
+\DoxyCodeLine{00815\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(IOException\ iox)\ \{\}}
+\DoxyCodeLine{00816\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00817\ \ \ \ \ \}}
+\DoxyCodeLine{00818\ \ \ \ \ }
+\DoxyCodeLine{00824\ \ \ \ \ \textcolor{keyword}{public}\ String\ postRGB(Color\ col)\ \{}
+\DoxyCodeLine{00825\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(String.format(\textcolor{stringliteral}{"{}\%.4e"{}},(\textcolor{keywordtype}{double})((\textcolor{keywordtype}{double})col.getRed()/255))+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00826\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.4e"{}},(\textcolor{keywordtype}{double})((\textcolor{keywordtype}{double})col.getGreen()/255))+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00827\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.4e"{}},(\textcolor{keywordtype}{double})((\textcolor{keywordtype}{double})col.getBlue()/255))+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00828\ \ \ \ \ \}}
+\DoxyCodeLine{00829\ \ \ \ \ }
+\DoxyCodeLine{00835\ \ \ \ \ \textcolor{keyword}{public}\ String\ postRGBsrgb(Color\ col)\ \{}
+\DoxyCodeLine{00836\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (postRGB(col)+\textcolor{stringliteral}{"{}\ srgb\ "{}});}
+\DoxyCodeLine{00837\ \ \ \ \ \}}
+\DoxyCodeLine{00838\ \ \ \ \ }
+\DoxyCodeLine{00849\ \ \ \ \ \textcolor{keyword}{public}\ String\ poly\_outline(\textcolor{keywordtype}{int}\ hes,Complex\ []Z,\textcolor{keywordtype}{boolean}\ cp)\ \{}
+\DoxyCodeLine{00850\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00851\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=Z.length;}
+\DoxyCodeLine{00852\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ spherical}}
+\DoxyCodeLine{00853\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ have\ to\ handle\ closeup\ issue}}
+\DoxyCodeLine{00854\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)\ \{\ }
+\DoxyCodeLine{00855\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ cnrs=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[2*N];}
+\DoxyCodeLine{00856\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<N;i++)\ \{}
+\DoxyCodeLine{00857\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cnrs[2*i]=Z[i].x;}
+\DoxyCodeLine{00858\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cnrs[2*i+1]=Z[i].y;}
+\DoxyCodeLine{00859\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00860\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00861\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cp)}
+\DoxyCodeLine{00862\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sph\_closed\_Poly(cnrs);}
+\DoxyCodeLine{00863\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00864\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00865\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00866\ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00867\ }
+\DoxyCodeLine{00868\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ hyp\ case}}
+\DoxyCodeLine{00869\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes\ <\ 0)\ \{}
+\DoxyCodeLine{00870\ \ \ \ \ \ \ \ \ \ \ \ \ HypGeodesic\ []hg;}
+\DoxyCodeLine{00871\ \ \ \ \ \ \ \ \ \ \ \ \ hg=\textcolor{keyword}{new}\ HypGeodesic[N];}
+\DoxyCodeLine{00872\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<N;i++)}
+\DoxyCodeLine{00873\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hg[i]\ =\ \textcolor{keyword}{new}\ HypGeodesic(Z[i],Z[(i+1)\%N]);}
+\DoxyCodeLine{00874\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ str\ =\ \textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}n\(\backslash\)n"{}});}
+\DoxyCodeLine{00875\ \ \ \ \ \ \ \ \ \ \ \ \ str.append(Z[0].x\ +\ \textcolor{stringliteral}{"{}\ "{}}\ +\ Z[0].y\ +\ \textcolor{stringliteral}{"{}\ m\(\backslash\)n"{}});}
+\DoxyCodeLine{00876\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<N;i++)}
+\DoxyCodeLine{00877\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str.append(hg2PS(hg[i]));}
+\DoxyCodeLine{00878\ \ \ \ \ \ \ \ \ \ \ \ \ str.append(\textcolor{stringliteral}{"{}cp\(\backslash\)n"{}});}
+\DoxyCodeLine{00879\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ str.toString();}
+\DoxyCodeLine{00880\ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00881\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00882\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ eucl\ case}}
+\DoxyCodeLine{00883\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hes\ ==\ 0)\ \{}
+\DoxyCodeLine{00884\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ str=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}n\(\backslash\)n"{}});}
+\DoxyCodeLine{00885\ \ \ \ \ \ \ \ \ \ \ \ \ str.append(Z[0].x+\textcolor{stringliteral}{"{}\ "{}}+Z[0].y+\textcolor{stringliteral}{"{}\ m\(\backslash\)n"{}});}
+\DoxyCodeLine{00886\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<N;i++)}
+\DoxyCodeLine{00887\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str.append(\textcolor{stringliteral}{"{}\ "{}}+Z[i].x+\textcolor{stringliteral}{"{}\ "{}}+Z[i].y+\textcolor{stringliteral}{"{}\ l\(\backslash\)n"{}});}
+\DoxyCodeLine{00888\ \ \ \ \ \ \ \ \ \ \ \ \ str.append(\textcolor{stringliteral}{"{}cp\(\backslash\)n"{}});}
+\DoxyCodeLine{00889\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ str.toString();}
+\DoxyCodeLine{00890\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00891\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00892\ \ \ \ \ \}}
+\DoxyCodeLine{00893\ \ \ \ \ }
+\DoxyCodeLine{00900\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ String\ hg2PS(HypGeodesic\ hg)\ \{}
+\DoxyCodeLine{00901\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hg.lineFlag)}
+\DoxyCodeLine{00902\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(hg.z2.x\ +\ \textcolor{stringliteral}{"{}\ "{}}\ +\ hg.z2.y\ +\ \textcolor{stringliteral}{"{}\ l\(\backslash\)n"{}});}
+\DoxyCodeLine{00903\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hg.extent>=0)\ }
+\DoxyCodeLine{00904\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(hg.center.x\ +\textcolor{stringliteral}{"{}\ "{}}+hg.center.y+\textcolor{stringliteral}{"{}\ "{}}+hg.rad+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00905\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (hg.startAng*DEGPI)+\textcolor{stringliteral}{"{}\ "{}}+((hg.startAng+hg.extent)*DEGPI)+\textcolor{stringliteral}{"{}\ a\(\backslash\)n"{}});}
+\DoxyCodeLine{00906\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(hg.center.x\ +\textcolor{stringliteral}{"{}\ "{}}+hg.center.y+\textcolor{stringliteral}{"{}\ "{}}+hg.rad+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00907\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (hg.startAng*DEGPI)+\textcolor{stringliteral}{"{}\ "{}}+((hg.startAng+hg.extent)*DEGPI)+\textcolor{stringliteral}{"{}\ an\(\backslash\)n"{}});}
+\DoxyCodeLine{00908\ \ \ \ \ \}}
+\DoxyCodeLine{00909\ \ \ \ \ }
+\DoxyCodeLine{00916\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ postString(String\ text)\ \{}
+\DoxyCodeLine{00917\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ SL=60;\ \textcolor{comment}{//\ segment\ length}}
+\DoxyCodeLine{00918\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (PackControl.postManager.textBuffer==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00919\ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.postManager.textBuffer=\textcolor{keyword}{new}\ StringBuilder();}
+\DoxyCodeLine{00920\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ sb=PackControl.postManager.textBuffer;}
+\DoxyCodeLine{00921\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00922\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ preliminary\ stuff}}
+\DoxyCodeLine{00923\ \ \ \ \ \ \ \ \ \ \ \ \ sb.append(\textcolor{stringliteral}{"{}\(\backslash\)n\%\ -\/-\/-\/\ bottom\ text\ -\/-\/-\/\ \(\backslash\)n"{}}+}
+\DoxyCodeLine{00924\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ 72\ 72\ sc\(\backslash\)n\ \ 4.25\ 5.5\ tr\(\backslash\)n"{}}+}
+\DoxyCodeLine{00925\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ /Times-\/Roman\ ff\ 0.22\ scf\ sf\(\backslash\)nn\(\backslash\)n"{}}+}
+\DoxyCodeLine{00926\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ -\/3.5\ -\/3.6\ m\(\backslash\)n"{}});}
+\DoxyCodeLine{00927\ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.postManager.textLineCount=0;}
+\DoxyCodeLine{00928\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00929\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ len=text.length();}
+\DoxyCodeLine{00930\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00931\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cut\ if\ too\ long}}
+\DoxyCodeLine{00932\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (len>MAX\_BOTTOM\_TEXT\_LENGTH)\ }
+\DoxyCodeLine{00933\ \ \ \ \ \ \ \ \ \ \ \ \ text=text.substring(0,MAX\_BOTTOM\_TEXT\_LENGTH);}
+\DoxyCodeLine{00934\ \ \ \ \ \ \ \ \ String\ frag;}
+\DoxyCodeLine{00935\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ spot=0;}
+\DoxyCodeLine{00936\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (spot<len)\ \{}
+\DoxyCodeLine{00937\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ endindx=SL;}
+\DoxyCodeLine{00938\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (len<SL)\ endindx=len;}
+\DoxyCodeLine{00939\ \ \ \ \ \ \ \ \ \ \ \ \ frag=text.substring(spot,endindx);}
+\DoxyCodeLine{00940\ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.postManager.textBuffer.append(\textcolor{stringliteral}{"{}0.0\ -\/0.2\ rmoveto\(\backslash\)n"{}}+}
+\DoxyCodeLine{00941\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}gs\ ("{}}+frag+\textcolor{stringliteral}{"{})\ show\ gr\(\backslash\)n"{}});}
+\DoxyCodeLine{00942\ \ \ \ \ \ \ \ \ \ \ \ \ spot\ +=SL;}
+\DoxyCodeLine{00943\ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.postManager.textLineCount++;}
+\DoxyCodeLine{00944\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00945\ \ \ \ \ \}}
+\DoxyCodeLine{00946\ \ \ \ \ }
+\DoxyCodeLine{00955\ \ \ \ \ \textcolor{keyword}{public}\ String\ sphCirclePath(Complex\ z,\textcolor{keywordtype}{double}\ r,\textcolor{keywordtype}{boolean}\ cp)\ \{}
+\DoxyCodeLine{00956\ }
+\DoxyCodeLine{00957\ \ \ \ \ \ \ \ \ StringBuilder\ strbuf=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00958\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00959\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Strategy:\ see\ 'ellCreateOnFront'}}
+\DoxyCodeLine{00960\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00961\ \ \ \ \ \ \ \ \ Point3D\ C=\textcolor{keyword}{new}\ Point3D(z.x,z.y);}
+\DoxyCodeLine{00962\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ L=Math.sqrt(1-\/C.x*C.x);}
+\DoxyCodeLine{00963\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sinr=Math.sin(r);}
+\DoxyCodeLine{00964\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cosr=Math.cos(r);}
+\DoxyCodeLine{00965\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ mu\ =\ Math.asin(C.x);\ \textcolor{comment}{//\ note:\ |mu|\ <=\ Pi/2}}
+\DoxyCodeLine{00966\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(C.x)>.9999)\ \{\ \textcolor{comment}{//\ C\ on\ x-\/axis?\ round\ circle}}
+\DoxyCodeLine{00967\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (C.x<0)\ \{\ \textcolor{comment}{//\ center\ on\ back}}
+\DoxyCodeLine{00968\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (r<Math.PI/2.0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ \textcolor{comment}{//\ on\ back}}
+\DoxyCodeLine{00969\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cp)\ \{\ \textcolor{comment}{//\ arc\ of\ circle\ and\ arc\ unit\ circle\ in\ one\ path}}
+\DoxyCodeLine{00970\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}n\ 0.0\ 0.0\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},sinr)+\textcolor{stringliteral}{"{}\ 0\ 360\ arc\ "{}}+}
+\DoxyCodeLine{00971\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ 1.0\ 0.0\ m\ 0.0\ 0.0\ 1.0\ 0\ 360\ arc\ "{}});}
+\DoxyCodeLine{00972\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00973\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ circle\ only}}
+\DoxyCodeLine{00974\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}n\ 0\ 0\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},sinr)+\textcolor{stringliteral}{"{}\ 0\ 360\ arc\ "{}});}
+\DoxyCodeLine{00975\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00976\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (C.x>0)\ \{\ \textcolor{comment}{//\ center\ on\ front}}
+\DoxyCodeLine{00977\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (r<Math.PI/2.0)\ }
+\DoxyCodeLine{00978\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}n\ 0\ 0\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},sinr)+\textcolor{stringliteral}{"{}\ 0\ 360\ arc\ "{}});}
+\DoxyCodeLine{00979\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cp)\ \textcolor{comment}{//\ return\ unit\ circle\ to\ fill}}
+\DoxyCodeLine{00980\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}n\ 0\ 0\ 1\ 0\ 360\ arc\ "{}});}
+\DoxyCodeLine{00981\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ }
+\DoxyCodeLine{00982\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00983\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00984\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00985\ \ \ \ \ \ \ \ \ String\ rot=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},rad2deg*Math.atan2(C.z,C.y))+\textcolor{stringliteral}{"{}\ rot\ "{}});}
+\DoxyCodeLine{00986\ \ \ \ \ \ \ \ \ String\ unrot=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},(-\/rad2deg*Math.atan2(C.z,C.y)))+\textcolor{stringliteral}{"{}\ rot\ "{}});}
+\DoxyCodeLine{00987\ \ \ \ \ \ \ \ \ String\ trans=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},cosr*C.y)+\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},cosr*C.z)+\textcolor{stringliteral}{"{}\ tr\ "{}});}
+\DoxyCodeLine{00988\ \ \ \ \ \ \ \ \ String\ untrans=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},(-\/cosr*C.y))+\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},(-\/cosr*C.z))+\textcolor{stringliteral}{"{}\ tr\ "{}});}
+\DoxyCodeLine{00989\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ wide=Math.abs(C.x)*sinr;}
+\DoxyCodeLine{00990\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ high=sinr;}
+\DoxyCodeLine{00991\ \ \ \ \ \ \ \ \ String\ scle=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},wide)+\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},high)+\textcolor{stringliteral}{"{}\ sc\ "{}});}
+\DoxyCodeLine{00992\ \ \ \ \ \ \ \ \ String\ unscle=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},1/wide)+\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},1/high)+\textcolor{stringliteral}{"{}\ sc\ "{}});}
+\DoxyCodeLine{00993\ }
+\DoxyCodeLine{00994\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Some\ quick\ eliminations:\ }}
+\DoxyCodeLine{00995\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ones\ entirely\ (essentially)\ on\ back}}
+\DoxyCodeLine{00996\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(mu)-\/r\ >=\ -\/.00001\ \&\&\ C.x<0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00997\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ large\ circle\ \ }}
+\DoxyCodeLine{00998\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(mu)>Math.PI-\/r)\ \{}
+\DoxyCodeLine{00999\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ on\ back;\ if\ not\ filled,\ return}}
+\DoxyCodeLine{01000\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (C.x>0\ \&\&\ !cp)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01001\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cp)\ \{\ \textcolor{comment}{//\ if\ filled,\ put\ unit\ circle\ in\ path}}
+\DoxyCodeLine{01002\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ center\ on\ front?\ done}}
+\DoxyCodeLine{01003\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (C.x>0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}n\ 0.0\ 0.0\ 1.0\ 0\ 360\ arc\ \(\backslash\)n"{}});}
+\DoxyCodeLine{01004\ }
+\DoxyCodeLine{01005\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ circle\ itself\ and\ unit\ circle\ bound\ annulus}}
+\DoxyCodeLine{01006\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ n\ "{}}+trans+rot+\textcolor{stringliteral}{"{}\(\backslash\)n"{}}+scle+}
+\DoxyCodeLine{01007\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}0\ 0\ 1\ 0\ -\/360\ arcn\ "{}}+unscle+unrot+untrans+\textcolor{stringliteral}{"{}\(\backslash\)n"{}}+}
+\DoxyCodeLine{01008\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}1\ 0\ moveto\ 0\ 0\ 1\ 0\ 360\ arc\ \(\backslash\)n"{}});}
+\DoxyCodeLine{01009\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ strbuf.toString();}
+\DoxyCodeLine{01010\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01011\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01012\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01013\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ For\ the\ rest,\ need\ first\ to\ build\ the\ visible\ arc.\ }}
+\DoxyCodeLine{01014\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ \ \ Later\ will\ add\ arc\ of\ horizon,\ if\ called\ for\ */}}
+\DoxyCodeLine{01015\ }
+\DoxyCodeLine{01016\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ entirely\ (essentially)\ on\ front}}
+\DoxyCodeLine{01017\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(mu)-\/r\ >=\ -\/.00001)\ \{\ }
+\DoxyCodeLine{01018\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}n\ "{}}+trans+rot+scle+\textcolor{stringliteral}{"{}\ 0\ 0\ 1\ 0\ 360\ arc\ "{}}+}
+\DoxyCodeLine{01019\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ unscle+unrot+untrans+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{01020\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01021\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01022\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ intersects\ the\ horizon}}
+\DoxyCodeLine{01023\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01024\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t0=Math.acos(C.x*cosr/(L*sinr));}
+\DoxyCodeLine{01025\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Double.isNaN(t0))\ t0=0.0;}
+\DoxyCodeLine{01026\ }
+\DoxyCodeLine{01027\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ circle\ essentially\ edge-\/on;\ oriented\ line,\ top\ to\ bottom}}
+\DoxyCodeLine{01028\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(C.x)<.0001)\ \{}
+\DoxyCodeLine{01029\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}n\ "{}}+rot+\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},L*cosr)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{01030\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6e"{}},sinr)+\textcolor{stringliteral}{"{}\ m\ "{}}+}
+\DoxyCodeLine{01031\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6e"{}},L*cosr)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{01032\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6e"{}},(-\/sinr))+\textcolor{stringliteral}{"{}\ l\ \(\backslash\)n"{}});}
+\DoxyCodeLine{01033\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t0=Math.PI/2.0;}
+\DoxyCodeLine{01034\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01035\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01036\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ X\ >\ 0:\ starting\ angle:\ t0,\ extent:\ 2(pi-\/t0)\ */}}
+\DoxyCodeLine{01037\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (C.x>0)\ \{}
+\DoxyCodeLine{01038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}n\ "{}}+trans+rot+scle+\textcolor{stringliteral}{"{}\ 0\ 0\ 1\ "{}}+}
+\DoxyCodeLine{01039\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6e"{}},rad2deg*t0)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{01040\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6e"{}},rad2deg*(2.0*Math.PI-\/t0))+\textcolor{stringliteral}{"{}\ arc\ "{}}+}
+\DoxyCodeLine{01041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ unscle+unrot+untrans+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{01042\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01043\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ X\ <\ 0:\ starting\ angle:\ Pi-\/t0,\ extent:\ -\/2*(Pi-\/t0)\ (clockwise)}}
+\DoxyCodeLine{01044\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}n\ "{}}+trans+rot+scle+\textcolor{stringliteral}{"{}\ 0\ 0\ 1\ "{}}+}
+\DoxyCodeLine{01046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6e"{}},rad2deg*(Math.PI-\/t0))+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{01047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6e"{}},(-\/rad2deg*(Math.PI-\/t0)))+}
+\DoxyCodeLine{01048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ arcn\ "{}}+unscle+unrot+untrans+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{01049\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01050\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ For\ filled\ circles\ we\ have\ to\ append\ part\ of\ the\ }}
+\DoxyCodeLine{01052\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ horizon,\ properly\ oriented.}}
+\DoxyCodeLine{01053\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cp)\ \{}
+\DoxyCodeLine{01054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c=rad2deg*Math.asin(Math.sin(t0)*sinr);}
+\DoxyCodeLine{01055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (r>Math.PI/2.0)\ c=180-\/c;}
+\DoxyCodeLine{01056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ "{}}+rot+\textcolor{stringliteral}{"{}\ 0\ 0\ 1\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},-\/c)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{01057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6e"{}},c)+\textcolor{stringliteral}{"{}\ arc\(\backslash\)n"{}});}
+\DoxyCodeLine{01058\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01059\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ done\ with\ appending\ horizon}}
+\DoxyCodeLine{01060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ strbuf.toString();}
+\DoxyCodeLine{01061\ \ \ \ \ \}}
+\DoxyCodeLine{01062\ \ \ \ \ }
+\DoxyCodeLine{01072\ \ \ \ \ \textcolor{keyword}{public}\ String\ sphEdgePath(SphGeodesic\ sg)\ \{\ }
+\DoxyCodeLine{01073\ }
+\DoxyCodeLine{01074\ \ \ \ \ \ \ \ \ StringBuilder\ strbuf=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{01075\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!sg.isVisible())\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ \textcolor{comment}{//\ both\ are\ on\ back}}
+\DoxyCodeLine{01077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg.lineFlag)\ \{\ \textcolor{comment}{//\ handle\ a\ straight\ line}}
+\DoxyCodeLine{01078\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ a=SphericalMath.sphToVisualPlane(sg.z1.x,sg.z1.y);}
+\DoxyCodeLine{01079\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ b=SphericalMath.sphToVisualPlane(sg.z2.x,sg.z2.y);}
+\DoxyCodeLine{01080\ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},a.x)+\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},a.y)+}
+\DoxyCodeLine{01081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ l\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},b.x)+\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},b.y)+\textcolor{stringliteral}{"{}\ l\ "{}});}
+\DoxyCodeLine{01082\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ strbuf.toString();}
+\DoxyCodeLine{01083\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg.followHorizon()!=0)\ \{\ \textcolor{comment}{//\ handle\ geodesic\ along\ the\ horizon}}
+\DoxyCodeLine{01085\ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ 0\ 0\ 1\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},sg.z1.arg()*rad2deg)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{01086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6e"{}},sg.z2.arg()*rad2deg)+\textcolor{stringliteral}{"{}\ arc\ "{}});}
+\DoxyCodeLine{01087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ strbuf.toString();}
+\DoxyCodeLine{01088\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01089\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01090\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ part\ of\ great\ circle}}
+\DoxyCodeLine{01091\ \ \ \ \ \ \ \ \ Point3D\ C=\textcolor{keyword}{new}\ Point3D(sg.center.x,sg.center.y);}
+\DoxyCodeLine{01092\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ plen=Math.sqrt(C.y*C.y+C.z*C.z);}
+\DoxyCodeLine{01093\ \ \ \ \ \ \ \ \ Point3D\ A=\textcolor{keyword}{new}\ Point3D(0,-\/C.z/plen,C.y/plen);\ \textcolor{comment}{//\ unit\ orthog\ to\ yz-\/proj\ of\ C}}
+\DoxyCodeLine{01094\ }
+\DoxyCodeLine{01095\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Creation\ of\ 'sg'\ should\ have\ made\ both\ ends\ visible}}
+\DoxyCodeLine{01096\ \ \ \ \ \ \ \ \ Point3D\ end1=\textcolor{keyword}{new}\ Point3D(sg.z1.x,sg.z1.y);}
+\DoxyCodeLine{01097\ \ \ \ \ \ \ \ \ Point3D\ end2=\textcolor{keyword}{new}\ Point3D(sg.z2.x,sg.z2.y);}
+\DoxyCodeLine{01098\ }
+\DoxyCodeLine{01099\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ up\ rotation\ and\ scaling}}
+\DoxyCodeLine{01100\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ wide=Math.abs(C.x);}
+\DoxyCodeLine{01101\ \ \ \ \ \ \ \ \ String\ rotsc=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+rad2deg*Math.atan2(C.z,C.y)+}
+\DoxyCodeLine{01102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ rot\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},wide)+\textcolor{stringliteral}{"{}\ 1\ sc\ "{}});}
+\DoxyCodeLine{01103\ \ \ \ \ \ \ \ \ String\ unrotsc=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},(1/wide))+\textcolor{stringliteral}{"{}\ 1\ sc\ "{}}+}
+\DoxyCodeLine{01104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (String.format(\textcolor{stringliteral}{"{}\%.6e"{}},(-\/1.0*rad2deg*Math.atan2(C.z,C.y)))+\textcolor{stringliteral}{"{}\ rot\ "{}}));}
+\DoxyCodeLine{01105\ }
+\DoxyCodeLine{01106\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dp=Point3D.DotProduct(A,end1);}
+\DoxyCodeLine{01107\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a1=Math.acos(dp);}
+\DoxyCodeLine{01108\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dp>=1.0)\ a1=0.0;}
+\DoxyCodeLine{01109\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (dp<=-\/1.0)\ a1=Math.PI;}
+\DoxyCodeLine{01110\ \ \ \ \ \ \ \ \ dp=Point3D.DotProduct(A,end2);}
+\DoxyCodeLine{01111\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a2=Math.acos(dp);}
+\DoxyCodeLine{01112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dp>=1.0)\ a2=0.0;}
+\DoxyCodeLine{01113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (dp<=-\/1.0)\ a2=Math.PI;}
+\DoxyCodeLine{01114\ \ \ \ \ \ \ \ \ strbuf.append(rotsc);}
+\DoxyCodeLine{01115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (C.x>=0)\ \{\ \textcolor{comment}{//\ seen\ from\ front}}
+\DoxyCodeLine{01116\ \ \ \ \ \ \ \ \ \ \ \ \ a1+=Math.PI/2.0;}
+\DoxyCodeLine{01117\ \ \ \ \ \ \ \ \ \ \ \ \ a2+=Math.PI/2.0;}
+\DoxyCodeLine{01118\ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ 0\ 0\ 1\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},rad2deg*a1)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{01119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6e"{}},rad2deg*a2)+\textcolor{stringliteral}{"{}\ arc\ "{}});}
+\DoxyCodeLine{01120\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01121\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ seen\ from\ back}}
+\DoxyCodeLine{01122\ \ \ \ \ \ \ \ \ \ \ \ \ a1\ =\ Math.PI/2.0-\/a1;}
+\DoxyCodeLine{01123\ \ \ \ \ \ \ \ \ \ \ \ \ a2\ =\ Math.PI/2.0-\/a2;}
+\DoxyCodeLine{01124\ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ 0\ 0\ 1\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},rad2deg*a1)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{01125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6e"{}},rad2deg*a2)+\textcolor{stringliteral}{"{}\ arcn\ "{}});}
+\DoxyCodeLine{01126\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01127\ \ \ \ \ \ \ \ \ strbuf.append(unrotsc);\ \textcolor{comment}{//\ undo\ the\ rotation\ and\ scaling}}
+\DoxyCodeLine{01128\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ strbuf.toString();}
+\DoxyCodeLine{01129\ \ \ \ \ \}}
+\DoxyCodeLine{01130\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01146\ \ \ \ \ \textcolor{keyword}{public}\ Vector<String>\ sphPolyPath(\textcolor{keywordtype}{double}\ []crns)\ }
+\DoxyCodeLine{01147\ \ \ \ \ \textcolor{keywordflow}{throws}\ DrawingException\ \{\ }
+\DoxyCodeLine{01148\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=crns.length/2;}
+\DoxyCodeLine{01149\ \ \ \ \ \ \ \ \ Vector<String>\ paths=\textcolor{keyword}{new}\ Vector<String>();}
+\DoxyCodeLine{01150\ \ \ \ \ \ \ \ \ StringBuilder\ strbuf;}
+\DoxyCodeLine{01151\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01152\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Cheap\ check:\ are\ all\ points\ invisible?\ Just\ check\ x-\/coords}}
+\DoxyCodeLine{01153\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ hit=\textcolor{keyword}{false};}
+\DoxyCodeLine{01154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;(j<N\ \&\&\ !hit);j++)}
+\DoxyCodeLine{01155\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.cos(crns[2*j])>0.0)\ hit=\textcolor{keyword}{true};}
+\DoxyCodeLine{01156\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!hit)\ \textcolor{keywordflow}{return}\ paths;}
+\DoxyCodeLine{01157\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01158\ \ \ \ \ \ \ \ \ Point3D\ []pts=\textcolor{keyword}{new}\ Point3D[N];}
+\DoxyCodeLine{01159\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<N;j++)\ \{}
+\DoxyCodeLine{01160\ \ \ \ \ \ \ \ \ \ \ \ \ pts[j]=\textcolor{keyword}{new}\ Point3D(crns[2*j],crns[2*j+1]);}
+\DoxyCodeLine{01161\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ System.out.println("{}j="{}+j+"{}\ "{}+pts[j].x+"{},"{}+pts[j].y);}}
+\DoxyCodeLine{01162\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01163\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01164\ \ \ \ \ \ \ \ \ SphGeodesic[]\ sg=\textcolor{keyword}{new}\ SphGeodesic[N];}
+\DoxyCodeLine{01165\ \ \ \ \ \ \ \ \ hit=\textcolor{keyword}{false};}
+\DoxyCodeLine{01166\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ allFront=\textcolor{keyword}{true};}
+\DoxyCodeLine{01167\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ allHorizon=\textcolor{keyword}{true};}
+\DoxyCodeLine{01168\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ firstX=-\/1;}
+\DoxyCodeLine{01169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=N-\/1;j>=0;j-\/-\/)\ \{}
+\DoxyCodeLine{01170\ \ \ \ \ \ \ \ \ \ \ \ \ sg[j]=\textcolor{keyword}{new}\ SphGeodesic(pts[j],pts[(j+1)\%N]);}
+\DoxyCodeLine{01171\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg[j].isVisible())\ \{}
+\DoxyCodeLine{01172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hit=\textcolor{keyword}{true};}
+\DoxyCodeLine{01173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ firstX=j;}
+\DoxyCodeLine{01174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg[j].hitHorizon())}
+\DoxyCodeLine{01175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ allFront=\textcolor{keyword}{false};}
+\DoxyCodeLine{01176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg[j].followHorizon()!=1)\ \{\ \textcolor{comment}{//\ not\ horizon\ or\ clockwise}}
+\DoxyCodeLine{01177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ allHorizon=\textcolor{keyword}{false};}
+\DoxyCodeLine{01178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01179\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01180\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01181\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!hit)\ \textcolor{keywordflow}{return}\ paths;\ \textcolor{comment}{//\ nothing\ on\ front}}
+\DoxyCodeLine{01182\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01183\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ everything\ on\ front\ or\ around\ horizon\ (counterclockwise)}}
+\DoxyCodeLine{01184\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (allFront\ ||\ allHorizon)\ \{}
+\DoxyCodeLine{01185\ \ \ \ \ \ \ \ \ \ \ \ \ strbuf=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}\ n\ "{}});}
+\DoxyCodeLine{01186\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ a=SphericalMath.sphToVisualPlane(sg[0].z1.x,sg[0].z1.y);}
+\DoxyCodeLine{01187\ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},a.x)+\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},a.y)+\textcolor{stringliteral}{"{}\ m\ "{}});\ \textcolor{comment}{//\ move\ to\ first\ end}}
+\DoxyCodeLine{01188\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<N;i++)\ \{}
+\DoxyCodeLine{01189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(sphEdgePath(sg[i])+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{01190\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println("{}i="{}+i+"{}\ y's\ are\ "{}+-\/1.0*Math.cos(sg[i].z1.y)+"{},"{}+-\/1.0*Math.cos(sg[i].z2.y));}}
+\DoxyCodeLine{01191\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01192\ \ \ \ \ \ \ \ \ \ \ \ \ paths.add(strbuf.toString());}
+\DoxyCodeLine{01193\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ paths;}
+\DoxyCodeLine{01194\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01195\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01196\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (firstX<0)\ }
+\DoxyCodeLine{01197\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DrawingException(\textcolor{stringliteral}{"{}Didn't\ find\ visible\ geodesic"{}});}
+\DoxyCodeLine{01198\ }
+\DoxyCodeLine{01199\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ general\ case,\ part\ on\ front,\ part\ on\ back}}
+\DoxyCodeLine{01200\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01201\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ in\ order}}
+\DoxyCodeLine{01202\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety=N+1;}
+\DoxyCodeLine{01203\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ spot=firstX;}
+\DoxyCodeLine{01204\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (safety>0\ \&\&\ !sg[spot].horizonStart\ \&\&\ !sg[(spot+N-\/1)\%N].horizonEnd)\ \{}
+\DoxyCodeLine{01205\ \ \ \ \ \ \ \ \ \ \ \ \ safety-\/-\/;}
+\DoxyCodeLine{01206\ \ \ \ \ \ \ \ \ \ \ \ \ spot=(spot+N-\/1)\%N;}
+\DoxyCodeLine{01207\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01208\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []indx=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[N];}
+\DoxyCodeLine{01209\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<N;j++)}
+\DoxyCodeLine{01210\ \ \ \ \ \ \ \ \ \ \ \ \ indx[j]=(spot+j)\%N;}
+\DoxyCodeLine{01211\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01212\ \ \ \ \ \ \ \ \ SphGeodesic\ firstSG=sg[indx[0]];}
+\DoxyCodeLine{01213\ \ \ \ \ \ \ \ \ SphGeodesic\ nextSG=firstSG;}
+\DoxyCodeLine{01214\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ i=0;}
+\DoxyCodeLine{01215\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01216\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ on\ each\ reentry,\ nextSG\ is\ visible\ but\ not\ yet\ added\ to\ path}}
+\DoxyCodeLine{01217\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (nextSG.isVisible()\ \&\&\ i<(N-\/1))\ \{}
+\DoxyCodeLine{01218\ \ \ \ \ \ \ \ \ \ \ \ \ strbuf=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}\ n\ "{}});}
+\DoxyCodeLine{01219\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ a=SphericalMath.sphToVisualPlane(nextSG.z1.x,nextSG.z1.y);}
+\DoxyCodeLine{01220\ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},a.x)+\textcolor{stringliteral}{"{}\ "{}}+String.format(\textcolor{stringliteral}{"{}\%.6e"{}},a.y)+\textcolor{stringliteral}{"{}\ m\ "{}});\ \textcolor{comment}{//\ move\ to\ first\ end}}
+\DoxyCodeLine{01221\ }
+\DoxyCodeLine{01222\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ geodesics\ until\ you\ get\ 'horizonEnd'\ (they\ should\ be\ visible)}}
+\DoxyCodeLine{01223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (!nextSG.horizonEnd)\ \{}
+\DoxyCodeLine{01224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(sphEdgePath(nextSG)+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{01225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i++;}
+\DoxyCodeLine{01226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextSG=sg[indx[i]];}
+\DoxyCodeLine{01227\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01228\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01229\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ it\ went\ beyond\ horizon,\ append\ this\ segment,\ record\ exit\ spot}}
+\DoxyCodeLine{01230\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextSG.horizonEnd)\ \{}
+\DoxyCodeLine{01231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(sphEdgePath(nextSG)+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{01232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ paths.add(strbuf.toString());\ \textcolor{comment}{//\ save\ to\ vector}}
+\DoxyCodeLine{01233\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01234\ }
+\DoxyCodeLine{01235\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ next\ segment\ if\ there\ is\ one}}
+\DoxyCodeLine{01236\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i<(N-\/1))\ \{}
+\DoxyCodeLine{01237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i++;}
+\DoxyCodeLine{01238\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextSG=sg[indx[i]];}
+\DoxyCodeLine{01239\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01240\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01241\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ignore\ geodesics\ until\ one\ becomes\ visible}}
+\DoxyCodeLine{01242\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (i<(N-\/1)\ \&\&\ !nextSG.isVisible())\ \{}
+\DoxyCodeLine{01243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i++;}
+\DoxyCodeLine{01244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextSG=sg[indx[i]];}
+\DoxyCodeLine{01245\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01246\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while\ \ \ }}
+\DoxyCodeLine{01247\ }
+\DoxyCodeLine{01248\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ paths;}
+\DoxyCodeLine{01249\ \ \ \ \ \}}
+\DoxyCodeLine{01262\ \ \ \ \ \textcolor{keyword}{public}\ String\ sph\_closed\_Poly(\textcolor{keywordtype}{double}\ []crns)\ }
+\DoxyCodeLine{01263\ \ \ \ \ \textcolor{keywordflow}{throws}\ DrawingException\ \{\ }
+\DoxyCodeLine{01264\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=crns.length/2;}
+\DoxyCodeLine{01265\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01266\ \ \ \ \ \ \ \ \ StringBuilder\ strbuf=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}\ n\ "{}});}
+\DoxyCodeLine{01267\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01268\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Cheap\ check:\ are\ all\ points\ invisible?\ Just\ check\ x-\/coords}}
+\DoxyCodeLine{01269\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ hit=\textcolor{keyword}{false};}
+\DoxyCodeLine{01270\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;(j<N\ \&\&\ !hit);j++)}
+\DoxyCodeLine{01271\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.cos(crns[2*j])>0.0)\ hit=\textcolor{keyword}{true};}
+\DoxyCodeLine{01272\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!hit)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01273\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01274\ \ \ \ \ \ \ \ \ Point3D\ []pts=\textcolor{keyword}{new}\ Point3D[N];}
+\DoxyCodeLine{01275\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<N;j++)}
+\DoxyCodeLine{01276\ \ \ \ \ \ \ \ \ \ \ \ \ pts[j]=\textcolor{keyword}{new}\ Point3D(crns[2*j],crns[2*j+1]);}
+\DoxyCodeLine{01277\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01278\ \ \ \ \ \ \ \ \ SphGeodesic[]\ sg=\textcolor{keyword}{new}\ SphGeodesic[N];}
+\DoxyCodeLine{01279\ \ \ \ \ \ \ \ \ hit=\textcolor{keyword}{false};}
+\DoxyCodeLine{01280\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ allFront=\textcolor{keyword}{true};}
+\DoxyCodeLine{01281\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ allHorizon=\textcolor{keyword}{true};}
+\DoxyCodeLine{01282\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ firstX=-\/1;}
+\DoxyCodeLine{01283\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=N-\/1;j>=0;j-\/-\/)\ \{}
+\DoxyCodeLine{01284\ \ \ \ \ \ \ \ \ \ \ \ \ sg[j]=\textcolor{keyword}{new}\ SphGeodesic(pts[j],pts[(j+1)\%N]);}
+\DoxyCodeLine{01285\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg[j].isVisible())\ \{}
+\DoxyCodeLine{01286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hit=\textcolor{keyword}{true};}
+\DoxyCodeLine{01287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ firstX=j;}
+\DoxyCodeLine{01288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg[j].hitHorizon())}
+\DoxyCodeLine{01289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ allFront=\textcolor{keyword}{false};}
+\DoxyCodeLine{01290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg[j].followHorizon()!=1)\ \{\ \textcolor{comment}{//\ not\ horizon\ or\ clockwise}}
+\DoxyCodeLine{01291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ allHorizon=\textcolor{keyword}{false};}
+\DoxyCodeLine{01292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01293\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01294\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01295\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!hit)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ \textcolor{comment}{//\ nothing\ on\ front}}
+\DoxyCodeLine{01296\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01297\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ everything\ on\ front\ or\ around\ horizon\ (counterclockwise)}}
+\DoxyCodeLine{01298\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (allFront\ ||\ allHorizon)\ \{}
+\DoxyCodeLine{01299\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ a=SphericalMath.sphToVisualPlane(sg[0].z1.x,sg[0].z1.y);}
+\DoxyCodeLine{01300\ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ "{}}+a.x+\textcolor{stringliteral}{"{}\ "{}}+a.y+\textcolor{stringliteral}{"{}\ m\ "{}});\ \textcolor{comment}{//\ move\ to\ first\ end}}
+\DoxyCodeLine{01301\ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(sphEdgePath(sg[0])+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{01302\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<N;i++)\ }
+\DoxyCodeLine{01303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(sphEdgePath(sg[i])+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{01304\ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ cp\ "{}});\ \textcolor{comment}{//\ close\ path}}
+\DoxyCodeLine{01305\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ strbuf.toString();\ }
+\DoxyCodeLine{01306\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01307\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (firstX<0)\ }
+\DoxyCodeLine{01308\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DrawingException(\textcolor{stringliteral}{"{}Didn't\ find\ visible\ geodesic"{}});}
+\DoxyCodeLine{01309\ }
+\DoxyCodeLine{01310\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ part\ on\ front,\ part\ on\ back}}
+\DoxyCodeLine{01311\ \ \ \ \ \ \ \ \ SphGeodesic\ firstSG=sg[firstX];}
+\DoxyCodeLine{01312\ \ \ \ \ \ \ \ \ Complex\ a=SphericalMath.sphToVisualPlane(firstSG.z1.x,firstSG.z1.y);}
+\DoxyCodeLine{01313\ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ "{}}+a.x+\textcolor{stringliteral}{"{}\ "{}}+a.y+\textcolor{stringliteral}{"{}\ m\ "{}});\ \textcolor{comment}{//\ move\ to\ first\ end}}
+\DoxyCodeLine{01314\ \ \ \ \ \ \ \ \ SphGeodesic\ nextSG=firstSG;}
+\DoxyCodeLine{01315\ \ \ \ \ \ \ \ \ Complex\ toBackSpot=\textcolor{keyword}{null};}
+\DoxyCodeLine{01316\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ i=firstX;}
+\DoxyCodeLine{01317\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01318\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ on\ each\ reentry,\ nextSG\ is\ visible\ but\ not\ yet\ added\ to\ path}}
+\DoxyCodeLine{01319\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (nextSG.isVisible()\ \&\&\ i<N)\ \{}
+\DoxyCodeLine{01320\ \ \ \ \ \ \ \ \ \ \ \ \ toBackSpot=\textcolor{keyword}{null};}
+\DoxyCodeLine{01321\ }
+\DoxyCodeLine{01322\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ geodesics\ until\ you\ get\ 'horizonEnd'\ (they\ should\ be\ visible)}}
+\DoxyCodeLine{01323\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (i<(N-\/1)\ \&\&\ !nextSG.horizonEnd)\ \{}
+\DoxyCodeLine{01324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(sphEdgePath(nextSG)+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{01325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i++;}
+\DoxyCodeLine{01326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextSG=sg[i];}
+\DoxyCodeLine{01327\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01328\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01329\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ it\ went\ beyond\ horizon,\ add\ this\ segment\ and\ record\ exit\ spot}}
+\DoxyCodeLine{01330\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextSG.horizonEnd)\ \{}
+\DoxyCodeLine{01331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ toBackSpot=SphericalMath.sphToVisualPlane(nextSG.z2);}
+\DoxyCodeLine{01332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(sphEdgePath(nextSG)+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{01333\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01334\ }
+\DoxyCodeLine{01335\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ last\ segment,\ have\ to\ finish\ up\ or\ catch\ error}}
+\DoxyCodeLine{01336\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i==(N-\/1))\ \{}
+\DoxyCodeLine{01337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i=N;\ \textcolor{comment}{//\ just\ to\ kick\ out\ of\ processing}}
+\DoxyCodeLine{01338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (toBackSpot!=\textcolor{keyword}{null})\ \{\ \textcolor{comment}{//\ already\ drawn,\ just\ close\ up}}
+\DoxyCodeLine{01339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!firstSG.horizonStart)}
+\DoxyCodeLine{01340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DrawingException(\textcolor{stringliteral}{"{}path\ not\ closed"{}});}
+\DoxyCodeLine{01341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ close\ up\ with\ arc\ of\ horizon}}
+\DoxyCodeLine{01342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a2=SphericalMath.sphToVisualPlane(firstSG.z1).arg();}
+\DoxyCodeLine{01343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ 0\ 0\ 1\ "{}}+rad2deg*toBackSpot.arg()+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{01344\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rad2deg*a2+\textcolor{stringliteral}{"{}\ arc\ "{}});}
+\DoxyCodeLine{01345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{comment}{//\ on\ front,\ should\ close,\ add\ it}}
+\DoxyCodeLine{01347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(sphEdgePath(nextSG)+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{01348\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01349\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01350\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ after\ this,\ toBackSpot\ is\ set}}
+\DoxyCodeLine{01351\ }
+\DoxyCodeLine{01352\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ next\ segment\ if\ there\ is\ one}}
+\DoxyCodeLine{01353\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i<(N-\/1))\ \{}
+\DoxyCodeLine{01354\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i++;}
+\DoxyCodeLine{01355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextSG=sg[i];}
+\DoxyCodeLine{01356\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01357\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ignore\ geodesics\ until\ one\ becomes\ visible}}
+\DoxyCodeLine{01359\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (i<(N-\/1)\ \&\&\ !nextSG.isVisible())\ \{}
+\DoxyCodeLine{01360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i++;}
+\DoxyCodeLine{01361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextSG=sg[i];}
+\DoxyCodeLine{01362\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01363\ }
+\DoxyCodeLine{01364\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ have\ last\ segment}}
+\DoxyCodeLine{01365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i==(N-\/1))\ \{}
+\DoxyCodeLine{01366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i=N;\ \textcolor{comment}{//\ kick\ out}}
+\DoxyCodeLine{01367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!nextSG.isVisible())\ \{}
+\DoxyCodeLine{01368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!firstSG.horizonStart)}
+\DoxyCodeLine{01369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DrawingException(\textcolor{stringliteral}{"{}never\ got\ back\ from\ the\ back"{}});}
+\DoxyCodeLine{01370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ include\ final\ arc\ of\ horizon}}
+\DoxyCodeLine{01371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a2=SphericalMath.sphToVisualPlane(firstSG.z1).arg();}
+\DoxyCodeLine{01372\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ 0\ 0\ 1\ "{}}+rad2deg*toBackSpot.arg()+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{01373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rad2deg*a2+\textcolor{stringliteral}{"{}\ arc\ "{}});}
+\DoxyCodeLine{01374\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01375\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ visible,\ must\ have\ come\ from\ the\ back}}
+\DoxyCodeLine{01376\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ include\ arc\ first}}
+\DoxyCodeLine{01377\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a2=SphericalMath.sphToVisualPlane(nextSG.z1).arg();}
+\DoxyCodeLine{01378\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ 0\ 0\ 1\ "{}}+rad2deg*toBackSpot.arg()+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{01379\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rad2deg*a2+\textcolor{stringliteral}{"{}\ arc\ "{}});}
+\DoxyCodeLine{01380\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ include\ the\ last\ arc\ itself}}
+\DoxyCodeLine{01381\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(sphEdgePath(nextSG)+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{01382\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01383\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01384\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (i<N)\ \{\ \textcolor{comment}{//\ have\ to\ add\ arc\ (only)}}
+\DoxyCodeLine{01385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a2=SphericalMath.sphToVisualPlane(nextSG.z1).arg();}
+\DoxyCodeLine{01386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ 0\ 0\ 1\ "{}}+rad2deg*toBackSpot.arg()+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{01387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rad2deg*a2+\textcolor{stringliteral}{"{}\ arc\ "{}});}
+\DoxyCodeLine{01388\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01389\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while\ \ \ }}
+\DoxyCodeLine{01390\ }
+\DoxyCodeLine{01391\ \ \ \ \ \ \ \ \ strbuf.append(\textcolor{stringliteral}{"{}\ cp\ "{}});}
+\DoxyCodeLine{01392\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ strbuf.toString();}
+\DoxyCodeLine{01393\ \ \ \ \ \}}
+\DoxyCodeLine{01394\ }
+\DoxyCodeLine{01395\ \ \ \ \ }
+\DoxyCodeLine{01406\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ postTileRecurs(SubdivisionRules\ sRules,\textcolor{keywordtype}{int}\ tiletype,Complex\ []base,\textcolor{keywordtype}{int}\ depth)\ \{}
+\DoxyCodeLine{01407\ \ \ \ \ \ \ \ \ TileRule\ topRule=sRules.tileRules.get(tiletype-\/4);}
+\DoxyCodeLine{01408\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01409\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ transformations}}
+\DoxyCodeLine{01410\ \ \ \ \ \ \ \ \ Complex\ origin=base[0];}
+\DoxyCodeLine{01411\ \ \ \ \ \ \ \ \ Complex\ basedir=base[1].minus(base[0]);}
+\DoxyCodeLine{01412\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01413\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first,\ draw\ yourself,\ then\ position\ and\ recursively\ draw\ any\ children}}
+\DoxyCodeLine{01414\ \ \ \ \ \ \ \ \ Complex\ []stdC\ =\textcolor{keyword}{new}\ Complex[topRule.stdCorners.length];}
+\DoxyCodeLine{01415\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<topRule.stdCorners.length;j++)}
+\DoxyCodeLine{01416\ \ \ \ \ \ \ \ \ \ \ \ \ stdC[j]=\textcolor{keyword}{new}\ Complex(topRule.stdCorners[j].times(basedir).add(origin));}
+\DoxyCodeLine{01417\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{01418\ \ \ \ \ \ \ \ \ \ \ \ \ postFilledColorPoly(0,\ stdC.length,\ stdC,\textcolor{keyword}{null},\textcolor{keyword}{null},2.0);}
+\DoxyCodeLine{01419\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{01420\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}failed\ in\ posting\ polygon."{}});}
+\DoxyCodeLine{01421\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01422\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=1;}
+\DoxyCodeLine{01423\ }
+\DoxyCodeLine{01424\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ recurse\ through\ children}}
+\DoxyCodeLine{01425\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (depth\ >\ 0)\ \{}
+\DoxyCodeLine{01426\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n\ =\ 1;\ n\ <=\ topRule.childCount;\ n++)\ \{}
+\DoxyCodeLine{01427\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ []subtileBase=\textcolor{keyword}{new}\ Complex[2];}
+\DoxyCodeLine{01428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subtileBase[0]\ =\ \textcolor{keyword}{new}\ Complex(topRule.tileBase[n][0].times(basedir).add(origin));}
+\DoxyCodeLine{01429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ subtileBase[1]\ =\ \textcolor{keyword}{new}\ Complex(topRule.tileBase[n][1].times(basedir).add(origin));}
+\DoxyCodeLine{01430\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ rslt\ =\ postTileRecurs(sRules,\ topRule.childType[n],\ subtileBase,\ depth\ -\/\ 1);}
+\DoxyCodeLine{01431\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rslt\ <=\ 0)}
+\DoxyCodeLine{01432\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{01433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count\ +=\ rslt;}
+\DoxyCodeLine{01434\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01435\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01436\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{01437\ \ \ \ \ \}}
+\DoxyCodeLine{01438\ \ \ \ \ }
+\DoxyCodeLine{01439\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ String\ getThickStr(\textcolor{keywordtype}{double}\ tx)\ \{}
+\DoxyCodeLine{01440\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tx<0)}
+\DoxyCodeLine{01441\ \ \ \ \ \ \ \ \ \ \ \ \ tx=1.0;}
+\DoxyCodeLine{01442\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tk=(int)tx;}
+\DoxyCodeLine{01443\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(tk)\ \{}
+\DoxyCodeLine{01444\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 1:\ \{\textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}onetk\ "{}};\}}
+\DoxyCodeLine{01445\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 2:\ \{\textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}twotk\ "{}};\}}
+\DoxyCodeLine{01446\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 3:\ \{\textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}threetk\ "{}};\}}
+\DoxyCodeLine{01447\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 4:\ \{\textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}fourtk\ "{}};\}}
+\DoxyCodeLine{01448\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 5:\ \{\textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}fivetk\ "{}};\}}
+\DoxyCodeLine{01449\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 6:\ \{\textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}sixtk\ "{}};\}}
+\DoxyCodeLine{01450\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 7:\ \{\textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}seventk\ "{}};\}}
+\DoxyCodeLine{01451\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 8:\ \{\textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}eighttk\ "{}};\}}
+\DoxyCodeLine{01452\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 9:\ \{\textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}ninetk\ "{}};\}}
+\DoxyCodeLine{01453\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 10:\ \{\textcolor{keywordflow}{return}\ \textcolor{stringliteral}{"{}tentk\ "{}};\}}
+\DoxyCodeLine{01454\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:\ \{\textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(String.format(\textcolor{stringliteral}{"{}\%.6e"{}},tx)+\textcolor{stringliteral}{"{}\ ourlinewidth\ "{}});\}}
+\DoxyCodeLine{01455\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01456\ \ \ \ \ \}}
+\DoxyCodeLine{01457\ \ \ \ \ }
+\DoxyCodeLine{01458\ \}}
+
+\end{DoxyCode}

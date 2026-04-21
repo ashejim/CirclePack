@@ -1,0 +1,257 @@
+\doxysection{Post\+Manager.\+java}
+\label{_post_manager_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/posting/PostManager.java@{C:/Users/ashej/myGitRepos/CirclePack/src/posting/PostManager.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }posting;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ input.CommandStrParser;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ packing.CPdrawing;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.io.FileReader;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.io.FileWriter;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.util.Date;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.util.Random;}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ exceptions.InOutException;}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00044\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }PostManager\ \{}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ PS\_UNIT\_LINEWIDTH=1.0;}
+\DoxyCodeLine{00047\ \ \ \ \ }
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keyword}{public}\ String\ postFilename;}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{public}\ File\ psUltimateFile;\ \ \textcolor{comment}{//\ The\ finished\ postscript\ file\ \ }}
+\DoxyCodeLine{00050\ \ \ \ \ BufferedWriter\ fp;\ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{public}\ PostFactory\ pF;}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ id;\ \textcolor{comment}{//\ unique\ identifier\ for\ temp\ files.}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keywordtype}{double}\ ps\_linewidth;}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{public}\ StringBuilder\ textBuffer;\ \textcolor{comment}{//\ accum\ text\ for\ bottom\ of\ postscript\ file}}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ textLineCount;\ \textcolor{comment}{//\ counts\ lines\ of\ text\ at\ bottom\ of\ file\ }}
+\DoxyCodeLine{00056\ \ \ \ \ }
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{public}\ PostManager()\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ ps\_linewidth=PS\_UNIT\_LINEWIDTH;}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{id}\ =\ \textcolor{keyword}{new}\ Random().nextInt(32000);}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ psUltimateFile=\textcolor{keyword}{null};}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ fp=\textcolor{keyword}{null};}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ pF=\textcolor{keyword}{null};}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ textBuffer=\textcolor{keyword}{null};}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ textLineCount=0;}
+\DoxyCodeLine{00066\ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \ \ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ open\_psfile(CPdrawing\ cpDrawing,\textcolor{keywordtype}{int}\ mode,String\ psFilename,String\ targStr)\ \{}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ choose\ ultimate\ file\ name\ for\ use\ when\ creating\ the\ final\ postscript}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (psFilename==\textcolor{keyword}{null})\ \{\ \textcolor{comment}{//\ none\ given?\ use\ default}}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cpDrawing.customPS==\textcolor{keyword}{null})\ postFilename=\textcolor{keyword}{new}\ String(CPdrawing.customGlobal);}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ postFilename=\textcolor{keyword}{new}\ String(cpDrawing.customPS);}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ postFilename=psFilename;}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!postFilename.endsWith(\textcolor{stringliteral}{"{}.ps"{}}))\ \textcolor{comment}{//\ user\ may\ forget\ .ps}}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ postFilename=\textcolor{keyword}{new}\ String(postFilename+\textcolor{stringliteral}{"{}.ps"{}});}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ psUltimateFile=\textcolor{keyword}{new}\ File(CPFileManager.ImageDirectory,postFilename);}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ temporarily,\ the\ main\ contents\ are\ put\ in\ 'bodyFile'}}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ File\ bodyFile\ =\ \textcolor{keyword}{new}\ File(\ System.getProperty(\textcolor{stringliteral}{"{}java.io.tmpdir"{}}),}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ String(File.separator+\textcolor{keywordtype}{id}+\textcolor{stringliteral}{"{}\_"{}}+postFilename));}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ close\ (losing\ contents)\ and\ reopen\ 'fp'\ to\ 'bodyFile'}}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode==1)\ \{\ }
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (isOpen())\ \{\ }
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.close();}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ ex)\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}trying\ to\ close\ PS\ file:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ reopen\ //\ TODO:\ Do\ we\ want\ to\ be\ sure\ to\ overwrite\ here\ if\ file\ exists?}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp\ =\ \textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(bodyFile));\ }
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp=\textcolor{keyword}{null};}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}failed\ to\ open\ tmp\ 'bodyFile':\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fp==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}failed\ to\ open\ tmp\ 'bodyFile'"{}});}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ open\ 'postFactory'\ to\ accept\ input\ to\ 'bodyFile'}}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ pF=\textcolor{keyword}{new}\ PostFactory();}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ pF.fp=fp;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ CommandStrParser.pF=pF;}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ textBuffer=\textcolor{keyword}{null};\ }
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00126\ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \ \ }
+\DoxyCodeLine{00138\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ close\_psfile(CPdrawing\ cpd)\ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!isOpen())\ \textcolor{comment}{//\ writer\ to\ 'bodyFile'\ is\ not\ open\ }}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ fp.flush();}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ fp.close();\ \textcolor{comment}{//\ close\ 'bodyFile'\ (temp\ storage\ of\ main\ postscript)}}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}problem\ closing\ postscript:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ fp=\textcolor{keyword}{null};}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ pF=\textcolor{keyword}{null};\ \textcolor{comment}{//\ close\ 'PostFactory'}}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ CommandStrParser.pF=\textcolor{keyword}{null};}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ finalPS=\textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(psUltimateFile));}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ preamble\ text}}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ preAmble(finalPS,cpd);}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ main\ body}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ File\ bodyFile\ =\ \textcolor{keyword}{new}\ File(\ System.getProperty(\textcolor{stringliteral}{"{}java.io.tmpdir"{}}),}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ String(File.separator+\textcolor{keywordtype}{id}+\textcolor{stringliteral}{"{}\_"{}}+postFilename));}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ BufferedReader\ bodyFP=\textcolor{keyword}{new}\ BufferedReader(\textcolor{keyword}{new}\ FileReader(bodyFile));}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ c;}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((c=bodyFP.read())>=0)\ }
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ finalPS.write(c);}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ bodyFP.close();}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ trailer\ to\ close}}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (PackControl.postManager.textBuffer==\textcolor{keyword}{null}\ ||}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.postManager.textBuffer.length()==0)\ \textcolor{comment}{//\ no\ bottom\ text}}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ finalPS.write(\textcolor{stringliteral}{"{}\(\backslash\)ngrestore\(\backslash\)nend\(\backslash\)nshowpage\(\backslash\)n"{}});\ \textcolor{comment}{//\ page\ wrapup}}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ finalPS.write(\textcolor{stringliteral}{"{}\(\backslash\)ngrestore\(\backslash\)n"{}});\ }
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ finalPS.write(PackControl.postManager.textBuffer.toString());}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ finalPS.write(\textcolor{stringliteral}{"{}\(\backslash\)nend\(\backslash\)nshowpage\(\backslash\)n"{}});}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ finalPS.flush();}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ finalPS.close();}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}closing\ postscript\ file:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ postFilename=\textcolor{keyword}{null};}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ textBuffer=\textcolor{keyword}{null};}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ textLineCount=0;}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00184\ \ \ \ \ \}\ }
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ preAmble(BufferedWriter\ bw,\ CPdrawing\ cpDrawing)\ \textcolor{keywordflow}{throws}\ IOException\ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/-\/-\/-\/\ preamble:\ standard\ eps-\/type\ header\ info\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ */}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\%!PS-\/Adobe-\/2.0\ EPSF-\/2.0\(\backslash\)n\%\%Title:\ "{}}+postFilename+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\%\%Creator:\ "{}}+PackControl.CPVersion+}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\(\backslash\)n\%\%CreationDate:\ "{}}+\textcolor{keyword}{new}\ Date().toString()+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\%\%For:\ "{}}+System.getProperty(\textcolor{stringliteral}{"{}user.name"{}})+\textcolor{stringliteral}{"{}\(\backslash\)n\%\%Orientation:\ Portrait\(\backslash\)n"{}});}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ post\_size\_settings(bw,cpDrawing,1);\ \textcolor{comment}{//\ BoundingBox}}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\%\%Pages:\ 1\(\backslash\)n\%\%BeginSetup\(\backslash\)n\%\%EndSetup\(\backslash\)n\%\%"{}}+}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Magnification:\ 1.0000\(\backslash\)n\%\%EndComments\(\backslash\)n"{}});}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)n\%\ CirclePack\ dictionary\ ================\(\backslash\)n"{}});}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \ \ \ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/-\/-\/-\/\ define\ CPdict\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ */}}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}/CPdict\ 256\ dict\ def\(\backslash\)nCPdict\ begin"{}});}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)n\%\ -\/-\/-\/\ Standard\ abbreviations\(\backslash\)n"{}});}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)t/cp\ \{closepath\}\ bind\ def\(\backslash\)n\(\backslash\)t/ef\ \{eofill\}\ bind\ "{}}+}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/gr\ \{grestore\}\ bind\ def\(\backslash\)n\(\backslash\)t/gs\ \{gsave\}\ bind\ "{}}+}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/sa\ \{save\}\ bind\ def\(\backslash\)n\(\backslash\)t/rs\ \{restore\}\ bind\ "{}}+}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/l\ \{lineto\}\ bind\ def\(\backslash\)n\(\backslash\)t/m\ \{moveto\}\ bind\ "{}}+}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/rm\ \{rmoveto\}\ bind\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)t/n\ \{newpath\}\ bind\ def\(\backslash\)n\(\backslash\)t/s\ \{stroke\}\ bind\ "{}}+}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/sh\ \{show\}\ bind\ def\(\backslash\)n\(\backslash\)t/slc\ \{setlinecap\}\ bind\ "{}}+}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/slj\ \{setlinejoin\}\ bind\ def\(\backslash\)n\(\backslash\)t/slw\ "{}}+}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\{setlinewidth\}\ bind\ def\(\backslash\)n\(\backslash\)t/srgb\ \{setrgbcolor\}\ bind\ "{}}+}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/rot\ \{rotate\}\ bind\ def\(\backslash\)n\(\backslash\)t/sc\ \{scale\}\ bind\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)t/sd\ \{setdash\}\ bind\ def\(\backslash\)n\(\backslash\)t/ff\ \{findfont\}\ bind\ "{}}+}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/sf\ \{setfont\}\ bind\ def\(\backslash\)n\(\backslash\)t/scf\ \{scalefont\}\ bind\ "{}}+}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\(\backslash\)t/sw\ \{stringwidth\}\ bind\ def\(\backslash\)n\(\backslash\)t/tr\ \{translate\}\ "{}}+}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}bind\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00215\ \ \ \ \ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/-\/-\/-\/\ Unique\ to\ CirclePack\ abbreviations,\ etc.\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ */}}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)n\%\ -\/-\/-\/\ Special\ abbreviations\(\backslash\)n"{}});}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /sg\ \{setgray\}\ bind\ def\(\backslash\)n\ \ \ /a\ \{arc\}\ bind\ "{}}+}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n\ \ \ /an\ \{arcn\}\ bind\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /c\ \{\ 0\ 360\ a\ s\}\ bind\ def\(\backslash\)t\(\backslash\)t\(\backslash\)t\%\ circle\(\backslash\)n"{}});}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /cc\ \{0\ 360\ a\ gs\ srgb\ s\ gr\ n\}\ bind\ def\(\backslash\)t\(\backslash\)t\%\ color\ circle\(\backslash\)n"{}});}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /d\ \{\ 0\ 360\ a\ gs\ sg\ fill\ gr\ s\}\ bind\ def\(\backslash\)t\%\ disc\(\backslash\)n"{}});}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /cd\ \{0\ 360\ a\ gs\ srgb\ fill\ gr\ s\}\ bind\ def\(\backslash\)t\%\ color\ disc\(\backslash\)n"{}});}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /mark\ \{gs\ 0\ 360\ a\ srgb\ fill\ gr\ n\}\ bind\ "{}}+}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)t\%default\ mark\ symbol\(\backslash\)n"{}});}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /wht\ \{1.0\}\ bind\ def\(\backslash\)t\(\backslash\)t\(\backslash\)t\(\backslash\)t\%\ gray\ levels\(\backslash\)n\ \ \ "{}}+}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}/gry\ \{0.8\}\ bind\ def\(\backslash\)n\ \ /drk\ \{0.5\}\ bind\ def\(\backslash\)n\ \ \ /blck\ "{}}+}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\{0.0\}\ bind\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /ourlinewidth\ \{.002\ mul\ setlinewidth\}\ bind\ "{}}+}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n"{}});}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ /getlinewidth\ \{currentlinewidth\ 500.0\ mul\}\ bind\ "{}}+}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}def\(\backslash\)n"{}});}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)nend\(\backslash\)n\%\%\ end\ CirclePack\ dictionary\ "{}}+}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}=================\(\backslash\)n\%\%EndProlog\(\backslash\)n"{}});}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00235\ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ begin\ first\ page\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ */}}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\(\backslash\)n\%\%Page:\ "{}}+1+\textcolor{stringliteral}{"{}\ "{}}+1+\textcolor{stringliteral}{"{}\(\backslash\)nCPdict\ begin\(\backslash\)ngsave\(\backslash\)n"{}});}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ 72\ 72\ sc\ \%\ inches\(\backslash\)n\ \ \ "{}}+4.25+\textcolor{stringliteral}{"{}\ "{}}+5.5+\textcolor{stringliteral}{"{}\ tr\(\backslash\)n"{}}+}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ \ 1\ slc\ \ 1\ slj\(\backslash\)n"{}});}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ post\_size\_settings(bw,cpDrawing,6);\ \textcolor{comment}{//\ BoundingBox,\ size\ info,\ clip\ window}}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cpDrawing.getGeom()!=0)\ \textcolor{comment}{//\ sph/hyp\ case:\ draw\ sphere/disc\ first}}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}n\ 0\ 0\ 1\ c\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{00243\ \ \ \ \ \}}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00250\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ post\_size\_settings(BufferedWriter\ bw,CPdrawing\ cpDrawing,\textcolor{keywordtype}{int}\ mode)\ }
+\DoxyCodeLine{00251\ \ \ \ \ \textcolor{keywordflow}{throws}\ IOException\ \{}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ size=(double)CPBase.DEFAULT\_PS\_PAGE\_SIZE;}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}((mode\ \&\ 1)==1)\ \{\ \textcolor{comment}{//\ BoundingBox\ }}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bblx=(int)(72*(4.25-\/size/2))-\/10;}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bbly=(int)(72*(5.5-\/size/2))-\/10;}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (textBuffer!=\textcolor{keyword}{null})\ \textcolor{comment}{//\ need\ to\ lower\ bottom\ for\ text\ }}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bbly\ -\/=\ textLineCount*18;\ }
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bbrx=(int)(72*(4.25+size/2))+10;}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bbry=(int)(72*(5.5+size/2))+10;}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\%\%BoundingBox:\ "{}}+bblx+\textcolor{stringliteral}{"{}\ "{}}+bbly+\textcolor{stringliteral}{"{}\ "{}}+bbrx+\textcolor{stringliteral}{"{}\ "{}}+bbry+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((mode\ \&\ 2)==2)\ \{\ \textcolor{comment}{//\ basic\ size\ info\ }}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\%\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ pack\ size\ settings\(\backslash\)n"{}});}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ factor=\ size/(cpDrawing.XWidth);}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/-\/-\/-\/\ scaling/translation\ for\ screen\ */}}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ "{}}+factor+\textcolor{stringliteral}{"{}\ "{}}+(\textcolor{keywordtype}{double})((1.01)*factor)+\textcolor{stringliteral}{"{}\ sc\ \(\backslash\)n\ \ \ \ \ "{}}+}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{double})(-\/(cpDrawing.realBox.lz.x+cpDrawing.realBox.rz.x)/2.0)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{double})(-\/(cpDrawing.realBox.lz.y+cpDrawing.realBox.rz.y)/2.0)+\textcolor{stringliteral}{"{}\ tr\(\backslash\)n"{}});}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ \ -\/-\/-\/-\/-\/-\/-\/-\/\ define\ 'ourlinewidth'\ at\ 1\ point\ */}}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /ourlinewidth\(\backslash\)n\ \ \ \ \ \ \{\ 72\ div\ "{}}+factor+\textcolor{stringliteral}{"{}\ div\ "{}}+}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ps\_linewidth+\textcolor{stringliteral}{"{}\ mul\ setlinewidth\}\ \ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ \ -\/-\/-\/-\/-\/-\/-\/-\/\ pre-\/defined\ thickness\ factors\ */}}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /onetk\(\backslash\)n\ \ \ \ \ \ \{1\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /twotk\(\backslash\)n\ \ \ \ \ \ \{2\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /threetk\(\backslash\)n\ \ \ \ \ \ \{3\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /fourtk\(\backslash\)n\ \ \ \ \ \ \{4\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /fivetk\(\backslash\)n\ \ \ \ \ \ \{5\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /sixtk\(\backslash\)n\ \ \ \ \ \ \{6\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /seventk\(\backslash\)n\ \ \ \ \ \ \{7\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /eighttk\(\backslash\)n\ \ \ \ \ \ \{8\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /ninetk\(\backslash\)n\ \ \ \ \ \ \{9\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ \ \ /tentk\(\backslash\)n\ \ \ \ \ \ \{10\ ourlinewidth\}\ def\(\backslash\)n"{}});}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}\ \ \ \ "{}}+(\textcolor{keywordtype}{double})ps\_linewidth+\textcolor{stringliteral}{"{}\ ourlinewidth\(\backslash\)n\ \ \ \ \ 0\ sg\(\backslash\)n"{}});}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}/Times-\/Roman\ ff\ "{}}+(\textcolor{keywordtype}{double})(.15/factor)+}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ scf\ sf\(\backslash\)n\%\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\(\backslash\)n"{}});\ \textcolor{comment}{//\ scale\ font}}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((mode\ \&\ 4)==4)\ \textcolor{comment}{/*\ clip\ window\ */}}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/\ now\ scaled\ based\ on\ screens\ size\ and\ desired\ output\ size\ */}}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ lx=cpDrawing.realBox.lz.x;}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ly=cpDrawing.realBox.lz.y;}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rx=cpDrawing.realBox.rz.x;}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ry=cpDrawing.realBox.rz.y;}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw.write(\textcolor{stringliteral}{"{}n\(\backslash\)n"{}}+lx+\textcolor{stringliteral}{"{}\ "{}}+ry+\textcolor{stringliteral}{"{}\ m\(\backslash\)n"{}}+lx+\textcolor{stringliteral}{"{}\ "{}}+ly+\textcolor{stringliteral}{"{}\ l\(\backslash\)n"{}}+rx+\textcolor{stringliteral}{"{}\ "{}}+ly+\textcolor{stringliteral}{"{}\ l\(\backslash\)n"{}}+}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rx+\textcolor{stringliteral}{"{}\ "{}}+ry+\textcolor{stringliteral}{"{}\ l\(\backslash\)ncp\(\backslash\)n\%gs\ s\ gr\(\backslash\)nclip\(\backslash\)nn\(\backslash\)n"{}});\ \textcolor{comment}{//\ clip\ box}}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00298\ \ \ \ \ \}}
+\DoxyCodeLine{00299\ }
+\DoxyCodeLine{00305\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ isOpen()\ \{}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (pF!=\textcolor{keyword}{null}\ \&\&\ fp!=\textcolor{keyword}{null});}
+\DoxyCodeLine{00307\ \ \ \ \ \}}
+\DoxyCodeLine{00308\ }
+\DoxyCodeLine{00309\ \}}
+
+\end{DoxyCode}

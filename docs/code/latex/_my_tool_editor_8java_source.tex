@@ -1,0 +1,306 @@
+\doxysection{My\+Tool\+Editor.\+java}
+\label{_my_tool_editor_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/mytools/MyToolEditor.java@{C:/Users/ashej/myGitRepos/CirclePack/src/mytools/MyToolEditor.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }mytools;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.event.ActionEvent;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.event.ActionListener;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.util.Random;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ javax.swing.BorderFactory;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ javax.swing.BoxLayout;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ javax.swing.JButton;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ javax.swing.JCheckBox;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ javax.swing.JFrame;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ javax.swing.JLabel;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ javax.swing.JTextArea;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ javax.swing.SwingConstants;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ javax.swing.WindowConstants;}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ images.CPIcon;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ images.IconComboBox;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ util.PopupBuilder;}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00030\ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keyword}{class\ }MyToolEditor\ \textcolor{keyword}{extends}\ JFrame\ implements\ ActionListener\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00033\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00034\ \ \ \ \ }
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keyword}{public}\ MyToolHandler\ parentHandler;}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{public}\ JTextArea\ cmdArea;}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{public}\ CPIcon\ cpIcon;}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{public}\ JCheckBox\ jcb;}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ Width=565;}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ topSize;\ \textcolor{comment}{//\ set\ by\ subclasses}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{public}\ String\ iconDir;\ \textcolor{comment}{//\ directory\ containing\ the\ icon\ files}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{public}\ IconComboBox\ iconCombo;}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{public}\ Vector<CPIcon>\ theCPIcons;}
+\DoxyCodeLine{00044\ \ \ \ \ }
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{comment}{//\ dropability\ stuff\ set\ by\ subclasses.\ User\ sets\ state,\ dropable\ or\ not?}}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{comment}{//\ 'dropable'\ means\ you\ carry\ to\ the\ target\ canvas\ with\ the\ mouse,}}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{//\ and\ the\ command\ is\ NOT\ executed\ with\ l-\/mouse\ click.\ Else,\ l-\/mouse\ }}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{comment}{//\ click\ applies\ command\ (to\ the\ active\ pack).}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ wantDropBox;\ \textcolor{comment}{//\ display\ 'dropBox'\ in\ 'middlePanel'}}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ dropMode;\ \textcolor{comment}{//\ is\ tool\ dropable?}}
+\DoxyCodeLine{00051\ \ \ \ \ }
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{private}\ JPanel\ topPanel;}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{private}\ JPanel\ middlePanel;}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{private}\ JPanel\ bottomPanel;}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{private}\ JTextField\ tooltipField;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{private}\ JPanel\ iconBoxPanel;}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{private}\ JButton\ clearButton;}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{private}\ JButton\ acceptButton;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{private}\ JButton\ dismissButton;}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{private}\ JTextField\ nameField;}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{private}\ JCheckBox\ dropBox;}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keyword}{private}\ JLabel\ browseLabel;}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{private}\ JLabel\ ttLabel;}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{private}\ JLabel\ nameLabel;}
+\DoxyCodeLine{00066\ \ \ \ \ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{public}\ MyToolEditor()\ \{\ \textcolor{comment}{//\ default\ constructor}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00070\ \ \ \ \ \}}
+\DoxyCodeLine{00071\ \ \ \ \ }
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{public}\ MyToolEditor(String\ tool\_type,MyToolHandler\ par)\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ parentHandler=par;}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tool\_type==\textcolor{keyword}{null}\ ||\ tool\_type.length()==0)\ tool\_type=\textcolor{stringliteral}{"{}MISC:"{}};}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tool\_type.equals(\textcolor{stringliteral}{"{}MAIN:"{}}))\ this.setTitle(\textcolor{stringliteral}{"{}Create\ a\ Tool\ for\ the\ main\ toolbar"{}});}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tool\_type.equals(\textcolor{stringliteral}{"{}BASIC:"{}}))\ this.setTitle(\textcolor{stringliteral}{"{}Create\ a\ Tool\ for\ the\ 'basic'\ toolbar"{}});}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tool\_type.equals(\textcolor{stringliteral}{"{}MYTOOL:"{}}))\ this.setTitle(\textcolor{stringliteral}{"{}Create\ a\ Tool\ for\ a\ personal\ toolbar"{}});}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tool\_type.equals(\textcolor{stringliteral}{"{}SCRIPT:"{}}))\ this.setTitle(\textcolor{stringliteral}{"{}Create\ a\ Tool\ for\ the\ script"{}});}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tool\_type.equals(\textcolor{stringliteral}{"{}MOBIUS:"{}}))\ this.setTitle(\textcolor{stringliteral}{"{}Create\ a\ Mobius\ Transformation\ Tool"{}});}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ this.setTitle(\textcolor{stringliteral}{"{}Create\ a\ miscellaneous\ Tool"{}});}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ dropableCheckBox();\ \textcolor{comment}{//\ show\ dropable\ checkbox?}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Build\ GUI:\ topPanel\ is\ specialized\ by\ subclass,\ middle/bottom\ standard}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ initGUI();\ \textcolor{comment}{//\ this\ is\ from\ BuildToolFrame}}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!wantDropBox)\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ middlePanel.remove(dropBox);}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ dropBox.setSelected(dropMode);}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ this.setSize(637,\ topPanel.getHeight()+middlePanel.getHeight()+bottomPanel.getHeight());}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ combobox\ for\ icons}}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ iconCombo=\textcolor{keyword}{new}\ IconComboBox();}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ iconBoxPanel.add(iconCombo);}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ iconCombo.setToolTipText(\textcolor{stringliteral}{"{}Select\ an\ icon\ image"{}});}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ theCPIcons=\textcolor{keyword}{new}\ Vector<CPIcon>();}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ actions\ for\ bottomPanel}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ acceptButton.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ acceptButton.setActionCommand(\textcolor{stringliteral}{"{}accept\_tool"{}});}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ dismissButton.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ dismissButton.setActionCommand(\textcolor{stringliteral}{"{}dismiss\_tool"{}});}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ clearButton.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ clearButton.setActionCommand(\textcolor{stringliteral}{"{}clear\_tool"{}});}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00108\ \ \ \ \ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{comment}{//\ subclasses\ must\ supply\ these\ routines}}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ String\ substanceText();\ \textcolor{comment}{//\ error\ popup\ text\ for\ the\ user}}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ JPanel\ topPanel();\ \textcolor{comment}{//\ return\ null\ if\ there's\ no\ middle\ panel}}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ String\ formulateCmd();\ \textcolor{comment}{//\ put\ final\ CPack\ command\ in\ 'cmd\_text'}}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keywordtype}{void}\ dropableCheckBox();\ \textcolor{comment}{//\ set\ 'dropBox'\ and\ 'dropMode'}}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keywordtype}{void}\ initMoreFields(MyTool\ mytool);\ \textcolor{comment}{//\ initialize\ any\ subclass-\/specific\ datafields}}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keywordtype}{void}\ resetMoreFields();\ \textcolor{comment}{//\ clear\ any\ subclass-\/specific\ datafields}}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keywordtype}{boolean}\ setDropDefault();\ \textcolor{comment}{//\ determine\ default\ dropability}}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ resetIconList()\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ iconCombo.setIconList(theCPIcons);}
+\DoxyCodeLine{00125\ \ \ \ \ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ addTool(CPIcon\ cpIc)\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ Iterator<CPIcon>\ iter=theCPIcons.iterator();}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (iter.hasNext())\ \{}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ CPIcon\ nextI=(CPIcon)iter.next();}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextI.getIconName().equals(cpIc.getIconName()))}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Not\ already\ there?\ add\ new\ CPIcon\ with\ image\ of\ cpIc}}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ theCPIcons.addElement(\textcolor{keyword}{new}\ CPIcon(cpIc.getIconName()));}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ resetIconList();}
+\DoxyCodeLine{00143\ \ \ \ \ \}}
+\DoxyCodeLine{00144\ }
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ randomCPIcon()\ \{}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ sz=theCPIcons.size();}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keyword}{new}\ Random()).nextInt(sz);}
+\DoxyCodeLine{00151\ \ \ \ \ \}}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getCPIconIndx(CPIcon\ cpIcon)\ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ indx=(int)theCPIcons.indexOf((Object)cpIcon);}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx>=0)}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ indx;}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ getCPIconIndx(cpIcon.getIconName());}
+\DoxyCodeLine{00165\ \ \ \ \ \}}
+\DoxyCodeLine{00166\ \ \ \ \ }
+\DoxyCodeLine{00174\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getCPIconIndx(String\ iconname)\ \{}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<theCPIcons.size();i++)}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((theCPIcons.get(i).getIconName().equals(iconname)))\ }
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ i;}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00179\ \ \ \ \ \}}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keyword}{public}\ CPIcon\ getCPIconAt(\textcolor{keywordtype}{int}\ indx)\ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ((CPIcon)theCPIcons.get(indx));}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(ArrayIndexOutOfBoundsException\ ex)\ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}Icon\ index\ out\ of\ range."{}});}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (PackControl.defaultCPIcon);}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00193\ \ \ \ \ \}}
+\DoxyCodeLine{00194\ }
+\DoxyCodeLine{00199\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ isDropable()\ \{}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ dropMode;}
+\DoxyCodeLine{00201\ \ \ \ \ \}}
+\DoxyCodeLine{00202\ }
+\DoxyCodeLine{00207\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setEntries(MyTool\ mytool)\ \{}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ tooltipField.setText(mytool.getToolTip());}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ nameField.setText(mytool.getName());}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ dropMode=isDropable();}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ indx=getCPIconIndx(mytool.getCPIcon());}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx<0)\ iconCombo.iconBox.setSelectedIndex(randomCPIcon());}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ iconCombo.iconBox.setSelectedIndex(indx);}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ initMoreFields(mytool);\ \textcolor{comment}{//\ extras\ required\ in\ subclasses}}
+\DoxyCodeLine{00215\ \ \ \ \ \}}
+\DoxyCodeLine{00216\ }
+\DoxyCodeLine{00217\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ clearfields()\ \{}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ tooltipField.setText(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ nameField.setText(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ dropMode=isDropable();}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ iconCombo.iconBox.setSelectedIndex(randomCPIcon());}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ resetMoreFields();}
+\DoxyCodeLine{00223\ \ \ \ \ \}}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00229\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ actionPerformed(ActionEvent\ e)\{}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ String\ command\ =\ e.getActionCommand();}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}dismiss\_tool"{}}))\ \{}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ this.setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}clear\_tool"{}}))\ \{}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ clearfields();}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ this.repaint();}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}accept\_tool"{}}))\ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ String\ name=(String)nameField.getText();}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ String\ cmd=formulateCmd();}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ String\ tip=tooltipField.getText();}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tip!=\textcolor{keyword}{null}\ \&\&\ tip.length()==0)\ tip=\textcolor{keyword}{null};}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ String\ mnemonic=\textcolor{keyword}{null};}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c=\textcolor{charliteral}{'\ '};}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name!=\textcolor{keyword}{null}\ \&\&\ name.length()>0\ \&\&\ (((c=name.charAt(0))>=\textcolor{charliteral}{'A'}\ \&\&\ c<=\textcolor{charliteral}{'z'})\ ||}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (c>=\textcolor{charliteral}{'0'}\ \&\&\ c<=\textcolor{charliteral}{'9'})\ ||\ c==\textcolor{charliteral}{'*'}))\ mnemonic=String.valueOf(c);}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.hashedTools.remove(name);}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ createTool\ will\ put\ it\ back\ in}}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ CPIcon\ cpIcon=(CPIcon)iconCombo.iconBox.getSelectedItem();}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ parentHandler.createTool(cpIcon,cmd,name,mnemonic,tip,}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ isDropable(),(PopupBuilder)\textcolor{keyword}{null});}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ parentHandler.repopulateTools();}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ this.setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00255\ \ \ \ \ \}}
+\DoxyCodeLine{00256\ \ \ \ \ }
+\DoxyCodeLine{00257\ \ \ \ \ \textcolor{comment}{//\ taken\ from\ BuildToolFrame;\ just\ change\ topPanel\ to\ get\ it\ from\ subclass}}
+\DoxyCodeLine{00258\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ initGUI()\ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ BoxLayout\ thisLayout\ =\ \textcolor{keyword}{new}\ BoxLayout(getContentPane(),\ javax.swing.BoxLayout.Y\_AXIS);}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ getContentPane().setLayout(thisLayout);}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ setDefaultCloseOperation(WindowConstants.DISPOSE\_ON\_CLOSE);}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ topPanel\ =\ topPanel();}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getContentPane().add(topPanel);}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ middlePanel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getContentPane().add(middlePanel);}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ middlePanel.setLayout(\textcolor{keyword}{null});}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ middlePanel.setBorder(BorderFactory.createTitledBorder(\textcolor{stringliteral}{"{}Standard\ items\ (optional)"{}}));}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ middlePanel.setPreferredSize(\textcolor{keyword}{new}\ java.awt.Dimension(611,\ 102));}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nameLabel\ =\ \textcolor{keyword}{new}\ JLabel();}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nameLabel.setText(\textcolor{stringliteral}{"{}Name"{}});}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nameLabel.setHorizontalTextPosition(SwingConstants.LEADING);}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nameLabel.setHorizontalAlignment(SwingConstants.RIGHT);}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ttLabel\ =\ \textcolor{keyword}{new}\ JLabel();}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ttLabel.setText(\textcolor{stringliteral}{"{}Tool\ Tip"{}});}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ttLabel.setHorizontalAlignment(SwingConstants.RIGHT);}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ iconBoxPanel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ browseLabel\ =\ \textcolor{keyword}{new}\ JLabel();}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ middlePanel.add(browseLabel);}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ middlePanel.add(iconBoxPanel);}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ iconBoxPanel.setBounds(535,\ 14,\ 59,\ 39);}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ browseLabel.setText(\textcolor{stringliteral}{"{}Browse\ Icons"{}});}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ browseLabel.setHorizontalAlignment(SwingConstants.RIGHT);}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ browseLabel.setBounds(400,\ 21,\ 128,\ 15);}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dropBox\ =\ \textcolor{keyword}{new}\ JCheckBox();}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dropBox.setText(\textcolor{stringliteral}{"{}Dropable?"{}});}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nameField\ =\ \textcolor{keyword}{new}\ JTextField();}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ middlePanel.add(nameField);}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ middlePanel.add(dropBox);}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dropBox.setBounds(287,\ 19,\ 113,\ 20);}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nameField.setBounds(107,\ 20,\ 148,\ 20);}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tooltipField\ =\ \textcolor{keyword}{new}\ JTextField();}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ middlePanel.add(tooltipField);}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ middlePanel.add(nameLabel);}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ middlePanel.add(ttLabel);}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ttLabel.setBounds(12,\ 49,\ 87,\ 16);}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nameLabel.setBounds(12,\ 22,\ 83,\ 16);}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tooltipField.setBounds(107,\ 47,\ 422,\ 21);}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bottomPanel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getContentPane().add(bottomPanel);}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bottomPanel.setPreferredSize(\textcolor{keyword}{new}\ java.awt.Dimension(619,\ 40));}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ acceptButton\ =\ \textcolor{keyword}{new}\ JButton();}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bottomPanel.add(acceptButton);}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ acceptButton.setText(\textcolor{stringliteral}{"{}Accept"{}});}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ acceptButton.setPreferredSize(\textcolor{keyword}{new}\ java.awt.Dimension(96,\ 21));}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dismissButton\ =\ \textcolor{keyword}{new}\ JButton();}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bottomPanel.add(dismissButton);}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dismissButton.setText(\textcolor{stringliteral}{"{}Dismiss"{}});}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dismissButton.setPreferredSize(\textcolor{keyword}{new}\ java.awt.Dimension(91,\ 21));}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ clearButton\ =\ \textcolor{keyword}{new}\ JButton();}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bottomPanel.add(clearButton);}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ clearButton.setText(\textcolor{stringliteral}{"{}Clear"{}});}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ clearButton.setPreferredSize(\textcolor{keyword}{new}\ java.awt.Dimension(88,\ 21));}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ pack();}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ this.setSize(621,\ 190);}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ e)\ \{}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ e.printStackTrace();}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00345\ \ \ \ \ \}}
+\DoxyCodeLine{00346\ }
+\DoxyCodeLine{00347\ \}}
+
+\end{DoxyCode}

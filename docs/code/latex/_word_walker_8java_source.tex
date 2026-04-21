@@ -1,0 +1,99 @@
+\doxysection{Word\+Walker.\+java}
+\label{_word_walker_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/WordWalker.java@{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/WordWalker.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }ftnTheory;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ dcel.PackDCEL;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ listManip.FaceLink;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ listManip.HalfLink;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ util.ColorUtil;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ util.DispFlags;}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }WordWalker\ \textcolor{keyword}{extends}\ PackExtender\ \{}
+\DoxyCodeLine{00037\ \ \ \ \ }
+\DoxyCodeLine{00038\ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{public}\ WordWalker(PackData\ p)\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ extenderPD=p;}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ extensionType=\textcolor{stringliteral}{"{}WORD\_WALKER"{}};}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ extensionAbbrev=\textcolor{stringliteral}{"{}WW"{}};}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ toolTip=\textcolor{stringliteral}{"{}'WordWalker':\ manipulate\ walks\ on\ trivalent\ triangulations"{}};\ }
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ registerXType();}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ extenderPD.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00048\ \ \ \ \ \}}
+\DoxyCodeLine{00049\ \ \ \ \ }
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cmdParser(String\ cmd,Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ Vector<String>\ items=\textcolor{keyword}{null};}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ========\ mtrek\ =========}}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ draw\ facelist,\ imprinting\ first\ and\ last}}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}mtrek"{}}))\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ useSchw=\textcolor{keyword}{false};}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ may\ want\ option\ to\ use\ schwarzians}}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)flagSegs.get(0);}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FaceLink\ facelink=\textcolor{keyword}{new}\ FaceLink(extenderPD,items);}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (facelink!=\textcolor{keyword}{null}\ \&\&\ facelink.size()>0)\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ firstface=(int)facelink.remove(0);}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ lastface=(int)facelink.get(facelink.size()-\/1);}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ imprintFace(firstface);}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HalfLink\ hlink=\textcolor{keyword}{null};}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackDCEL\ pdcel=extenderPD.packDCEL;}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (facelink.size()>1\ \&\&\ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (hlink=facelink.getHalfLink(pdcel))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Integer\ []codes=\textcolor{keyword}{new}\ Integer[3];}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ codes[0]=Integer.valueOf(1);}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ codes[1]=\textcolor{keyword}{null};}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ codes[2]=\textcolor{keyword}{null};}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ DispFlags\ dflags=\textcolor{keyword}{new}\ DispFlags(\textcolor{keyword}{null});}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcel.layoutFactory(\textcolor{keyword}{null},hlink,dflags,\textcolor{keyword}{null},}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{true},\textcolor{keyword}{false},useSchw,-\/1.0);}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ imprintFace(lastface);}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.activeFrame.reDisplay();}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ super.cmdParser(cmd,\ flagSegs);}
+\DoxyCodeLine{00091\ \ \ \ \ \}}
+\DoxyCodeLine{00092\ \ \ \ \ }
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ imprintFace(\textcolor{keywordtype}{int}\ f)\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ Complex[]\ c=\textcolor{keyword}{new}\ Complex[3];}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ c=extenderPD.packDCEL.getFaceCorners(extenderPD.packDCEL.faces[f]);}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ Complex\ cc=extenderPD.getFaceCenter(f);}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ DispFlags\ dflags=\textcolor{keyword}{new}\ DispFlags(\textcolor{stringliteral}{"{}f"{}});}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ dflags.setColor(ColorUtil.coLor(232));}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ extenderPD.cpDrawing.drawFace(c[0],c[1],cc,\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{keyword}{null},dflags);}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ dflags.setColor(ColorUtil.coLor(218));}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ extenderPD.cpDrawing.drawFace(c[1],c[2],cc,\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{keyword}{null},dflags);}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ dflags.setColor(ColorUtil.coLor(1));}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ extenderPD.cpDrawing.drawFace(c[2],c[0],cc,\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{keyword}{null},dflags);}
+\DoxyCodeLine{00109\ \ \ \ \ \}}
+\DoxyCodeLine{00110\ \ \ \ \ }
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ helpInfo()\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ helpMsg(\textcolor{stringliteral}{"{}Commands\ for\ PackExtender\ "{}}+extensionAbbrev+\textcolor{stringliteral}{"{}\ (Word\ Walking)"{}});}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ helpMsg(\textcolor{stringliteral}{"{}To\ manipulate\ "{}}+}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}the\ layout\ of\ faces\ in\ a\ trivalent\ triangulation\ as\ "{}}+}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}prescribed\ in\ 'words'\ giving\ successive\ sides\ to\ "{}}+}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}extend\ across."{}});}
+\DoxyCodeLine{00117\ \ \ \ \ \}}
+\DoxyCodeLine{00118\ \ \ \ \ }
+\DoxyCodeLine{00119\ \}}
+
+\end{DoxyCode}

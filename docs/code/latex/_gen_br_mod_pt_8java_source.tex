@@ -1,0 +1,101 @@
+\doxysection{Gen\+Br\+Mod\+Pt.\+java}
+\label{_gen_br_mod_pt_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/branching/GenBrModPt.java@{C:/Users/ashej/myGitRepos/CirclePack/src/branching/GenBrModPt.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }branching;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ combinatorics.komplex.Vertex;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ dcel.PackDCEL;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ ftnTheory.GenModBranching;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ listManip.HalfLink;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ math.Mobius;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00063\ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keyword}{class\ }GenBrModPt\ \{}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ RIFF\_TOLER=.00000001;}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ pi2=Math.PI*2.0;}
+\DoxyCodeLine{00067\ \ \ \ \ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{//\ branch\ type}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ TRADITIONAL=1;}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ FRACTURED=2;}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ QUADFACE=3;}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ SINGULAR=4;\ \textcolor{comment}{//\ singular\ face,\ using\ chaperones}}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ SHIFTED=5;\ \ \textcolor{comment}{//\ shifted,\ using\ ratio/phase\ parameters}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ CHAPERONE=6;\ \textcolor{comment}{//\ shifted,\ using\ chaperone\ circles}}
+\DoxyCodeLine{00075\ \ \ \ \ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keyword}{public}\ GenModBranching\ gmb;\ \ \textcolor{comment}{//\ parent\ extender}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ myType;\ \ \ \ \textcolor{comment}{//\ type\ (see\ above)}}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{public}\ HalfEdge\ myEdge;\ \ \textcolor{comment}{//\ each\ type\ can\ be\ associated\ with\ a\ halfedge}}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ branchID;\ \ \textcolor{comment}{//\ id\ number,\ starting\ from\ 0\ as\ created\ by\ parent}}
+\DoxyCodeLine{00081\ \textcolor{comment}{//\ \ public\ int\ myIndex;\ \ \ //\ may\ be\ face\ index\ or\ vert\ index,\ depending\ on\ type}}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keywordtype}{double}\ myAim;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ target\ angle\ sum;\ e.g.\ 4*pi.}}
+\DoxyCodeLine{00083\ \ \ \ \ PackData\ p;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ who's\ your\ daddy?\ (held\ by\ GenModBranching\ extender)}}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keyword}{public}\ HalfLink\ layoutAddons;\ \ \textcolor{comment}{//\ adjoined\ to\ parent\ layout\ for\ this\ branch}}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{public}\ HalfLink\ myHoloBorder;\ \ \textcolor{comment}{//\ for\ local\ holonomy\ }}
+\DoxyCodeLine{00086\ \ \ \ \ Mobius\ myHolonomy;\ \ \ \ \textcolor{comment}{//\ Can\ update\ this\ after\ each\ layout}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{comment}{//\ TODO:\ converting\ to\ dcel\ structure,\ build\ temporary\ parallel\ data\ }}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keyword}{public}\ HalfLink\ eventHorizon;\ \ \textcolor{comment}{//\ surrounding\ the\ branch\ region}}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keyword}{public}\ ArrayList<Vertex>\ myExclusions;\ \textcolor{comment}{//\ vertices\ on/inside\ 'eventHorizon'}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ success;\ \textcolor{comment}{//\ false\ if\ something\ went\ wrong\ during\ construction}}
+\DoxyCodeLine{00093\ \ \ \ \ }
+\DoxyCodeLine{00094\ \ \ \ \ PackDCEL\ pdc;\ \textcolor{comment}{//\ convenience}}
+\DoxyCodeLine{00095\ \ \ \ \ }
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keyword}{public}\ GenBrModPt(GenModBranching\ gmb,\textcolor{keywordtype}{int}\ bID,\textcolor{keywordtype}{double}\ aim)\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ p=gmb.extenderPD;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ pdc=p.packDCEL;\ }
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ branchID=bID;}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ myAim=aim;}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ myHolonomy=\textcolor{keyword}{null};}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ layoutAddons=\textcolor{keyword}{null};}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ myHoloBorder=\textcolor{keyword}{null};}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ success=\textcolor{keyword}{false};\ \ }
+\DoxyCodeLine{00106\ \ \ \ \ \}}
+\DoxyCodeLine{00107\ \ \ \ \ }
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{comment}{//\ **************\ abstract\ methods\ ******************}}
+\DoxyCodeLine{00109\ \ \ \ \ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{comment}{//\ create\ the\ local\ packing\ based\ on\ type\ of\ branch\ point}}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keywordtype}{int}\ modifyPackData();}
+\DoxyCodeLine{00112\ \ \ \ \ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{comment}{//\ prepare\ to\ delete\ by\ resetting\ 'packData'}}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ dismantle();}
+\DoxyCodeLine{00115\ \ \ \ \ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{//\ report\ existence\ and\ main\ data}}
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keyword}{public}\ String\ reportExistence();}
+\DoxyCodeLine{00118\ \ \ \ \ }
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{comment}{//\ report\ status:\ id,\ vert/face,\ holonomy\ error,\ etc.}}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keyword}{public}\ String\ reportStatus();}
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{comment}{//\ report\ parameters\ in\ String}}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keyword}{public}\ String\ getParameters();}
+\DoxyCodeLine{00124\ \ \ \ \ }
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{comment}{//\ set\ parameters\ (list\ depends\ on\ branch\ type)}}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setParameters(Vector<Vector<String>>\ flagSegs);}
+\DoxyCodeLine{00127\ \ \ \ \ }
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{comment}{//\ renew\ parameters\ and\ colors}}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keyword}{abstract}\ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ renew();}
+\DoxyCodeLine{00130\ \ \ \ \ }
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{comment}{//\ ************************************************}}
+\DoxyCodeLine{00132\ }
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keyword}{public}\ Mobius\ getLocalHolonomy()\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myHoloBorder==\textcolor{keyword}{null}\ ||\ myHoloBorder.size()==0)}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ PackData.holonomyMobius(p,myHoloBorder);}
+\DoxyCodeLine{00143\ \ \ \ \ \}}
+\DoxyCodeLine{00144\ \ \ \ \ }
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{comment}{//\ each\ type\ should\ process\ its\ local\ display\ options\ }}
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ displayMe(Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00148\ \ \ \ \ \}}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \}}
+
+\end{DoxyCode}

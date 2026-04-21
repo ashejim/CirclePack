@@ -1,0 +1,170 @@
+\doxysection{Side\+Data.\+java}
+\label{_side_data_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/dcel/SideData.java@{C:/Users/ashej/myGitRepos/CirclePack/src/dcel/SideData.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }dcel;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ combinatorics.komplex.RedEdge;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ listManip.HalfLink;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ math.Mobius;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ util.ColorUtil;}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }SideData\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ }
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ hes;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ geometry\ from\ parent\ packing}}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ spIndex;\ \ \ \ \ \ \ \textcolor{comment}{//\ index\ in\ 'PairLink'\ linked\ list\ }}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ (indexed\ from\ 1)}}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ mateIndex;\ \ \ \ \ \textcolor{comment}{//\ 'spIndex'\ of\ paired\ side\ (-\/1\ if\ no\ mate)}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{public}\ RedEdge\ startEdge;\ \textcolor{comment}{//\ the\ first\ 'RedEdge'\ of\ this\ "{}side"{}}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{public}\ RedEdge\ endEdge;\ \ \ \textcolor{comment}{//\ the\ final\ 'RedEdge'\ of\ this\ "{}side"{}}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{public}\ Mobius\ mob;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ Mobius\ transform\ when\ side\ is\ paired:\ map}}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ of\ paired\ edge\ TO\ this\ edge\ }}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ (TODO:\ for\ spherical)\ }}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ mobErr;\ \ \ \ \ \textcolor{comment}{//\ error\ in\ the\ Mobius\ transform\ (mainly\ for\ hyp}}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ case;\ mob\ is\ always\ an\ automorphism,\ but\ }}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ roundoff\ can\ prevent\ it\ from\ providing\ }}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ exact\ match).}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{public}\ Color\ color;\ \ \ \ \ \ \ \textcolor{comment}{//\ paired\ segments\ are\ color-\/coded\ for\ }}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ visual\ matching}}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{public}\ String\ label;\ \ \ \ \ \ \textcolor{comment}{//\ 'a',\ 'b',\ etc.\ for\ paired\ sides,\ ('A',\ 'B',\ etc)\ for}}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ other\ side.\ '1',\ '2',\ etc.\ for\ unpaired\ sides.}}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ Default\ is\ null.\ Note:\ due\ to\ Windows\ treatment}}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ of\ case,\ label\ 'A'\ is\ stored\ as\ 'aa',\ etc.}}
+\DoxyCodeLine{00055\ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{public}\ SideData()\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ startEdge=\textcolor{keyword}{null};}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ endEdge=\textcolor{keyword}{null};}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ mob=\textcolor{keyword}{new}\ Mobius();}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ mobErr=0.0;}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ spIndex=-\/1;}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ mateIndex=-\/1;}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ label=\textcolor{keyword}{null};}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ color=ColorUtil.getFGColor();}
+\DoxyCodeLine{00066\ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \ \ }
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ sideCount()\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=1;}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ RedEdge\ rtrace=startEdge;}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ rtrace=rtrace.nextRed;}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (rtrace!=endEdge);}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00080\ \ \ \ \ \}}
+\DoxyCodeLine{00081\ \ \ \ \ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ set\_sp\_Mobius()\ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mateIndex<0)\ }
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;\ \textcolor{comment}{//\ this\ is\ a\ "{}border"{}\ side}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ Complex\ A=startEdge.getCenter();}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ Complex\ a=startEdge.twinRed.nextRed.getCenter();}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ Complex\ B=endEdge.nextRed.getCenter();}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ Complex\ b=endEdge.twinRed.getCenter();}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ mob=\textcolor{keyword}{new}\ Mobius();\ \textcolor{comment}{//\ start\ with\ identity}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ mobErr=0.0;}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Now\ have\ everything\ for\ mobius\ transformation.\ (The\ mobius}}
+\DoxyCodeLine{00103\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ for\ 'pairedEdge'\ is\ set\ separately\ (should\ be\ inverse\ to\ this)).\ */}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)\ \{\ \textcolor{comment}{//\ hyp\ }}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (a.abs()>=Mobius.MOD1\ \&\&\ b.abs()>=Mobius.MOD1\ }
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ A.abs()>=Mobius.MOD1\ \&\&\ B.abs()>=Mobius.MOD1)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ We\ have\ another\ real\ degree\ of\ freedom,\ so\ we\ go\ to\ a\ face}}
+\DoxyCodeLine{00108\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ midway\ along\ this\ paired\ side\ and\ match\ its\ centers.*/}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RedEdge\ etrace=startEdge;}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (etrace!=endEdge)\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ etrace=etrace.nextRed;}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (count<2)\ \ \textcolor{comment}{//\ side\ is\ too\ short}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ move\ to\ center\ edge-\/pairing\ and\ use\ ends}}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ etrace=startEdge;}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<=(int)(count/2);i++)}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ etrace=etrace.nextRed;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ C=etrace.getCenter();}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ c=etrace.twinRed.nextRed.getCenter();}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (c.abs()>=Mobius.MOD1\ ||\ C.abs()>=Mobius.MOD1)}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;\ \textcolor{comment}{//\ didn't\ get\ matching\ centers\ or\ one/both\ these}}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ centers\ were\ too\ close\ to\ unit\ circle.\ }}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mob=Mobius.trans\_abAB(a,b,A,B,c,C);}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mobErr=mob.error;}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (a.abs()>=Mobius.MOD1\ ||\ b.abs()>=Mobius.MOD1\ }
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ A.abs()>=Mobius.MOD1\ ||\ B.abs()>=Mobius.MOD1)}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;\ \textcolor{comment}{/*\ fixup:\ don't\ have\ routine\ to\ handle\ some\ of\ points\ }}
+\DoxyCodeLine{00136\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ "{}on"{}\ unit\ circle\ and\ others\ off.\ Also,}}
+\DoxyCodeLine{00137\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ may\ have\ too\ much\ error\ for\ either\ trans\_abAB}}
+\DoxyCodeLine{00138\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *\ or\ auto\_abAB.\ */}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ mob=Mobius.auto\_abAB(a,b,A,B);}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ mobErr=mob.error;}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hes==0)\ \{\ \textcolor{comment}{//\ eucl\ }}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ mob=Mobius.mob\_abAB(a,b,A,B);}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ mobErr=mob.error;}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ sph\ not\ yet\ implemented,\ but\ may\ be\ set\ elsewhere,}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ e.g.,\ under\ projection\ to\ the\ sphere.}}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return}\ 0;\ }
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00150\ \ \ \ \ \}}
+\DoxyCodeLine{00151\ \ \ \ \ }
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ SideData\ which\_side(PairLink\ pairLink,RedEdge\ redge)\ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pairLink==\textcolor{keyword}{null}\ ||\ pairLink.size()==0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ Iterator<SideData>\ pl=pairLink.iterator();}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ SideData\ ep=\textcolor{keyword}{null};}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (pl.hasNext())\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ ep=(SideData)pl.next();}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ RedEdge\ rdl=ep.startEdge;}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rdl==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (redge==(RedEdge)rdl)\ \textcolor{keywordflow}{return}\ ep;}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rdl=rdl.nextRed;}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (rdl!=ep.endEdge);}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ \textcolor{comment}{//\ didn't\ find\ it}}
+\DoxyCodeLine{00174\ \ \ \ \ \}}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ sideFirstVert()\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ startEdge.myEdge.origin.vertIndx;}
+\DoxyCodeLine{00182\ \ \ \ \ \}}
+\DoxyCodeLine{00183\ \ \ \ \ }
+\DoxyCodeLine{00189\ \ \ \ \ \textcolor{keyword}{public}\ HalfLink\ sideHalfLink()\ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (startEdge==\textcolor{keyword}{null}\ ||\ endEdge==\textcolor{keyword}{null})}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ HalfLink\ hlink=\textcolor{keyword}{new}\ HalfLink();}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ RedEdge\ rtrace=startEdge;}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ hlink.add(rtrace.myEdge);}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ rtrace=rtrace.nextRed;}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}(rtrace!=endEdge);}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ hlink.add(rtrace.myEdge);}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ hlink;}
+\DoxyCodeLine{00200\ \ \ \ \ \}}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00206\ \ \ \ \ \textcolor{keyword}{public}\ SideData\ clone()\ \{}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ SideData\ sd=\textcolor{keyword}{new}\ SideData();}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ sd.hes=hes;}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ sd.startEdge=startEdge;}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ sd.endEdge=endEdge;}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ sd.label=label;}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ sd.mateIndex=mateIndex;}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ sd.spIndex=spIndex;}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ sd.mob=mob.cloneMe();}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ sd.mobErr=mobErr;}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ sd.color=ColorUtil.cloneMe(color);}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sd;}
+\DoxyCodeLine{00218\ \ \ \ \ \}}
+\DoxyCodeLine{00219\ \ \ \ \ }
+\DoxyCodeLine{00220\ \}}
+
+\end{DoxyCode}

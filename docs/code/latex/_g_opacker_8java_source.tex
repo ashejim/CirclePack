@@ -1,0 +1,1151 @@
+\doxysection{GOpacker.\+java}
+\label{_g_opacker_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/rePack/GOpacker.java@{C:/Users/ashej/myGitRepos/CirclePack/src/rePack/GOpacker.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }rePack;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.Arrays;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ JNI.SolverData;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ exceptions.CombException;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ exceptions.MiscException;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ geometry.CircleSimple;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ geometry.EuclMath;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ geometry.HyperbolicMath;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ geometry.NSpole;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ geometry.SphericalMath;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ packing.PackLite;}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00077\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }GOpacker\ \textcolor{keyword}{extends}\ RePacker\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ }
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ mode;\ \ }
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ NOT\_YET\_SET=0;\ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ MAX\_PACK=1;\ \textcolor{comment}{//\ 1:\ default,\ max\ pack\ for\ unit\ disc.\ (for\ sphere,\ use\ POLY\_PACK)}}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ POLY\_PACK=2;\ \textcolor{comment}{//\ 2:\ polygon,\ side\ count\ =\ size\ of\ 'corners'\ (once\ it's\ set\ up)}}
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ ORTHO\_BDRY=3;\ \textcolor{comment}{//\ 3:\ bdry\ circles\ orthogonal\ to\ unit\ circle.}}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ FIXED\_CORNERS=4;\ \textcolor{comment}{//\ fix\ corner\ locations,\ let\ rest\ of\ bdry\ float}}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ FIXED\_BDRY=5;\ \ \textcolor{comment}{//\ boundary\ radii\ and\ centers\ are\ not\ changed}}
+\DoxyCodeLine{00086\ \ \ \ \ }
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ currentCrit;\ \ \textcolor{comment}{//\ keep\ track\ of\ last\ value\ of\ 'crit'\ requested\ }}
+\DoxyCodeLine{00088\ \ \ \ \ }
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{comment}{//\ persistent\ objects}}
+\DoxyCodeLine{00090\ \ \ \ \ PackLite\ myPLite;\ \ \ \ \ \ \ \textcolor{comment}{//\ create\ on\ startup,\ holds\ radii/centers}}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keywordtype}{int}\ origNodeCount;\ \ \ \ \ \ \textcolor{comment}{//\ original\ parent\ nodeCount\ for\ weak\ check\ of\ consistency\ }}
+\DoxyCodeLine{00092\ \ \ \ \ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{comment}{//\ these\ are\ null\ unless\ the\ goal\ is\ a\ polygonal\ packing}}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keywordtype}{int}\ []parentCorners;\ \textcolor{comment}{//\ corner\ vertices\ in\ original\ indices}}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keywordtype}{int}\ []corners;\ \ \textcolor{comment}{//\ null\ until\ 'parentCorners'\ are\ translated\ to\ local\ indices.}}
+\DoxyCodeLine{00096\ \ \ \ \ ArrayList<NodeLink>\ sides;\ \ \textcolor{comment}{//\ list\ of\ bdry\ verts\ along\ sides,\ include\ both\ ends}}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keywordtype}{double}\ []cornerAngles;\ \textcolor{comment}{//\ for\ POLY\_PACK\ mode\ only,\ default\ to\ pi-\/2pi/n\ =\ pi(1-\/2/n)}}
+\DoxyCodeLine{00098\ \ \ \ \ Complex\ []cornerLocations;\ \textcolor{comment}{//\ for\ FIXED\_CORNER\ mode\ only}}
+\DoxyCodeLine{00099\ \ \ \ \ }
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{comment}{//\ sparse\ matrix\ structural\ stuff\ for\ linear\ system}}
+\DoxyCodeLine{00101\ \ \ \ \ SolverData\ sData;}
+\DoxyCodeLine{00102\ \ \ \ \ }
+\DoxyCodeLine{00103\ \ \ \ \ VWJ\ []vwjA;}
+\DoxyCodeLine{00104\ \ \ \ \ VWJ\ []vwjRHS;}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{comment}{//\ for\ filling\ righthand\ side\ of\ linear\ system}}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keywordtype}{int}\ rhsIJcount;}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordtype}{int}\ []rhsV;}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keywordtype}{int}\ []rhsWindx;}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ }
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keywordtype}{double}\ [][]sectorTans;\ }
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{comment}{/*\ for\ interior\ v,\ sectorTans[v]\ are\ based\ on\ radii;}}
+\DoxyCodeLine{00113\ \textcolor{comment}{\ \ \ \ \ *\ is\ array\ of\ tan(angle/2)\ for\ faces\ about\ v;\ entry\ j\ is\ }}
+\DoxyCodeLine{00114\ \textcolor{comment}{\ \ \ \ \ *\ for\ face\ \{v,v\_j,v\_\{j+1\}\}.\ */}}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keywordtype}{double}\ []conductances;}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{comment}{/*\ total\ node\ conductances\ for\ interior\ v;\ computed\ using}}
+\DoxyCodeLine{00117\ \textcolor{comment}{\ \ \ \ \ *\ sectorTans\ and\ radii.\ \ */}}
+\DoxyCodeLine{00118\ \ \ \ \ }
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keyword}{public}\ Vector<Double>\ myPLiteError;\ \textcolor{comment}{//\ successive\ error\ after\ set\ cycles\ are\ done}}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ localError;\ \textcolor{comment}{//\ error\ in\ localradii/centers\ during\ riffles}}
+\DoxyCodeLine{00121\ \ \ \ \ }
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keywordtype}{boolean}\ debug=\textcolor{keyword}{false};}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ \textcolor{keywordtype}{int}\ passes;}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordtype}{double}\ errtol;}
+\DoxyCodeLine{00126\ \ \ \ \ }
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{comment}{//\ constructor(s)}}
+\DoxyCodeLine{00128\ \ \ \ \ \textcolor{keyword}{public}\ GOpacker(PackData\ pd)\ \{\ \textcolor{comment}{//\ default\ to\ 10\ passes}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(pd,10);}
+\DoxyCodeLine{00130\ \ \ \ \ \}}
+\DoxyCodeLine{00131\ \ \ \ \ }
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keyword}{public}\ GOpacker(PackData\ pd,\textcolor{keywordtype}{int}\ pass\_limit)\ \{\ \textcolor{comment}{//\ default:\ max\ pack\ }}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ super(pd,pass\_limit);}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ passes=pass\_limit;}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ errtol=.001;}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ realLoad(\textcolor{keyword}{null});}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ setMode(0);\ \ \textcolor{comment}{//\ NOT\_YET\_SET;}}
+\DoxyCodeLine{00138\ \ \ \ \ \}}
+\DoxyCodeLine{00139\ \ \ \ \ }
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keyword}{public}\ GOpacker(PackData\ pd,NodeLink\ vint)\ \{\ \textcolor{comment}{//\ specify\ interior}}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ super(pd,30);}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ setMode(0);\ \textcolor{comment}{//\ NOT\_YET\_SET;}}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ realLoad(vint);}
+\DoxyCodeLine{00144\ \ \ \ \ \}}
+\DoxyCodeLine{00145\ \ \ \ \ }
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ load()\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ \ \ \ \ }
+\DoxyCodeLine{00171\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ realLoad(NodeLink\ v\_int)\ \{}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ status=RePacker.FAILURE;}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ setCorners(\textcolor{keyword}{null},\textcolor{keyword}{null});}
+\DoxyCodeLine{00175\ \ \ \ \ }
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ persistent\ 'PackLite',\ 'SolverData',\ and\ 'rhs'\ stuff}}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ PackLite\ myPLite=\textcolor{keyword}{new}\ PackLite(p);}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ origNodeCount=p.nodeCount;}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ what\ to\ do\ about\ aims?\ Let's\ reset\ to\ default,\ then\ change\ as}}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ appropriate\ to\ mode.}}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ myPLite.aims=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.vertCount+1];}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPLite.intVertCount;v++)\ }
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.aims[v]=2.0*Math.PI;}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=myPLite.intVertCount+1;v<=myPLite.vertCount;v++)}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.aims[v]=-\/.1;}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ initiate\ SolverData}}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ sData=initSolverData(myPLite);}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ready\ to\ go}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ status=RePacker.LOADED;}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ myPLite.vertCount;}
+\DoxyCodeLine{00194\ \ \ \ \ \}}
+\DoxyCodeLine{00195\ \ \ \ \ }
+\DoxyCodeLine{00200\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setMode(\textcolor{keywordtype}{int}\ md)\ \{}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(md)\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 0:\ \textcolor{comment}{//\ not\ yet\ set}}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ mode=NOT\_YET\_SET;}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 2:\ \textcolor{comment}{//\ polygonal\ region}}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ mode=POLY\_PACK;}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 3:\ \textcolor{comment}{//\ bdry\ centers\ on\ unit\ circle}}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ mode=ORTHO\_BDRY;}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 4:\ \textcolor{comment}{//\ fixed\ corner}}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ mode=FIXED\_CORNERS;}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 5:\ \textcolor{comment}{//\ fixed\ bdry}}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ mode=FIXED\_BDRY;}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ mode=MAX\_PACK;}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00232\ \ \ \ \ \}}
+\DoxyCodeLine{00233\ \ \ \ \ }
+\DoxyCodeLine{00247\ \ \ \ \ \textcolor{keyword}{public}\ SolverData\ initSolverData(PackLite\ pL)\ \{}
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ijCount=0;}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=pL.intVertCount;v++)}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ ijCount\ +=pL.vNum[v]+1;\ \textcolor{comment}{//\ larger\ than\ needed,\ but\ will\ be\ adjusted\ later}}
+\DoxyCodeLine{00252\ }
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ Ap\ and\ Ai\ data\ for\ compressed\ column\ format}}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Ap\ has\ 1+number\ of\ column\ (=intVertCount+1)\ entries,\ with\ Ap[0]=0.}}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ SolverData\ sdata=\textcolor{keyword}{new}\ SolverData();}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ VWJ\ []tmp\_vwj=\textcolor{keyword}{new}\ VWJ[ijCount];}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ VWJ\ []tmp\_rhs=\textcolor{keyword}{new}\ VWJ[ijCount];}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ sdata.nz\_entries=0;}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ rhsIJcount=0;\ \textcolor{comment}{//\ separate\ pointer\ to\ non-\/zero\ entries}}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first,\ find\ and\ list\ (possibly)\ non-\/zero\ entry\ spots\ }}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ in\ the\ square\ matrix,\ interior-\/to-\/interior}}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=pL.intVertCount;v++)\ \{}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ tmp\_vwj[sdata.nz\_entries++]=\textcolor{keyword}{new}\ VWJ(v,v,-\/1);}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []flower=pL.flowers[v];}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=pL.vNum[v];}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flower[0]!=flower[num])\ \textcolor{comment}{//\ this\ shouldn't\ happen}}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ num++;}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=flower[j];}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (w<=pL.intVertCount)\ \textcolor{comment}{//\ w\ interior}}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp\_vwj[sdata.nz\_entries++]=\textcolor{keyword}{new}\ VWJ(v,w,j);}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp\_rhs[rhsIJcount++]=\textcolor{keyword}{new}\ VWJ(v,w,j);}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00278\ }
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ non-\/zero\ spots\ are\ in\ vwjA;\ sort\ these\ and\ store\ in\ 'Ai',}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ put\ counts\ in\ 'Ap'}}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ vwjA=\textcolor{keyword}{new}\ VWJ[sdata.nz\_entries];}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<sdata.nz\_entries;i++)}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ vwjA[i]=tmp\_vwj[i];}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ Arrays.sort(vwjA);}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ sdata.Ai=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[sdata.nz\_entries];}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ sdata.Ap=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[pL.intVertCount+1];}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<sdata.nz\_entries;i++)\ \{}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ sdata.Ap[vwjA[i].w]++;}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ sdata.Ai[i]=vwjA[i].v-\/1;\ }
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ w=2;w<=pL.intVertCount;w++)\ \textcolor{comment}{//\ Ap\ entries\ are\ cummulative}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ sdata.Ap[w]\ +=\ sdata.Ap[w-\/1];}
+\DoxyCodeLine{00293\ }
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ vwjRHS=\textcolor{keyword}{new}\ VWJ[rhsIJcount];}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<rhsIJcount;j++)}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ vwjRHS[j]=tmp\_rhs[j];}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ sdata.intNum=pL.intVertCount;}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ sdata.bdryNum=pL.bdryCount;}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sdata;}
+\DoxyCodeLine{00302\ \ \ \ \ \}}
+\DoxyCodeLine{00303\ \ \ \ \ }
+\DoxyCodeLine{00308\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ startRiffle()\ \{}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ myPLite.radii=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.vertCount+1];}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=myPLite.vertCount;k++)\ \{}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[k]=1.0;}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ totalPasses=localPasses=0;}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ status=RePacker.RIFFLE;\ \textcolor{comment}{//\ ready\ to\ continue\ riffling}}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ myPLiteError=\textcolor{keyword}{new}\ Vector<Double>(1);}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00317\ \ \ \ \ \}}
+\DoxyCodeLine{00318\ }
+\DoxyCodeLine{00327\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ reStartRiffle(\textcolor{keywordtype}{int}\ passNum)\ \{}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes!=0)\ \{}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}'reStartRiffle'\ applies\ only\ to\ eucl\ packings"{}});}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=myPLite.vertCount;k++)\ }
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[k]=p.getRadius(myPLite.v2parent[k]);}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (passNum<0)}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ passNum=passLimit;}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ passLimit=passNum;}
+\DoxyCodeLine{00338\ }
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ localPasses=0;\ \textcolor{comment}{//\ leave\ 'totalPasses'\ unchanged}}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ status=RePacker.RIFFLE;\ \textcolor{comment}{//\ ready\ to\ continue\ riffling}}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ myPLiteError=\textcolor{keyword}{new}\ Vector<Double>(1);}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ continueRiffle(passNum);}
+\DoxyCodeLine{00343\ \ \ \ \ \}}
+\DoxyCodeLine{00344\ }
+\DoxyCodeLine{00350\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ continueRiffle(\textcolor{keywordtype}{int}\ passNum)\ \{}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (passNum<0)}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ passNum=passLimit;}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ passLimit=passNum;}
+\DoxyCodeLine{00356\ }
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ time\ through?}}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode==NOT\_YET\_SET)\ \{}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setMode(GOpacker.MAX\_PACK);\ \textcolor{comment}{//\ default}}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ but\ is\ this\ a\ sphere\ with\ punctured\ face?}}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (setSphBdry()>0)\ \textcolor{comment}{//\ these\ sets\ bdry\ rad/centers\ (if\ there\ are\ 3\ bdry\ verts)}}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setMode(GOpacker.FIXED\_BDRY);}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ************************\ main\ loop\ ****************************}}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pass=0;}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (passNum==0)\ \{\ \textcolor{comment}{//\ want\ layout\ only}}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ layoutBdry();}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ layoutCenters();}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (pass<passNum)\ \{}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ centers\ for\ bdry\ circles\ based\ on\ current\ radii}}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ layoutBdry();}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ layout\ interior\ via\ Tutte\ embedding}}
+\DoxyCodeLine{00380\ }
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ layoutCenters();}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reset\ radii\ to\ effective\ radii\ based\ on\ new\ centers}}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ setEffective();}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ pass++;}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ judge\ results.\ good\ enough,\ then\ exit}}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ localError=\ l2quality(.001);\ }
+\DoxyCodeLine{00390\ }
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (localError\ <\ .0001)\ \{}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPLiteError==\textcolor{keyword}{null})}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLiteError=\textcolor{keyword}{new}\ Vector<Double>(1);}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLiteError.addElement(Double.valueOf(localError));}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ status=RePacker.RIFFLE;\ \textcolor{comment}{//\ ready\ to\ continue\ riffling}}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ localPasses\ +=\ pass;}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ totalPasses\ +=\ pass;}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ reapResults();}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pass;\textcolor{comment}{//\ kick\ out}}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ outer\ while}}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ********************************************************}}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ results\ in\ parent\ packing}}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ reapResults();}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ status=RePacker.RIFFLE;\ }
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pass;}
+\DoxyCodeLine{00410\ \ \ \ \ \}}
+\DoxyCodeLine{00411\ \ \ \ \ }
+\DoxyCodeLine{00416\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ layoutBdry()\ \{}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(mode)\ \{}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ FIXED\_BDRY:\ \textcolor{comment}{//\ nothing\ to\ do}}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ FIXED\_CORNERS:}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ setFixedShape();}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ POLY\_PACK:\ \textcolor{comment}{//\ polygon\ packing}}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ not\ yet\ implemented}}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ setPolyCenters();}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ ORTHO\_BDRY:\ \textcolor{comment}{//\ bdry\ circles\ ortho\ to\ unit\ circle}}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ setOrthoCenters();}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:\ \textcolor{comment}{//\ MAX\_PACKING\ }}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ setHoroCenters();\ \textcolor{comment}{//\ for\ max\ packing,\ place\ around\ inside\ of\ unit\ circle}}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00444\ \ \ \ \ \}}
+\DoxyCodeLine{00445\ }
+\DoxyCodeLine{00453\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ layoutCenters()\ \{}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ linear\ system\ data\ based\ on\ localradii}}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ updateMatrices();}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Compute\ z:\ system\ is\ A*z=b\ }}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ stat=getTutteCenters(sData);}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ the\ new\ interior\ centers}}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (stat>0)}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ storeLocalZ();}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ myPLite.intVertCount;\ \textcolor{comment}{//\ anything\ meaningful\ to\ return?}}
+\DoxyCodeLine{00466\ \ \ \ \ \}}
+\DoxyCodeLine{00467\ \ \ \ \ }
+\DoxyCodeLine{00474\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getTutteCenters(SolverData\ sD)\ \{}
+\DoxyCodeLine{00475\ }
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00477\ \textcolor{comment}{//\ OBE:\ as\ of\ 3/2022\ have\ deleted\ all\ the\ former\ JNI\ stuff\ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00478\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ sData\ =\ new\ SolverFunction().apply(sData);}}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}SolverFunction\ UMFpackException\ occurred:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00484\ }
+\DoxyCodeLine{00485\ \textcolor{comment}{//\ \ here's\ the\ way\ to\ do\ this\ in\ separate\ thread:}}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00487\ \textcolor{comment}{//\ \ \ \ \ \ try\ \{}}
+\DoxyCodeLine{00488\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ CompletableFuture<SolverData>\ future=}}
+\DoxyCodeLine{00489\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ CompletableFuture.completedFuture(sData)}}
+\DoxyCodeLine{00490\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ .thenApply(new\ SolverFunction())}}
+\DoxyCodeLine{00491\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ .thenApply((solverData1)-\/>\{System.out.printf("{}Done.\(\backslash\)n"{});return\ solverData1;\});}}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00493\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ sData=future.get();}}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00495\ \textcolor{comment}{//\ \ \ \ \ \ \}\ catch\ (InterruptedException\ ex)\ \{}}
+\DoxyCodeLine{00496\ \textcolor{comment}{//\ \ \ \ \ \ CirclePack.cpb.errMsg("{}SolverFunction\ interruption\ occurred:\ "{}+ex.getMessage());}}
+\DoxyCodeLine{00497\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ return\ 0;}}
+\DoxyCodeLine{00498\ \textcolor{comment}{//\ \ \ \ \ \ \}\ catch\ (ExecutionException\ ex)\ \{}}
+\DoxyCodeLine{00499\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg("{}SolverFunction\ execution\ error\ occurred:\ "{}+ex.getMessage());}}
+\DoxyCodeLine{00500\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ return\ 0;}}
+\DoxyCodeLine{00501\ \textcolor{comment}{//\ \ \ \ \ \ \}}}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00504\ \ \ \ \ \}}
+\DoxyCodeLine{00505\ \ \ \ \ }
+\DoxyCodeLine{00512\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ updateMatrices()\ \{}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ }}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ sectorTans=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.intVertCount+1][];}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPLite.intVertCount;v++)\ \{}
+\DoxyCodeLine{00517\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ double\ ckangsum=0.0;\ //\ for\ debugging}}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []flower=myPLite.flowers[v];}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []data=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.vNum[v]];}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<myPLite.vNum[v];j++)\ \{}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=flower[j];}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ u=flower[j+1];}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cang=EuclMath.e\_cos\_overlap(myPLite.radii[v],myPLite.radii[w],myPLite.radii[u]);}
+\DoxyCodeLine{00524\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ ckangsum\ +=Math.acos(cang);\ //\ debugging:\ check\ angle\ sum}}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data[j]=Math.sqrt((1.0-\/cang)/(1.0+cang));\ \textcolor{comment}{//\ half\ angle\ formula}}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \ \ \ \ sectorTans[v]=data;}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00529\ }
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ total\ conductances\ for\ variable\ vertices}}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ conductances=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.intVertCount+1];}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPLite.intVertCount;v++)\ \{}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []st=sectorTans[v];}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=myPLite.vNum[v];}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []flower=myPLite.flowers[v];}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flower[0]==flower[num])\ \{\ \ \textcolor{comment}{//\ interior\ vertex}}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=flower[0];}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ conductances[v]=(st[num-\/1]+st[0])/(myPLite.radii[v]+myPLite.radii[w]);}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<num;j++)\ \{}
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t1=st[j-\/1];}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t2=st[j];}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=flower[j];}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ conductances[v]\ +=(t1+t2)/(myPLite.radii[v]+myPLite.radii[w]);}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ bdry\ vertex}}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=flower[0];}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ conductances[v]=st[0]/(myPLite.radii[v]+myPLite.radii[w]);}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<num;j++)\ \{}
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t1=st[j-\/1];}
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t2=st[j];}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=flower[j];}
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ conductances[v]\ +=(t1+t2)/(myPLite.radii[v]+myPLite.radii[w]);}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=flower[num];}
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ conductances[v]\ +=st[num-\/1]/(myPLite.radii[v]+myPLite.radii[w]);}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00558\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00559\ }
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ 'Aentries'}}
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=sData.nz\_entries;}
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ sData.Aentries=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[n];}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;k<n;k++)\ \{}
+\DoxyCodeLine{00564\ \ \ \ \ \ \ \ \ \ \ \ \ VWJ\ vwj=vwjA[k];}
+\DoxyCodeLine{00565\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=vwj.v;}
+\DoxyCodeLine{00566\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=vwj.w;}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j=vwj.j;}
+\DoxyCodeLine{00568\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=myPLite.vNum[v];}
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []st=sectorTans[v];}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []flower=myPLite.flowers[v];}
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j<0)\ \{\ \textcolor{comment}{//\ edge\ to\ self\ if\ j=-\/1}}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sData.Aentries[k]=-\/1.0;}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (flower[0]==flower[num])\ \{\ \textcolor{comment}{//\ interior\ vertex}}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t1;}
+\DoxyCodeLine{00576\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j==0)}
+\DoxyCodeLine{00577\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t1=st[num-\/1];}
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t1=st[j-\/1];}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t2=st[j];}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ this\ is\ transition\ probability\ from\ v\ to\ w.\ Conductance\ on\ an\ edge\ is\ ratio}}
+\DoxyCodeLine{00583\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ of\ dual\ circle\ center\ distance\ divided\ by\ circle\ center\ distance.\ rad[v]}}
+\DoxyCodeLine{00584\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ doesn't\ appear\ in\ t1,\ t2\ because\ it\ cancels\ with\ rad[v]\ that\ would\ appear}}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ in\ conductance.}}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sData.Aentries[k]=((t1+t2)/(myPLite.radii[v]+myPLite.radii[w]))/conductances[v];}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ bdry\ vertex}}
+\DoxyCodeLine{00589\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t1;}
+\DoxyCodeLine{00590\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j==0\ ||\ j==num)}
+\DoxyCodeLine{00591\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t1=0.0;}
+\DoxyCodeLine{00592\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00593\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t1=st[j-\/1];}
+\DoxyCodeLine{00594\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t2=st[j];}
+\DoxyCodeLine{00595\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sData.Aentries[k]=((t1+t2)/(myPLite.radii[v]+myPLite.radii[w]))/conductances[v];}
+\DoxyCodeLine{00596\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00597\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00598\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00599\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ rhs\ stuff,\ which\ is\ -\/B*zb,\ with\ B\ the\ m\ x\ n\ matrix}}
+\DoxyCodeLine{00600\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ of\ transition,\ interior-\/to-\/bdry,\ m=intVertCount,\ n=bdryCount,\ and}}
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ zb\ is\ the\ vertor\ of\ bdry\ centers.}}
+\DoxyCodeLine{00602\ \ \ \ \ \ \ \ \ sData.rhsX=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.intVertCount];}
+\DoxyCodeLine{00603\ \ \ \ \ \ \ \ \ sData.rhsY=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.intVertCount];}
+\DoxyCodeLine{00604\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;k<rhsIJcount;k++)\ \{}
+\DoxyCodeLine{00605\ \ \ \ \ \ \ \ \ \ \ \ \ VWJ\ vwj=vwjRHS[k];}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=vwj.v;}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=vwj.w;}
+\DoxyCodeLine{00608\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j=vwj.j;}
+\DoxyCodeLine{00609\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=myPLite.vNum[v];}
+\DoxyCodeLine{00610\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []st=sectorTans[v];}
+\DoxyCodeLine{00611\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []flower=myPLite.flowers[v];}
+\DoxyCodeLine{00612\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ tranprob=0.0;}
+\DoxyCodeLine{00613\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ bdry=\textcolor{keyword}{false};}
+\DoxyCodeLine{00614\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flower[0]!=flower[num])\ \{\ \textcolor{comment}{//\ v\ is\ bdry}}
+\DoxyCodeLine{00615\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bdry=\textcolor{keyword}{true};}
+\DoxyCodeLine{00616\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ num++;}
+\DoxyCodeLine{00617\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00618\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t=0.0;}
+\DoxyCodeLine{00619\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bdry)\ \{}
+\DoxyCodeLine{00620\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j==0)}
+\DoxyCodeLine{00621\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t=st[0];}
+\DoxyCodeLine{00622\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j==num)}
+\DoxyCodeLine{00623\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t=st[j-\/1];}
+\DoxyCodeLine{00624\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00625\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t=st[j-\/1]+st[j];}
+\DoxyCodeLine{00626\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00627\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00628\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t=st[j];}
+\DoxyCodeLine{00629\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j==0)}
+\DoxyCodeLine{00630\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t\ +=st[num-\/1];}
+\DoxyCodeLine{00631\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00632\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t+=st[j-\/1];}
+\DoxyCodeLine{00633\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00634\ \ \ \ \ \ \ \ \ \ \ \ \ tranprob=1.0*(t/(myPLite.radii[v]+myPLite.radii[w]))/conductances[v];}
+\DoxyCodeLine{00635\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00636\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ have\ to\ introduce\ negative\ sign}}
+\DoxyCodeLine{00637\ \ \ \ \ \ \ \ \ \ \ \ \ sData.rhsX[v-\/1]\ -\/=\ tranprob*myPLite.centers[w].x;}
+\DoxyCodeLine{00638\ \ \ \ \ \ \ \ \ \ \ \ \ sData.rhsY[v-\/1]\ -\/=\ tranprob*myPLite.centers[w].y;}
+\DoxyCodeLine{00639\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00640\ }
+\DoxyCodeLine{00641\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00642\ \ \ \ \ \}}
+\DoxyCodeLine{00643\ \ \ \ \ }
+\DoxyCodeLine{00649\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ storeLocalZ()\ \{}
+\DoxyCodeLine{00650\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00651\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;k<myPLite.intVertCount;k++)\ }
+\DoxyCodeLine{00652\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[k+1]=\textcolor{keyword}{new}\ Complex(sData.Zx[k],sData.Zy[k]);}
+\DoxyCodeLine{00653\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ myPLite.intVertCount;}
+\DoxyCodeLine{00654\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00655\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ MiscException(\textcolor{stringliteral}{"{}error\ getting\ new\ centers:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00656\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00657\ \ \ \ \ \}}
+\DoxyCodeLine{00658\ \ \ \ \ }
+\DoxyCodeLine{00668\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setEffective()\ \{}
+\DoxyCodeLine{00669\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00670\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ handle\ interior\ first:\ their\ anglesum\ and\ aim\ are\ 2*pi}}
+\DoxyCodeLine{00671\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v\ =\ 1;\ v\ <=\ myPLite.intVertCount;\ v++)\ \{}
+\DoxyCodeLine{00672\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ area\ =\ 0;}
+\DoxyCodeLine{00673\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num\ =\ myPLite.vNum[v];}
+\DoxyCodeLine{00674\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z\ =\ \textcolor{keyword}{new}\ Complex(myPLite.centers[v]);}
+\DoxyCodeLine{00675\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower\ =\ myPLite.flowers[v];}
+\DoxyCodeLine{00676\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ num;\ j++)\ \{}
+\DoxyCodeLine{00677\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ jr\ =\ flower[j];}
+\DoxyCodeLine{00678\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ jl\ =\ flower[j\ +\ 1];}
+\DoxyCodeLine{00679\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ zr\ =\ \textcolor{keyword}{new}\ Complex(myPLite.centers[jr]);}
+\DoxyCodeLine{00680\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ zl\ =\ \textcolor{keyword}{new}\ Complex(myPLite.centers[jl]);}
+\DoxyCodeLine{00681\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ radius\ of\ sector\ at\ v}}
+\DoxyCodeLine{00682\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r\ =\ 0.5\ *\ (zr.minus(z).abs()\ +\ zl.minus(z).abs()\ -\/\ zr.minus(zl).abs());}
+\DoxyCodeLine{00683\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cC\ =\ EuclMath.e\_cos\_corners(myPLite.centers[v],}
+\DoxyCodeLine{00684\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[jr],\ myPLite.centers[jl]);}
+\DoxyCodeLine{00685\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cC\ <\ -\/1.0)}
+\DoxyCodeLine{00686\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cC\ =\ -\/1.0;}
+\DoxyCodeLine{00687\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cC\ >\ 1.0)}
+\DoxyCodeLine{00688\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cC\ =\ 1.0;}
+\DoxyCodeLine{00689\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ang\ =\ Math.acos(cC);}
+\DoxyCodeLine{00690\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ area\ +=\ 0.5\ *\ r\ *\ r\ *\ ang;\ \textcolor{comment}{//\ add\ area\ of\ sector}}
+\DoxyCodeLine{00691\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00692\ }
+\DoxyCodeLine{00693\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ effective\ radii\ at\ interior\ if\ it\ is\ adjustable}}
+\DoxyCodeLine{00694\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPLite.aims[v]>0.0)}
+\DoxyCodeLine{00695\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[v]\ =\ Math.sqrt(area\ /\ Math.PI);\ }
+\DoxyCodeLine{00696\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ finished\ with\ interiors}}
+\DoxyCodeLine{00697\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00698\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode==FIXED\_BDRY)}
+\DoxyCodeLine{00699\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00700\ }
+\DoxyCodeLine{00701\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ do\ boundary,\ where,\ if\ there's\ not\ specified\ angle\ sum,}}
+\DoxyCodeLine{00702\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ we\ try\ to\ maintain\ the\ current\ angle\ sum;}}
+\DoxyCodeLine{00703\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v\ =\ myPLite.intVertCount+1;\ v\ <=\ myPLite.vertCount;\ v++)\ \{}
+\DoxyCodeLine{00704\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ area\ =\ 0;}
+\DoxyCodeLine{00705\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ angsum=0;}
+\DoxyCodeLine{00706\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z\ =\ \textcolor{keyword}{new}\ Complex(myPLite.centers[v]);}
+\DoxyCodeLine{00707\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower\ =\ myPLite.flowers[v];}
+\DoxyCodeLine{00708\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num\ =\ myPLite.vNum[v]-\/1;\ \textcolor{comment}{//\ num\ faces}}
+\DoxyCodeLine{00709\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <=\ num;\ j++)\ \{}
+\DoxyCodeLine{00710\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ jr\ =\ flower[j];}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ jl\ =\ flower[j\ +\ 1];}
+\DoxyCodeLine{00712\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ zr\ =\ \textcolor{keyword}{new}\ Complex(myPLite.centers[jr]);}
+\DoxyCodeLine{00713\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ zl\ =\ \textcolor{keyword}{new}\ Complex(myPLite.centers[jl]);}
+\DoxyCodeLine{00714\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ radius\ of\ sector\ at\ v}}
+\DoxyCodeLine{00715\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r\ =\ 0.5\ *\ (zr.minus(z).abs()\ +\ zl.minus(z).abs()\ -\/\ zr.minus(zl).abs());}
+\DoxyCodeLine{00716\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cC\ =\ EuclMath.e\_cos\_corners(myPLite.centers[v],}
+\DoxyCodeLine{00717\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[jr],\ myPLite.centers[jl]);}
+\DoxyCodeLine{00718\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cC\ <\ -\/1.0)}
+\DoxyCodeLine{00719\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cC\ =\ -\/1.0;}
+\DoxyCodeLine{00720\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cC\ >\ 1.0)}
+\DoxyCodeLine{00721\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cC\ =\ 1.0;}
+\DoxyCodeLine{00722\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ang\ =\ Math.acos(cC);}
+\DoxyCodeLine{00723\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angsum\ +=\ ang;}
+\DoxyCodeLine{00724\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ area\ +=\ 0.5\ *\ r\ *\ r\ *\ ang;\ \textcolor{comment}{//\ add\ area\ of\ sector}}
+\DoxyCodeLine{00725\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00726\ }
+\DoxyCodeLine{00727\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ positive\ aim,\ want\ effective\ radii\ to\ give\ same\ area\ as\ aim\ would}}
+\DoxyCodeLine{00728\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPLite.aims[v]>0.001)\ \{\ \textcolor{comment}{//\ }}
+\DoxyCodeLine{00729\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angsum=myPLite.aims[v];}
+\DoxyCodeLine{00730\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[v]\ =\ (Math.sqrt(2.0*area/angsum));\ \textcolor{comment}{//\ +\ myPLite.radii[v])\ /\ 2.0;}}
+\DoxyCodeLine{00731\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00732\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ negative\ aim,\ want\ area\ as\ current\ angle\ sum\ would\ give,\ except\ we}}
+\DoxyCodeLine{00733\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ average\ radius\ with\ current\ value\ to\ prevent\ oscillations\ (can\ test\ if}}
+\DoxyCodeLine{00734\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ this\ is\ helpful\ later}}
+\DoxyCodeLine{00735\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (myPLite.aims[v]<-\/.001)\ \{\ \textcolor{comment}{//\ or\ same\ }}
+\DoxyCodeLine{00736\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[v]\ =\ (Math.sqrt(2.0*area/angsum)\ +\ myPLite.radii[v])\ /\ 2.0;}
+\DoxyCodeLine{00737\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00738\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00739\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Note:\ if\ 'targetArea'\ is\ between\ -\/.001\ and\ .001,\ then\ the}}
+\DoxyCodeLine{00740\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ local\ radius\ does\ not\ change.\ (E.g.,\ with\ 3\ bdry\ circles}}
+\DoxyCodeLine{00741\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ in\ the\ spherical\ case.)}}
+\DoxyCodeLine{00742\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00743\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ finished\ with\ boundary\ }}
+\DoxyCodeLine{00744\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00745\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00746\ \ \ \ \ \}}
+\DoxyCodeLine{00747\ \ \ \ \ }
+\DoxyCodeLine{00748\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ l2quality(\textcolor{keywordtype}{double}\ crit)\ \{}
+\DoxyCodeLine{00749\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []ans=packQuality(crit);}
+\DoxyCodeLine{00750\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans[0];}
+\DoxyCodeLine{00751\ \ \ \ \ \}}
+\DoxyCodeLine{00752\ }
+\DoxyCodeLine{00761\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ []packQuality(\textcolor{keywordtype}{double}\ crit)\ \{}
+\DoxyCodeLine{00762\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []ans=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[2];}
+\DoxyCodeLine{00763\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sas=0.0;}
+\DoxyCodeLine{00764\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=myPLite.intVertCount;k++)\ \{}
+\DoxyCodeLine{00765\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r=myPLite.radii[k];}
+\DoxyCodeLine{00766\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=myPLite.vNum[k];}
+\DoxyCodeLine{00767\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []flower=myPLite.flowers[k];}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ \ \ \ \ \ \ sas=-\/myPLite.aims[k];}
+\DoxyCodeLine{00769\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{00770\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sas\ +=\ Math.acos(EuclMath.e\_cos\_overlap(r,}
+\DoxyCodeLine{00771\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[flower[j]],myPLite.radii[flower[j+1]]));}
+\DoxyCodeLine{00772\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00773\ \ \ \ \ \ \ \ \ \ \ \ \ sas=Math.abs(sas);}
+\DoxyCodeLine{00774\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sas>ans[0])\ ans[0]=sas;}
+\DoxyCodeLine{00775\ \ \ \ \ \ \ \ \ \ \ \ \ ans[1]\ +=\ sas*sas;}
+\DoxyCodeLine{00776\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00777\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00778\ \ \ \ \ \}}
+\DoxyCodeLine{00779\ \ \ \ \ }
+\DoxyCodeLine{00785\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ reapResults()\ \{}
+\DoxyCodeLine{00786\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes==0)\ \{\ \textcolor{comment}{//\ eucl\ case}}
+\DoxyCodeLine{00787\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=p.nodeCount;v++)\ \{}
+\DoxyCodeLine{00788\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=myPLite.parent2v[v];}
+\DoxyCodeLine{00789\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k>0)\ \{}
+\DoxyCodeLine{00790\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(v,myPLite.radii[k]);}
+\DoxyCodeLine{00791\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setCenter(v,\textcolor{keyword}{new}\ Complex(myPLite.centers[k]));}
+\DoxyCodeLine{00792\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00793\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00794\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00795\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00796\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes>0)\ \{\ \textcolor{comment}{//\ sph\ case}}
+\DoxyCodeLine{00797\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=p.nodeCount;v++)\ \{}
+\DoxyCodeLine{00798\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=myPLite.parent2v[v];}
+\DoxyCodeLine{00799\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ sc=SphericalMath.e\_to\_s\_data(myPLite.centers[k],myPLite.radii[k]);}
+\DoxyCodeLine{00800\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k>0)\ \{}
+\DoxyCodeLine{00801\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setCenter(v,\textcolor{keyword}{new}\ Complex(sc.center));}
+\DoxyCodeLine{00802\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(v,sc.rad);}
+\DoxyCodeLine{00803\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00804\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00805\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00806\ \ \ \ \ \ \ \ \ \ \ \ \ NSpole\ nsPoler=\textcolor{keyword}{new}\ NSpole(p);\ \ \textcolor{comment}{//\ routines\ are\ here}}
+\DoxyCodeLine{00807\ \ \ \ \ \ \ \ \ \ \ \ \ nsPoler.parseNSpole(\textcolor{keyword}{null});}
+\DoxyCodeLine{00808\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00809\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00810\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ hyp\ case}}
+\DoxyCodeLine{00811\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=p.nodeCount;v++)\ \{}
+\DoxyCodeLine{00812\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=myPLite.parent2v[v];}
+\DoxyCodeLine{00813\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ sc=HyperbolicMath.e\_to\_h\_data(myPLite.centers[k],myPLite.radii[k]);}
+\DoxyCodeLine{00814\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k>0)\ \{}
+\DoxyCodeLine{00815\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setCenter(v,\textcolor{keyword}{new}\ Complex(sc.center));}
+\DoxyCodeLine{00816\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(v,sc.rad);}
+\DoxyCodeLine{00817\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00818\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00819\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00820\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00821\ \ \ \ \ \}}
+\DoxyCodeLine{00822\ }
+\DoxyCodeLine{00823\ \ \ \ \ \textcolor{comment}{/*\ ******************************************************}}
+\DoxyCodeLine{00824\ \textcolor{comment}{\ \ \ \ \ *\ Methods\ for\ positioning\ boundary\ circles}}
+\DoxyCodeLine{00825\ \textcolor{comment}{\ \ \ \ \ ******************************************************\ */}}
+\DoxyCodeLine{00826\ \ \ \ \ }
+\DoxyCodeLine{00833\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ setHoroCenters()\ \{}
+\DoxyCodeLine{00834\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ fvalue=0.0;}
+\DoxyCodeLine{00835\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ fprime=0.0;}
+\DoxyCodeLine{00836\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00837\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ initial\ guess:\ (sum\ of\ bdry\ radii)/pi}}
+\DoxyCodeLine{00838\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ R=0.0;}
+\DoxyCodeLine{00839\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ minrad=0.0;}
+\DoxyCodeLine{00840\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []r=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.bdryCount+1];\ \textcolor{comment}{//\ closed\ list\ of\ radii}}
+\DoxyCodeLine{00841\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<myPLite.bdryCount;j++)\ \{}
+\DoxyCodeLine{00842\ \ \ \ \ \ \ \ \ \ \ \ \ R\ +=\ r[j]=myPLite.radii[j+myPLite.intVertCount+1];}
+\DoxyCodeLine{00843\ \ \ \ \ \ \ \ \ \ \ \ \ minrad=\ (r[j]>minrad)\ ?\ r[j]\ :\ minrad;}
+\DoxyCodeLine{00844\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (java.lang.Double.isNaN(R))}
+\DoxyCodeLine{00845\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}R\ is\ NaN\ ???"{}});}
+\DoxyCodeLine{00846\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00847\ \ \ \ \ \ \ \ \ r[myPLite.bdryCount]=r[0];\ \textcolor{comment}{//\ to\ close\ up}}
+\DoxyCodeLine{00848\ \ \ \ \ \ \ \ \ R\ /=\ Math.PI;}
+\DoxyCodeLine{00849\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (R<2.0*minrad)}
+\DoxyCodeLine{00850\ \ \ \ \ \ \ \ \ \ \ \ \ R=3.0*minrad;}
+\DoxyCodeLine{00851\ }
+\DoxyCodeLine{00852\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Newton\ iteration\ to\ find\ R}}
+\DoxyCodeLine{00853\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ keepon=\textcolor{keyword}{true};}
+\DoxyCodeLine{00854\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (keepon)\ \{}
+\DoxyCodeLine{00855\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00856\ \ \ \ \ \ \ \ \ \ \ \ \ fvalue=-\/2.0*Math.PI;}
+\DoxyCodeLine{00857\ \ \ \ \ \ \ \ \ \ \ \ \ fprime=0.0;}
+\DoxyCodeLine{00858\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<myPLite.bdryCount;j++)\ \{}
+\DoxyCodeLine{00859\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ Rrr=R-\/r[j]-\/r[j+1];}
+\DoxyCodeLine{00860\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ RRrr=R*Rrr;}
+\DoxyCodeLine{00861\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ab=r[j]*r[j+1];}
+\DoxyCodeLine{00862\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fvalue\ +=\ Math.acos((RRrr-\/ab)/(RRrr+ab));}
+\DoxyCodeLine{00863\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (java.lang.Double.isNaN(fvalue))}
+\DoxyCodeLine{00864\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}acos\ failed:\ R="{}}+R+\textcolor{stringliteral}{"{};\ r[j]="{}}+r[j]);}
+\DoxyCodeLine{00865\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fprime\ +=\ -\/1.0*(R+Rrr)*Math.sqrt(ab/RRrr)/(RRrr+ab);}
+\DoxyCodeLine{00866\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00867\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00868\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ this\ working?}}
+\DoxyCodeLine{00869\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ newR=R-\/fvalue/fprime;}
+\DoxyCodeLine{00870\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR<R/2.0\ ||\ newR>2.0*R)\ \{}
+\DoxyCodeLine{00871\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println("{}big\ change\ in\ R="{}+R+"{};\ newR="{}+newR);}}
+\DoxyCodeLine{00872\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR<R/2.0)\ \{\ }
+\DoxyCodeLine{00873\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newR=R/2;}
+\DoxyCodeLine{00874\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR<2.0*minrad)}
+\DoxyCodeLine{00875\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newR=(2.0*minrad+R)/2.0;}
+\DoxyCodeLine{00876\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00877\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR>2.0*R)}
+\DoxyCodeLine{00878\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newR=2.0*R;}
+\DoxyCodeLine{00879\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00880\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00881\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(newR-\/R)<.00001)}
+\DoxyCodeLine{00882\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ keepon=\textcolor{keyword}{false};}
+\DoxyCodeLine{00883\ \ \ \ \ \ \ \ \ \ \ \ \ R=newR;}
+\DoxyCodeLine{00884\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00885\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00886\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ scale\ all\ radii\ by\ 1/R}}
+\DoxyCodeLine{00887\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=myPLite.vertCount;k++)}
+\DoxyCodeLine{00888\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[k]\ /=\ R;}
+\DoxyCodeLine{00889\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00890\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ boundary\ centers,\ first\ on\ y-\/axis.}}
+\DoxyCodeLine{00891\ \ \ \ \ \ \ \ \ myPLite.centers[myPLite.intVertCount+1]=\textcolor{keyword}{new}\ Complex(0.0,1.0-\/myPLite.radii[myPLite.intVertCount+1]);}
+\DoxyCodeLine{00892\ \textcolor{comment}{//\ \ \ \ \ \ double\ chkarg=0.0;\ //\ for\ debugging}}
+\DoxyCodeLine{00893\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=myPLite.intVertCount+2;k<=myPLite.vertCount;k++)\ \{}
+\DoxyCodeLine{00894\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rj=myPLite.radii[k-\/1];}
+\DoxyCodeLine{00895\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rj1=myPLite.radii[k];}
+\DoxyCodeLine{00896\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ RRrr=1.0-\/rj-\/rj1;}
+\DoxyCodeLine{00897\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ab=rj*rj1;}
+\DoxyCodeLine{00898\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ delta\ =\ Math.acos((RRrr-\/ab)/(RRrr+ab));}
+\DoxyCodeLine{00899\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ arg=myPLite.centers[k-\/1].arg()+delta;}
+\DoxyCodeLine{00900\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ chkarg\ +=delta;}}
+\DoxyCodeLine{00901\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d=1.0-\/myPLite.radii[k];}
+\DoxyCodeLine{00902\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[k]=\textcolor{keyword}{new}\ Complex(d*Math.cos(arg),d*Math.sin(arg));}
+\DoxyCodeLine{00903\ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00904\ \textcolor{comment}{//\ \ \ \ \ \ chkarg\ /=2.0*Math.PI;}}
+\DoxyCodeLine{00905\ \textcolor{comment}{//\ \ \ \ \ \ System.out.println("{}R\ is\ "{}+R+"{}\ and\ chkarg\ is\ "{}+chkarg);}}
+\DoxyCodeLine{00906\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ R;}
+\DoxyCodeLine{00907\ \ \ \ \ \}}
+\DoxyCodeLine{00908\ \ \ \ \ }
+\DoxyCodeLine{00915\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ setOrthoCenters()\ \{}
+\DoxyCodeLine{00916\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ fvalue=0.0;}
+\DoxyCodeLine{00917\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ fprime=0.0;}
+\DoxyCodeLine{00918\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00919\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ initial\ guess:\ (sum\ of\ bdry\ radii)/pi}}
+\DoxyCodeLine{00920\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ R=0.0;}
+\DoxyCodeLine{00921\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ minrad=0.0;}
+\DoxyCodeLine{00922\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []r=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.bdryCount+1];\ \textcolor{comment}{//\ closed\ list\ of\ radii}}
+\DoxyCodeLine{00923\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<myPLite.bdryCount;j++)\ \{}
+\DoxyCodeLine{00924\ \ \ \ \ \ \ \ \ \ \ \ \ R\ +=\ r[j]=myPLite.radii[j+myPLite.intVertCount+1];}
+\DoxyCodeLine{00925\ \ \ \ \ \ \ \ \ \ \ \ \ minrad=\ (r[j]>minrad)\ ?\ r[j]\ :\ minrad;}
+\DoxyCodeLine{00926\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (java.lang.Double.isNaN(R))}
+\DoxyCodeLine{00927\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}R\ is\ NaN\ ???"{}});}
+\DoxyCodeLine{00928\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00929\ \ \ \ \ \ \ \ \ r[myPLite.bdryCount]=r[0];\ \textcolor{comment}{//\ to\ close\ up}}
+\DoxyCodeLine{00930\ \ \ \ \ \ \ \ \ R\ /=\ 2.0*Math.PI;}
+\DoxyCodeLine{00931\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (R<minrad)}
+\DoxyCodeLine{00932\ \ \ \ \ \ \ \ \ \ \ \ \ R=2.0*minrad;}
+\DoxyCodeLine{00933\ }
+\DoxyCodeLine{00934\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Newton\ iteration\ to\ find\ R}}
+\DoxyCodeLine{00935\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ keepon=\textcolor{keyword}{true};}
+\DoxyCodeLine{00936\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (keepon)\ \{}
+\DoxyCodeLine{00937\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00938\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ RR=R*R;}
+\DoxyCodeLine{00939\ \ \ \ \ \ \ \ \ \ \ \ \ fvalue=-\/2.0*Math.PI;}
+\DoxyCodeLine{00940\ \ \ \ \ \ \ \ \ \ \ \ \ fprime=0.0;}
+\DoxyCodeLine{00941\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<myPLite.bdryCount;j++)\ \{}
+\DoxyCodeLine{00942\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fvalue\ +=\ 2.0*Math.atan(r[j]/R);\ \textcolor{comment}{//\ angle\ each\ boundary\ circle\ intercepts\ at\ origin}}
+\DoxyCodeLine{00943\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (java.lang.Double.isNaN(fvalue))}
+\DoxyCodeLine{00944\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}acos\ failed:\ R="{}}+R+\textcolor{stringliteral}{"{};\ r[j]="{}}+r[j]);}
+\DoxyCodeLine{00945\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fprime\ +=\ -\/2.0*r[j]/(RR+r[j]*r[j]);}
+\DoxyCodeLine{00946\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00947\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00948\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ this\ working?}}
+\DoxyCodeLine{00949\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ newR=R-\/fvalue/fprime;}
+\DoxyCodeLine{00950\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR<R/2.0\ ||\ newR>2.0*R)\ \{}
+\DoxyCodeLine{00951\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println("{}big\ change\ in\ R="{}+R+"{};\ newR="{}+newR);}}
+\DoxyCodeLine{00952\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR<R/2.0)\ \{\ }
+\DoxyCodeLine{00953\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newR=R/2;}
+\DoxyCodeLine{00954\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR<minrad)}
+\DoxyCodeLine{00955\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newR=(minrad+R)/2.0;}
+\DoxyCodeLine{00956\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00957\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newR>2.0*R)}
+\DoxyCodeLine{00958\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newR=2.0*R;}
+\DoxyCodeLine{00959\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00960\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00961\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(newR-\/R)<.00001)}
+\DoxyCodeLine{00962\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ keepon=\textcolor{keyword}{false};}
+\DoxyCodeLine{00963\ \ \ \ \ \ \ \ \ \ \ \ \ R=newR;}
+\DoxyCodeLine{00964\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00965\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00966\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ scale\ all\ radii\ by\ 1/R}}
+\DoxyCodeLine{00967\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=myPLite.vertCount;k++)}
+\DoxyCodeLine{00968\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[k]\ /=\ R;}
+\DoxyCodeLine{00969\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00970\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ boundary\ centers,\ first\ on\ y-\/axis;\ center\ is\ distance\ sqrt(r\string^2+1\string^2)\ from\ origin}}
+\DoxyCodeLine{00971\ }
+\DoxyCodeLine{00972\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad=myPLite.radii[myPLite.intVertCount+1];}
+\DoxyCodeLine{00973\ \ \ \ \ \ \ \ \ myPLite.centers[myPLite.intVertCount+1]=\textcolor{keyword}{new}\ Complex(0.0,Math.sqrt(rad*rad+1.0));}
+\DoxyCodeLine{00974\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ accumArg=Math.atan(rad)+Math.PI/2.0;\ \textcolor{comment}{//\ pi/2\ +\ half\ of\ angle\ subtended\ by\ first\ bdry\ circle\ }}
+\DoxyCodeLine{00975\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=myPLite.intVertCount+2;k<=myPLite.vertCount;k++)\ \{}
+\DoxyCodeLine{00976\ \ \ \ \ \ \ \ \ \ \ \ \ rad=myPLite.radii[k];}
+\DoxyCodeLine{00977\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ delta=Math.atan(rad);}
+\DoxyCodeLine{00978\ \ \ \ \ \ \ \ \ \ \ \ \ accumArg\ +=delta;\ \textcolor{comment}{//\ increment\ by\ half\ the\ angle\ subtended}}
+\DoxyCodeLine{00979\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d=Math.sqrt(rad*rad+1.0);}
+\DoxyCodeLine{00980\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[k]=\textcolor{keyword}{new}\ Complex(d*Math.cos(accumArg),d*Math.sin(accumArg));}
+\DoxyCodeLine{00981\ \ \ \ \ \ \ \ \ \ \ \ \ accumArg\ +=delta;\ \textcolor{comment}{//\ increment\ by\ the\ other\ half}}
+\DoxyCodeLine{00982\ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00983\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ R;}
+\DoxyCodeLine{00984\ \ \ \ \ \}}
+\DoxyCodeLine{00985\ \ \ \ \ }
+\DoxyCodeLine{00992\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setPolyCenters()\ \{}
+\DoxyCodeLine{00993\ }
+\DoxyCodeLine{00994\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00995\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=0;}
+\DoxyCodeLine{00996\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sides==\textcolor{keyword}{null}\ ||\ (N=sides.size())<3)}
+\DoxyCodeLine{00997\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}No\ sides\ or\ too\ few\ sides\ given"{}});}
+\DoxyCodeLine{00998\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00999\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ record\ the\ side\ lengths\ based\ on\ radii}}
+\DoxyCodeLine{01000\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []sidelengths=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[N];}
+\DoxyCodeLine{01001\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<N;i++)\ \{}
+\DoxyCodeLine{01002\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ myside=sides.get(i);}
+\DoxyCodeLine{01003\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=myside.size();}
+\DoxyCodeLine{01004\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01005\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ and\ last\ radii}}
+\DoxyCodeLine{01006\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ length=myPLite.radii[myside.get(0)];}
+\DoxyCodeLine{01007\ \ \ \ \ \ \ \ \ \ \ \ \ length\ +=myPLite.radii[myside.get(n-\/1)];}
+\DoxyCodeLine{01008\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01009\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ plus\ diameters\ of\ circle\ in\ between}}
+\DoxyCodeLine{01010\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<n-\/1;j++)}
+\DoxyCodeLine{01011\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ length\ +=2.0*myPLite.radii[myside.get(j)];}
+\DoxyCodeLine{01012\ \ \ \ \ \ \ \ \ \ \ \ \ sidelengths[i]=length;}
+\DoxyCodeLine{01013\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01014\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01015\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ rectangle\ (or\ even\ number\ of\ sides),\ average\ opposites}}
+\DoxyCodeLine{01016\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []avglengths=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[N];}
+\DoxyCodeLine{01017\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (2*(\textcolor{keywordtype}{int})(((\textcolor{keywordtype}{double})N)/2.0)==N)\ \{}
+\DoxyCodeLine{01018\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ no2=N/2;}
+\DoxyCodeLine{01019\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<no2;i++)\ \{}
+\DoxyCodeLine{01020\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ avglengths[i]=avglengths[i+no2]=(sidelengths[i]+sidelengths[i+no2])/2.0;}
+\DoxyCodeLine{01021\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01022\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01023\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01024\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(N)\ \{}
+\DoxyCodeLine{01025\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 4:\ \textcolor{comment}{//\ rectangle}}
+\DoxyCodeLine{01026\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01027\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ width=avglengths[0];}
+\DoxyCodeLine{01028\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ height=avglengths[1];}
+\DoxyCodeLine{01029\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ aspect=height/width;}
+\DoxyCodeLine{01030\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ factor=2.0*(aspect+1)/(width+height);}
+\DoxyCodeLine{01031\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=myPLite.vertCount;v++)}
+\DoxyCodeLine{01032\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.radii[v]\ *=\ factor;}
+\DoxyCodeLine{01033\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<4;i++)\ \{}
+\DoxyCodeLine{01034\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sidelengths[i]\ *=factor;}
+\DoxyCodeLine{01035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ avglengths[i]\ *=factor;}
+\DoxyCodeLine{01036\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01037\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01038\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ lowerleft\ (-\/1,-\/aspect),\ upper\ right\ (1,aspect).}}
+\DoxyCodeLine{01039\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ On\ each\ edge,\ spread\ vertices\ proportially\ to\ cover}}
+\DoxyCodeLine{01040\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ unit\ vector\ edge\ directions,\ based\ on\ arguments}}
+\DoxyCodeLine{01041\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ convention:\ 0'th\ edge\ is\ horizontal,\ right\ to\ left}}
+\DoxyCodeLine{01042\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ []edgedir=\textcolor{keyword}{new}\ Complex[4];}
+\DoxyCodeLine{01043\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ turn=Math.PI;}
+\DoxyCodeLine{01044\ \ \ \ \ \ \ \ \ \ \ \ \ edgedir[0]=\textcolor{keyword}{new}\ Complex(0.0,turn).exp();\ \textcolor{comment}{//\ }}
+\DoxyCodeLine{01045\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01046\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ successive\ directions\ computed\ from\ turning\ angles}}
+\DoxyCodeLine{01047\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<4;i++)\ \{}
+\DoxyCodeLine{01048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ turn\ +=\ Math.PI-\/cornerAngles[(i+1)\%4];}
+\DoxyCodeLine{01049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ edgedir[i]=\textcolor{keyword}{new}\ Complex(0.0,turn).exp();}
+\DoxyCodeLine{01050\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01051\ }
+\DoxyCodeLine{01052\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ plant\ the\ initial\ corner,\ by\ convention\ at\ 1+aspect*i}}
+\DoxyCodeLine{01053\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ spot=\textcolor{keyword}{new}\ Complex(1.0,aspect);}
+\DoxyCodeLine{01054\ }
+\DoxyCodeLine{01055\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ do\ the\ edges\ in\ turn}}
+\DoxyCodeLine{01056\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k=0;k<4;k++)\ \{}
+\DoxyCodeLine{01057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sidefactor=avglengths[k]/sidelengths[k];}
+\DoxyCodeLine{01058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ side=sides.get(k);}
+\DoxyCodeLine{01059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=side.size();}
+\DoxyCodeLine{01060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[side.get(0)]=\textcolor{keyword}{new}\ Complex(spot);}
+\DoxyCodeLine{01062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ prev=sidefactor*myPLite.radii[side.get(0)];}
+\DoxyCodeLine{01063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{01064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ m=1;m<n;m++)\ \{}
+\DoxyCodeLine{01065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=side.get(m);}
+\DoxyCodeLine{01066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ next=sidefactor*myPLite.radii[v];}
+\DoxyCodeLine{01067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ spot=spot.add(edgedir[k].times(prev+next));}
+\DoxyCodeLine{01068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[v]=\textcolor{keyword}{new}\ Complex(spot);}
+\DoxyCodeLine{01069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prev=next;}
+\DoxyCodeLine{01070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{01071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01072\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01073\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{01074\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 3:\ \textcolor{comment}{//\ triangle}}
+\DoxyCodeLine{01076\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{01077\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ fix\ this\ up.\ Must\ be\ given\ 'cornerAngles'}}
+\DoxyCodeLine{01078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};\ }
+\DoxyCodeLine{01079\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01080\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01081\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{01082\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{01084\ \ \ \ \ \}}
+\DoxyCodeLine{01085\ }
+\DoxyCodeLine{01092\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setFixedShape()\ \{}
+\DoxyCodeLine{01093\ }
+\DoxyCodeLine{01094\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{01095\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=0;}
+\DoxyCodeLine{01096\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sides==\textcolor{keyword}{null}\ ||\ (N=sides.size())<3)}
+\DoxyCodeLine{01097\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}No\ sides\ or\ too\ few\ sides\ given"{}});}
+\DoxyCodeLine{01098\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01099\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ record\ the\ side\ lengths\ based\ on\ radii}}
+\DoxyCodeLine{01100\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []sidelengths=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[N];}
+\DoxyCodeLine{01101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<N;i++)\ \{}
+\DoxyCodeLine{01102\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ myside=sides.get(i);}
+\DoxyCodeLine{01103\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=myside.size();}
+\DoxyCodeLine{01104\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ and\ last\ radii}}
+\DoxyCodeLine{01106\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ length=myPLite.radii[myside.get(0)];}
+\DoxyCodeLine{01107\ \ \ \ \ \ \ \ \ \ \ \ \ length\ +=myPLite.radii[myside.get(n-\/1)];}
+\DoxyCodeLine{01108\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ plus\ diameters\ of\ circle\ in\ between}}
+\DoxyCodeLine{01110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<n-\/1;j++)}
+\DoxyCodeLine{01111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ length\ +=2.0*myPLite.radii[myside.get(j)];}
+\DoxyCodeLine{01112\ \ \ \ \ \ \ \ \ \ \ \ \ sidelengths[i]=length;}
+\DoxyCodeLine{01113\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01114\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01115\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ intended\ lengths\ and\ unit\ vector\ directions\ of\ the\ sides}}
+\DoxyCodeLine{01116\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []givenlength=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[N];}
+\DoxyCodeLine{01117\ \ \ \ \ \ \ \ \ Complex\ []edgedir=\textcolor{keyword}{new}\ Complex[N];}
+\DoxyCodeLine{01118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<N;i++)\ \{}
+\DoxyCodeLine{01119\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ myside=sides.get(i);}
+\DoxyCodeLine{01120\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ fz=myPLite.centers[myside.getFirst()];}
+\DoxyCodeLine{01121\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ lz=myPLite.centers[myside.getLast()];}
+\DoxyCodeLine{01122\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ vec=fz.minus(lz);}
+\DoxyCodeLine{01123\ \ \ \ \ \ \ \ \ \ \ \ \ givenlength[i]=vec.abs();}
+\DoxyCodeLine{01124\ \ \ \ \ \ \ \ \ \ \ \ \ edgedir[i]=vec.divide(givenlength[i]);}
+\DoxyCodeLine{01125\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01126\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01127\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ s=0;s<N;s++)\ \{}
+\DoxyCodeLine{01128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sidefactor=givenlength[s]/sidelengths[s];}
+\DoxyCodeLine{01129\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ myside=sides.get(s);}
+\DoxyCodeLine{01130\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=myside.size();}
+\DoxyCodeLine{01131\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ spot=\textcolor{keyword}{new}\ Complex(myPLite.centers[myside.getFirst()]);}
+\DoxyCodeLine{01132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ prev=sidefactor*myPLite.radii[myside.get(0)];}
+\DoxyCodeLine{01133\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{01134\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ m=1;m<n;m++)\ \{}
+\DoxyCodeLine{01135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=myside.get(m);}
+\DoxyCodeLine{01136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ next=sidefactor*myPLite.radii[v];}
+\DoxyCodeLine{01137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ spot=spot.add(edgedir[s].times(prev+next));}
+\DoxyCodeLine{01138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.centers[v]=\textcolor{keyword}{new}\ Complex(spot);}
+\DoxyCodeLine{01139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prev=next;}
+\DoxyCodeLine{01140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{01141\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01142\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01143\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01144\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{01145\ \ \ \ \ \}}
+\DoxyCodeLine{01146\ \ }
+\DoxyCodeLine{01153\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ sideSetup(\textcolor{keywordtype}{int}\ []crnrs)\ \{}
+\DoxyCodeLine{01154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPLite.vertCount\ \ <=1)}
+\DoxyCodeLine{01155\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}GOpack\ failed:\ no\ interior\ vertices"{}});}
+\DoxyCodeLine{01156\ }
+\DoxyCodeLine{01157\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get/check\ the\ corners}}
+\DoxyCodeLine{01158\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=crnrs.length;}
+\DoxyCodeLine{01159\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n<3)}
+\DoxyCodeLine{01160\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}GOpack\ failed:\ less\ than\ 3\ corners\ specified"{}});}
+\DoxyCodeLine{01161\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01162\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ corners\ in\ cclw\ 'neworder'}}
+\DoxyCodeLine{01163\ \ \ \ \ \ \ \ \ sides=\textcolor{keyword}{new}\ ArrayList<NodeLink>(n);}
+\DoxyCodeLine{01164\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []neworder=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[n+1];}
+\DoxyCodeLine{01165\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ first=crnrs[0];}
+\DoxyCodeLine{01166\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01167\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ a\ knockout\ list}}
+\DoxyCodeLine{01168\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []kolst=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[n];}
+\DoxyCodeLine{01169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<n;i++)}
+\DoxyCodeLine{01170\ \ \ \ \ \ \ \ \ \ \ \ \ kolst[i]=crnrs[i];}
+\DoxyCodeLine{01171\ \ \ \ \ \ \ \ \ neworder[0]=neworder[n]=first;\ \textcolor{comment}{//\ first\ one\ remains\ first}}
+\DoxyCodeLine{01172\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=1;}
+\DoxyCodeLine{01173\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;(i<myPLite.bdryCount\ \&\&\ tick<n);i++)\ \{}
+\DoxyCodeLine{01174\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ indx=(first+i-\/myPLite.intVertCount-\/1)\%myPLite.bdryCount+myPLite.intVertCount+1;}
+\DoxyCodeLine{01175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<n;j++)\ \{}
+\DoxyCodeLine{01176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx==kolst[j])\ \{}
+\DoxyCodeLine{01177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ neworder[tick]=indx;}
+\DoxyCodeLine{01178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ kolst[j]=0;}
+\DoxyCodeLine{01179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{01180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01181\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01182\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01183\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tick<n)\ \{}
+\DoxyCodeLine{01184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}didn't\ get\ all\ the\ corners\ in\ order"{}});}
+\DoxyCodeLine{01185\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01186\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01187\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ find\ the\ segments}}
+\DoxyCodeLine{01188\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ current=first;}
+\DoxyCodeLine{01189\ }
+\DoxyCodeLine{01190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)\ \{}
+\DoxyCodeLine{01191\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ nlk=\textcolor{keyword}{new}\ NodeLink();}
+\DoxyCodeLine{01192\ \ \ \ \ \ \ \ \ \ \ \ \ nlk.add(current);}
+\DoxyCodeLine{01193\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<myPLite.bdryCount;j++)\ \{}
+\DoxyCodeLine{01194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=(current+j-\/myPLite.intVertCount-\/1)\%myPLite.bdryCount+myPLite.intVertCount+1;}
+\DoxyCodeLine{01195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k==neworder[i+1])\ \{}
+\DoxyCodeLine{01196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nlk.add(k);}
+\DoxyCodeLine{01197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ current=k;}
+\DoxyCodeLine{01198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ j=myPLite.bdryCount;\ \textcolor{comment}{//\ kickout}}
+\DoxyCodeLine{01199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{01201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nlk.add(k);}
+\DoxyCodeLine{01202\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01203\ \ \ \ \ \ \ \ \ \ \ \ \ sides.add(nlk);}
+\DoxyCodeLine{01204\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01205\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01206\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ no\ cornerAngles,\ set\ to\ default\ pi-\/2pi/n.}}
+\DoxyCodeLine{01207\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cornerAngles==\textcolor{keyword}{null}\ ||\ cornerAngles.length!=n)\ \{}
+\DoxyCodeLine{01208\ \ \ \ \ \ \ \ \ \ \ \ \ cornerAngles=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[n];}
+\DoxyCodeLine{01209\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)}
+\DoxyCodeLine{01210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cornerAngles[i]=Math.PI*(1-\/2.0/(\textcolor{keywordtype}{double})n);}
+\DoxyCodeLine{01211\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01212\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01213\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ aims:\ 2*pi\ in\ interior,\ pi\ on\ bdry,\ angles\ at\ corners}}
+\DoxyCodeLine{01214\ \ \ \ \ \ \ \ \ myPLite.aims=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myPLite.vertCount+1];}
+\DoxyCodeLine{01215\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<=myPLite.intVertCount;i++)}
+\DoxyCodeLine{01216\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.aims[i]=2.0*Math.PI;}
+\DoxyCodeLine{01217\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=myPLite.intVertCount+1;i<=myPLite.vertCount;i++)}
+\DoxyCodeLine{01218\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.aims[i]=Math.PI;}
+\DoxyCodeLine{01219\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)}
+\DoxyCodeLine{01220\ \ \ \ \ \ \ \ \ \ \ \ \ myPLite.aims[corners[i]]=cornerAngles[i];\ }
+\DoxyCodeLine{01221\ }
+\DoxyCodeLine{01222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ n;}
+\DoxyCodeLine{01223\ \ \ \ \ \}}
+\DoxyCodeLine{01224\ \ }
+\DoxyCodeLine{01232\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setCorners(\textcolor{keywordtype}{int}\ []pCorners,\textcolor{keywordtype}{double}\ []pAngles)\ \{}
+\DoxyCodeLine{01233\ \ \ \ \ \ \ \ \ setMode(NOT\_YET\_SET);\ \textcolor{comment}{//\ default\ (eventually\ max\ pack);\ should\ reset\ later}}
+\DoxyCodeLine{01234\ \ \ \ \ \ \ \ \ corners=\textcolor{keyword}{null};}
+\DoxyCodeLine{01235\ \ \ \ \ \ \ \ \ sides=\textcolor{keyword}{null};}
+\DoxyCodeLine{01236\ \ \ \ \ \ \ \ \ parentCorners=\textcolor{keyword}{null};}
+\DoxyCodeLine{01237\ \ \ \ \ \ \ \ \ cornerAngles=\textcolor{keyword}{null};}
+\DoxyCodeLine{01238\ \ \ \ \ \ \ \ \ cornerLocations=\textcolor{keyword}{null};}
+\DoxyCodeLine{01239\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pCorners==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01240\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{01241\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01242\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=0;}
+\DoxyCodeLine{01243\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((n=pCorners.length)<3)}
+\DoxyCodeLine{01244\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}GOpack\ needs\ at\ least\ 3\ corners"{}});}
+\DoxyCodeLine{01245\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01246\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ corners,\ both\ parent\ and\ local\ }}
+\DoxyCodeLine{01247\ \ \ \ \ \ \ \ \ parentCorners=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[n];}
+\DoxyCodeLine{01248\ \ \ \ \ \ \ \ \ corners=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[n];}
+\DoxyCodeLine{01249\ \ \ \ \ \ \ \ \ cornerAngles=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[n];}
+\DoxyCodeLine{01250\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)\ \{}
+\DoxyCodeLine{01251\ \ \ \ \ \ \ \ \ \ \ \ \ parentCorners[i]=pCorners[i];}
+\DoxyCodeLine{01252\ \ \ \ \ \ \ \ \ \ \ \ \ corners[i]=myPLite.parent2v[parentCorners[i]];}
+\DoxyCodeLine{01253\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01254\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01255\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ corner\ angles,\ default\ is\ pi*(1-\/2/n)}}
+\DoxyCodeLine{01256\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pAngles!=\textcolor{keyword}{null}\ \&\&\ pAngles.length==n)\ \{}
+\DoxyCodeLine{01257\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)}
+\DoxyCodeLine{01258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cornerAngles[i]=Math.PI*pAngles[i];}
+\DoxyCodeLine{01259\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01260\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ default}}
+\DoxyCodeLine{01261\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)}
+\DoxyCodeLine{01262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cornerAngles[i]=Math.PI*(1-\/2.0/((\textcolor{keywordtype}{double})n));}
+\DoxyCodeLine{01263\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01264\ \ \ \ \ \ \ \ \ setMode(POLY\_PACK);}
+\DoxyCodeLine{01265\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01266\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sideSetup(corners);}
+\DoxyCodeLine{01267\ \ \ \ \ \}}
+\DoxyCodeLine{01268\ \ \ \ \ }
+\DoxyCodeLine{01275\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setSphBdry()\ \{}
+\DoxyCodeLine{01276\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPLite.bdryCount!=3)}
+\DoxyCodeLine{01277\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{01278\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad=2*Math.sqrt(3)-\/3.0;\ \textcolor{comment}{//\ radius\ so\ circles\ are}}
+\DoxyCodeLine{01279\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ca=1.0-\/rad;}
+\DoxyCodeLine{01280\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=myPLite.intVertCount+1;}
+\DoxyCodeLine{01281\ \ \ \ \ \ \ \ \ myPLite.radii[k]=rad;}
+\DoxyCodeLine{01282\ \ \ \ \ \ \ \ \ myPLite.centers[k]=\textcolor{keyword}{new}\ Complex(0.0,ca);}
+\DoxyCodeLine{01283\ \ \ \ \ \ \ \ \ k++;}
+\DoxyCodeLine{01284\ \ \ \ \ \ \ \ \ myPLite.radii[k]=rad;}
+\DoxyCodeLine{01285\ \ \ \ \ \ \ \ \ myPLite.centers[k]=\textcolor{keyword}{new}\ Complex(-\/Math.sqrt(3),-\/1.0).times(ca*.5);}
+\DoxyCodeLine{01286\ \ \ \ \ \ \ \ \ k++;}
+\DoxyCodeLine{01287\ \ \ \ \ \ \ \ \ myPLite.radii[k]=rad;}
+\DoxyCodeLine{01288\ \ \ \ \ \ \ \ \ myPLite.centers[k]=\textcolor{keyword}{new}\ Complex(Math.sqrt(3),-\/1.0).times(ca*.5);}
+\DoxyCodeLine{01289\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 3;}
+\DoxyCodeLine{01290\ \ \ \ \ \}}
+\DoxyCodeLine{01291\ \ \ \ \ }
+\DoxyCodeLine{01296\ \ \ \ \ \textcolor{keyword}{public}\ String\ getStatus()\ \{}
+\DoxyCodeLine{01297\ \ \ \ \ \ \ \ \ StringBuilder\ strb=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}GOpack\ for\ p"{}}+p.packNum+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{01298\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (status==RePacker.FAILURE)}
+\DoxyCodeLine{01299\ \ \ \ \ \ \ \ \ \ \ \ \ strb.append(\textcolor{stringliteral}{"{}is\ in\ FAILURE\ state"{}});}
+\DoxyCodeLine{01300\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (status==RePacker.RIFFLE)}
+\DoxyCodeLine{01301\ \ \ \ \ \ \ \ \ \ \ \ \ strb.append(\textcolor{stringliteral}{"{}is\ ready\ to\ RIFFLE"{}});}
+\DoxyCodeLine{01302\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (status==RePacker.LOADED)}
+\DoxyCodeLine{01303\ \ \ \ \ \ \ \ \ \ \ \ \ strb.append(\textcolor{stringliteral}{"{}is\ LOADED\ and\ ready"{}});}
+\DoxyCodeLine{01304\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (status==RePacker.IN\_THREAD)}
+\DoxyCodeLine{01305\ \ \ \ \ \ \ \ \ \ \ \ \ strb.append(\textcolor{stringliteral}{"{}is\ working\ IN\_THREAD\ (in\ a\ separate\ thread)"{}});}
+\DoxyCodeLine{01306\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ strb.toString();}
+\DoxyCodeLine{01307\ \ \ \ \ \}}
+\DoxyCodeLine{01308\ \ \ \ \ }
+\DoxyCodeLine{01313\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getOrigNodeCount()\ \{}
+\DoxyCodeLine{01314\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ origNodeCount;}
+\DoxyCodeLine{01315\ \ \ \ \ \}}
+\DoxyCodeLine{01316\ \ \ \ \ }
+\DoxyCodeLine{01323\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ []getSphCorners()\ \{}
+\DoxyCodeLine{01324\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myPLite.bdryCount!=3)}
+\DoxyCodeLine{01325\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01326\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []ans=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[3];}
+\DoxyCodeLine{01327\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<3;i++)}
+\DoxyCodeLine{01328\ \ \ \ \ \ \ \ \ \ \ \ \ ans[i]=myPLite.v2parent[myPLite.intVertCount+i+1];}
+\DoxyCodeLine{01329\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{01330\ \ \ \ \ \}}
+\DoxyCodeLine{01331\ \ \ \ \ }
+\DoxyCodeLine{01332\ \}}
+\DoxyCodeLine{01333\ }
+\DoxyCodeLine{01343\ \textcolor{keyword}{class\ }VWJ\ \textcolor{keyword}{implements}\ Comparable<Object>\ \{}
+\DoxyCodeLine{01344\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ v;}
+\DoxyCodeLine{01345\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ j;}
+\DoxyCodeLine{01346\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ w;}
+\DoxyCodeLine{01347\ }
+\DoxyCodeLine{01348\ \ \ \ \ \textcolor{keyword}{public}\ VWJ(\textcolor{keywordtype}{int}\ nv,\textcolor{keywordtype}{int}\ nw,\textcolor{keywordtype}{int}\ nj)\ \{}
+\DoxyCodeLine{01349\ \ \ \ \ \ \ \ \ v=nv;}
+\DoxyCodeLine{01350\ \ \ \ \ \ \ \ \ w=nw;}
+\DoxyCodeLine{01351\ \ \ \ \ \ \ \ \ j=nj;\ \textcolor{comment}{//\ often\ j\ =\ -\/1\ when\ v\ ==\ w}}
+\DoxyCodeLine{01352\ \ \ \ \ \}}
+\DoxyCodeLine{01353\ }
+\DoxyCodeLine{01358\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ compareTo(Object\ o1)\ \{}
+\DoxyCodeLine{01359\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ vv=((VWJ)o1).v;}
+\DoxyCodeLine{01360\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ww=((VWJ)o1).w;}
+\DoxyCodeLine{01361\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this.w<ww)}
+\DoxyCodeLine{01362\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{01363\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (this.w==ww)\ \{}
+\DoxyCodeLine{01364\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this.v==vv)}
+\DoxyCodeLine{01365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{01366\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (this.v>vv)}
+\DoxyCodeLine{01367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{01368\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{01369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{01370\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01371\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{01372\ \ \ \ \ \}}
+\DoxyCodeLine{01373\ }
+\DoxyCodeLine{01374\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,832 @@
+\doxysection{Eucl\+Packer.\+java}
+\label{_eucl_packer_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/rePack/EuclPacker.java@{C:/Users/ashej/myGitRepos/CirclePack/src/rePack/EuclPacker.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }rePack;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ combinatorics.komplex.DcelFace;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ combinatorics.komplex.Vertex;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ dcel.PackDCEL;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ exceptions.PackingException;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ ftnTheory.ProjStruct;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ input.CommandStrParser;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ util.TriData;}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }EuclPacker\ \textcolor{keyword}{extends}\ RePacker\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ }
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{comment}{//\ Constructors}}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{public}\ EuclPacker(PackData\ pd,\textcolor{keywordtype}{int}\ pass\_limit)\ \{\ }
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ p=pd;}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ pdcel=p.packDCEL;}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ oldReliable=\textcolor{keyword}{false};}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pass\_limit<0)\ }
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ passLimit=PASSLIMIT;}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ passLimit=pass\_limit;}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ status=load();\ }
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (status!=LOADED)\ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ PackingException(\textcolor{stringliteral}{"{}'EuclPacker'\ failed\ to\ load"{}});}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ totalPasses=0;}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ localPasses=0;}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ R1=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[p.nodeCount+1];}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ R2=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[p.nodeCount+1];}
+\DoxyCodeLine{00066\ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ }
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ load()\ \{}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((pdcel=p.packDCEL)==\textcolor{keyword}{null})}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}usage:\ d\_repackers\ need\ DCEL"{}});}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ aimnum\ =\ 0;}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ index\ =\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[p.nodeCount+1];}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<=p.nodeCount;i++)\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.getAim(i)>0)\ \{\ \textcolor{comment}{//\ p.getAim(39);}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ index[aimnum]=i;}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aimnum++;}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (aimnum==0)\ \ \textcolor{comment}{//\ nothing\ to\ repack}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ FAILURE;}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ load\ the\ 'TriData';\ true\ if\ inv\ distances\ involved}}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ oldReliable=prepData();}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ LOADED;\ }
+\DoxyCodeLine{00090\ \ \ \ \ \}}
+\DoxyCodeLine{00091\ \ \ \ \ }
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ l2quality(\textcolor{keywordtype}{double}\ crit)\ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ need\ quality\ measurement\ tools\ (presumably\ based\ purely}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ on\ radii\ and\ curvature,\ since\ centers\ are\ not\ available\ locally.}}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1.0;}
+\DoxyCodeLine{00096\ \ \ \ \ \}}
+\DoxyCodeLine{00097\ \ \ \ \ }
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ reapResults()\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ PackDCEL\ pdcel=p.packDCEL;}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<aimnum;i++)\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=index[i];}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ Vertex\ vert=pdcel.vertices[v];}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ reds,\ need\ to\ find\ red\ edges}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ }}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vert.redFlag)\ \{\ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ArrayList<DcelFace>\ facelist=vert.getFaceFlower();}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<DcelFace>\ fist=facelist.iterator();}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(fist.hasNext())\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ f=fist.next().faceIndx;}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (f>0)\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TriData\ trid=pdcel.triData[f];}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j=trid.vertIndex(v);}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=trid.baseEdge;}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j==1)}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.next;}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (j==2)}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.next.next;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcel.setRad4Edge(he,trid.radii[j]);}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.packDCEL.vertices[v].rad=trid.radii[j];}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TriData\ vtd=pdcel.triData[}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcel.vertices[v].halfedge.face.faceIndx];}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ vindx=vtd.vertIndex(v);}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(v,vtd.radii[vindx]);}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ p.fillcurves();}
+\DoxyCodeLine{00135\ \ \ \ \ \}}
+\DoxyCodeLine{00136\ \ \ \ \ }
+\DoxyCodeLine{00137\ \ }
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ reStartRiffle(\textcolor{keywordtype}{int}\ passes)\ \{\ \ \ \ \textcolor{comment}{//\ continue\ the\ packing\ computation}}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00141\ \ \ \ \ \}}
+\DoxyCodeLine{00142\ \ \ \ \ }
+\DoxyCodeLine{00157\ \ \ \ \ }
+\DoxyCodeLine{00158\ \ \ \ \ \textcolor{comment}{/*\ Added\ arguments\ are\ positional:\ if\ omitted,\ they\ take\ default\ values\ }}
+\DoxyCodeLine{00159\ \textcolor{comment}{\ \ \ \ \ \ \ as\ given\ in\ the\ header.\ Namely,}}
+\DoxyCodeLine{00160\ \textcolor{comment}{\ \ \ \ \ \ \ }}
+\DoxyCodeLine{00161\ \textcolor{comment}{\ \ \ \ \ \ \ passNo\ =\ PASS\_FIRST\ |\ PASS\_MIDDLE\ |\ PASS\_LAST}}
+\DoxyCodeLine{00162\ \textcolor{comment}{\ \ \ \ \ \ \ cutp\ =\ null}}
+\DoxyCodeLine{00163\ \textcolor{comment}{\ \ \ \ \ \ \ state\ =\ null}}
+\DoxyCodeLine{00164\ \textcolor{comment}{\ \ \ \ \ \ \ }}
+\DoxyCodeLine{00165\ \textcolor{comment}{\ \ \ \ \ \ \ This\ tells\ riffle\ to\ first\ allocate\ memory,\ initialize\ superstep}}
+\DoxyCodeLine{00166\ \textcolor{comment}{\ \ \ \ \ \ \ variables\ (PASS\_FIRST),\ do\ specified\ number\ of\ iterations}}
+\DoxyCodeLine{00167\ \textcolor{comment}{\ \ \ \ \ \ \ (PASS\_MIDDLE),\ and\ clean\ up\ (PASS\_LAST).\ \ The\ two\ null\ pointers\ tell}}
+\DoxyCodeLine{00168\ \textcolor{comment}{\ \ \ \ \ \ \ riffle\ not\ to\ store\ any\ of\ the\ state\ variables\ from\ this\ call\ to}}
+\DoxyCodeLine{00169\ \textcolor{comment}{\ \ \ \ \ \ \ riffle,\ so\ that\ superstepping\ will\ have\ to\ start\ over\ the\ next\ time}}
+\DoxyCodeLine{00170\ \textcolor{comment}{\ \ \ \ \ \ \ riffle\ is\ called.\ (The\ aim\ was\ to\ be\ able\ to\ use\ in\ a\ parallel}}
+\DoxyCodeLine{00171\ \textcolor{comment}{\ \ \ \ \ \ \ and/or\ interruptable\ environment.)\ So,\ the\ default\ values\ for\ these\ }}
+\DoxyCodeLine{00172\ \textcolor{comment}{\ \ \ \ \ \ \ last\ three\ parameters\ should\ make\ modified\ routines\ behave\ exactly\ like\ the}}
+\DoxyCodeLine{00173\ \textcolor{comment}{\ \ \ \ \ \ \ original\ routines.}}
+\DoxyCodeLine{00174\ \textcolor{comment}{\ \ \ \ */}}
+\DoxyCodeLine{00175\ \ \ \ \ }
+\DoxyCodeLine{00176\ \ \ \ \ \textcolor{comment}{/*\ CRC\ -\/\ modified\ 8/5/02\ from\ h\_riffle;\ uses\ uniform\ neighbor\ model\ }}
+\DoxyCodeLine{00177\ \textcolor{comment}{\ \ \ \ \ \ \ (UNM)\ and\ two\ levels\ of\ super\ steps,\ with\ safety\ measures\ to\ avoid\ }}
+\DoxyCodeLine{00178\ \textcolor{comment}{\ \ \ \ \ \ \ bad\ steps.\ Anglesum\ calculations\ are\ in-\/line.\ */}}
+\DoxyCodeLine{00179\ \ \ \ \ }
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ startRiffle()\ throws\ PackingException\ \{\ \textcolor{comment}{//\ initiate\ packing\ computation}}
+\DoxyCodeLine{00181\ \ \ \ \ }
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{keywordflow}{if}\ (status!=LOADED)\ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ PackingException();}
+\DoxyCodeLine{00183\ \ \ \ \ }
+\DoxyCodeLine{00184\ \ \ \ \ maxBadCuts\ =\ 0;}
+\DoxyCodeLine{00185\ \ \ \ \ minBadCuts\ =\ 0;}
+\DoxyCodeLine{00186\ \ \ \ \ sumBadCuts\ =\ 0;}
+\DoxyCodeLine{00187\ \ \ \ \ cntBadCuts\ =\ 0;}
+\DoxyCodeLine{00188\ \ \ \ \ }
+\DoxyCodeLine{00189\ \ \ \ \ \textcolor{comment}{//\ set\ up\ parameters}}
+\DoxyCodeLine{00190\ \ \ \ \ ttoler\ =\ 3*aimnum*RP\_TOLER;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ adjust\ tolerance\ }}
+\DoxyCodeLine{00191\ \ \ \ \ key\ =\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ initial\ superstep\ type\ }}
+\DoxyCodeLine{00192\ \ \ \ \ m\ =\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Type\ 1\ multiplier\ }}
+\DoxyCodeLine{00193\ \ \ \ \ sct\ =\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Type\ 1\ count\ }}
+\DoxyCodeLine{00194\ \ \ \ \ fct\ =\ 2;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Type\ 2\ minimum\ count\ }}
+\DoxyCodeLine{00195\ \ \ \ \ }
+\DoxyCodeLine{00196\ \ \ \ \ \textcolor{comment}{//\ do\ one\ iteration\ to\ get\ started\ }}
+\DoxyCodeLine{00197\ \ \ \ \ accumErr2\ =\ 0;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00198\ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<aimnum;j++)\ \{}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v\ =\ index[j];}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ faim\ =\ p.packDCEL.vertices[v].aim;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ target\ sum\ }}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r\ =\ getTriRadius(v);\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ present\ label}}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ compute\ anglesum\ (using\ local\ data)}}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ fbest=compTriCurv(v,r);}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ use\ the\ model\ to\ predict\ the\ next\ value\ }}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N\ =\ 2*vNum[v];}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ del\ =\ Math.sin(faim/N);}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bet\ =\ Math.sin(fbest/N);}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2\ =\ r*bet*(1-\/del)/(del*(1-\/bet));}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ as\ new\ radius\ label\ }}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (r2<0)\ }
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ PackingException();}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ setTriRadius(v,r2);}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ p.packDCEL.vertices[v].curv\ =\ fbest;\ \ \textcolor{comment}{//\ store\ new\ angle\ sum}}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ -\/=\ faim;}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ accumErr2\ +=\ fbest*fbest;\ \ \ \textcolor{comment}{//\ accum\ abs\ error\ }}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ accumErr2\ =\ Math.sqrt(accumErr2);}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ status=FAILURE;}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ PackingException();}
+\DoxyCodeLine{00225\ \ \ \ \ \}}
+\DoxyCodeLine{00226\ \ \ \ \ status=RIFFLE;}
+\DoxyCodeLine{00227\ \ \ \ \ totalPasses=localPasses=1;}
+\DoxyCodeLine{00228\ \ \ \ \ \textcolor{keywordflow}{return}\ RIFFLE;}
+\DoxyCodeLine{00229\ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ }
+\DoxyCodeLine{00248\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ continueRiffle(\textcolor{keywordtype}{int}\ passL)\ \textcolor{keywordflow}{throws}\ PackingException\ \{}
+\DoxyCodeLine{00249\ \ \ \ \ \textcolor{keywordtype}{double}\ fbest;}
+\DoxyCodeLine{00250\ \ \ \ \ \textcolor{keywordtype}{double}\ faim;}
+\DoxyCodeLine{00251\ \ \ \ \ \textcolor{keywordtype}{double}\ c1;}
+\DoxyCodeLine{00252\ \ \ \ \ }
+\DoxyCodeLine{00253\ \ \ \ \ \textcolor{keywordflow}{if}\ (status!=RIFFLE)\ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ PackingException();}
+\DoxyCodeLine{00254\ \ \ \ \ localPasses=0;}
+\DoxyCodeLine{00255\ \ \ \ \ passLimit=passL;}
+\DoxyCodeLine{00256\ }
+\DoxyCodeLine{00257\ \ \ \ \ \textcolor{comment}{//\ ============\ Begin\ Main\ Loop\ ============}}
+\DoxyCodeLine{00258\ \ \ \ \ \textcolor{comment}{//\ Iterate\ until\ L2\ error\ is\ below\ tolerance\ or\ pass\ limit\ reached}}
+\DoxyCodeLine{00259\ \ \ \ \ \textcolor{keywordflow}{while}\ ((accumErr2\ >ttoler\ \&\&\ localPasses<passLimit))\ \{}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Snapshot\ current\ radii\ before\ this\ pass\ (for\ superstep\ computation)}}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<=p.nodeCount;i++)\ }
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ R1[i]\ =\ getTriRadius(i);}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ numBadCuts\ =\ 0;}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ factor=0.0;}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{\ \ \ \textcolor{comment}{//\ Retry\ loop:\ ensure\ error\ ratio\ factor\ <\ 1.0\ (i.e.,\ progress)}}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ c1\ =\ 0.0;}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<aimnum;j++)\ \{}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v\ =\ index[j];\ \ \ \textcolor{comment}{//\ index\ of\ adjustable\ vertex}}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ faim\ =\ p.packDCEL.vertices[v].aim;\ \textcolor{comment}{//\ target\ angle\ sum\ α(v)}}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ra\ =\ getTriRadius(v);\ \ \ \ \textcolor{comment}{//\ current\ radius\ r(v)}}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Compute\ current\ angle\ sum\ θ(v)\ from\ surrounding\ radii}}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest=compTriCurv(v,ra);}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===\ Uniform\ Neighbor\ Model\ (UNM)\ prediction\ ===}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Model:\ if\ v\ had\ 2N\ equal\ neighbors,\ each\ face\ angle}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ would\ be\ θ/(2N).\ \ The\ radius\ producing\ target\ α/(2N)\ is:}}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ r\_new\ =\ r\ ·\ sin(θ/2N)(1−sin(α/2N))\ /\ [sin(α/2N)(1−sin(θ/2N))]}}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N\ =\ 2*vNum[v];}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ del\ =\ Math.sin(faim/N);\ \ \ \textcolor{comment}{//\ sin(α/2N)}}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bet\ =\ Math.sin(fbest/N);\ \ \textcolor{comment}{//\ sin(θ/2N)}}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2\ =\ ra*bet*(1-\/del)/(del*(1-\/bet));}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ as\ new\ radius\ label\ }}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (r2<0)\ }
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ PackingException();}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setTriRadius(v,r2);}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.packDCEL.vertices[v].curv\ =\ fbest;\ \ \ \ \ \ \ \textcolor{comment}{//\ store\ new\ angle\ sum}}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ -\/=\ faim;}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ c1\ +=\ fbest*fbest;\ \ \ \textcolor{comment}{//\ accum\ abs\ error\ }}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ c1\ =\ Math.sqrt(c1);}
+\DoxyCodeLine{00295\ \ \ \ \ }
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ factor\ =\ c1/accumErr2;}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (factor\ >=\ 1.0)\ \{}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accumErr2\ =\ c1;}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ key\ =\ 1;}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ numBadCuts++;}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(numBadCuts\ >\ MAX\_ALLOWABLE\_BAD\_CUTS)\ }
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ PackingException(}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}exceeded\ MAX\_ALLOWABLE\_BAD\_CUTS"{}});}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}(factor\ >=\ 1.0);}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(cntBadCuts\ ==\ 0)\ \ \{}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ maxBadCuts\ =\ numBadCuts;}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ minBadCuts\ =\ numBadCuts;}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ sumBadCuts\ =\ numBadCuts;}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \ \{}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ maxBadCuts\ =\ (numBadCuts\ >\ maxBadCuts)\ ?\ numBadCuts\ :\ maxBadCuts;}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ minBadCuts\ =\ (numBadCuts\ <\ minBadCuts)\ ?\ numBadCuts\ :\ minBadCuts;}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ sumBadCuts\ +=\ numBadCuts;}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ cntBadCuts++;}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ==========\ Superstep\ Acceleration\ ==========}}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ After\ one\ UNM\ pass,\ radii\ moved\ from\ R1→R2\ with\ error}}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reduction\ factor\ =\ c1/accumErr2.\ \ We\ extrapolate\ further}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ along\ direction\ (R2−R1)\ by\ factor\ λ\ to\ speed\ convergence.}}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Snapshot\ post-\/UNM\ radii}}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<=p.nodeCount;i++)\ }
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ R2[i]\ =\ getTriRadius(i);}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Find\ maximum\ safe\ λ:\ need\ R2+λ(R2−R1)\ >\ 0\ for\ all\ vertices.}}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ For\ vertices\ where\ radius\ decreased\ (R2−R1\ <\ 0),}}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ λ\ must\ be\ <\ R2/(R1−R2)\ to\ keep\ radius\ positive.}}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ lmax\ =\ 10000;}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ fact0=0.0;}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<aimnum;j++)\ \{}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v\ =\ index[j];}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rat\ =\ R2[v]\ -\/\ R1[v];\ \ \ \textcolor{comment}{//\ direction\ of\ change}}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ tr=0.0;}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rat\ <\ 0)}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ lmax\ =\ (lmax\ <\ (tr=\ (-\/R2[v]/rat)))\ ?\ lmax\ :\ tr;}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ lmax\ =\ lmax/2;\ \ \textcolor{comment}{//\ safety\ factor\ of\ 2}}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Compute\ λ\ using\ one\ of\ two\ strategies}}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ lambda=0.0;}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key==1)\ \{\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Type\ 1:\ growing\ multiplier\ m}}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ lambda\ =\ m*factor;}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ mmax\ =\ 0.75/(1-\/factor);\ \ \ \textcolor{comment}{//\ cap\ on\ multiplier}}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ mm=0.0;}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ m\ =\ (mmax\ <\ (mm=(1+0.8/(sct+1))*m))\ ?\ mmax\ :\ mm;}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Type\ 2:\ geometric\ extrapolation}}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ fact0=0.0;}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ftol=0.0;}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sct>fct\ \&\&\ Math.abs(factor-\/fact0)<ftol)\ \{}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lambda\ =\ factor/(1-\/factor);\ \ \textcolor{comment}{//\ geometric\ series\ sum}}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ sct\ =\ -\/1;}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ lambda\ =\ factor;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ fallback}}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ lambda\ =\ (lambda>lmax)\ ?\ lmax\ :\ lambda;\ \ \textcolor{comment}{//\ clamp\ to\ safe\ max}}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Apply\ superstep:\ R\_new\ =\ R2\ +\ λ·(R2\ −\ R1)}}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<aimnum;j++)\ \{}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v\ =\ index[j];}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ nwr=R2[v]+lambda*(R2[v]-\/R1[v]);}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(nwr<0)}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ PackingException(\textcolor{stringliteral}{"{}negative\ rad\ at\ "{}}+v);}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ setTriRadius(v,nwr);}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ sct++;}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ fact0\ =\ factor;}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ==========\ Verify\ Superstep\ ==========}}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Recompute\ angle\ sums\ with\ extrapolated\ radii\ and\ do}}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ one\ more\ UNM\ update\ to\ check\ improvement.}}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ accumErr2\ =\ 0;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<aimnum;j++)\ \{}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v\ =\ index[j];}
+\DoxyCodeLine{00379\ }
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ faim\ =\ p.packDCEL.vertices[v].aim;}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rc\ =\ getTriRadius(v);}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Recompute\ angle\ sum\ after\ superstep}}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ fbest=compTriCurv(v,rc);}
+\DoxyCodeLine{00385\ }
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ UNM\ prediction\ from\ post-\/superstep\ state}}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N\ =\ 2*vNum[v];}
+\DoxyCodeLine{00388\ }
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ del\ =\ Math.sin(faim/N);}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bet\ =\ Math.sin(fbest/N);}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2\ =\ rc*bet*(1-\/del)/(del*(1-\/bet));}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (r2<0)\ }
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ PackingException();}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ setTriRadius(v,r2);}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ p.packDCEL.vertices[v].curv\ =\ fbest;}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ -\/=\ faim;}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ accumErr2\ +=\ fbest*fbest;}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ accumErr2\ =\ Math.sqrt(accumErr2);}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ==========\ Evaluate\ Superstep\ Outcome\ ==========}}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Compare\ actual\ error\ reduction\ to\ the\ predicted\ reduction}}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ factor\string^λ\ (linear\ convergence\ extrapolation).}}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ pred\ =\ Math.exp(lambda*Math.log(factor));\ \textcolor{comment}{//\ predicted:\ factor\string^λ}}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ act\ =\ accumErr2/c1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ actual\ ratio}}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (act<1)\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ error\ decreased:\ superstep\ helped}}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (act>pred)\ \{\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ but\ not\ as\ much\ as\ predicted:\ reset\ multiplier}}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\ =\ 1;}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sct\ =\ 0;}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key==1)\ key\ =\ 2;\ \ \textcolor{comment}{//\ switch\ superstep\ strategy}}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else:\ accept\ result\ and\ keep\ growing\ multiplier}}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ error\ increased:\ roll\ back\ to\ pre-\/superstep\ state}}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ m\ =\ 1;}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ sct\ =0;}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<=p.nodeCount;i++)\ }
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setTriRadius(i,R2[i]);\ \ \textcolor{comment}{//\ restore\ R2\ (post-\/UNM,\ pre-\/superstep)}}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ accumErr2\ =\ c1;}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key==2)\ key\ =\ 1;\ \ \ \ \ \ \textcolor{comment}{//\ switch\ strategy\ for\ next\ attempt}}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ show\ activity\ }}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((localPasses\ \%\ 10)==0)\ }
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ repack\_activity\_msg();}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ localPasses++;}
+\DoxyCodeLine{00429\ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ main\ while\ loop\ }}
+\DoxyCodeLine{00430\ \ \ \ \ }
+\DoxyCodeLine{00431\ \ \ \ \ totalPasses+=localPasses;}
+\DoxyCodeLine{00432\ \ \ \ \ \textcolor{keywordflow}{return}\ RIFFLE;}
+\DoxyCodeLine{00433\ \ \ \ \ \}}
+\DoxyCodeLine{00434\ }
+\DoxyCodeLine{00451\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ d\_oldReliable(\textcolor{keywordtype}{int}\ passes)\ \{}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count\ =\ 0;}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ accum=0.0;}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=5;\ \textcolor{comment}{//\ iterations\ in\ each\ radius\ comp}}
+\DoxyCodeLine{00455\ }
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \textcolor{comment}{//\ find\ vertices\ to\ work\ on\ and\ set\ cutoff\ value}}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []inDex\ =\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[p.nodeCount+1];}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ aimnum=0;}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=p.nodeCount;v++)\ \{}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.getAim(v)>0)\ \{\ \textcolor{comment}{//\ \ \ p.getAim(j)>0)\ \{}}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inDex[aimnum++]=v;}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ curv=compTriCurv(v,getTriRadius(v));}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ err=curv-\/p.getAim(v);}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accum\ +=\ (err<0)\ ?\ (-\/err)\ :\ err;}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (aimnum==0)\ \textcolor{keywordflow}{return}\ FAILURE;\ \textcolor{comment}{//\ nothing\ to\ repack}}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ }
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ recip=.333333/aimnum;}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cut=accum*recip;}
+\DoxyCodeLine{00471\ }
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((cut\ >\ RP\_TOLER\ \&\&\ count<passes))\ \{}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r=.5;\ \textcolor{comment}{//\ to\ help\ with\ debugging}}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rr=.5;}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<aimnum;j++)\ \{}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=inDex[j];}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r=getTriRadius(v);}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(compTriCurv(v,r)-\/p.getAim(v))>cut)\ \{}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rr=e\_RadCalc(v,r,p.getAim(v),N);}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setTriRadius(v,rr);}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ accum=0;}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<aimnum;j++)\ \{}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=inDex[j];}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ err=compTriCurv(v,getTriRadius(v))-\/p.getAim(v);}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accum\ +=\ (err<0)\ ?\ (-\/err)\ :\ err;}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \ \ cut=accum*recip;}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ show\ activity\ }}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((count\ \%\ 10)==0)\ repack\_activity\_msg();}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \}\ \textcolor{comment}{/*\ end\ of\ while\ */}}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00498\ \ \ \ \ \}}
+\DoxyCodeLine{00499\ \ \ \ \ }
+\DoxyCodeLine{00500\ \ \ \ }
+\DoxyCodeLine{00520\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ e\_RadCalc(\textcolor{keywordtype}{int}\ v,\textcolor{keywordtype}{double}\ r,\ \textcolor{keywordtype}{double}\ aim,\textcolor{keywordtype}{int}\ N)\ \{}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ lower=0.5;}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ upper=0.5;}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ factor=0.5;}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ upcurv;}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ lowcurv;}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ compute\ initial\ curvature}}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ curv=compTriCurv(v,r);\ }
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bestcurv=lowcurv=upcurv=curv;}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ may\ hit\ upper/lower\ bounds\ on\ radius}}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bestcurv>(aim+RP\_OKERR))\ \{}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \ \ \ \ upper=r/factor;}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \ \ \ \ upcurv=compTriCurv(v,upper);}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (upcurv>aim)\ \{\ \textcolor{comment}{//\ return\ max\ possible}}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ upper;}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (bestcurv<(aim-\/RP\_OKERR))\ \{}
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \ \ \ \ \ \ lower=r*factor;}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \ \ \ \ lowcurv=compTriCurv(v,lower);}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lowcurv<aim)\ \{\ \textcolor{comment}{//\ return\ min\ possible}}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ lower;}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ iterative\ secand\ method}}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n=1;n<=N;n++)\ \{}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bestcurv>(aim+RP\_OKERR))\ \{}
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lower=r;}
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lowcurv=bestcurv;}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r\ +=\ (aim-\/bestcurv)*(upper-\/r)/(upcurv-\/bestcurv);}
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (bestcurv<(aim-\/RP\_OKERR))\ \{}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ upper=r;}
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ upcurv=bestcurv;}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r\ -\/=\ (bestcurv-\/aim)*(lower-\/r)/(lowcurv-\/bestcurv);}
+\DoxyCodeLine{00558\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ r;}
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \ \ \ \ bestcurv=compTriCurv(v,r);}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00564\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00565\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ r;}
+\DoxyCodeLine{00566\ \ \ \ \ \}}
+\DoxyCodeLine{00567\ \ \ \ \ }
+\DoxyCodeLine{00597\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ affinePack(PackData\ p,\textcolor{keywordtype}{int}\ passes)\ \{}
+\DoxyCodeLine{00598\ \ \ \ \ \ \ \ \ PackDCEL\ pdcel=p.packDCEL;}
+\DoxyCodeLine{00599\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pdcel.triData==\textcolor{keyword}{null}\ ||\ pdcel.triData.length<pdcel.faceCount+2)}
+\DoxyCodeLine{00600\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(}
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}usage\ error:\ 'affinePack'\ needs\ 'PackDCEL.triCata'"{}});}
+\DoxyCodeLine{00602\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count\ =\ 0;}
+\DoxyCodeLine{00603\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ accum=0.0;}
+\DoxyCodeLine{00604\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (passes<=0)}
+\DoxyCodeLine{00605\ \ \ \ \ \ \ \ \ \ \ passes=PASSLIMIT;}
+\DoxyCodeLine{00606\ }
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ vertices\ to\ work\ on\ and\ set\ cutoff\ value}}
+\DoxyCodeLine{00608\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []inDex\ =\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[p.nodeCount+1];}
+\DoxyCodeLine{00609\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ aimnum=0;}
+\DoxyCodeLine{00610\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=p.nodeCount;v++)\ \{}
+\DoxyCodeLine{00611\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.getAim(v)>0)\ \{\ \textcolor{comment}{//\ \ \ p.getAim(j)>0)\ \{}}
+\DoxyCodeLine{00612\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inDex[aimnum++]=v;}
+\DoxyCodeLine{00613\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ curv=ProjStruct.labelAngSum(p,pdcel.triData,v,1.0)[0];}
+\DoxyCodeLine{00614\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ err=curv-\/p.getAim(v);}
+\DoxyCodeLine{00615\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accum\ +=\ (err<0)\ ?\ (-\/err)\ :\ err;}
+\DoxyCodeLine{00616\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00617\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00618\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (aimnum==0)\ }
+\DoxyCodeLine{00619\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;\ \textcolor{comment}{//\ nothing\ to\ repack}}
+\DoxyCodeLine{00620\ \ \ \ \ \ \ }
+\DoxyCodeLine{00621\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ recip=.333333/aimnum;}
+\DoxyCodeLine{00622\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cut=accum*recip;}
+\DoxyCodeLine{00623\ }
+\DoxyCodeLine{00624\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((cut\ >\ RePacker.RP\_TOLER\ \&\&\ count<passes))\ \{}
+\DoxyCodeLine{00625\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<aimnum;j++)\ \{}
+\DoxyCodeLine{00626\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=inDex[j];}
+\DoxyCodeLine{00627\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ asum=ProjStruct.labelAngSum(p,pdcel.triData,v,1.0)[0];}
+\DoxyCodeLine{00628\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ aim=pdcel.p.getAim(v);}
+\DoxyCodeLine{00629\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=p.countFaces(v);}
+\DoxyCodeLine{00630\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ factor=EuclPacker.uniFactor(num,\ asum,\ aim);}
+\DoxyCodeLine{00631\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ProjStruct.adjustLabel(p,pdcel.triData,v,factor);}
+\DoxyCodeLine{00632\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00633\ }
+\DoxyCodeLine{00634\ \ \ \ \ \ \ \ \ \ \ accum=0;}
+\DoxyCodeLine{00635\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<aimnum;j++)\ \{}
+\DoxyCodeLine{00636\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=inDex[j];}
+\DoxyCodeLine{00637\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ curv=ProjStruct.labelAngSum(p,pdcel.triData,v,1.0)[0];}
+\DoxyCodeLine{00638\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ err=curv-\/p.getAim(v);}
+\DoxyCodeLine{00639\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accum\ +=\ (err<0)\ ?\ (-\/err)\ :\ err;}
+\DoxyCodeLine{00640\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00641\ \ \ \ \ \ \ \ \ \ \ cut=accum*recip;}
+\DoxyCodeLine{00642\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00643\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ show\ activity\ }}
+\DoxyCodeLine{00644\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ if\ ((count\ \%\ 10)==0)\ repack\_activity\_msg();}}
+\DoxyCodeLine{00645\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00646\ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00647\ \ \ \ \ \ \ \}\ \textcolor{comment}{/*\ end\ of\ while\ */}}
+\DoxyCodeLine{00648\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00649\ \ \ \ \ \}}
+\DoxyCodeLine{00650\ \ \ \ \ }
+\DoxyCodeLine{00659\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ polyPack(PackData\ p,NodeLink\ crns,\textcolor{keywordtype}{boolean}\ okayC)\ \{}
+\DoxyCodeLine{00660\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=crns.size();}
+\DoxyCodeLine{00661\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)\ \{}
+\DoxyCodeLine{00662\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!p.isBdry(crns.get(i)))}
+\DoxyCodeLine{00663\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}corners\ must\ be\ bdry\ vertices"{}});}
+\DoxyCodeLine{00664\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00665\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=crns.get(1);\ \textcolor{comment}{//\ second}}
+\DoxyCodeLine{00666\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=crns.get(0);\ \textcolor{comment}{//\ first}}
+\DoxyCodeLine{00667\ }
+\DoxyCodeLine{00668\ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(p,\textcolor{stringliteral}{"{}geom\_to\_e"{}});}
+\DoxyCodeLine{00669\ \ \ \ \ \ \ \ \ p.set\_aim\_default();}
+\DoxyCodeLine{00670\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00671\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ use\ traditional\ java\ packing\ routine\ calls;\ }}
+\DoxyCodeLine{00672\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Note\ that\ old\ C\ calls\ are\ no\ longer\ used\ }}
+\DoxyCodeLine{00673\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!okayC\ ||\ p.nodeCount<GOPACK\_THRESHOLD)\ \{}
+\DoxyCodeLine{00674\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00675\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ the\ aims}}
+\DoxyCodeLine{00676\ \ \ \ \ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(p,\textcolor{stringliteral}{"{}set\_aim\ 1.0\ b"{}});}
+\DoxyCodeLine{00677\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ angles=1-\/2.0/((double)n);}
+\DoxyCodeLine{00678\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ strbld=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}set\_aim\ "{}}+angles+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00679\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)}
+\DoxyCodeLine{00680\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbld.append(crns.get(i)+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00681\ \ \ \ \ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(p,strbld.toString());}
+\DoxyCodeLine{00682\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00683\ \ \ \ \ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(p,\textcolor{stringliteral}{"{}repack\ 1000"{}});}
+\DoxyCodeLine{00684\ \ \ \ \ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(p,\textcolor{stringliteral}{"{}layout"{}});}
+\DoxyCodeLine{00685\ \ \ \ \ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(p,\textcolor{stringliteral}{"{}norm\_scale\ -\/u\ "{}}+v);}
+\DoxyCodeLine{00686\ \ \ \ \ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(p,\textcolor{stringliteral}{"{}norm\_scale\ -\/h\ "{}}+v+\textcolor{stringliteral}{"{}\ "{}}+w);}
+\DoxyCodeLine{00687\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00688\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00689\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00690\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ from\ command}}
+\DoxyCodeLine{00691\ \ \ \ \ \ \ \ \ StringBuilder\ strbld=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}GOpack\ -\/b"{}}+n+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00692\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<n;i++)\ }
+\DoxyCodeLine{00693\ \ \ \ \ \ \ \ \ \ \ \ \ strbld.append(crns.get(i)+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00694\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00695\ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(p,strbld.toString());}
+\DoxyCodeLine{00696\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ CommandStrParser.jexecute(p,\textcolor{stringliteral}{"{}GOpack\ -\/c\ 30"{}});}
+\DoxyCodeLine{00697\ \ \ \ \ \}}
+\DoxyCodeLine{00698\ \ \ \ \ }
+\DoxyCodeLine{00728\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}[]\ euclPerron(PackData\ p,\ \textcolor{keywordtype}{int}\ direction,\ \textcolor{keywordtype}{int}\ passes)\ \{}
+\DoxyCodeLine{00729\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ results\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[4];}
+\DoxyCodeLine{00730\ \ \ \ \ \ \ \ \ results[0]\ =\ results[1]\ =\ results[2]\ =\ results[3]\ =\ FAILURE;}
+\DoxyCodeLine{00731\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dirSign\ =\ -\/1.0;}
+\DoxyCodeLine{00732\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (direction\ >=\ 0)}
+\DoxyCodeLine{00733\ \ \ \ \ \ \ \ \ \ \ \ \ dirSign\ =\ 1.0;}
+\DoxyCodeLine{00734\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ both\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00735\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (direction\ ==\ 2\ ||\ direction\ ==\ -\/2\ ||\ direction\ ==\ 0)}
+\DoxyCodeLine{00736\ \ \ \ \ \ \ \ \ \ \ \ \ both\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00737\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count\ =\ 0;}
+\DoxyCodeLine{00738\ }
+\DoxyCodeLine{00739\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ whom\ to\ repack?}}
+\DoxyCodeLine{00740\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ aimNum\ =\ 0;}
+\DoxyCodeLine{00741\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ inDex\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[p.nodeCount\ +\ 1];}
+\DoxyCodeLine{00742\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k\ =\ 1;\ k\ <=\ p.nodeCount;\ k++)\ \{}
+\DoxyCodeLine{00743\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.getAim(k)\ >\ 0)\ \{}
+\DoxyCodeLine{00744\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inDex[aimNum]\ =\ k;}
+\DoxyCodeLine{00745\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aimNum++;}
+\DoxyCodeLine{00746\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00747\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00748\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (aimNum\ ==\ 0)\ \{\ \textcolor{comment}{//\ nothing\ to\ repack}}
+\DoxyCodeLine{00749\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ results;}
+\DoxyCodeLine{00750\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00751\ }
+\DoxyCodeLine{00752\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===============\ First\ stage\ ======================}}
+\DoxyCodeLine{00753\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ radii\ going\ up\ if\ direction>=0\ or\ else\ down:}}
+\DoxyCodeLine{00754\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ compute\ discrepency\ from\ being\ super/subpacking}}
+\DoxyCodeLine{00755\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ discrepency\ =\ 0.0;}
+\DoxyCodeLine{00756\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ fbest\ =\ 0.0;}
+\DoxyCodeLine{00757\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ aimNum;\ j++)\ \{}
+\DoxyCodeLine{00758\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v\ =\ inDex[j];}
+\DoxyCodeLine{00759\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ vaim\ =\ p.getAim(v);}
+\DoxyCodeLine{00760\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r\ =\ p.getRadius(v);}
+\DoxyCodeLine{00761\ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ =\ 0.0;}
+\DoxyCodeLine{00762\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower\ =\ p.packDCEL.vertices[v].getFlower(\textcolor{keyword}{true});}
+\DoxyCodeLine{00763\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=flower.length-\/1;}
+\DoxyCodeLine{00764\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2\ =\ p.getRadius(flower[0]);}
+\DoxyCodeLine{00765\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00766\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n\ =\ 1;\ n\ <=\ num;\ n++)\ \{}
+\DoxyCodeLine{00767\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ m1\ =\ m2;}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r2\ =\ p.getRadius(flower[n]);}
+\DoxyCodeLine{00769\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00770\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ +=\ Math.acos(1\ -\/\ 2\ *\ m1\ *\ m2);}
+\DoxyCodeLine{00771\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00772\ \ \ \ \ \ \ \ \ \ \ \ \ p.setCurv(v,\ fbest);}
+\DoxyCodeLine{00773\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ diff2\ =\ dirSign\ *\ (fbest\ -\/\ vaim);}
+\DoxyCodeLine{00774\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (diff2\ >\ 0.0)}
+\DoxyCodeLine{00775\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ discrepency\ +=\ diff2\ *\ diff2;}
+\DoxyCodeLine{00776\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00777\ }
+\DoxyCodeLine{00778\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Perron\ until\ we\ have\ a\ super/subpacking\ (or\ pass\ out)}}
+\DoxyCodeLine{00779\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety\ =\ 0;}
+\DoxyCodeLine{00780\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (safety\ <\ passes\ \&\&\ discrepency\ >\ RP\_TOLER)\ \{}
+\DoxyCodeLine{00781\ \ \ \ \ \ \ \ \ \ \ \ \ safety++;}
+\DoxyCodeLine{00782\ \ \ \ \ \ \ \ \ \ \ \ \ discrepency\ =\ 0.0;}
+\DoxyCodeLine{00783\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ aimNum;\ j++)\ \{}
+\DoxyCodeLine{00784\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v\ =\ inDex[j];}
+\DoxyCodeLine{00785\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ vaim\ =\ p.getAim(v);}
+\DoxyCodeLine{00786\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r\ =\ p.getRadius(v);}
+\DoxyCodeLine{00787\ }
+\DoxyCodeLine{00788\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ anglesum\ for\ initial\ r\ (nghb's\ may\ have\ changed)}}
+\DoxyCodeLine{00789\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ =\ 0.0;}
+\DoxyCodeLine{00790\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower\ =\ p.packDCEL.vertices[v].getFlower(\textcolor{keyword}{true});}
+\DoxyCodeLine{00791\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=flower.length-\/1;}
+\DoxyCodeLine{00792\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2\ =\ p.getRadius(flower[0]);}
+\DoxyCodeLine{00793\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00794\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n\ =\ 1;\ n\ <=\ num;\ n++)\ \{}
+\DoxyCodeLine{00795\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ m1\ =\ m2;}
+\DoxyCodeLine{00796\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r2\ =\ p.getRadius(flower[n]);}
+\DoxyCodeLine{00797\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00798\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ +=\ Math.acos(1\ -\/\ 2\ *\ m1\ *\ m2);}
+\DoxyCodeLine{00799\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00800\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setCurv(v,\ fbest);}
+\DoxyCodeLine{00801\ }
+\DoxyCodeLine{00802\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ sub/superpacking\ at\ v?\ want\ to\ adjust\ radius}}
+\DoxyCodeLine{00803\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ diff2\ =\ dirSign\ *\ (fbest\ -\/\ vaim);}
+\DoxyCodeLine{00804\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (diff2\ >\ RP\_TOLER)\ \{\ \textcolor{comment}{//\ uniform\ neighbor\ computation}}
+\DoxyCodeLine{00805\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N\ =\ 2\ *\ num;}
+\DoxyCodeLine{00806\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ del\ =\ Math.sin(vaim\ /\ N);}
+\DoxyCodeLine{00807\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bet\ =\ Math.sin(fbest\ /\ N);}
+\DoxyCodeLine{00808\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r\ =\ r\ *\ bet\ *\ (1\ -\/\ del)\ /\ (del\ *\ (1\ -\/\ bet));}
+\DoxyCodeLine{00809\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(v,\ r);}
+\DoxyCodeLine{00810\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00811\ }
+\DoxyCodeLine{00812\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ the\ anglesum\ for\ new\ r}}
+\DoxyCodeLine{00813\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ =\ 0.0;}
+\DoxyCodeLine{00814\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r2\ =\ p.getRadius(flower[0]);}
+\DoxyCodeLine{00815\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00816\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n\ =\ 1;\ n\ <=\ num;\ n++)\ \{}
+\DoxyCodeLine{00817\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ m1\ =\ m2;}
+\DoxyCodeLine{00818\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r2\ =\ p.getRadius(flower[n]);}
+\DoxyCodeLine{00819\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00820\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ +=\ Math.acos(1\ -\/\ 2\ *\ m1\ *\ m2);}
+\DoxyCodeLine{00821\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00822\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setCurv(v,\ fbest);}
+\DoxyCodeLine{00823\ }
+\DoxyCodeLine{00824\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ squared\ discrepency}}
+\DoxyCodeLine{00825\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ diff2\ =\ dirSign\ *\ (fbest\ -\/\ vaim);}
+\DoxyCodeLine{00826\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (diff2\ <\ -\/(100\ *\ RP\_TOLER))\ \{}
+\DoxyCodeLine{00827\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ PackingException(\textcolor{stringliteral}{"{}uniform\ neighbor\ computation\ overshoots\ at\ v="{}}\ +\ v);}
+\DoxyCodeLine{00828\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00829\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00830\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (diff2\ >\ 0.0)}
+\DoxyCodeLine{00831\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ discrepency\ +=\ diff2\ *\ diff2;}
+\DoxyCodeLine{00832\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00833\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while\ loop}}
+\DoxyCodeLine{00834\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dirSign\ >=\ 0)\ \textcolor{comment}{//\ upward}}
+\DoxyCodeLine{00835\ \ \ \ \ \ \ \ \ \ \ \ \ results[1]\ =\ Math.sqrt(discrepency);}
+\DoxyCodeLine{00836\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00837\ \ \ \ \ \ \ \ \ \ \ \ \ results[2]\ =\ Math.sqrt(discrepency);}
+\DoxyCodeLine{00838\ }
+\DoxyCodeLine{00839\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ failed?}}
+\DoxyCodeLine{00840\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (safety\ ==\ passes)\ \{}
+\DoxyCodeLine{00841\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dirSign\ >\ 0)}
+\DoxyCodeLine{00842\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}failed\ to\ get\ a\ superpacking\ in\ euclPerron"{}});}
+\DoxyCodeLine{00843\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00844\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}failed\ to\ get\ a\ subpacking\ in\ euclPerron"{}});}
+\DoxyCodeLine{00845\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00846\ }
+\DoxyCodeLine{00847\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ to\ prepare\ for\ stage\ 2\ or\ return,\ update\ discrepency\ and\ accum}}
+\DoxyCodeLine{00848\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ accum\ =\ 0.0;}
+\DoxyCodeLine{00849\ \ \ \ \ \ \ \ \ discrepency\ =\ 0.0;}
+\DoxyCodeLine{00850\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ aimNum;\ j++)\ \{}
+\DoxyCodeLine{00851\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v\ =\ inDex[j];}
+\DoxyCodeLine{00852\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ vaim\ =\ p.getAim(v);}
+\DoxyCodeLine{00853\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r\ =\ p.getRadius(v);}
+\DoxyCodeLine{00854\ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ =\ 0.0;}
+\DoxyCodeLine{00855\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower\ =\ p.packDCEL.vertices[v].getFlower(\textcolor{keyword}{true});}
+\DoxyCodeLine{00856\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=flower.length-\/1;}
+\DoxyCodeLine{00857\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2\ =\ p.getRadius(flower[0]);}
+\DoxyCodeLine{00858\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00859\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n\ =\ 1;\ n\ <=\ num;\ n++)\ \{}
+\DoxyCodeLine{00860\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ m1\ =\ m2;}
+\DoxyCodeLine{00861\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r2\ =\ p.getRadius(flower[n]);}
+\DoxyCodeLine{00862\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00863\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ +=\ Math.acos(1\ -\/\ 2\ *\ m1\ *\ m2);}
+\DoxyCodeLine{00864\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00865\ \ \ \ \ \ \ \ \ \ \ \ \ p.setCurv(v,\ fbest);}
+\DoxyCodeLine{00866\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ diff\ =\ fbest\ -\/\ vaim;}
+\DoxyCodeLine{00867\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sqdiff\ =\ diff\ *\ diff;}
+\DoxyCodeLine{00868\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (diff\ >\ 0.0)}
+\DoxyCodeLine{00869\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ discrepency\ +=\ sqdiff;}
+\DoxyCodeLine{00870\ \ \ \ \ \ \ \ \ \ \ \ \ accum\ +=\ sqdiff;}
+\DoxyCodeLine{00871\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00872\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sqError\ =\ Math.sqrt(accum);}
+\DoxyCodeLine{00873\ }
+\DoxyCodeLine{00874\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!both)\ \{\ \textcolor{comment}{//\ return\ after\ the\ first\ stage}}
+\DoxyCodeLine{00875\ \ \ \ \ \ \ \ \ \ \ \ \ results[0]\ =\ count;}
+\DoxyCodeLine{00876\ \ \ \ \ \ \ \ \ \ \ \ \ results[3]\ =\ sqError;}
+\DoxyCodeLine{00877\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ results;}
+\DoxyCodeLine{00878\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00879\ }
+\DoxyCodeLine{00880\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===============\ Second\ stage\ (optional)\ =================}}
+\DoxyCodeLine{00881\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ radii\ going\ down\ if\ direction>=0\ or\ else\ up:}}
+\DoxyCodeLine{00882\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ cutoff\ value}}
+\DoxyCodeLine{00883\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ recip\ =\ .333333\ /\ aimNum;}
+\DoxyCodeLine{00884\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cut\ =\ sqError\ *\ recip;}
+\DoxyCodeLine{00885\ }
+\DoxyCodeLine{00886\ \ \ \ \ \ \ \ \ safety\ =\ 0;}
+\DoxyCodeLine{00887\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (both\ \&\&\ (cut\ >\ RP\_TOLER)\ \&\&\ safety\ <\ passes)\ \{}
+\DoxyCodeLine{00888\ \ \ \ \ \ \ \ \ \ \ \ \ safety++;}
+\DoxyCodeLine{00889\ \ \ \ \ \ \ \ \ \ \ \ \ accum\ =\ 0.0;}
+\DoxyCodeLine{00890\ \ \ \ \ \ \ \ \ \ \ \ \ discrepency\ =\ 0.0;}
+\DoxyCodeLine{00891\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ aimNum;\ j++)\ \{}
+\DoxyCodeLine{00892\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v\ =\ inDex[j];}
+\DoxyCodeLine{00893\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ vaim\ =\ p.getAim(v);}
+\DoxyCodeLine{00894\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r\ =\ p.getRadius(v);}
+\DoxyCodeLine{00895\ }
+\DoxyCodeLine{00896\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ the\ anglesum}}
+\DoxyCodeLine{00897\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ =\ 0.0;}
+\DoxyCodeLine{00898\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower\ =\ p.packDCEL.vertices[v].getFlower(\textcolor{keyword}{true});}
+\DoxyCodeLine{00899\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=flower.length-\/1;}
+\DoxyCodeLine{00900\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2\ =\ p.getRadius(flower[0]);}
+\DoxyCodeLine{00901\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00902\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n\ =\ 1;\ n\ <=\ num;\ n++)\ \{}
+\DoxyCodeLine{00903\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ m1\ =\ m2;}
+\DoxyCodeLine{00904\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r2\ =\ p.getRadius(flower[n]);}
+\DoxyCodeLine{00905\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00906\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ +=\ Math.acos(1\ -\/\ 2\ *\ m1\ *\ m2);}
+\DoxyCodeLine{00907\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00908\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setCurv(v,\ fbest);}
+\DoxyCodeLine{00909\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ diff2\ =\ dirSign\ *\ (fbest\ -\/\ vaim);}
+\DoxyCodeLine{00910\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (diff2\ <\ -\/(100\ *\ RP\_TOLER))\ \{}
+\DoxyCodeLine{00911\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ uniform\ neighbor\ computation}}
+\DoxyCodeLine{00912\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N\ =\ 2\ *\ num;}
+\DoxyCodeLine{00913\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ del\ =\ Math.sin(vaim\ /\ N);}
+\DoxyCodeLine{00914\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bet\ =\ Math.sin(fbest\ /\ N);}
+\DoxyCodeLine{00915\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r\ =\ r\ *\ bet\ *\ (1\ -\/\ del)\ /\ (del\ *\ (1\ -\/\ bet));}
+\DoxyCodeLine{00916\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(v,\ r2);}
+\DoxyCodeLine{00917\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00918\ }
+\DoxyCodeLine{00919\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ the\ anglesum\ for\ new\ r}}
+\DoxyCodeLine{00920\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ =\ 0;}
+\DoxyCodeLine{00921\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r2\ =\ p.getRadius(flower[0]);}
+\DoxyCodeLine{00922\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00923\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n\ =\ 1;\ n\ <=\ num;\ n++)\ \{}
+\DoxyCodeLine{00924\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ m1\ =\ m2;}
+\DoxyCodeLine{00925\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r2\ =\ p.getRadius(flower[n]);}
+\DoxyCodeLine{00926\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00927\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ +=\ Math.acos(1\ -\/\ 2\ *\ m1\ *\ m2);}
+\DoxyCodeLine{00928\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00929\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setCurv(v,\ fbest);}
+\DoxyCodeLine{00930\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00931\ }
+\DoxyCodeLine{00932\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ diff2\ and\ gather\ data}}
+\DoxyCodeLine{00933\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ diff2\ =\ dirSign\ *\ (p.getAim(v)\ -\/\ vaim);}
+\DoxyCodeLine{00934\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sqdiff\ =\ diff2\ *\ diff2;}
+\DoxyCodeLine{00935\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (diff2\ <\ -\/(100\ *\ RP\_TOLER))\ \{}
+\DoxyCodeLine{00936\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ discrepency\ +=\ sqdiff;}
+\DoxyCodeLine{00937\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00938\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accum\ +=\ sqdiff;}
+\DoxyCodeLine{00939\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ for\ loop}}
+\DoxyCodeLine{00940\ }
+\DoxyCodeLine{00941\ \ \ \ \ \ \ \ \ \ \ \ \ sqError\ =\ Math.sqrt(accum);}
+\DoxyCodeLine{00942\ \ \ \ \ \ \ \ \ \ \ \ \ cut\ =\ sqError\ *\ recip;}
+\DoxyCodeLine{00943\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ note\ that\ 'cut'\ is\ old\ data;\ in\ downward\ Perron,\ the}}
+\DoxyCodeLine{00944\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ accumulated\ error\ should\ be\ less\ than\ accum.}}
+\DoxyCodeLine{00945\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while\ loop}}
+\DoxyCodeLine{00946\ }
+\DoxyCodeLine{00947\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ accum\ and\ discrepency\ before\ returning}}
+\DoxyCodeLine{00948\ \ \ \ \ \ \ \ \ accum\ =\ 0.0;}
+\DoxyCodeLine{00949\ \ \ \ \ \ \ \ \ discrepency\ =\ 0.0;}
+\DoxyCodeLine{00950\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ aimNum;\ j++)\ \{}
+\DoxyCodeLine{00951\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v\ =\ inDex[j];}
+\DoxyCodeLine{00952\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ vaim\ =\ p.getAim(v);}
+\DoxyCodeLine{00953\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r\ =\ p.getRadius(v);}
+\DoxyCodeLine{00954\ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ =\ 0.0;}
+\DoxyCodeLine{00955\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower\ =\ p.packDCEL.vertices[v].getFlower(\textcolor{keyword}{true});}
+\DoxyCodeLine{00956\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=flower.length-\/1;}
+\DoxyCodeLine{00957\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2\ =\ p.getRadius(flower[0]);}
+\DoxyCodeLine{00958\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00959\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n\ =\ 1;\ n\ <=\ num;\ n++)\ \{}
+\DoxyCodeLine{00960\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ m1\ =\ m2;}
+\DoxyCodeLine{00961\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r2\ =\ p.getRadius(flower[n]);}
+\DoxyCodeLine{00962\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m2\ =\ r2\ /\ (r\ +\ r2);}
+\DoxyCodeLine{00963\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fbest\ +=\ Math.acos(1\ -\/\ 2\ *\ m1\ *\ m2);}
+\DoxyCodeLine{00964\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00965\ \ \ \ \ \ \ \ \ \ \ \ \ p.setCurv(v,\ fbest);}
+\DoxyCodeLine{00966\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ diff\ =\ fbest\ -\/\ vaim;}
+\DoxyCodeLine{00967\ \ \ \ \ \ \ \ \ \ \ \ \ diff\ =\ diff\ *\ diff;}
+\DoxyCodeLine{00968\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (diff\ <\ 0.0)}
+\DoxyCodeLine{00969\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ discrepency\ +=\ diff;}
+\DoxyCodeLine{00970\ \ \ \ \ \ \ \ \ \ \ \ \ accum\ +=\ diff;}
+\DoxyCodeLine{00971\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00972\ \ \ \ \ \ \ \ \ sqError\ =\ Math.sqrt(accum);}
+\DoxyCodeLine{00973\ }
+\DoxyCodeLine{00974\ \ \ \ \ \ \ \ \ results[0]\ =\ count;}
+\DoxyCodeLine{00975\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dirSign\ >=\ 0)\ \textcolor{comment}{//\ up/down}}
+\DoxyCodeLine{00976\ \ \ \ \ \ \ \ \ \ \ \ \ results[2]\ =\ Math.sqrt(discrepency);}
+\DoxyCodeLine{00977\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{comment}{//\ down/up}}
+\DoxyCodeLine{00978\ \ \ \ \ \ \ \ \ \ \ \ \ results[1]\ =\ Math.sqrt(discrepency);}
+\DoxyCodeLine{00979\ \ \ \ \ \ \ \ \ results[3]\ =\ sqError;}
+\DoxyCodeLine{00980\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ results;}
+\DoxyCodeLine{00981\ \ \ \ \ \}}
+\DoxyCodeLine{00982\ \ \ \ \ }
+\DoxyCodeLine{00998\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ uniFactor(\textcolor{keywordtype}{int}\ num,\textcolor{keywordtype}{double}\ asum,\textcolor{keywordtype}{double}\ aim)\ \{}
+\DoxyCodeLine{00999\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N\ =\ 2*num;}
+\DoxyCodeLine{01000\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ assume\ all\ petals\ have\ radius\ 1.0}}
+\DoxyCodeLine{01001\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ del\ =\ Math.sin(aim/N);}
+\DoxyCodeLine{01002\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bet\ =\ Math.sin(asum/N);}
+\DoxyCodeLine{01003\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ current\ rad\ r=(1/bet)-\/1.0,\ desired\ rad\ R=(1/del)-\/1.0,\ }}
+\DoxyCodeLine{01004\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ so\ return\ R/r}}
+\DoxyCodeLine{01005\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ((1.0/del)-\/1.0)/((1.0/bet)-\/1.0);}
+\DoxyCodeLine{01006\ \ \ \ \ \}}
+\DoxyCodeLine{01007\ }
+\DoxyCodeLine{01008\ \}}
+
+\end{DoxyCode}

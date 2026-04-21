@@ -1,0 +1,575 @@
+\doxysection{Eucl\+Math.\+java}
+\label{_eucl_math_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/geometry/EuclMath.java@{C:/Users/ashej/myGitRepos/CirclePack/src/geometry/EuclMath.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }geometry;}
+\DoxyCodeLine{00002\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ baryStuff.BaryPoint;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ combinatorics.komplex.RedEdge;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ dcel.PackDCEL;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ math.Mobius;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ math.Point3D;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ util.RadIvdPacket;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }EuclMath\{}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ OKERR=.000000001;\ \textcolor{comment}{//\ TODO:\ set\ more\ rationally}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ CircleSimple\ circle\_3(Complex\ z1,\ Complex\ z2,\ Complex\ z3)\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a1\ =\ z2.x-\/z1.x;}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a2\ =\ z3.x-\/z2.x;}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ b1\ =\ z2.y-\/z1.y;}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ b2\ =\ z3.y-\/z2.y;}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ det\ =\ (a1\ *\ b2\ -\/\ b1\ *\ a2);}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(det)\ <\ 0.0000000000001)\ \textcolor{comment}{//\ return\ with\ radius\ 0.0}}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CircleSimple(\textcolor{keyword}{false});}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dum\ =\ z2.absSq()/2.0;}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c1\ =\ dum-\/z1.absSq()/2.0;}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c2\ =\ z3.absSq()/2.0-\/dum;}
+\DoxyCodeLine{00052\ }
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ Complex\ cent=\textcolor{keyword}{new}\ Complex((b2*c1-\/b1*c2)/det,(a1*c2-\/a2*c1)/det);}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c\_rad=cent.minus(z1).abs();}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CircleSimple(cent,c\_rad,1);}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \ \ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ e\_cos\_overlap(\textcolor{keywordtype}{double}\ r0,\ \textcolor{keywordtype}{double}\ r1,\ \textcolor{keywordtype}{double}\ r2,}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ivd0,\ \textcolor{keywordtype}{double}\ ivd1,\ \textcolor{keywordtype}{double}\ ivd2)\ \{}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((ivd0==1.0)\ \&\&\ (ivd1==1.0)\ \&\&\ (ivd2==1.0))}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ e\_cos\_overlap(r0,r1,r2);}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ squared\ radii}}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ e0sq\ =\ r0\ *\ r0;}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ e1sq\ =\ r1\ *\ r1;}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ e2sq\ =\ r2\ *\ r2;}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ edge\ lengths\ squared}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t0=2.0*r0*r1*ivd0;}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t1=2.0*r1*r2*ivd1;}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t2=2.0*r2*r0*ivd2;}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ len0sq=e0sq+e1sq+t0;}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ len1sq=e1sq+e2sq+t1;}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ len2sq=e2sq+e0sq+t2;}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cos\_ang=(len0sq+len2sq-\/len1sq)/(2.0*Math.sqrt(len0sq\ *\ len2sq));}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cos\_ang\ <\ -\/1.0\ ||\ cos\_ang>1.0)\ \{\ \textcolor{comment}{//\ error?\ }}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cos\_ang>1.0)}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ .9999999999;\ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cos\_ang<-\/1.0)}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/.9999999999;}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cos\_ang;}
+\DoxyCodeLine{00095\ \ \ \ \ \}}
+\DoxyCodeLine{00096\ \ \ \ \ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ e\_cos\_overlap(\textcolor{keywordtype}{double}\ r0,\ \textcolor{keywordtype}{double}\ r1,\ \textcolor{keywordtype}{double}\ r2)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c=r1*r2;}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1-\/2*c/(r0*(r0+r1+r2)+c);}
+\DoxyCodeLine{00109\ \ \ \ \ \}}
+\DoxyCodeLine{00110\ \ \ \ \ }
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ e\_cos\_corners(Complex\ z0,Complex\ z1,Complex\ z2)\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l1=z1.minus(z0).abs();}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l2=z2.minus(z0).abs();}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l12=z2.minus(z1).abs();}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ denom=2.0*l1*l2;}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (l1*l1+l2*l2-\/l12*l12)/denom;}
+\DoxyCodeLine{00125\ \ \ \ \ \}}
+\DoxyCodeLine{00126\ \ \ \ \ }
+\DoxyCodeLine{00127\ \ \ \ \ }
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ e\_cos\_3D(Point3D\ p0,Point3D\ p1,Point3D\ p2)\ \{}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l0=Point3D.distance(p0,\ p1);}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l2=Point3D.distance(p2,\ p0);}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l1=Point3D.distance(p1,\ p2);}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ denom=2.0*l0*l2;}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (l0*l0+l2*l2-\/l1*l1)/denom;}
+\DoxyCodeLine{00142\ \ \ \ \ \}}
+\DoxyCodeLine{00143\ \ \ \ \ }
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ eArea(RadIvdPacket\ rip)\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ eArea(rip.rad[0],rip.rad[1],rip.rad[2],}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rip.ivd[0],rip.ivd[1],rip.ivd[2]);}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ \ \ \ \ }
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ eArea(\textcolor{keywordtype}{double}\ r0,\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t0,\textcolor{keywordtype}{double}\ t1,\textcolor{keywordtype}{double}\ t2)\ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a=e\_ivd\_length(r0,r1,t0);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ b=e\_ivd\_length(r1,r2,t1);}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c=e\_ivd\_length(r2,r0,t2);}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.sqrt((a+b+c)*(a+b-\/c)*(a+c-\/b)*(b+c-\/a))/4.0;}
+\DoxyCodeLine{00172\ \ \ \ \ \}}
+\DoxyCodeLine{00173\ \ \ \ \ }
+\DoxyCodeLine{00183\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ doesItHit(Complex\ p1,\ Complex\ p2,}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ a,Complex\ b,Complex\ c)\ \{}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ Complex\ v=p2.minus(p1);}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v.abs()<.00000001)\ }
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}points\ are\ too\ close"{}});}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ Complex\ p1a=a.minus(p1);}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ Complex\ p1b=b.minus(p1);}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ Complex\ p1c=c.minus(p1);}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ arga=p1a.divide(v).arg();}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ argb=p1b.divide(v).arg();}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ argc=p1c.divide(v).arg();}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((arga>EuclMath.OKERR\ \&\&\ argb>EuclMath.OKERR}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ argc>EuclMath.OKERR)\ ||}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (arga<-\/EuclMath.OKERR\ \&\&\ argb<-\/EuclMath.OKERR}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ argc<-\/EuclMath.OKERR))}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00201\ \ \ \ \ \}}
+\DoxyCodeLine{00202\ \ \ \ \ }
+\DoxyCodeLine{00211\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ pt\_in\_eucl\_tri(Complex\ p1,}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ a,Complex\ b,Complex\ c)\ \{}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((a.x-\/p1.x)*(b.y-\/p1.y)-\/(b.x-\/p1.x)*(a.y-\/p1.y)<0)\ }
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((b.x-\/p1.x)*(c.y-\/p1.y)-\/(c.x-\/p1.x)*(b.y-\/p1.y)<0)\ }
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((c.x-\/p1.x)*(a.y-\/p1.y)-\/(a.x-\/p1.x)*(c.y-\/p1.y)<0)\ }
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00220\ \ \ \ \ \}}
+\DoxyCodeLine{00221\ \ \ \ \ }
+\DoxyCodeLine{00232\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ BaryPoint\ e\_pt\_to\_bary(Complex\ z,}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z0,Complex\ z1,Complex\ z2)\ \{}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ linear\ alg:\ 2x2\ T}}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a=z0.x-\/z2.x;}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ b=z1.x-\/z2.x;}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c=z0.y-\/z2.y;}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d=z1.y-\/z2.y;}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ det=a*d-\/b*c;}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(det)<CPBase.GENERIC\_TOLER)\ \{\ \textcolor{comment}{//\ points\ colinear}}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ can\ find\ two\ non-\/zero\ corners,\ use\ them\ and\ origin}}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=z.x-\/z2.x;}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ y=z.y-\/z2.y;}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ solve\ inv(T)(x,y)\ =\ (b1,\ b2)}}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keyword}{new}\ BaryPoint((d*x-\/b*y)/det,(-\/c*x+a*y)/det));}
+\DoxyCodeLine{00250\ \ \ \ \ \}}
+\DoxyCodeLine{00251\ }
+\DoxyCodeLine{00264\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Complex\ firstHit(Complex\ p1,Complex\ p2,}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ A,Complex\ B,Complex\ C)\ \{}
+\DoxyCodeLine{00266\ }
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pt\_in\_eucl\_tri(p1,A,B,C))\ }
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Complex(p1);}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ Complex\ p12=p2.minus(p1);}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p12.abs()<.000001)}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}p1\ is\ not\ supposed\ to\ equal\ p2"{}});}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ one\ of\ bp\ coords\ must\ be\ <\ 0,\ rotate\ so\ that's\ a}}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ BaryPoint\ bp=EuclMath.e\_pt\_to\_bary(p1,A,B,C);}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ Complex\ a=\textcolor{keyword}{null};}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ Complex\ b=\textcolor{keyword}{null};}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ Complex\ c=\textcolor{keyword}{null};}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bp.b0<0)\ \{}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ a=\textcolor{keyword}{new}\ Complex(A);}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ b=\textcolor{keyword}{new}\ Complex(B);}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ c=\textcolor{keyword}{new}\ Complex(C);}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (bp.b1<0)\ \{}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ a=\textcolor{keyword}{new}\ Complex(B);}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ b=\textcolor{keyword}{new}\ Complex(C);}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ c=\textcolor{keyword}{new}\ Complex(A);}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (bp.b2<0)\ \{}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ a=\textcolor{keyword}{new}\ Complex(C);}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ b=\textcolor{keyword}{new}\ Complex(A);}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ c=\textcolor{keyword}{new}\ Complex(B);}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}implies\ p1\ is\ in\ triangle"{}});}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ Complex\ p1a=a.minus(p1);}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ Complex\ p1b=b.minus(p1);}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ Complex\ p1c=c.minus(p1);}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ arga=p1a.divide(p12).arg();}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ argb=p1b.divide(p12).arg();}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ argc=p1c.divide(p12).arg();}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ all\ on\ one\ side\ or\ other?}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((arga>=-\/OKERR\ \&\&\ argb>=-\/OKERR\ \&\&\ argc>=-\/OKERR)\ ||}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (arga<=OKERR\ \&\&\ argb<=OKERR\ \&\&\ argc<=OKERR))\ \{}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ line\ pts\ at\ some\ corner?}}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(arga)<OKERR\ ||\ Math.abs(argb)<OKERR\ ||\ }
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Math.abs(argc)<OKERR)\ \{}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(argb)<OKERR)\ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(argc)<OKERR\ \&\&\ }
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p12.minus(p1b).abs()>=p12.minus(p1c).abs())}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Complex(c);}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Complex(b);}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(argc)<OKERR)}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Complex(c);}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Complex(a);\ \textcolor{comment}{//\ since\ all\ one\ side}}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00321\ }
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ which\ side\ is\ seen\ from\ p1?\ [a\ b],\ [b\ c],\ or\ [c\ a]?}}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (argc<0\ \&\&\ argb\ >0)\ \textcolor{comment}{//\ note:\ must\ have\ argc\ <\ argb\ }}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ segIntersect(p1,p2,b,c);}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (arga<0)\ \ \textcolor{comment}{//\ b\ c\ must\ be\ on\ left}}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ segIntersect(p1,p2,c,a);}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ segIntersect(p1,p2,a,b);}
+\DoxyCodeLine{00328\ \ \ \ \ \}}
+\DoxyCodeLine{00329\ }
+\DoxyCodeLine{00340\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Complex\ segIntersect(Complex\ p1,Complex\ p2,}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ a,Complex\ b)\ \{}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ Complex\ p1b=b.minus(p1);}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p1b.abs()<OKERR)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Complex(p1);\ \textcolor{comment}{//\ p1\ ==\ b}}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ Complex\ p1p2=p2.minus(p1);}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ Complex\ p1a=a.minus(p1);}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p1a.abs()<OKERR)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Complex(p1);\ \textcolor{comment}{//\ p1==a}}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ theta=p1p2.divide(p1b).arg();}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (theta<-\/OKERR)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ \textcolor{comment}{//\ b\ not\ to\ right?}}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ phi=p1a.divide(p1p2).arg();}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (phi<-\/OKERR)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ \textcolor{comment}{//\ a\ not\ to\ left?}}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ for\ p1\ on\ [a\ b]}}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ Complex\ ab=b.minus(a);}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ lengab=ab.abs();}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(p1b.abs()+p1a.abs()-\/lengab)<OKERR/lengab)}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Complex(p1);}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ p1\ p2\ parallel\ to\ ab}}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ argdist=Math.abs(ab.arg()-\/p1p2.arg());}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (argdist<OKERR\ ||\ Math.abs(argdist-\/Math.PI)<OKERR)\ \{}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (theta<OKERR)\ }
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Complex(b);}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(p1p2.divide(p1a).arg())<OKERR)}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Complex(a);}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ \textcolor{comment}{//\ must\ be\ paraallel\ or\ point\ away\ from\ [a\ b]}}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ generic\ case;\ lin\ alg\ to\ find\ where\ line\ intersects\ [a,b]\ (in\ that\ order)}}
+\DoxyCodeLine{00369\ \textcolor{comment}{//\ \ \ \ \ \ double\ lam=((p2.x-\/p1.x)*(p1.x-\/a.y)-\/(p2.y-\/p1.y)*(p1.x-\/a.x))/}}
+\DoxyCodeLine{00370\ \textcolor{comment}{//\ \ \ \ \ \ ((b.y-\/a.y)*(p2.x-\/p1.x)-\/(b.x-\/a.x)*(p2.y-\/p1.y));}}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ lam=((a.y-\/b.y)*(b.x-\/p1.x)-\/(a.x-\/b.x)*(b.y-\/p1.y))/}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ ((a.y-\/b.y)*(p2.x-\/p1.x)-\/(a.x-\/b.x)*(p2.y-\/p1.y));}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keyword}{new}\ Complex(p1.x+lam*(p2.x-\/p1.x),p1.y+lam*(p2.y-\/p1.y)));}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00375\ \ \ \ \ \}}
+\DoxyCodeLine{00376\ }
+\DoxyCodeLine{00384\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Complex\ eucl\_tri\_center(Complex\ p0,Complex\ p1,Complex\ p2)\ \{}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ Complex\ ctr\ =\textcolor{keyword}{new}\ Complex();}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ ctr.x=(p0.x+p1.x+p2.x)*.333333333333;}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ ctr.y=(p0.y+p1.y+p2.y)*.333333333333;}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ctr;}
+\DoxyCodeLine{00390\ \ \ \ \ \}}
+\DoxyCodeLine{00391\ }
+\DoxyCodeLine{00402\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ CircleSimple\ eucl\_tri\_incircle(Complex\ z0,}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1,Complex\ z2)\ \{}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ CircleSimple\ sc=\textcolor{keyword}{new}\ CircleSimple();}
+\DoxyCodeLine{00405\ }
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ side\ lengths}}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a=z1.minus(z2).abs();}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ b=z0.minus(z2).abs();}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c=z0.minus(z1).abs();}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ p=a+b+c;}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ sc.center=z0.times(a/p).add(z1.times(b/p).add(z2.times(c/p)));}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ sc.rad=.5*Math.sqrt(((a+b-\/c)*(a+c-\/b)*(b+c-\/a))/p);}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sc;}
+\DoxyCodeLine{00414\ \ \ \ \ \}}
+\DoxyCodeLine{00415\ \ \ \ \ }
+\DoxyCodeLine{00427\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ eucl\_tri\_inradius(\textcolor{keywordtype}{double}\ a,\textcolor{keywordtype}{double}\ b,\textcolor{keywordtype}{double}\ c)\ \{}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (.5*Math.sqrt(((a+b-\/c)*(a+c-\/b)*(b+c-\/a))/(a+b+c)));}
+\DoxyCodeLine{00429\ \ \ \ \ \}}
+\DoxyCodeLine{00430\ \ \ \ \ }
+\DoxyCodeLine{00441\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Complex\ eucl\_tangency(Complex\ z1,Complex\ z2,\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2)\ \{}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ Complex\ zvec=z2.minus(z1);}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ z1.add(zvec.times(r1/(r1+r2)));}
+\DoxyCodeLine{00444\ \ \ \ \ \}}
+\DoxyCodeLine{00445\ }
+\DoxyCodeLine{00462\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ CircleSimple\ e\_compcenter(Complex\ z0,Complex\ z1,\textcolor{keywordtype}{double}\ r0,}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\textcolor{keywordtype}{double}\ ivd0,\textcolor{keywordtype}{double}\ ivd1,\textcolor{keywordtype}{double}\ ivd2)\ \{}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ squared\ lengths\ of\ sides}}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l0\ =\ r0\ *\ r0\ +\ r1\ *\ r1\ +\ 2\ *\ r0\ *\ r1\ *\ ivd0;\ \textcolor{comment}{//\ l0=a\string^2}}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l1\ =\ r1\ *\ r1\ +\ (r2)\ *\ (r2)\ +\ 2\ *\ r1\ *\ (r2)\ *\ ivd1;\ \textcolor{comment}{//\ l1=b\string^2}}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l2\ =\ r0\ *\ r0\ +\ (r2)\ *\ (r2)\ +\ 2\ *\ r0\ *\ (r2)\ *\ ivd2;\ \textcolor{comment}{//\ l2=c\string^2}}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ld\ =\ 0.5\ *\ (l2\ +\ l0\ -\/\ l1);\ \textcolor{comment}{//\ a\ c\ cos(theta)=(c\string^2+a\string^2-\/b\string^2)/2}}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((ld\ *\ ld)\ >\ (l2\ *\ l0))}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CircleSimple(\textcolor{keyword}{false});}
+\DoxyCodeLine{00472\ }
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ drop\ perp\ to\ side\ a,\ get\ base,\ height\ G,\ H\ }}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ B\ =\ ld\ /\ Math.sqrt(l0);\ \textcolor{comment}{//\ v.x=\ c\ cos(theta)}}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ H\ =\ Math.sqrt(l2\ -\/\ B*B);}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ Complex\ v\ =\ \textcolor{keyword}{new}\ Complex(B,H);}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ a\ were\ laid\ out\ along\ x-\/axis,\ v\ is\ vector\ to\ center}}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ Complex\ w\ =\ z1.sub(z0);}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ s\ =\ w.abs();}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (s\ <\ 1.0e-\/30)}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CircleSimple(\textcolor{keyword}{false});}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ w\ =\ w.times(1\ /\ s);}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ answer\ is\ z0+w*v}}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ Complex\ z=\textcolor{keyword}{new}\ Complex((z0.x\ +\ w.x\ *\ v.x\ -\/\ w.y\ *\ v.y),}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (z0.y\ +\ w.x\ *\ v.y\ +\ w.y\ *\ v.x));}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CircleSimple(z,\ r2,\ 1);}
+\DoxyCodeLine{00488\ \ \ \ \ \}}
+\DoxyCodeLine{00489\ \ \ \ \ }
+\DoxyCodeLine{00501\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ CircleSimple\ e\_compcenter(Complex\ z1,Complex\ z2,\textcolor{keywordtype}{double}\ e1,}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ e2,\textcolor{keywordtype}{double}\ e3)\ \{}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ e\_compcenter(z1,z2,e1,e2,e3,1.0,1.0,1.0);}
+\DoxyCodeLine{00504\ \ \ \ \ \}}
+\DoxyCodeLine{00505\ \ \ \ \ }
+\DoxyCodeLine{00515\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ inv\_dist(Complex\ z1,Complex\ z2,\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2)\ \{}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (r1>0\ \&\&\ r2>0)\ \{}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ((z1.minus(z2).absSq()-\/(r1*r1+r2*r2))/(2.0*r1*r2));}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ need\ to\ handle:\ one\ plane,\ r=0,\ or\ one\ negative\ r\ }}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1.0;}
+\DoxyCodeLine{00521\ \ \ \ \ \}}
+\DoxyCodeLine{00522\ }
+\DoxyCodeLine{00536\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ e\_dilatation(\textcolor{keywordtype}{double}\ A,\textcolor{keywordtype}{double}\ B,\textcolor{keywordtype}{double}\ C,}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a,\textcolor{keywordtype}{double}\ b,\textcolor{keywordtype}{double}\ c)\ \{}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ AB2,ab2;}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ okerr=OKERR;}
+\DoxyCodeLine{00540\ }
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((AB2=2.0*A*B)<okerr\ ||\ (ab2=2.0*a*b)<okerr}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ ||\ C<okerr\ ||\ c<okerr}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ ||\ (A>=(B+C+okerr)\ \&\&\ B>=(A+C+okerr)\ \&\&\ C>=(A+B+okerr))}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ ||\ (a>=(b+c+okerr)\ \&\&\ b>=(a+c+okerr)\ \&\&\ c>=(a+b+okerr))}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \ \ )\ \textcolor{keywordflow}{return}\ -\/1.0;}
+\DoxyCodeLine{00546\ }
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cos1=(A*A+B*B-\/C*C)/AB2;\ \textcolor{comment}{//\ cos(theta)\ }}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cos2=(a*a+b*b-\/c*c)/ab2;}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sin1=Math.sqrt(1-\/cos1*cos1);}
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sin2=Math.sqrt(1-\/cos2*cos2);}
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=B*cos1;}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ y=1.0/(B*sin1);}
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ u=b*cos2;}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ v=b*sin2;}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ affine\_dilatation(a/A,\ (u-\/(a/A)*x)*y,(\textcolor{keywordtype}{double})\ 0.0,\ v*y);}
+\DoxyCodeLine{00556\ \ \ \ \ \}}
+\DoxyCodeLine{00557\ \ \ \ \ }
+\DoxyCodeLine{00558\ }
+\DoxyCodeLine{00568\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ affine\_dilatation(\textcolor{keywordtype}{double}\ a,\textcolor{keywordtype}{double}\ b,\textcolor{keywordtype}{double}\ c,}
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d)\ \{}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ det;}
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((det=(a*d-\/b*c))<OKERR)\ \textcolor{keywordflow}{return}\ -\/1.0;}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ Q=(a*a+b*b+c*c+d*d)/((2.0)*det);}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ need\ error\ check\ here,\ but\ for\ now\ (10/07),\ do\ this}}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ans=Q*Q-\/1.0;}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ans<=0.0)\ \textcolor{keywordflow}{return}\ 1.0;}
+\DoxyCodeLine{00576\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Q+Math.sqrt(Q*Q-\/1.0);}
+\DoxyCodeLine{00577\ \ \ \ \ \}}
+\DoxyCodeLine{00578\ \ \ \ \ }
+\DoxyCodeLine{00585\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ xyz\_dist(Point3D\ xyz,Point3D\ XYZ)\ \{}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (Math.sqrt((xyz.x-\/XYZ.x)*(xyz.x-\/XYZ.x)+}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (xyz.y-\/XYZ.y)*(xyz.y-\/XYZ.y)+}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (xyz.z-\/XYZ.z)*(xyz.z-\/XYZ.z)));}
+\DoxyCodeLine{00589\ \ \ \ \ \}}
+\DoxyCodeLine{00590\ }
+\DoxyCodeLine{00607\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Complex\ quad\_cross\_ratio(}
+\DoxyCodeLine{00608\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\textcolor{keywordtype}{double}\ r3,\textcolor{keywordtype}{double}\ r4,}
+\DoxyCodeLine{00609\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ivd1,\textcolor{keywordtype}{double}\ ivd2,\textcolor{keywordtype}{double}\ ivd3,\textcolor{keywordtype}{double}\ ivd4,}
+\DoxyCodeLine{00610\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ivd\_common)\ \{}
+\DoxyCodeLine{00611\ }
+\DoxyCodeLine{00612\ \ \ \ \ \ \ \textcolor{comment}{//\ compute\ edge\ lengths\ using\ radii/overlaps\ }}
+\DoxyCodeLine{00613\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ L5=r1*r1+r3*r3+2*r1*r3*ivd\_common;}
+\DoxyCodeLine{00614\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l5=Math.sqrt(L5);}
+\DoxyCodeLine{00615\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ L1=r1*r1+r2*r2+2*r1*r2*ivd1;}
+\DoxyCodeLine{00616\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ L2=r2*r2+r3*r3+2*r2*r3*ivd2;}
+\DoxyCodeLine{00617\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ L3=r3*r3+r4*r4+2*r3*r4*ivd3;}
+\DoxyCodeLine{00618\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ L4=r4*r4+r1*r1+2*r1*r4*ivd4;}
+\DoxyCodeLine{00619\ }
+\DoxyCodeLine{00620\ \ \ \ \ \ \ Complex\ z1=\textcolor{keyword}{new}\ Complex(0.0);}
+\DoxyCodeLine{00621\ \ \ \ \ \ \ Complex\ z3=\textcolor{keyword}{new}\ Complex(l5);}
+\DoxyCodeLine{00622\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l1c=(L1+L5-\/L2)/(2.0*l5);}
+\DoxyCodeLine{00623\ \ \ \ \ \ \ Complex\ z2=\textcolor{keyword}{new}\ Complex(l1c,-\/Math.sqrt(L1-\/l1c*l1c));}
+\DoxyCodeLine{00624\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ l4c=(L4+L5-\/L3)/(2.0*l5);}
+\DoxyCodeLine{00625\ \ \ \ \ \ \ Complex\ z4=\textcolor{keyword}{new}\ Complex(l4c,Math.sqrt(L4-\/l4c*l4c));}
+\DoxyCodeLine{00626\ \ \ \ \ \ \ Complex\ num1=z1.minus(z2).divide(z1.minus(z4));}
+\DoxyCodeLine{00627\ \ \ \ \ \ \ Complex\ num2=z3.minus(z4).divide(z3.minus(z2));}
+\DoxyCodeLine{00628\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ num1.times(num2);}
+\DoxyCodeLine{00629\ \ \ \ \ \}\ }
+\DoxyCodeLine{00630\ }
+\DoxyCodeLine{00637\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ e\_dist(Complex\ z,Complex\ w)\ \{}
+\DoxyCodeLine{00638\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.sqrt(Math.pow(z.x-\/w.x,\ 2)+Math.pow(z.y-\/w.y,\ 2));}
+\DoxyCodeLine{00639\ \ \ \ \ \}}
+\DoxyCodeLine{00640\ }
+\DoxyCodeLine{00650\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ e\_ivd\_length(\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\textcolor{keywordtype}{double}\ ivd)\ \{}
+\DoxyCodeLine{00651\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (Math.sqrt(r1*r1+r2*r2+2.0*r1*r2*ivd));}
+\DoxyCodeLine{00652\ \ \ \ \ \}}
+\DoxyCodeLine{00653\ \ \ \ \ }
+\DoxyCodeLine{00661\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ dist\_to\_line(Complex\ z,Complex\ z1,\ Complex\ z2)\ \{}
+\DoxyCodeLine{00662\ \ \ \ \ \ \ \ \ Complex\ base=z1.minus(z2);}
+\DoxyCodeLine{00663\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dist=base.abs();}
+\DoxyCodeLine{00664\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dist<OKERR)\ \textcolor{keywordflow}{return}\ -\/1.0;\ \textcolor{comment}{//\ base\ too\ small\ for\ accuracy}}
+\DoxyCodeLine{00665\ \ \ \ \ \ \ \ \ Complex\ vec=z1.minus(z);}
+\DoxyCodeLine{00666\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vec.abs()<OKERR\ ||\ z.minus(z2).abs()<OKERR)\ \textcolor{keywordflow}{return}\ 0.0;}
+\DoxyCodeLine{00667\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ formula\ based\ on\ vector\ cross-\/product:\ |vec\ x\ base|/|base|}}
+\DoxyCodeLine{00668\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (Math.abs(vec.x*base.y-\/vec.y*base.x)/dist);}
+\DoxyCodeLine{00669\ \ \ \ \ \}\ }
+\DoxyCodeLine{00670\ \ \ \ \ }
+\DoxyCodeLine{00678\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ dist\_to\_path(Complex\ z,Vector<Complex>\ plist)\ \{}
+\DoxyCodeLine{00679\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ mindist=1000000.0;}
+\DoxyCodeLine{00680\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ndist;}
+\DoxyCodeLine{00681\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00682\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (plist==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return}\ 0.0;}
+\DoxyCodeLine{00683\ \ \ \ \ \ \ \ \ Iterator<Complex>\ plst=plist.iterator();}
+\DoxyCodeLine{00684\ }
+\DoxyCodeLine{00685\ \ \ \ \ \ \ \ \ Complex\ z2=\textcolor{keyword}{new}\ Complex((Complex)plst.next());}
+\DoxyCodeLine{00686\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (plst.hasNext())\ \{}
+\DoxyCodeLine{00687\ \ \ \ \ \ \ \ \ Complex\ z1=\textcolor{keyword}{new}\ Complex(z2);}
+\DoxyCodeLine{00688\ \ \ \ \ \ \ \ \ z2=\textcolor{keyword}{new}\ Complex((Complex)plst.next());}
+\DoxyCodeLine{00689\ \ \ \ \ \ \ \ \ ndist=dist\_to\_segment(z,z1,z2);}
+\DoxyCodeLine{00690\ \ \ \ \ \ \ \ \ mindist=(ndist<mindist)\ ?\ ndist\ :\ mindist;}
+\DoxyCodeLine{00691\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00692\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ mindist;}
+\DoxyCodeLine{00693\ \ \ \ \ \}\ }
+\DoxyCodeLine{00694\ \ \ \ \ }
+\DoxyCodeLine{00703\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ dist\_to\_segment(Complex\ z,Complex\ z1,\ Complex\ z2)\ \{}
+\DoxyCodeLine{00704\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ toline=dist\_to\_line(z,z1,z2);}
+\DoxyCodeLine{00705\ \ \ \ \ \ \ \ \ Complex\ w1=z.minus(z1);}
+\DoxyCodeLine{00706\ \ \ \ \ \ \ \ \ Complex\ w2=z.minus(z2);}
+\DoxyCodeLine{00707\ \ \ \ \ \ \ \ \ Complex\ w=z1.minus(z2);\ \textcolor{comment}{//\ dirction\ of\ line}}
+\DoxyCodeLine{00708\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d1=w1.abs();}
+\DoxyCodeLine{00709\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d2=w2.abs();}
+\DoxyCodeLine{00710\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ minm=d1;}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \ \ minm\ =\ (d2<d1)\ ?\ d2\ :\ d1;}
+\DoxyCodeLine{00712\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (minm<OKERR)\ \textcolor{keywordflow}{return}\ 0.0;\ \textcolor{comment}{//\ z\ essentially\ equals\ z1\ or\ z2}}
+\DoxyCodeLine{00713\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ dot\ products\ to\ see\ if\ ends\ are\ in\ different\ directions;}}
+\DoxyCodeLine{00714\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ yes,\ then\ closest\ point\ is\ in\ between,\ else\ is\ closest\ endpoint}}
+\DoxyCodeLine{00715\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((w1.x*w.x+w1.y*w.y)*(w2.x*w.x+w2.y*w.y)<=0.0)\ \textcolor{keywordflow}{return}\ toline;}
+\DoxyCodeLine{00716\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ minm;}
+\DoxyCodeLine{00717\ \ \ \ \ \}}
+\DoxyCodeLine{00718\ \ \ \ \ }
+\DoxyCodeLine{00727\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Point3D\ proj\_to\_seg(Point3D\ pt,Point3D\ z1,Point3D\ z2)\ \{}
+\DoxyCodeLine{00728\ \ \ \ \ \ \ \ \ Point3D\ base=\textcolor{keyword}{new}\ Point3D(z2.x-\/z1.x,z2.y-\/z1.y,z2.z-\/z1.z);}
+\DoxyCodeLine{00729\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (base.norm()<OKERR)\ \textcolor{comment}{//\ z1\ and\ z2\ are\ too\ close\ together}}
+\DoxyCodeLine{00730\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Point3D(z1);}
+\DoxyCodeLine{00731\ \ \ \ \ \ \ \ \ Point3D\ z1z=\textcolor{keyword}{new}\ Point3D(pt.x-\/z1.x,pt.y-\/z1.y,pt.z-\/z1.z);}
+\DoxyCodeLine{00732\ \ \ \ \ \ \ \ \ Point3D\ proj=Point3D.proj\_vector(z1z,\ base);}
+\DoxyCodeLine{00733\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Point3D.DotProduct(proj,base)<=0.0)\ \textcolor{comment}{//\ z1\ is\ closest}}
+\DoxyCodeLine{00734\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Point3D(z1);}
+\DoxyCodeLine{00735\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (proj.normSq()>base.normSq())\ \textcolor{comment}{//\ z2\ is\ closest}}
+\DoxyCodeLine{00736\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Point3D(z2);}
+\DoxyCodeLine{00737\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Point3D(proj.x+base.x,proj.y+base.y,proj.z+base.z);}
+\DoxyCodeLine{00738\ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{00739\ }
+\DoxyCodeLine{00747\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Complex\ proj\_to\_seg(Complex\ pt,Complex\ z1,Complex\ z2)\ \{}
+\DoxyCodeLine{00748\ \ \ \ \ \ \ \ \ Point3D\ pt3=\textcolor{keyword}{new}\ Point3D(pt.x,pt.y,0.0);}
+\DoxyCodeLine{00749\ \ \ \ \ \ \ \ \ Point3D\ z13=\textcolor{keyword}{new}\ Point3D(z1.x,z1.y,0.0);}
+\DoxyCodeLine{00750\ \ \ \ \ \ \ \ \ Point3D\ z23=\textcolor{keyword}{new}\ Point3D(z2.x,z2.y,0.0);}
+\DoxyCodeLine{00751\ \ \ \ \ \ \ \ \ Point3D\ proj=proj\_to\_seg(pt3,z13,z23);}
+\DoxyCodeLine{00752\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (proj==\textcolor{keyword}{null})}
+\DoxyCodeLine{00753\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00754\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Complex(proj.x,proj.y);}
+\DoxyCodeLine{00755\ \ \ \ \ \}}
+\DoxyCodeLine{00756\ \ \ \ \ }
+\DoxyCodeLine{00767\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ effectiveRad(PackData\ p,\textcolor{keywordtype}{double}\ []radii)\ \{}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=p.nodeCount;v++)\ \{}
+\DoxyCodeLine{00769\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ each\ node\ find\ the\ area\ sum\ and\ angle\ sum}}
+\DoxyCodeLine{00770\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z=p.getCenter(v);}
+\DoxyCodeLine{00771\ }
+\DoxyCodeLine{00772\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ thsum\ =\ 0.0;}
+\DoxyCodeLine{00773\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ asum\ =\ 0.0;}
+\DoxyCodeLine{00774\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=p.countFaces(v);}
+\DoxyCodeLine{00775\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=p.packDCEL.vertices[v].getFlower(\textcolor{keyword}{true});}
+\DoxyCodeLine{00776\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{00777\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ spoke0\ =\ }
+\DoxyCodeLine{00778\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z.minus(p.getCenter(flower[j]));}
+\DoxyCodeLine{00779\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ spoke1\ =\ }
+\DoxyCodeLine{00780\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z.minus(p.getCenter(flower[j+1]));}
+\DoxyCodeLine{00781\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ farside\ =\ (p.getCenter(flower[j])).}
+\DoxyCodeLine{00782\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ minus(p.getCenter(flower[j+1]));}
+\DoxyCodeLine{00783\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a,\ b,\ c;}
+\DoxyCodeLine{00784\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ a\ =\ spoke0.abs();\ b\ =\ farside.abs();\ c\ =\ spoke1.abs();}
+\DoxyCodeLine{00785\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ facerad\ =\ (a+c-\/b)/2.0;}
+\DoxyCodeLine{00786\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ th\ =\ Math.acos((a*a+c*c-\/b*b)/(2*a*c));}
+\DoxyCodeLine{00787\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ thsum\ +=\ th;}
+\DoxyCodeLine{00788\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ asum\ +=\ facerad*facerad*th/2.0;}
+\DoxyCodeLine{00789\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00790\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (radii==\textcolor{keyword}{null})}
+\DoxyCodeLine{00791\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(v,Math.sqrt(asum/(thsum/2.0)));}
+\DoxyCodeLine{00792\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ radii[v]=\ Math.sqrt(asum/(thsum/2.0));}
+\DoxyCodeLine{00793\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00794\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00795\ \ \ \ \ \}}
+\DoxyCodeLine{00796\ \ \ \ \ }
+\DoxyCodeLine{00808\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Point3D\ getSpacePoint(BaryPoint\ bp,}
+\DoxyCodeLine{00809\ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ p0,Point3D\ p1,Point3D\ p2)\ \{}
+\DoxyCodeLine{00810\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Point3D(}
+\DoxyCodeLine{00811\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bp.b0*p0.x+bp.b1*p1.x+bp.b2*p2.x,}
+\DoxyCodeLine{00812\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bp.b0*p0.y+bp.b1*p1.y+bp.b2*p2.y,}
+\DoxyCodeLine{00813\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bp.b0*p0.z+bp.b1*p1.z+bp.b2*p2.z);}
+\DoxyCodeLine{00814\ \ \ \ \ \}}
+\DoxyCodeLine{00815\ \ \ \ \ }
+\DoxyCodeLine{00824\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Mobius\ e\_norm\_pack(PackDCEL\ pdcel,Complex\ a,Complex\ g)\ \{}
+\DoxyCodeLine{00825\ \ \ \ \ \ \ \ \ Mobius\ mob=Mobius.mobNormPlane(a,g);}
+\DoxyCodeLine{00826\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Mobius.frobeniusNorm(mob)>Mobius.MOB\_TOLER)\ \{}
+\DoxyCodeLine{00827\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ directly\ adjust\ in\ 'Vertex'}}
+\DoxyCodeLine{00828\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v\ =\ 1;\ v\ <=\ pdcel.vertCount;\ v++)\ \{}
+\DoxyCodeLine{00829\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z\ =\ pdcel.vertices[v].center;}
+\DoxyCodeLine{00830\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcel.vertices[v].center\ =\ mob.apply(z);}
+\DoxyCodeLine{00831\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00832\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ directly\ adjust\ in\ red\ chain}}
+\DoxyCodeLine{00833\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pdcel.redChain\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00834\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RedEdge\ rtrace\ =\ pdcel.redChain;}
+\DoxyCodeLine{00835\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00836\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rtrace.setCenter(mob.apply(rtrace.getCenter()));}
+\DoxyCodeLine{00837\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rtrace\ =\ rtrace.nextRed;}
+\DoxyCodeLine{00838\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (rtrace\ !=\ pdcel.redChain);}
+\DoxyCodeLine{00839\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00840\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00841\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ mob;}
+\DoxyCodeLine{00842\ \ \ \ \ \}\ }
+\DoxyCodeLine{00843\ \ \ \ \ }
+\DoxyCodeLine{00852\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ Fx(\textcolor{keywordtype}{double}\ x,\textcolor{keywordtype}{double}\ y,\textcolor{keywordtype}{double}\ z)\ \{}
+\DoxyCodeLine{00853\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a=x*(x+y+z);}
+\DoxyCodeLine{00854\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ b=y*z;}
+\DoxyCodeLine{00855\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\ (-\/b)*(2*x+y+z)/((a+b)*Math.sqrt(a*b))\ );}
+\DoxyCodeLine{00856\ \ \ \ \ \}}
+\DoxyCodeLine{00857\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00866\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ Fy(\textcolor{keywordtype}{double}\ x,\textcolor{keywordtype}{double}\ y,\textcolor{keywordtype}{double}\ z)\ \{}
+\DoxyCodeLine{00867\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a=x*(x+y+z);\ }
+\DoxyCodeLine{00868\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ b=y*z;}
+\DoxyCodeLine{00869\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (x*y*(x+y)/((a+b)*Math.sqrt(a*b)));}
+\DoxyCodeLine{00870\ \ \ \ \ \}\ }
+\DoxyCodeLine{00871\ }
+\DoxyCodeLine{00880\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ Fz(\textcolor{keywordtype}{double}\ x,\textcolor{keywordtype}{double}\ y,\textcolor{keywordtype}{double}\ z)\ \{}
+\DoxyCodeLine{00881\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (Fy(x,z,y));}
+\DoxyCodeLine{00882\ \ \ \ \ \}\ }
+\DoxyCodeLine{00883\ \ \ \ \ }
+\DoxyCodeLine{00889\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ ccWise(Complex\ z1,Complex\ z2,Complex\ z3)\ \{}
+\DoxyCodeLine{00890\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ w=(z3-\/z2)/(z2-\/z1)}}
+\DoxyCodeLine{00891\ \ \ \ \ \ \ \ \ Complex\ w=z3.minus(z2).divide(z2.minus(z1));}
+\DoxyCodeLine{00892\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (w.y>0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00893\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00894\ \ \ \ \ \}}
+\DoxyCodeLine{00895\ \ \ \ \ }
+\DoxyCodeLine{00905\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ []QuadAngles(Complex\ vz,}
+\DoxyCodeLine{00906\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ rz,Complex\ wz,Complex\ lz)\ \{}
+\DoxyCodeLine{00907\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []angles=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[4];}
+\DoxyCodeLine{00908\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ edg=vz.minus(wz).abs();}
+\DoxyCodeLine{00909\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ lv\_edge=lz.minus(vz).abs();}
+\DoxyCodeLine{00910\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ lw\_edge=lz.minus(wz).abs();}
+\DoxyCodeLine{00911\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rv\_edge=rz.minus(vz).abs();}
+\DoxyCodeLine{00912\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rw\_edge=rz.minus(wz).abs();}
+\DoxyCodeLine{00913\ \ \ \ \ }
+\DoxyCodeLine{00914\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ angles\ at\ v,\ left/right}}
+\DoxyCodeLine{00915\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ al=Math.acos((lv\_edge*lv\_edge+edg*edg-\/lw\_edge*lw\_edge)/(2.0*lv\_edge*edg));}
+\DoxyCodeLine{00916\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ar=Math.acos((rv\_edge*rv\_edge+edg*edg-\/rw\_edge*rw\_edge)/(2.0*rv\_edge*edg));}
+\DoxyCodeLine{00917\ \ \ \ \ \ \ \ \ angles[0]=al+ar;}
+\DoxyCodeLine{00918\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00919\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ angles\ at\ w,\ left/\ right}}
+\DoxyCodeLine{00920\ \ \ \ \ \ \ \ \ al=Math.acos((lw\_edge*lw\_edge+edg*edg-\/lv\_edge*lv\_edge)/(2.0*lw\_edge*edg));}
+\DoxyCodeLine{00921\ \ \ \ \ \ \ \ \ ar=Math.acos((rw\_edge*rw\_edge+edg*edg-\/rv\_edge*rv\_edge)/(2.0*rw\_edge*edg));}
+\DoxyCodeLine{00922\ \ \ \ \ \ \ \ \ angles[2]=al+ar;}
+\DoxyCodeLine{00923\ }
+\DoxyCodeLine{00924\ \ \ \ \ \ \ \ \ angles[1]=Math.acos((rw\_edge*rw\_edge+rv\_edge*rv\_edge-\/edg*edg)/(2.0*rw\_edge*rv\_edge));}
+\DoxyCodeLine{00925\ \ \ \ \ \ \ \ \ angles[3]=Math.acos((lw\_edge*lw\_edge+lv\_edge*lv\_edge-\/edg*edg)/(2.0*lw\_edge*lv\_edge));}
+\DoxyCodeLine{00926\ }
+\DoxyCodeLine{00927\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ angles;}
+\DoxyCodeLine{00928\ \ \ \ \ \}}
+\DoxyCodeLine{00929\ \ \ \ \ }
+\DoxyCodeLine{00930\ \}}
+\DoxyCodeLine{00931\ }
+
+\end{DoxyCode}

@@ -1,0 +1,348 @@
+\doxysection{Slider\+Panel.\+java}
+\label{_slider_panel_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/variables/SliderPanel.java@{C:/Users/ashej/myGitRepos/CirclePack/src/variables/SliderPanel.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }variables;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.event.ActionEvent;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.event.ActionListener;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.event.ItemEvent;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.event.ItemListener;}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ javax.swing.BorderFactory;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ javax.swing.Box;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ javax.swing.BoxLayout;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ javax.swing.JButton;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ javax.swing.JCheckBox;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ javax.swing.JSlider;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ javax.swing.border.EmptyBorder;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ javax.swing.border.LineBorder;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ javax.swing.event.ChangeEvent;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ javax.swing.event.ChangeListener;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ javax.swing.table.AbstractTableModel;}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ com.jimrolf.functionfield.FunctionField;}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{import}\ util.xNumField;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }SliderPanel\ \textcolor{keyword}{extends}\ JPanel\ }
+\DoxyCodeLine{00047\ \ \ \ \ implements\ ChangeListener,\ ActionListener,\ ItemListener\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00050\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{public}\ SliderPacket\ sliderPacket;\ \ \ \textcolor{comment}{//\ holds\ the\ details}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{public}\ JButton\ varNameButton;}
+\DoxyCodeLine{00054\ \ \ \ \ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{comment}{//\ live\ command\ structure:\ execute\ on\ slide/value\ change}}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{protected}\ JTextField\ liveCommand;\ \textcolor{comment}{//\ optional\ live\ command}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{protected}\ JCheckBox\ liveCheck;\ \ \ \ \textcolor{comment}{//\ use\ the\ live\ command?}}
+\DoxyCodeLine{00058\ \ \ \ \ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{comment}{//\ function\ structure}}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{protected}\ JCheckBox\ ftnCheck;\ \ \ \textcolor{comment}{//\ use\ function}}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{public}\ parser.Parser\ functionParser;}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{public}\ FunctionField\ ftnField;}
+\DoxyCodeLine{00063\ \ \ \ \ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{double}\ value;}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{protected}\ xNumField\ currentValue;}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keyword}{protected}\ xNumField\ sliderMin;}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{protected}\ xNumField\ sliderMax;}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{protected}\ JSlider\ theSlider;}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{boolean}\ fireFlag;}
+\DoxyCodeLine{00070\ \ \ \ \ }
+\DoxyCodeLine{00071\ \ \ \ \ AbstractTableModel\ varModel;}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{public}\ SliderPanel(String\ name,String\ specs,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ String\ valueStr)\ \{\ \ }
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ model\ of\ variable\ will\ need\ refreshing}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ varModel=CPBase.varControl.getVarTableModel();}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'specs'\ give\ all\ the\ info\ for\ the\ new\ slider}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ sliderPacket=\textcolor{keyword}{new}\ SliderPacket(name,specs);}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ the\ layout}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ this.setLayout(\textcolor{keyword}{new}\ BoxLayout(\textcolor{keyword}{this},BoxLayout.PAGE\_AXIS));}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ this.setBorder(BorderFactory.createCompoundBorder(}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ LineBorder(Color.blue),}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ EmptyBorder(5,\ 5,\ 5,\ 5)));}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ this.setMinimumSize(\textcolor{keyword}{new}\ Dimension(350,45));}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ this.setMaximumSize(\textcolor{keyword}{new}\ Dimension(Integer.MAX\_VALUE,100));}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ varNameButton=\textcolor{keyword}{new}\ JButton(name);}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ varNameButton.setToolTipText(\textcolor{stringliteral}{"{}variable\ name"{}});}
+\DoxyCodeLine{00094\ \textcolor{comment}{//\ \ \ \ \ \ varName.setPreferredSize(new\ Dimension(30,20));}}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ varNameButton.setMaximumSize(\textcolor{keyword}{new}\ Dimension(Integer.MAX\_VALUE,20));}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ value=Double.valueOf(5.0);}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ value=Double.parseDouble(valueStr);}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}value\ is\ not\ a\ double"{}});}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ optional\ ftn}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ ftnCheck=\textcolor{keyword}{new}\ JCheckBox(\textcolor{stringliteral}{"{}ftn?"{}});}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ ftnCheck.setToolTipText(\textcolor{stringliteral}{"{}if\ checked,\ apply\ function\ to\ variable"{}});}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ ftnCheck.addItemListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ ftnField\ =\ \textcolor{keyword}{new}\ FunctionField();}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ ftnField.setText(\textcolor{stringliteral}{"{}z*pi"{}});}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ ftnField.setBackground(Color.white);}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ftnField.hasError())\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(\textcolor{stringliteral}{"{}Function\ parser\ error."{}});}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ ftnField.setBackground(Color.white);}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ ftnField.setColumns(20);}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'enter'\ will\ parse\ the\ function\ string}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ ftnField.addActionListener(\textcolor{keyword}{new}\ ActionListener()\ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ actionPerformed(ActionEvent\ e)\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ftnField.setBackground(Color.white);}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ftnField.hasError())\ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(\textcolor{stringliteral}{"{}Function\ parser\ error."{}});}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ ftnField.setComplexFunc(\textcolor{keyword}{true});}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ ftnField.setErrorColor(Color.yellow);}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ ftnField.setToolTipText(\textcolor{stringliteral}{"{}Function\ to\ be\ applied\ to\ slider\ values"{}});}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ ftnField.setMaximumSize(\textcolor{keyword}{new}\ Dimension(Integer.MAX\_VALUE,20));}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ optional\ command}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ liveCheck=\textcolor{keyword}{new}\ JCheckBox(\textcolor{stringliteral}{"{}Cmd?"{}});}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ liveCheck.setToolTipText(\textcolor{stringliteral}{"{}if\ checked,\ execute\ this\ command\ on\ change"{}});}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ liveCheck.addItemListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ liveCommand=\textcolor{keyword}{new}\ JTextField(\textcolor{stringliteral}{"{}"{}},6);}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ liveCommand.setToolTipText(}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Command\ to\ execute\ on\ slider\ change\ (preferably\ a\ key\ '[*]')"{}});}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ liveCommand.setMaximumSize(\textcolor{keyword}{new}\ Dimension(Integer.MAX\_VALUE,20));}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ current\ value\ (just\ for\ display)}}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ currentValue=\textcolor{keyword}{new}\ xNumField(\textcolor{stringliteral}{"{}Current\ value"{}},10);}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ currentValue.setValue(value);}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ scale\ minimum/maximum}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ sliderMin=\textcolor{keyword}{new}\ xNumField(\textcolor{stringliteral}{"{}min"{}},8);}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ sliderMin.setActionCommand(\textcolor{stringliteral}{"{}minval"{}});}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ sliderMin.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ sliderMin.setToolTipText(\textcolor{stringliteral}{"{}minimum\ value"{}});}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ sliderMax=\textcolor{keyword}{new}\ xNumField(\textcolor{stringliteral}{"{}max"{}},8);}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ sliderMax.setActionCommand(\textcolor{stringliteral}{"{}maxval"{}});}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ sliderMax.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ sliderMax.setToolTipText(\textcolor{stringliteral}{"{}maximum\ value"{}});}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ slider\ itself}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ fireFlag=\textcolor{keyword}{false};}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ theSlider=\textcolor{keyword}{new}\ JSlider(JSlider.HORIZONTAL,0,100,50);}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ theSlider.addChangeListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ theSlider.setMajorTickSpacing(10);}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ theSlider.setMinorTickSpacing(2);}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ theSlider.setPaintTicks(\textcolor{keyword}{true});}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ theSlider.setPaintLabels(\textcolor{keyword}{false});}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00165\ \textcolor{comment}{//\ \ \ \ \ \ ImageIcon\ ii=\ new\ ImageIcon(CPBase.getResourceURL(}}
+\DoxyCodeLine{00166\ \textcolor{comment}{//\ \ \ \ \ \ "{}/Icons/script/kill\_16x16.png"{}));}}
+\DoxyCodeLine{00167\ \textcolor{comment}{//\ \ \ \ \ \ killMe=new\ JButton();}}
+\DoxyCodeLine{00168\ \textcolor{comment}{//\ \ \ \ \ \ killMe.setIcon(ii);}}
+\DoxyCodeLine{00169\ \textcolor{comment}{//\ \ \ \ \ \ killMe.setOpaque(false);}}
+\DoxyCodeLine{00170\ \textcolor{comment}{//\ \ \ \ \ \ killMe.setBorderPainted(false);}}
+\DoxyCodeLine{00171\ \textcolor{comment}{//\ \ \ \ \ \ killMe.setBackground(Color.white);}}
+\DoxyCodeLine{00172\ \textcolor{comment}{//\ \ \ \ \ \ killMe.setToolTipText("{}Delete\ this\ variable"{});}}
+\DoxyCodeLine{00173\ \textcolor{comment}{//\ \ \ \ \ \ killMe.setSize(new\ Dimension(ii.getIconWidth(),ii.getIconHeight()));\ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00174\ \textcolor{comment}{//\ \ \ \ \ \ killMe.setActionCommand("{}killme"{});}}
+\DoxyCodeLine{00175\ \textcolor{comment}{//\ \ \ \ \ \ killMe.addActionListener(this);}}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ top,\ value,\ sliderZone\ panels}}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ top\ panel\ has\ fields\ and\ buttons}}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ JPanel\ topPanel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ topPanel.setLayout(\textcolor{keyword}{new}\ BoxLayout(topPanel,BoxLayout.LINE\_AXIS));}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ topPanel.add(Box.createRigidArea(\textcolor{keyword}{new}\ Dimension(20,0)));}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ topPanel.add(varNameButton);}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ topPanel.add(Box.createRigidArea(\textcolor{keyword}{new}\ Dimension(20,0)));}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ topPanel.add(Box.createHorizontalGlue());}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ topPanel.add(ftnCheck);}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ topPanel.add(ftnField);}
+\DoxyCodeLine{00188\ \textcolor{comment}{//\ \ \ \ \ \ topPanel.add(killMe);}}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ value\ panel}}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ JPanel\ valuePanel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ valuePanel.setLayout(\textcolor{keyword}{new}\ BoxLayout(valuePanel,BoxLayout.LINE\_AXIS));}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ valuePanel.add(sliderMin);}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ valuePanel.add(Box.createHorizontalGlue());}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ valuePanel.add(currentValue);}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ valuePanel.add(Box.createHorizontalGlue());}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ valuePanel.add(sliderMax);}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ slide\ panel\ has\ slider\ and\ Pi\ check}}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ JPanel\ slideZone=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ slideZone.setLayout(\textcolor{keyword}{new}\ BoxLayout(slideZone,BoxLayout.LINE\_AXIS));}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ slideZone.add(theSlider);}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ slideZone.add(Box.createRigidArea(\textcolor{keyword}{new}\ Dimension(20,0)));}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ slideZone.add(liveCheck);}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ slideZone.add(liveCommand);}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ ftnCheck.setSelected(\textcolor{keyword}{false});}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ liveCheck.setSelected(\textcolor{keyword}{false});}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ some\ items}}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sliderPacket.getCommandActive())\ \{}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ liveCheck.setSelected(\textcolor{keyword}{true});}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ liveCommand.setText(sliderPacket.getCommand());}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sliderPacket.getFunctionActive())\ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ ftnCheck.setSelected(\textcolor{keyword}{true});}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ ftnField.setText(sliderPacket.getFunction());}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ ftnField.setBackground(Color.white);}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ftnField.hasError())\ \{}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(\textcolor{stringliteral}{"{}Function\ parser\ error."{}});}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ if\ max/min\ affects\ value}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ adjustValue4Range();}
+\DoxyCodeLine{00226\ }
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ all\ to\ this\ panel}}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ this.add(topPanel);}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ this.add(valuePanel);}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ this.add(slideZone);}
+\DoxyCodeLine{00231\ \ \ \ \ \}}
+\DoxyCodeLine{00232\ \ \ \ \ }
+\DoxyCodeLine{00233\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ adjustValue4Range()\ \{}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sliderPacket.getMin()>value)}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ sliderPacket.setMin(value);}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ sliderMin.setValue(sliderPacket.getMin());}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sliderPacket.getMax()<value)}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ sliderPacket.setMax(value);}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ sliderMax.setValue(sliderPacket.getMax());}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=(int)(100*(value-\/}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sliderPacket.getMin()/}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (sliderPacket.getMax()-\/sliderPacket.getMin())));}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ theSlider.setValue(tick);}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ fireFlag=\textcolor{keyword}{true};}
+\DoxyCodeLine{00245\ \ \ \ \ \}}
+\DoxyCodeLine{00246\ \ \ \ \ }
+\DoxyCodeLine{00257\ \ \ \ \ \textcolor{keyword}{public}\ String\ toString()\ \{}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ftnCheck.isSelected())\ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ com.jimrolf.complex.Complex\ w=ftnField.parser.evalFunc(}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ com.jimrolf.complex.Complex(value,0.0));}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Double.toString(w.re());}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}Ftn\ Panel\ error:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Double.toString(value);}
+\DoxyCodeLine{00268\ \ \ \ \ \}}
+\DoxyCodeLine{00269\ \ \ \ \ }
+\DoxyCodeLine{00270\ \ \ \ \ \textcolor{comment}{//\ Listen\ to\ the\ slider;\ fireFlag==false,\ do\ catch\ the\ change}}
+\DoxyCodeLine{00271\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ stateChanged(ChangeEvent\ ce)\ \{}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!fireFlag)\ \textcolor{keywordflow}{return};\ \textcolor{comment}{//\ ignore\ some\ changes}}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ JSlider\ source\ =\ (JSlider)ce.getSource();}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!source.getValueIsAdjusting())\ \{\ \ \textcolor{comment}{//\ ignore\ intermediate\ events\ }}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ factor\ =\ (double)(source.getValue()/100.0);}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ value=sliderPacket.getMin()+}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (sliderPacket.getMax()-\/sliderPacket.getMin())*factor;}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ currentValue.setValue(value);}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ try\ to\ update\ by\ adding\ using\ the\ same\ key}}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.varControl.variables.put(}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ varNameButton.getText(),\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}[SLIDER]\ "{}}+}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Double.toString(value)));}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ varModel.fireTableDataChanged();}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ execute\ specified\ command?}}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sliderPacket.getCommandActive())}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.trafficCenter.parseWrapper(}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ liveCommand.getText(),}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.getActivePackData(),\textcolor{keyword}{false},\textcolor{keyword}{true},0,\textcolor{keyword}{null});}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00292\ \ \ \ \ \}}
+\DoxyCodeLine{00293\ \ \ \ \ }
+\DoxyCodeLine{00294\ \ \ \ \ \textcolor{comment}{//\ Listen\ for\ various\ actions}}
+\DoxyCodeLine{00295\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ actionPerformed(ActionEvent\ ae)\ \{}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ String\ command\ =\ ae.getActionCommand();}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}minval"{}}))\ \{\ \textcolor{comment}{//\ adjust\ min}}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ minVal=sliderMin.getValue();}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (minVal>=value)\ \{}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ minVal=value;}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sliderMin.setValue(minVal);}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ sliderPacket.setMin(minVal);}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=(int)(100*(value-\/minVal)/(sliderPacket.getMax()-\/minVal));}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ fireFlag=\textcolor{keyword}{false};\ \textcolor{comment}{//\ suppress\ event}}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ theSlider.setValue(tick);}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ fireFlag=\textcolor{keyword}{true};}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}maxval"{}}))\ \{\ \textcolor{comment}{//\ adjust\ max}}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ maxVal=sliderMax.getValue();}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (maxVal<=value)\ \{}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ maxVal=value;}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sliderMax.setValue(maxVal);}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ sliderPacket.setMax(maxVal);}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=(int)(100*(value-\/sliderPacket.getMin())/}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (maxVal-\/sliderPacket.getMin()));}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ fireFlag=\textcolor{keyword}{false};\ \textcolor{comment}{//\ suppress\ event}}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ theSlider.setValue(tick);}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ fireFlag=\textcolor{keyword}{true};}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00325\ \ \ \ \ \}}
+\DoxyCodeLine{00326\ \ \ \ \ }
+\DoxyCodeLine{00327\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ itemStateChanged(ItemEvent\ ie)\ \{}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ state=ie.getStateChange();}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ie.getSource()==(Object)liveCheck)\ \{}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (state==ItemEvent.SELECTED)}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sliderPacket.setCommandActive(\textcolor{keyword}{true});}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sliderPacket.setCommandActive(\textcolor{keyword}{false});}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00336\ \ \ \ \ \}}
+\DoxyCodeLine{00337\ \ \ \ \ }
+\DoxyCodeLine{00338\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ resetValue(\textcolor{keywordtype}{double}\ newValue)\ \{}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newValue<sliderMin.getValue())\ \{}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ tick=0;}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ sliderPacket.setMin(newValue);}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ sliderMin.setValue(newValue);}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (newValue>sliderMax.getValue())\ \{}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ tick=100;}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ sliderPacket.setMax(newValue);}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ sliderMax.setValue(newValue);}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ tick=(int)(100.0*(newValue-\/sliderPacket.getMin())/}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (sliderPacket.getMax()-\/sliderPacket.getMin()));}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ will\ this\ automatically\ call\ }}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ theSlider.setValue(tick);}
+\DoxyCodeLine{00355\ }
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ currentValue.setValue(newValue);}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ value=newValue;}
+\DoxyCodeLine{00358\ \ \ \ \ \}}
+\DoxyCodeLine{00359\ \ \ \ \ }
+\DoxyCodeLine{00365\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ ftn\_actionPerformed(ActionEvent\ e)\ \{}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ ftnField.setBackground(Color.white);}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ftnField.hasError())\ \{}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(\textcolor{stringliteral}{"{}Function\ parser\ error."{}});}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00370\ \ \ \ \ \}}
+\DoxyCodeLine{00371\ \}}
+
+\end{DoxyCode}

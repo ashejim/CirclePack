@@ -1,0 +1,913 @@
+\doxysection{dcel.\+Raw\+Manip Class Reference}
+\label{classdcel_1_1_raw_manip}\index{dcel.RawManip@{dcel.RawManip}}
+
+
+This file is for static methods manipulating combinatoric structures. These "{}$\ast$\+\_\+raw"{} methods typically handle radii and centers only in copying them to new elements and there is almost no dependence on the \doxyref{Pack\+Data}{p.}{classpacking_1_1_pack_data} parent. The routines expect \textquotesingle{}vertices\textquotesingle{} to be in place and for bdry edges to be identifiable based on face indices. They may update \textquotesingle{}vertices\textquotesingle{}, but arrays \textquotesingle{}edges\textquotesingle{} and \textquotesingle{}faces\textquotesingle{} are not updated. Red chain may be adjusted, but will be null if there are problems modifying it (sometimes because it is just too complicated). \textquotesingle{}\doxyref{Pack\+DCEL.\+tri\+Data}{p.}{classdcel_1_1_pack_d_c_e_l_a401c93c060269d818d8ef302a52fc22b}\textquotesingle{} is set to null, since this data is generally outdated.  
+
+
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \textbf{ Pack\+DCEL} \textbf{ seed\+\_\+raw} (int n)
+\begin{DoxyCompactList}\small\item\em Create a new \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} seed with n petals. \end{DoxyCompactList}\item 
+static int[$\,$] \textbf{ mark\+Generations} (\textbf{ Pack\+DCEL} pdcel, int[$\,$] seedstop)
+\begin{DoxyCompactList}\small\item\em General "{}generational"{} marking routine. \textquotesingle{}seedstop\textquotesingle{} entries $>$0 for "{}seed"{} set, $<$0 for "{}stop"{} set, 0 for neutral. Seeds are first generation, with successive generations connected to them; stop are ones that don\textquotesingle{}t propagate further. The return entry for \textquotesingle{}v\textquotesingle{} is:\+ \end{DoxyCompactList}\item 
+static \textbf{ Half\+Edge} \textbf{ split\+Edge\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Add a new vertex which splits this edge and connects to shared neighbors. So new vert degree is 3 for bdry edge, 4 for interior edge. Red chain should stay intact. Call to \textquotesingle{}meld\+Edge\+\_\+raw\textquotesingle{} should reverse this using the returned \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{}. \end{DoxyCompactList}\item 
+static \textbf{ Half\+Edge} \textbf{ split\+Flower\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Half\+Edge} uedge, \textbf{ Half\+Edge} wedge)
+\begin{DoxyCompactList}\small\item\em Split \textquotesingle{}V\textquotesingle{} flower into two flowers, depending on situation. ~\newline
+ (1) \textquotesingle{}uedge\textquotesingle{}, \textquotesingle{}wedge\textquotesingle{} both non-\/null, then V must be interior:\+ first flower is u -\/-\/$>$ w about V, while second is w -\/-\/$>$ u about \textquotesingle{}newV\textquotesingle{}. Thus (V,newV,u), (newV,V,w) are new oriented faces. Return new edge (V,newV) (can be reversed via call to \textquotesingle{}meld\+Edge\textquotesingle{} using (V,newV)). (2) If \textquotesingle{}wedge\textquotesingle{} is null, then V must be a bdry; split the flower at \textquotesingle{}uedge\textquotesingle{} (which must be interior edge):\+ first flower downstream bdry around \textquotesingle{}newV\textquotesingle{} to \textquotesingle{}uedge\textquotesingle{}; second from \textquotesingle{}uedge\textquotesingle{} around V to the upstream bdry. Return new bdry edge (V,newV). Red chain is adjusted. Reverse via \textquotesingle{}meld\+Edge\+\_\+raw\textquotesingle{} with (V,newV). \end{DoxyCompactList}\item 
+static int \textbf{ rm\+Bary\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Vertex} vert)
+\begin{DoxyCompactList}\small\item\em Remove interior degree 3 \textquotesingle{}vert\textquotesingle{} (i.\+e., a "{}ball bearing"{}) without introducing new bdry. Adjust \textquotesingle{}vertices\textquotesingle{}. If \textquotesingle{}vert\textquotesingle{} is red, adjust red chain. \end{DoxyCompactList}\item 
+static Array\+List$<$ \textbf{ Vertex} $>$ \textbf{ rm\+Vert\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, int v)
+\begin{DoxyCompactList}\small\item\em Remove a vertex; \textquotesingle{}vertices\textquotesingle{} are adjusted and reindexed, with old index in \textquotesingle{}vutil\textquotesingle{}. Calling routine must have checked for legality, e.\+g., whether it leaves an interior neighbor with only 2 neighbors, etc. \textquotesingle{}red\+Chain\textquotesingle{} is lost; return \textquotesingle{}vlist\textquotesingle{} of nghb\textquotesingle{}ing vertices for updating (e.\+g. they may become bdry vertices); these vertices become bdry with \textquotesingle{}halfedge\textquotesingle{}s set to first bdry edge, but the calling routine can use return \textquotesingle{}vlist\textquotesingle{} to adjust as necessary (e.\+g., as in \textquotesingle{}rm\+\_\+cir\textquotesingle{}, where \textquotesingle{}v\textquotesingle{} is degree 3 and we don\textquotesingle{}t want to puncture, (no new bdry)). \end{DoxyCompactList}\item 
+static int \textbf{ enfold\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, int v)
+\begin{DoxyCompactList}\small\item\em v must be boundary vertex; link cclw and clw nghbs with a new edge, making v interior. Red chain is adjusted, but calling routine updates combinatorics. If v and its 2 nghbs form an ideal face, make it interior by making them interior and adjusting or tossing the red chain. Note:\+ fails if v has just two nghb\textquotesingle{}s. \end{DoxyCompactList}\item 
+static int \textbf{ add\+Bary\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Half\+Edge} edge, boolean multi\+\_\+bary)
+\begin{DoxyCompactList}\small\item\em Create a barycenter for face \textquotesingle{}edge.\+face\textquotesingle{}; \textquotesingle{}vutil\textquotesingle{} set to hold reference vert. If \textquotesingle{}edge.\+face\textquotesingle{} is ideal, throw out the red chain; otherwise, \textquotesingle{}red\+Flag\textquotesingle{}s, and \textquotesingle{}bdry\+Flag\textquotesingle{}s should remain undisturbed. \end{DoxyCompactList}\item 
+static int \textbf{ add\+Bary\+Cents\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, Array\+List$<$ \textbf{ Dcel\+Face} $>$ farray)
+\begin{DoxyCompactList}\small\item\em Add barycenters to given list of faces. A barycenter is a new vertex interior to the face and connected to its bdry vertices. \end{DoxyCompactList}\item 
+static \textbf{ Vertex} \textbf{ add\+Vert\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Half\+Edge} clw\+\_\+edge)
+\begin{DoxyCompactList}\small\item\em Add vertex nghb\textquotesingle{}ing given clw bdry edge (w,u). Set \textquotesingle{}vutil\textquotesingle{} of new vertex to \textquotesingle{}w\textquotesingle{} as its reference vertex. If red chain exists, adjust it. \end{DoxyCompactList}\item 
+static \textbf{ Vertex} \textbf{ add\+Box\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Half\+Edge} edge, boolean fullbox)
+\begin{DoxyCompactList}\small\item\em Given clw bdry edge, add a "{}box"{}, a rectangle tile with barycenter. If \textquotesingle{}fullbox\textquotesingle{}, then attach three new bdry edges to given \textquotesingle{}edge\textquotesingle{} to form the box; else two new bdry edges, one to base of \textquotesingle{}edge\textquotesingle{} and one to end of \textquotesingle{}edge.\+next\textquotesingle{}. \end{DoxyCompactList}\item 
+static int \textbf{ bary\+Box\+\_\+layer} (\textbf{ Pack\+DCEL} pdcel, int v1, int v2)
+\begin{DoxyCompactList}\small\item\em add combinatorics for a layer of "{}square"{} faces with barycenters, one for each bdry edge, \textquotesingle{}v1\textquotesingle{} to \textquotesingle{}v2\textquotesingle{}. \textquotesingle{}vutil\textquotesingle{} of new vertex is index of reference circle on original bdry. Calling routine does the rest. \end{DoxyCompactList}\item 
+static \textbf{ Red\+Edge} \textbf{ contract\+Red\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Red\+Edge} rededge)
+\begin{DoxyCompactList}\small\item\em If \textquotesingle{}rededge\textquotesingle{} backtracks, we can shrink red chain (moving \textquotesingle{}red\+Chain\textquotesingle{} as necessary). No action? return \textquotesingle{}rededge\textquotesingle{}. If red chain is just two edges, this becomes a sphere, return null. Else return next downstream red after backtrack. \end{DoxyCompactList}\item 
+static \textbf{ Half\+Edge}[$\,$] \textbf{ flip\+Advance\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Given initial \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \{v.\+w\}, do two things:\+ (1) advance in half-\/hex direction (pass two edges on left) for new \textquotesingle{}base\+Edge\textquotesingle{} \{w,u\} and (2) flip the next clw edge about v, \{v,c\}, if possible. Return two \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{}s:\+ [0] is new \textquotesingle{}base\+Edge\textquotesingle{} and [1] is the edge resulting from the flip. If we can\textquotesingle{}t advance, then return null. If we an advance, [1] may be null if we can\textquotesingle{}t flip. Note that \textquotesingle{}Red\+Chain\textquotesingle{} may be null if red edge is flipped. Calling routine must complete the combinatorics. \end{DoxyCompactList}\item 
+static \textbf{ Half\+Edge} \textbf{ flip\+Edge\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em "{}\+Flip"{} an \textquotesingle{}edge\textquotesingle{} in the combinatorics; that means, to replace \textquotesingle{}edge\textquotesingle{} by the other diagonal in the union of its two faces. The numbers of faces, edges, and verts is unchanged. There are combinatoric conditions on \textquotesingle{}edge\textquotesingle{}:\+ \end{DoxyCompactList}\item 
+static Array\+List$<$ Integer $>$ \textbf{ hex\+Bary\+Refine\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, boolean bary\+Flag)
+\begin{DoxyCompactList}\small\item\em Either hex or bary refine the given DCEL. Start either process by first dividing each edge in half. Then either add edges between the new edge vertices (hex refining) or add a barycenter and new edges (bary refining). We return \textquotesingle{}Array\+List$<$\+Integer$>$\textquotesingle{}:\+ in baryrefine case, this lists all the new barycenters, in hexrefine case, it is not null but is empty. ~\newline
+ The \textquotesingle{}pdcel.\+red\+Chain\textquotesingle{} should remain in tact, but is subdivided to get the new red chain. All original vertices have their original \textquotesingle{}halfedge\textquotesingle{}s, \textquotesingle{}vutil\textquotesingle{} holds index of reference verts (see \textquotesingle{}reap\+VUtils\textquotesingle{}). Process involves cycling original spokes of original vertices. At the end, \textquotesingle{}vertices\textquotesingle{} is up to date, \textquotesingle{}faces\textquotesingle{} and \textquotesingle{}edges\textquotesingle{} are outdated, but ideal faces and their indices should remain. CAUTION:\+ Here \textquotesingle{}pdcel.\+vertices\textquotesingle{} will be extended as necessary; in \textquotesingle{}attach\+DCEL\textquotesingle{}, pack \textquotesingle{}size\+Limit\textquotesingle{} should get adjusted to accommodate. \end{DoxyCompactList}\item 
+static int \textbf{ migrate} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Routine to \textquotesingle{}migrate\textquotesingle{} a branch point from interior point v to nghb w. Based on a common geometric method for creating branch points, namely, by attaching two packings along a common slit, the tips of the slits becoming the common branch circle. If the local combinatorics of the two complexes were identical, then the branch point could be modified by extending the slit one more edge on each piece to end at the common neighbors of the original tips; after pasting, the branching would occur at that neighbor. This routine adjusts the combinatorics of the original pasted complex locally to accomplish the same result -- so a branch point v is "{}migrated"{} to a neighbor w. \end{DoxyCompactList}\item 
+static int \textbf{ add\+Ideal\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, int v, int w)
+\begin{DoxyCompactList}\small\item\em Add a new vertex to some or all vertices bounding an ideal face, starting with \textquotesingle{}v\textquotesingle{} and going cclw about the bdry component (clw about the ideal face) until the new vertex neighbors w. If w=v, then we\textquotesingle{}re adding a barycenter to the ideal face and this bdry component becomes interior. Calling must check that v, w on same bdry comp, and handles combinatorics. New vert should have the largest index. Exception if bdry comp has just two edges. \end{DoxyCompactList}\item 
+static int \textbf{ add\+Ideal\+Face\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Dcel\+Face} f)
+\begin{DoxyCompactList}\small\item\em If ideal face \textquotesingle{}f\textquotesingle{} has precisely three edges, then make it into a normal face. Check for sphere and adjust red chain as necessary. \end{DoxyCompactList}\item 
+static \textbf{ Half\+Edge} \textbf{ get\+Common\+Edge} (\textbf{ Pack\+DCEL} pdcel, int v, int w)
+\begin{DoxyCompactList}\small\item\em Find an common edge opposite to both v and w:\+ v will be to its left, w to its right. \end{DoxyCompactList}\item 
+static \textbf{ Pack\+DCEL} \textbf{ poly\+Cluster} (\textbf{ Pack\+DCEL} base, int v, int sides, int n)
+\begin{DoxyCompactList}\small\item\em Build a raw \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} consisting of n$>$=3 copies of \textquotesingle{}base\textquotesingle{} attached about its bdry vertex \textquotesingle{}v\textquotesingle{}, each pasting involving \textquotesingle{}sides\textquotesingle{}$>$=1 bdry edges from \textquotesingle{}v\textquotesingle{}. \end{DoxyCompactList}\item 
+static int \textbf{ rm\+Quad\+Node} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Remove an interior node of degree 4, namely, the origin \textquotesingle{}v\textquotesingle{} of \textquotesingle{}edge\textquotesingle{}. If \textquotesingle{}w\textquotesingle{} is other end, introduce new edge from opposite vertex \textquotesingle{}u\textquotesingle{} to \textquotesingle{}w\textquotesingle{}. (So we collapse \textquotesingle{}v\textquotesingle{} to \textquotesingle{}u\textquotesingle{}.) Fix up \textquotesingle{}vertices\textquotesingle{}, \textquotesingle{}vert\+Count\textquotesingle{}, compose to update \textquotesingle{}old\+New\textquotesingle{}. If \textquotesingle{}v\textquotesingle{} is red, null red chain. May have to reset \textquotesingle{}alpha\textquotesingle{}. \end{DoxyCompactList}\item 
+static int \textbf{ swap\+Nodes\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, int v, int w)
+\begin{DoxyCompactList}\small\item\em Simply swap vertices v and w in a raw \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l}. \end{DoxyCompactList}\item 
+static int \textbf{ frack\+Vert} (\textbf{ Pack\+DCEL} pdcel, int v)
+\begin{DoxyCompactList}\small\item\em Fracking is a combinatorial refinement process. Given a vertex, we first add a barycenter to each neighboring face. Then we flip each edge shared by two of these faces. Finally, we remove any boundary edges of these faces. Return the count of new vertices. Note:\+ if v is bdry with just one face, then return 0. See the "{}ring"{} command. \end{DoxyCompactList}\item 
+static int \textbf{ rm\+Edge\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Remove \textquotesingle{}edge\textquotesingle{}, which must be bdry or have both ends interior. \end{DoxyCompactList}\item 
+static int \textbf{ meld\+Edge\+\_\+raw} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Meld the two ends of \textquotesingle{}edge\textquotesingle{} $<$v,w$>$, orphaning the edge and one end. If $<$v,w$>$ is cclw bdry edge or $<$v,w$>$ is interior and w is interior, then orphan w. Try to keep the red chain intact, but if too complicated, set to null. \textquotesingle{}alpha\textquotesingle{} may also be set to null. This can be used to reverse \textquotesingle{}split\+Edge\+\_\+raw\textquotesingle{} and \textquotesingle{}split\+Flower\+\_\+raw\textquotesingle{} if called with the proper \textquotesingle{}edge\textquotesingle{}. \end{DoxyCompactList}\item 
+static \textbf{ Red\+Edge} \textbf{ vlink2red} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Node\+Link} vlink)
+\begin{DoxyCompactList}\small\item\em Use \textquotesingle{}\doxyref{Node\+Link}{p.}{classlist_manip_1_1_node_link}\textquotesingle{} to create a closed chain of new red edges. The links must be contiguous and must close up. We set \textquotesingle{}my\+Edge\textquotesingle{}s for the \textquotesingle{}\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}\textquotesingle{}s but do not set their \textquotesingle{}my\+Red\+Edge\textquotesingle{} or \textquotesingle{}\doxyref{Vertex.\+red\+Flag}{p.}{classcombinatorics_1_1komplex_1_1_vertex_aa7ad473b32e2b5cf2ead46f6c7a27407}\textquotesingle{}s. \end{DoxyCompactList}\item 
+static int \textbf{ wipe\+Red\+Chain} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Red\+Edge} redchain)
+\begin{DoxyCompactList}\small\item\em Wipe out the linked \textquotesingle{}\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}\textquotesingle{}s starting with \textquotesingle{}red\+Chain\textquotesingle{}:\+ null \textquotesingle{}my\+Edge\textquotesingle{} references to \textquotesingle{}my\+Red\+Edge\textquotesingle{}, null \textquotesingle{}red\+Chain\textquotesingle{}, orphan all \textquotesingle{}Red\+Edges\textquotesingle{} so they can be garbaged. Return 0 if there seems to be a problem -- e.\+g., the red\+Chain isn\textquotesingle{}t closed. \end{DoxyCompactList}\item 
+static int \textbf{ remove\+Vert\+Index} (\textbf{ Pack\+DCEL} pdcel, int v)
+\begin{DoxyCompactList}\small\item\em Remove the \textquotesingle{}\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}\textquotesingle{} with index \textquotesingle{}v\textquotesingle{}, readjusting \textquotesingle{}vertices\textquotesingle{}, \textquotesingle{}vertex\+Count\textquotesingle{}, and \textquotesingle{}old\+New\textquotesingle{}. If \textquotesingle{}old\+New\textquotesingle{} is null and \textquotesingle{}v\textquotesingle{} is less than \textquotesingle{}vertex\+Count\textquotesingle{}, then \textquotesingle{}old\+New\textquotesingle{} is initiated. This code allows various \textquotesingle{}raw\textquotesingle{} routines to be called multiple times before requiring combinatorial processing. \end{DoxyCompactList}\item 
+static Array\+List$<$ \textbf{ Half\+Link} $>$ \textbf{ island\+Surround} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Node\+Link} beach)
+\begin{DoxyCompactList}\small\item\em Build the \textquotesingle{}\doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link}\textquotesingle{} whose faces define an oriented chain outside of \textquotesingle{}beach\textquotesingle{}; beach is typically a closed chain of vertices, as a cclw beach around an island. If \textquotesingle{}beach\textquotesingle{} is all interior, the result should define a closed chain of faces (so the first and last \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{}s have the same face). Otherwise, \textquotesingle{}\doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link}\textquotesingle{} will define one or more open chains of faces, which the calling routine processes. Return null if \textquotesingle{}beach\textquotesingle{} is all bdry. \end{DoxyCompactList}\item 
+static \textbf{ Half\+Link} \textbf{ rightside\+Link} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Half\+Link} hlink)
+\begin{DoxyCompactList}\small\item\em Build the \textquotesingle{}\doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link}\textquotesingle{} whose faces define the contiguous chain of faces to the right of \textquotesingle{}hlink\textquotesingle{}. So these are halfedges outward from the right; used, e.\+g., to get the faces surrounding an island. Start with halfedges outward from the end of the first edge of \textquotesingle{}hlink\textquotesingle{} and continue only as long as the edges of \textquotesingle{}hlink\textquotesingle{} remain contiguous and we don\textquotesingle{}t encounter an outgoing edge whose face is ideal. Stop with outgoing edges for the origin of the last halfedge, but watch in case \textquotesingle{}hlink\textquotesingle{} is closed --- then end with the last cclw outgoing edges from the common vertex. The link we return here does not have the initial edge of \textquotesingle{}hlink\textquotesingle{} in it:\+ the user may need to insert that or other edges at one end, depending on the purpose. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This file is for static methods manipulating combinatoric structures. These "{}$\ast$\+\_\+raw"{} methods typically handle radii and centers only in copying them to new elements and there is almost no dependence on the \doxyref{Pack\+Data}{p.}{classpacking_1_1_pack_data} parent. The routines expect \textquotesingle{}vertices\textquotesingle{} to be in place and for bdry edges to be identifiable based on face indices. They may update \textquotesingle{}vertices\textquotesingle{}, but arrays \textquotesingle{}edges\textquotesingle{} and \textquotesingle{}faces\textquotesingle{} are not updated. Red chain may be adjusted, but will be null if there are problems modifying it (sometimes because it is just too complicated). \textquotesingle{}\doxyref{Pack\+DCEL.\+tri\+Data}{p.}{classdcel_1_1_pack_d_c_e_l_a401c93c060269d818d8ef302a52fc22b}\textquotesingle{} is set to null, since this data is generally outdated. 
+
+Typical process:\+ (1) calling routine may \textquotesingle{}zero\+EUtil\textquotesingle{} to zero \textquotesingle{}eutil\textquotesingle{}. (2) calling routine runs \textquotesingle{}{\itshape \+\_\+raw\textquotesingle{} method to modify the dcel structure. (3) the \textquotesingle{}}\+\_\+raw\textquotesingle{} routine should ensure \textquotesingle{}vertices\textquotesingle{} and \textquotesingle{}vert\+Count\textquotesingle{} are updated and space is allocated and ideal faces are created and give negative index. If red chain could not be safely modified in \textquotesingle{}$\ast$\+\_\+raw\textquotesingle{}, then set \textquotesingle{}red\+Chain\textquotesingle{} null. (4) for any new vertices, preliminary data (cent/\+rad/\+aim, etc.) are typically set from appropriat reference vert. (5) calling routine runs \textquotesingle{}fix\+DCEL\textquotesingle{}, which computes red chain (if needed) and calls \textquotesingle{}Fill\+Inside\textquotesingle{} and \textquotesingle{}attach\+DCEL\textquotesingle{}.
+
+Sometimes \textquotesingle{}$\ast$\+\_\+raw\textquotesingle{} may store info in \textquotesingle{}\doxyref{Pack\+DCEL.\+old\+New}{p.}{classdcel_1_1_pack_d_c_e_l_ab38ff3aa7bafebf781ea90203bab3a16}\textquotesingle{}. Many raw routines can be repeated several times before \textquotesingle{}fix\+DCEL\textquotesingle{} is needed. I\textquotesingle{}m going to try this approach:\+
+
+(a) Before the first \textquotesingle{}$\ast$\+\_\+raw\textquotesingle{} call, set \textquotesingle{}pack\+DCEL.\+old\+New\textquotesingle{} null.
+
+(b) during each call, compose \textquotesingle{}pack\+DCEL.\+old\+New\textquotesingle{} with local \textquotesingle{}oldnew\textquotesingle{} built during the routine; see \textquotesingle{}\doxyref{Vertex\+Map.\+followed\+By}{p.}{classlist_manip_1_1_vertex_map_a723a190279b6cf19f8ac89ea3675c7dc}\textquotesingle{}.
+
+(c) When done, \textquotesingle{}pack\+DCEL.\+old\+New\textquotesingle{} should have $<$orig,final$>$ pairings which are used during \textquotesingle{}attach\+DCEL\textquotesingle{} to copy data where needed.
+
+\begin{DoxyAuthor}{Author}
+kens
+\end{DoxyAuthor}
+Low-\/level DCEL surgery:\+ edge flips, vertex insertions, face splits, and boundary modifications.
+
+\begin{DoxyAuthor}{Author}
+kstephe2 
+\end{DoxyAuthor}
+
+
+Definition at line \textbf{ 71} of file \textbf{ Raw\+Manip.\+java}.
+
+
+
+\label{doc-func-members}
+\doxysubsection{Member Function Documentation}
+\index{dcel.RawManip@{dcel.RawManip}!addBary\_raw@{addBary\_raw}}
+\index{addBary\_raw@{addBary\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{addBary\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_af6f3e92501260da41523e6b69fa03b26} 
+int dcel.\+Raw\+Manip.\+add\+Bary\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Half\+Edge}}]{edge}{, }\item[{boolean}]{multi\+\_\+bary}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Create a barycenter for face \textquotesingle{}edge.\+face\textquotesingle{}; \textquotesingle{}vutil\textquotesingle{} set to hold reference vert. If \textquotesingle{}edge.\+face\textquotesingle{} is ideal, throw out the red chain; otherwise, \textquotesingle{}red\+Flag\textquotesingle{}s, and \textquotesingle{}bdry\+Flag\textquotesingle{}s should remain undisturbed. 
+
+TODO:\+ \textquotesingle{}multi-\/bary\textquotesingle{} true, then add three vertices to the face instead of just one (if the face has 3 edges?)
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+{\em mutli\+\_\+bary} & boolean, \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int new index 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1001} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!addBaryCents\_raw@{addBaryCents\_raw}}
+\index{addBaryCents\_raw@{addBaryCents\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{addBaryCents\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_abbb61b8736880b59117e2d6e285c2d5a} 
+int dcel.\+Raw\+Manip.\+add\+Bary\+Cents\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{Array\+List$<$ \textbf{ Dcel\+Face} $>$}]{farray}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Add barycenters to given list of faces. A barycenter is a new vertex interior to the face and connected to its bdry vertices. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em farray} & Array\+List$<$dcel.\+Face$>$ \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int count, 0 on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1087} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!addBox\_raw@{addBox\_raw}}
+\index{addBox\_raw@{addBox\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{addBox\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a63cce3897319562a474c6f58fcc8823d} 
+\textbf{ Vertex} dcel.\+Raw\+Manip.\+add\+Box\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Half\+Edge}}]{edge}{, }\item[{boolean}]{fullbox}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Given clw bdry edge, add a "{}box"{}, a rectangle tile with barycenter. If \textquotesingle{}fullbox\textquotesingle{}, then attach three new bdry edges to given \textquotesingle{}edge\textquotesingle{} to form the box; else two new bdry edges, one to base of \textquotesingle{}edge\textquotesingle{} and one to end of \textquotesingle{}edge.\+next\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+{\em fullbox} & boolean, \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}, barycenter vertex 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1242} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!addIdeal\_raw@{addIdeal\_raw}}
+\index{addIdeal\_raw@{addIdeal\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{addIdeal\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a1b0280af9dc9e5d748fe7a69d5129d14} 
+int dcel.\+Raw\+Manip.\+add\+Ideal\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{int}]{v}{, }\item[{int}]{w}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Add a new vertex to some or all vertices bounding an ideal face, starting with \textquotesingle{}v\textquotesingle{} and going cclw about the bdry component (clw about the ideal face) until the new vertex neighbors w. If w=v, then we\textquotesingle{}re adding a barycenter to the ideal face and this bdry component becomes interior. Calling must check that v, w on same bdry comp, and handles combinatorics. New vert should have the largest index. Exception if bdry comp has just two edges. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em v} & int \\
+\hline
+{\em w} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int, count of edgepairs added, 0 on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2388} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!addIdealFace\_raw@{addIdealFace\_raw}}
+\index{addIdealFace\_raw@{addIdealFace\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{addIdealFace\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a81cd0ed4e1af98e82b6a517ce988fc1e} 
+int dcel.\+Raw\+Manip.\+add\+Ideal\+Face\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Dcel\+Face}}]{f}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+If ideal face \textquotesingle{}f\textquotesingle{} has precisely three edges, then make it into a normal face. Check for sphere and adjust red chain as necessary. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \\
+\hline
+{\em f} & dcel.\+face \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 1 on success 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2434} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!addVert\_raw@{addVert\_raw}}
+\index{addVert\_raw@{addVert\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{addVert\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_ac4ea09855bf14cee26d290f7ea44ff47} 
+\textbf{ Vertex} dcel.\+Raw\+Manip.\+add\+Vert\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Half\+Edge}}]{clw\+\_\+edge}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Add vertex nghb\textquotesingle{}ing given clw bdry edge (w,u). Set \textquotesingle{}vutil\textquotesingle{} of new vertex to \textquotesingle{}w\textquotesingle{} as its reference vertex. If red chain exists, adjust it. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em clw\+\_\+edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+new \doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1113} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!baryBox\_layer@{baryBox\_layer}}
+\index{baryBox\_layer@{baryBox\_layer}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{baryBox\_layer()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_ab2e5aaa18e1c1bde13a826f2609f2775} 
+int dcel.\+Raw\+Manip.\+bary\+Box\+\_\+layer (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{int}]{v1}{, }\item[{int}]{v2}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+add combinatorics for a layer of "{}square"{} faces with barycenters, one for each bdry edge, \textquotesingle{}v1\textquotesingle{} to \textquotesingle{}v2\textquotesingle{}. \textquotesingle{}vutil\textquotesingle{} of new vertex is index of reference circle on original bdry. Calling routine does the rest. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em v1} & int \\
+\hline
+{\em v2} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int, new \textquotesingle{}vert\+Count\textquotesingle{} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1285} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!contractRed\_raw@{contractRed\_raw}}
+\index{contractRed\_raw@{contractRed\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{contractRed\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_adbc94ca05545a4fb20de928e359bfd6f} 
+\textbf{ Red\+Edge} dcel.\+Raw\+Manip.\+contract\+Red\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Red\+Edge}}]{rededge}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+If \textquotesingle{}rededge\textquotesingle{} backtracks, we can shrink red chain (moving \textquotesingle{}red\+Chain\textquotesingle{} as necessary). No action? return \textquotesingle{}rededge\textquotesingle{}. If red chain is just two edges, this becomes a sphere, return null. Else return next downstream red after backtrack. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em rededge} & \doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}, possibly null 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1655} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!enfold\_raw@{enfold\_raw}}
+\index{enfold\_raw@{enfold\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{enfold\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_aac57ad70c1ed7b05dcd21154272205f1} 
+int dcel.\+Raw\+Manip.\+enfold\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{int}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+v must be boundary vertex; link cclw and clw nghbs with a new edge, making v interior. Red chain is adjusted, but calling routine updates combinatorics. If v and its 2 nghbs form an ideal face, make it interior by making them interior and adjusting or tossing the red chain. Note:\+ fails if v has just two nghb\textquotesingle{}s. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em v} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int degree of v 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 850} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!flipAdvance\_raw@{flipAdvance\_raw}}
+\index{flipAdvance\_raw@{flipAdvance\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{flipAdvance\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_aed8f10c2f7fcf263b301615c314777ca} 
+\textbf{ Half\+Edge}[$\,$] dcel.\+Raw\+Manip.\+flip\+Advance\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Given initial \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \{v.\+w\}, do two things:\+ (1) advance in half-\/hex direction (pass two edges on left) for new \textquotesingle{}base\+Edge\textquotesingle{} \{w,u\} and (2) flip the next clw edge about v, \{v,c\}, if possible. Return two \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{}s:\+ [0] is new \textquotesingle{}base\+Edge\textquotesingle{} and [1] is the edge resulting from the flip. If we can\textquotesingle{}t advance, then return null. If we an advance, [1] may be null if we can\textquotesingle{}t flip. Note that \textquotesingle{}Red\+Chain\textquotesingle{} may be null if red edge is flipped. Calling routine must complete the combinatorics. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}[2], null if can\textquotesingle{}t advance 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1721} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!flipEdge\_raw@{flipEdge\_raw}}
+\index{flipEdge\_raw@{flipEdge\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{flipEdge\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a0b1a86be88fea191de6fefef64ec608f} 
+\textbf{ Half\+Edge} dcel.\+Raw\+Manip.\+flip\+Edge\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+"{}\+Flip"{} an \textquotesingle{}edge\textquotesingle{} in the combinatorics; that means, to replace \textquotesingle{}edge\textquotesingle{} by the other diagonal in the union of its two faces. The numbers of faces, edges, and verts is unchanged. There are combinatoric conditions on \textquotesingle{}edge\textquotesingle{}:\+ 
+
+
+\begin{DoxyItemize}
+\item shared by two non-\/ideal faces (i.\+e. interior edge)
+\item must not have an end of degree 3.
+\item if end of degree 4, it cannot have nghb of degree 3.
+\item new edge ends cannot already be neighbors. If \textquotesingle{}edge\textquotesingle{} is in red chain, then set \textquotesingle{}red\+Chain\textquotesingle{} null. Calling routine handles processing.
+\end{DoxyItemize}
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}, new edge, null failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1766} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!frackVert@{frackVert}}
+\index{frackVert@{frackVert}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{frackVert()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a8b4f95b58b9ea71efbdd1cbb3c20fb86} 
+int dcel.\+Raw\+Manip.\+frack\+Vert (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{int}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Fracking is a combinatorial refinement process. Given a vertex, we first add a barycenter to each neighboring face. Then we flip each edge shared by two of these faces. Finally, we remove any boundary edges of these faces. Return the count of new vertices. Note:\+ if v is bdry with just one face, then return 0. See the "{}ring"{} command. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em verts} & \doxyref{Node\+Link}{p.}{classlist_manip_1_1_node_link} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int, count of new vertices, 0 on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2680} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!getCommonEdge@{getCommonEdge}}
+\index{getCommonEdge@{getCommonEdge}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{getCommonEdge()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a3f17e7db889e3614a116e3535e02222f} 
+\textbf{ Half\+Edge} dcel.\+Raw\+Manip.\+get\+Common\+Edge (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{int}]{v}{, }\item[{int}]{w}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Find an common edge opposite to both v and w:\+ v will be to its left, w to its right. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int \\
+\hline
+{\em w} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Edge\+Simple}{p.}{classkomplex_1_1_edge_simple}, null on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2577} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!hexBaryRefine\_raw@{hexBaryRefine\_raw}}
+\index{hexBaryRefine\_raw@{hexBaryRefine\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{hexBaryRefine\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a5ee9202be026a9319d1e630d3fbbc9db} 
+Array\+List$<$ Integer $>$ dcel.\+Raw\+Manip.\+hex\+Bary\+Refine\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{boolean}]{bary\+Flag}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Either hex or bary refine the given DCEL. Start either process by first dividing each edge in half. Then either add edges between the new edge vertices (hex refining) or add a barycenter and new edges (bary refining). We return \textquotesingle{}Array\+List$<$\+Integer$>$\textquotesingle{}:\+ in baryrefine case, this lists all the new barycenters, in hexrefine case, it is not null but is empty. ~\newline
+ The \textquotesingle{}pdcel.\+red\+Chain\textquotesingle{} should remain in tact, but is subdivided to get the new red chain. All original vertices have their original \textquotesingle{}halfedge\textquotesingle{}s, \textquotesingle{}vutil\textquotesingle{} holds index of reference verts (see \textquotesingle{}reap\+VUtils\textquotesingle{}). Process involves cycling original spokes of original vertices. At the end, \textquotesingle{}vertices\textquotesingle{} is up to date, \textquotesingle{}faces\textquotesingle{} and \textquotesingle{}edges\textquotesingle{} are outdated, but ideal faces and their indices should remain. CAUTION:\+ Here \textquotesingle{}pdcel.\+vertices\textquotesingle{} will be extended as necessary; in \textquotesingle{}attach\+DCEL\textquotesingle{}, pack \textquotesingle{}size\+Limit\textquotesingle{} should get adjusted to accommodate. 
+
+(Nominally works for non-\/triangular faces, but that has not been tested.)
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em bary\+Flag} & boolean; true, then do bary refine, else hex \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Array\+List$<$\+Integer$>$, may be empty 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1884} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!islandSurround@{islandSurround}}
+\index{islandSurround@{islandSurround}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{islandSurround()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a1c2e90ea27e0cf87f7b6c2a0a43bb6ba} 
+Array\+List$<$ \textbf{ Half\+Link} $>$ dcel.\+Raw\+Manip.\+island\+Surround (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Node\+Link}}]{beach}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Build the \textquotesingle{}\doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link}\textquotesingle{} whose faces define an oriented chain outside of \textquotesingle{}beach\textquotesingle{}; beach is typically a closed chain of vertices, as a cclw beach around an island. If \textquotesingle{}beach\textquotesingle{} is all interior, the result should define a closed chain of faces (so the first and last \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{}s have the same face). Otherwise, \textquotesingle{}\doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link}\textquotesingle{} will define one or more open chains of faces, which the calling routine processes. Return null if \textquotesingle{}beach\textquotesingle{} is all bdry. 
+
+TODO:\+ Combinatorial detail:\+ if face f2 shares an edge e with f0 and vert v of f2 opposite to e is degree 3, then may want to swallow v into the interior; i.\+e., .. f0 f1 f2 .. replaced by .. f0 f2 ..
+
+
+\begin{DoxyParams}{Parameters}
+{\em p} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\doxyref{Pack\+Data}{p.}{classpacking_1_1_pack_data} 
+\end{DoxySeeAlso}
+
+\begin{DoxyParams}{Parameters}
+{\em beach} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxySeeAlso}{See also}
+\doxyref{Node\+Link}{p.}{classlist_manip_1_1_node_link} 
+\end{DoxySeeAlso}
+\begin{DoxyReturn}{Returns}
+Array\+List$<$\+Half\+Link$>$, null on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 3240} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!markGenerations@{markGenerations}}
+\index{markGenerations@{markGenerations}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{markGenerations()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a7803f1f2fdb646dbbde9823e381c76b6} 
+int[$\,$] dcel.\+Raw\+Manip.\+mark\+Generations (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{int[$\,$]}]{seedstop}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+General "{}generational"{} marking routine. \textquotesingle{}seedstop\textquotesingle{} entries $>$0 for "{}seed"{} set, $<$0 for "{}stop"{} set, 0 for neutral. Seeds are first generation, with successive generations connected to them; stop are ones that don\textquotesingle{}t propagate further. The return entry for \textquotesingle{}v\textquotesingle{} is:\+ 
+
+
+\begin{DoxyItemize}
+\item n$>$0 ==$>$ nth generation from some seed
+\item -\/m if stop at mth generation
+\item 0 if not reached.
+\item ans[0] contains count of positive entries. If there is no "{}seed"{}, then use alpha (if it\textquotesingle{}s not a stop vertex), else a neighbor of alpha, else first neutral located.
+\end{DoxyItemize}
+
+Examples:\+ count generations from alpha, no stop; Find interior component containing alpha with stops; etc.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em seedstop} & int[], entry for each vertex \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int[] 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 120} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!meldEdge\_raw@{meldEdge\_raw}}
+\index{meldEdge\_raw@{meldEdge\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{meldEdge\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_ad85eddd0e49286b3216d093e54286258} 
+int dcel.\+Raw\+Manip.\+meld\+Edge\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Meld the two ends of \textquotesingle{}edge\textquotesingle{} $<$v,w$>$, orphaning the edge and one end. If $<$v,w$>$ is cclw bdry edge or $<$v,w$>$ is interior and w is interior, then orphan w. Try to keep the red chain intact, but if too complicated, set to null. \textquotesingle{}alpha\textquotesingle{} may also be set to null. This can be used to reverse \textquotesingle{}split\+Edge\+\_\+raw\textquotesingle{} and \textquotesingle{}split\+Flower\+\_\+raw\textquotesingle{} if called with the proper \textquotesingle{}edge\textquotesingle{}. 
+
+TODO:\+ synchronize meld\+Edge with split\+Edge and split\+Flwoer so that the orphaned edge in meld\+Edge is the newly created edge during the split operations.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int, orphaned vert index, 0 on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2888} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!migrate@{migrate}}
+\index{migrate@{migrate}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{migrate()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a2172811b929924bdacd3b98247c4176b} 
+int dcel.\+Raw\+Manip.\+migrate (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Routine to \textquotesingle{}migrate\textquotesingle{} a branch point from interior point v to nghb w. Based on a common geometric method for creating branch points, namely, by attaching two packings along a common slit, the tips of the slits becoming the common branch circle. If the local combinatorics of the two complexes were identical, then the branch point could be modified by extending the slit one more edge on each piece to end at the common neighbors of the original tips; after pasting, the branching would occur at that neighbor. This routine adjusts the combinatorics of the original pasted complex locally to accomplish the same result -- so a branch point v is "{}migrated"{} to a neighbor w. 
+
+Branching is a geometric phenomenon, and while the work is combinatoric, there must exist certain local symmetries to make this work:\+ if \textquotesingle{}edge\textquotesingle{} is $<$v,w$>$, the original \textquotesingle{}branch\textquotesingle{} vertex is \textquotesingle{}v\textquotesingle{} and must have even degree (at least 6) and neighbor w must have the same degree as the vertex ww directly opposite of v.
+
+After migration, \textquotesingle{}v\textquotesingle{} remains as the branch vertex, \textquotesingle{}w\textquotesingle{} and \textquotesingle{}ww\textquotesingle{} split the old branch vert edges; no need to adjust aims. 
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l}, (only needed to null \textquotesingle{}tri\+Data\textquotesingle{}) \\
+\hline
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int, new \textquotesingle{}w\textquotesingle{}, else 0 on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2311} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!polyCluster@{polyCluster}}
+\index{polyCluster@{polyCluster}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{polyCluster()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a99a841911fc9a72ec42f8aa9bf2eaa5d} 
+\textbf{ Pack\+DCEL} dcel.\+Raw\+Manip.\+poly\+Cluster (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{base}{, }\item[{int}]{v}{, }\item[{int}]{sides}{, }\item[{int}]{n}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Build a raw \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} consisting of n$>$=3 copies of \textquotesingle{}base\textquotesingle{} attached about its bdry vertex \textquotesingle{}v\textquotesingle{}, each pasting involving \textquotesingle{}sides\textquotesingle{}$>$=1 bdry edges from \textquotesingle{}v\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em base} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em v} & int \\
+\hline
+{\em sides} & int \\
+\hline
+{\em n} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l}, null on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2598} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!removeVertIndex@{removeVertIndex}}
+\index{removeVertIndex@{removeVertIndex}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{removeVertIndex()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a7355125c5bef3bc6db06f0395e140109} 
+int dcel.\+Raw\+Manip.\+remove\+Vert\+Index (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{int}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Remove the \textquotesingle{}\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}\textquotesingle{} with index \textquotesingle{}v\textquotesingle{}, readjusting \textquotesingle{}vertices\textquotesingle{}, \textquotesingle{}vertex\+Count\textquotesingle{}, and \textquotesingle{}old\+New\textquotesingle{}. If \textquotesingle{}old\+New\textquotesingle{} is null and \textquotesingle{}v\textquotesingle{} is less than \textquotesingle{}vertex\+Count\textquotesingle{}, then \textquotesingle{}old\+New\textquotesingle{} is initiated. This code allows various \textquotesingle{}raw\textquotesingle{} routines to be called multiple times before requiring combinatorial processing. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em v} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int, new \textquotesingle{}vert\+Count\textquotesingle{} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 3204} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!rightsideLink@{rightsideLink}}
+\index{rightsideLink@{rightsideLink}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{rightsideLink()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a6731c452d6b69bfe0b1af2ca7e450768} 
+\textbf{ Half\+Link} dcel.\+Raw\+Manip.\+rightside\+Link (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Half\+Link}}]{hlink}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Build the \textquotesingle{}\doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link}\textquotesingle{} whose faces define the contiguous chain of faces to the right of \textquotesingle{}hlink\textquotesingle{}. So these are halfedges outward from the right; used, e.\+g., to get the faces surrounding an island. Start with halfedges outward from the end of the first edge of \textquotesingle{}hlink\textquotesingle{} and continue only as long as the edges of \textquotesingle{}hlink\textquotesingle{} remain contiguous and we don\textquotesingle{}t encounter an outgoing edge whose face is ideal. Stop with outgoing edges for the origin of the last halfedge, but watch in case \textquotesingle{}hlink\textquotesingle{} is closed --- then end with the last cclw outgoing edges from the common vertex. The link we return here does not have the initial edge of \textquotesingle{}hlink\textquotesingle{} in it:\+ the user may need to insert that or other edges at one end, depending on the purpose. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em hlink} & \doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link}, should be contiguous, may be closed \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link}, may be null or empty 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 3375} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!rmBary\_raw@{rmBary\_raw}}
+\index{rmBary\_raw@{rmBary\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{rmBary\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_aef1a4912eba698cbf36da7723df5551e} 
+int dcel.\+Raw\+Manip.\+rm\+Bary\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Vertex}}]{vert}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Remove interior degree 3 \textquotesingle{}vert\textquotesingle{} (i.\+e., a "{}ball bearing"{}) without introducing new bdry. Adjust \textquotesingle{}vertices\textquotesingle{}. If \textquotesingle{}vert\textquotesingle{} is red, adjust red chain. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em vert} & \doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int, orphaned vert index, 0 on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 645} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!rmEdge\_raw@{rmEdge\_raw}}
+\index{rmEdge\_raw@{rmEdge\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{rmEdge\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a99ba98034743ea97f33fb315433bb7da} 
+int dcel.\+Raw\+Manip.\+rm\+Edge\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Remove \textquotesingle{}edge\textquotesingle{}, which must be bdry or have both ends interior. 
+
+
+\begin{DoxyItemize}
+\item If edge has two interior ends, this creates a new bdry component surrounding the edge, red chain is lost. \textquotesingle{}alpha\textquotesingle{} may need to be reset.
+\item If edge is bdry:\+ if part of a protruding bdry face, then we will orphan one vertex (and set \textquotesingle{}old\+New\textquotesingle{}). Keep \textquotesingle{}edge.\+origin\textquotesingle{} vertex, or surviving vertex if one end is orphaned. We try to keep the red chain.
+\end{DoxyItemize}
+
+Return int:\+
+\begin{DoxyItemize}
+\item if -\/w, then vert of index w is now red and calling routine should set rad/\+center.
+\item 0 on failure 
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int, 0 on failure 
+\end{DoxyReturn}
+
+\end{DoxyItemize}
+
+Definition at line \textbf{ 2730} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!rmQuadNode@{rmQuadNode}}
+\index{rmQuadNode@{rmQuadNode}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{rmQuadNode()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a305845eb6675d588c7d9e8919ea0a57f} 
+int dcel.\+Raw\+Manip.\+rm\+Quad\+Node (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Remove an interior node of degree 4, namely, the origin \textquotesingle{}v\textquotesingle{} of \textquotesingle{}edge\textquotesingle{}. If \textquotesingle{}w\textquotesingle{} is other end, introduce new edge from opposite vertex \textquotesingle{}u\textquotesingle{} to \textquotesingle{}w\textquotesingle{}. (So we collapse \textquotesingle{}v\textquotesingle{} to \textquotesingle{}u\textquotesingle{}.) Fix up \textquotesingle{}vertices\textquotesingle{}, \textquotesingle{}vert\+Count\textquotesingle{}, compose to update \textquotesingle{}old\+New\textquotesingle{}. If \textquotesingle{}v\textquotesingle{} is red, null red chain. May have to reset \textquotesingle{}alpha\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int, orphaned vert index, 0 on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2636} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!rmVert\_raw@{rmVert\_raw}}
+\index{rmVert\_raw@{rmVert\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{rmVert\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a3b6ee953bcfaa0e6c3d8b0db2a8715c6} 
+Array\+List$<$ \textbf{ Vertex} $>$ dcel.\+Raw\+Manip.\+rm\+Vert\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{int}]{v}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Remove a vertex; \textquotesingle{}vertices\textquotesingle{} are adjusted and reindexed, with old index in \textquotesingle{}vutil\textquotesingle{}. Calling routine must have checked for legality, e.\+g., whether it leaves an interior neighbor with only 2 neighbors, etc. \textquotesingle{}red\+Chain\textquotesingle{} is lost; return \textquotesingle{}vlist\textquotesingle{} of nghb\textquotesingle{}ing vertices for updating (e.\+g. they may become bdry vertices); these vertices become bdry with \textquotesingle{}halfedge\textquotesingle{}s set to first bdry edge, but the calling routine can use return \textquotesingle{}vlist\textquotesingle{} to adjust as necessary (e.\+g., as in \textquotesingle{}rm\+\_\+cir\textquotesingle{}, where \textquotesingle{}v\textquotesingle{} is degree 3 and we don\textquotesingle{}t want to puncture, (no new bdry)). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em v} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Array\+List$<$\+Vertex$>$ neighbors 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 787} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!seed\_raw@{seed\_raw}}
+\index{seed\_raw@{seed\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{seed\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_ac68e132853701498c8a9cb42fd4c3b05} 
+\textbf{ Pack\+DCEL} dcel.\+Raw\+Manip.\+seed\+\_\+raw (\begin{DoxyParamCaption}\item[{int}]{n}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Create a new \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} seed with n petals. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 79} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!splitEdge\_raw@{splitEdge\_raw}}
+\index{splitEdge\_raw@{splitEdge\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{splitEdge\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a8c0477dc02bbc483e183fb83b3ad58a3} 
+\textbf{ Half\+Edge} dcel.\+Raw\+Manip.\+split\+Edge\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Add a new vertex which splits this edge and connects to shared neighbors. So new vert degree is 3 for bdry edge, 4 for interior edge. Red chain should stay intact. Call to \textquotesingle{}meld\+Edge\+\_\+raw\textquotesingle{} should reverse this using the returned \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}, \textquotesingle{}edge\textquotesingle{}, but with new \textquotesingle{}mid\+Vert\textquotesingle{} as end 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 197} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!splitFlower\_raw@{splitFlower\_raw}}
+\index{splitFlower\_raw@{splitFlower\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{splitFlower\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a772006f7f00a7d069e9af0bff8e76b4f} 
+\textbf{ Half\+Edge} dcel.\+Raw\+Manip.\+split\+Flower\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Half\+Edge}}]{uedge}{, }\item[{\textbf{ Half\+Edge}}]{wedge}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Split \textquotesingle{}V\textquotesingle{} flower into two flowers, depending on situation. ~\newline
+ (1) \textquotesingle{}uedge\textquotesingle{}, \textquotesingle{}wedge\textquotesingle{} both non-\/null, then V must be interior:\+ first flower is u -\/-\/$>$ w about V, while second is w -\/-\/$>$ u about \textquotesingle{}newV\textquotesingle{}. Thus (V,newV,u), (newV,V,w) are new oriented faces. Return new edge (V,newV) (can be reversed via call to \textquotesingle{}meld\+Edge\textquotesingle{} using (V,newV)). (2) If \textquotesingle{}wedge\textquotesingle{} is null, then V must be a bdry; split the flower at \textquotesingle{}uedge\textquotesingle{} (which must be interior edge):\+ first flower downstream bdry around \textquotesingle{}newV\textquotesingle{} to \textquotesingle{}uedge\textquotesingle{}; second from \textquotesingle{}uedge\textquotesingle{} around V to the upstream bdry. Return new bdry edge (V,newV). Red chain is adjusted. Reverse via \textquotesingle{}meld\+Edge\+\_\+raw\textquotesingle{} with (V,newV). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em uedge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+{\em wedge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}, new edge (V,newV) 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 356} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!swapNodes\_raw@{swapNodes\_raw}}
+\index{swapNodes\_raw@{swapNodes\_raw}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{swapNodes\_raw()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a4feffbe342cd964cee55b40a6ef8e836} 
+int dcel.\+Raw\+Manip.\+swap\+Nodes\+\_\+raw (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{int}]{v}{, }\item[{int}]{w}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Simply swap vertices v and w in a raw \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em v} & int \\
+\hline
+{\em w} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2656} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!vlink2red@{vlink2red}}
+\index{vlink2red@{vlink2red}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{vlink2red()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_a040720c95857e64abd833f5f415b95f3} 
+\textbf{ Red\+Edge} dcel.\+Raw\+Manip.\+vlink2red (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Node\+Link}}]{vlink}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Use \textquotesingle{}\doxyref{Node\+Link}{p.}{classlist_manip_1_1_node_link}\textquotesingle{} to create a closed chain of new red edges. The links must be contiguous and must close up. We set \textquotesingle{}my\+Edge\textquotesingle{}s for the \textquotesingle{}\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}\textquotesingle{}s but do not set their \textquotesingle{}my\+Red\+Edge\textquotesingle{} or \textquotesingle{}\doxyref{Vertex.\+red\+Flag}{p.}{classcombinatorics_1_1komplex_1_1_vertex_aa7ad473b32e2b5cf2ead46f6c7a27407}\textquotesingle{}s. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em vlink} & \doxyref{Node\+Link}{p.}{classlist_manip_1_1_node_link} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+null on error, disconnected or not closed 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 3112} of file \textbf{ Raw\+Manip.\+java}.
+
+\index{dcel.RawManip@{dcel.RawManip}!wipeRedChain@{wipeRedChain}}
+\index{wipeRedChain@{wipeRedChain}!dcel.RawManip@{dcel.RawManip}}
+\doxysubsubsection{wipeRedChain()}
+{\footnotesize\ttfamily \label{classdcel_1_1_raw_manip_ae7b7162a8f60a76b8a2e570e50a5123c} 
+int dcel.\+Raw\+Manip.\+wipe\+Red\+Chain (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Red\+Edge}}]{redchain}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Wipe out the linked \textquotesingle{}\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}\textquotesingle{}s starting with \textquotesingle{}red\+Chain\textquotesingle{}:\+ null \textquotesingle{}my\+Edge\textquotesingle{} references to \textquotesingle{}my\+Red\+Edge\textquotesingle{}, null \textquotesingle{}red\+Chain\textquotesingle{}, orphan all \textquotesingle{}Red\+Edges\textquotesingle{} so they can be garbaged. Return 0 if there seems to be a problem -- e.\+g., the red\+Chain isn\textquotesingle{}t closed. 
+
+NOTE:\+ not sure this is ever necessary; generally, just setting \textquotesingle{}red\+Chain\textquotesingle{} to null is enough.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em redchain} & \doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int count if seems successful, -\/count if problem 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 3170} of file \textbf{ Raw\+Manip.\+java}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+C:\+/\+\+Users/\+ashej/\+my\+Git\+Repos/\+\+Circle\+Pack/\+src/\+dcel/\+\textbf{ Raw\+Manip.\+java}\end{DoxyCompactItemize}

@@ -1,0 +1,2085 @@
+\doxysection{dcel.\+Pack\+DCEL Class Reference}
+\label{classdcel_1_1_pack_d_c_e_l}\index{dcel.PackDCEL@{dcel.PackDCEL}}
+
+
+Doubly-\/connected edge list (DCEL) with circle-\/packing geometry data.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Pack\+DCEL} ()
+\item 
+void \textbf{ fix\+DCEL} (\textbf{ Pack\+Data} \textbf{ p})
+\begin{DoxyCompactList}\small\item\em Cleanup routine:\+ needed because \textquotesingle{}$\ast$\+\_\+raw\textquotesingle{} routines modify dcel structure w/\+o complete update:\+ \textquotesingle{}vert\+Count\textquotesingle{}, \textquotesingle{}vertices\textquotesingle{}, edge connectivity should be in tact and often \textquotesingle{}red\+Chain\textquotesingle{} is in tact. The calling routine should already have done things like cents/\+radii. If the red chain was broken, the calling routine should set \textquotesingle{}red\+Chain\textquotesingle{}=null so that \textquotesingle{}redchain\+\_\+by\+\_\+edge\textquotesingle{} is called. Faces may be outdated or non-\/existent, \textquotesingle{}edges\textquotesingle{}, \textquotesingle{}faces\textquotesingle{}, counts, etc. need updating, so \textquotesingle{}fill\+Inside\textquotesingle{} is called. Also, need to \textquotesingle{}attach\textquotesingle{} to a packing (usually the current parent) or not if packing is null. This call does not "{}prune"{} the complex. \end{DoxyCompactList}\item 
+void \textbf{ fix\+DCEL} (\textbf{ Pack\+Data} \textbf{ p}, boolean prune)
+\begin{DoxyCompactList}\small\item\em Cleanup routine:\+ needed because \textquotesingle{}$\ast$\+\_\+raw\textquotesingle{} routines modify dcel structure w/\+o complete update:\+ \textquotesingle{}vert\+Count\textquotesingle{}, \textquotesingle{}vertices\textquotesingle{}, edge connectivity should be in tact and often \textquotesingle{}red\+Chain\textquotesingle{} is in tact. The calling routine should already have done things like cents/\+radii. If the red chain was broken, the calling routine should set \textquotesingle{}red\+Chain\textquotesingle{}=null so that \textquotesingle{}redchain\+\_\+by\+\_\+edge\textquotesingle{} is called. Faces may be outdated or non-\/existent, \textquotesingle{}edges\textquotesingle{}, \textquotesingle{}faces\textquotesingle{}, counts, etc. need updating, so \textquotesingle{}fill\+Inside\textquotesingle{} is called. Also, need to \textquotesingle{}attach\textquotesingle{} to a packing (usually the current parent) or not if packing is null. If \textquotesingle{}prune\textquotesingle{} is set, then vertices without interior nghbs are prunned. \end{DoxyCompactList}\item 
+int \textbf{ alloc\+\_\+vert\+\_\+space} (int new\+\_\+size, boolean keepit)
+\begin{DoxyCompactList}\small\item\em Reallocate space for \textquotesingle{}vertices\textquotesingle{} in increments of 1000. \end{DoxyCompactList}\item 
+int \textbf{ alloc\+Tri\+Data} ()
+\begin{DoxyCompactList}\small\item\em Create and populate \textquotesingle{}tri\+Data[]\textquotesingle{}. This loads \textquotesingle{}radii\textquotesingle{}, \textquotesingle{}inv\+Dist\textquotesingle{}s, \textquotesingle{}aim\textquotesingle{}. \end{DoxyCompactList}\item 
+boolean \textbf{ update\+Tri\+Data\+Radii} ()
+\begin{DoxyCompactList}\small\item\em Update or create \textquotesingle{}tri\+Data\textquotesingle{}. Return true if there are nontrivial inversive distances so we can set "{}old\+Reliable"{} flag in repacking. \end{DoxyCompactList}\item 
+\textbf{ Pack\+DCEL} \textbf{ red\+Cookie} (\textbf{ Node\+Link} vlist)
+\begin{DoxyCompactList}\small\item\em The "{}red"{} chain is a closed cclw chain of edges about a simply connected fundamental domain for the complex. This is rather difficult because \textquotesingle{}this\textquotesingle{} \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} should remain unchanged --- we depend on \textquotesingle{}bouquet\textquotesingle{} to create new \textquotesingle{}\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}\textquotesingle{}s and \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{}s. \end{DoxyCompactList}\item 
+int \textbf{ index\+Faces} (Array\+List$<$ \textbf{ Half\+Edge} $>$ \textbf{ edges}, Array\+List$<$ \textbf{ Half\+Edge} $>$ bdryedges)
+\begin{DoxyCompactList}\small\item\em Given full set of edges, redo the face numbers. Start by setting all former \textquotesingle{}.face\textquotesingle{} entries to null and, starting with alpha, resetting them, renumbering from 1. Ideal (i.\+e. outside) faces will have the highest indices. NOTE:\+ we assume that any \textquotesingle{}\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}\textquotesingle{} v which is bdry will have \textquotesingle{}v.\+halfedge.\+twin\textquotesingle{} in \textquotesingle{}bdryedges\textquotesingle{}. \end{DoxyCompactList}\item 
+void \textbf{ place\+First\+Edge} (\textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Place a \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{} so \textquotesingle{}origin\textquotesingle{} is at z=0 and other end is on the positive imaginary axis. Store the centers. \end{DoxyCompactList}\item 
+\textbf{ Circle\+Simple} \textbf{ d\+\_\+comp\+Opp\+Center} (\textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Compute the center of the vertex opposite \textquotesingle{}edge\textquotesingle{} in \textquotesingle{}edge.\+face\textquotesingle{}. \end{DoxyCompactList}\item 
+\textbf{ Circle\+Simple} \textbf{ comp\+Avg\+Center} (\textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Compute center of vert v opposite the given \textquotesingle{}edge\textquotesingle{} in its face. Compute as average of locations based on all edges opposite v whose other centers are already in place, indicated by \textquotesingle{}eutil$>$0\textquotesingle{} for the edge\textquotesingle{}s twin. Set eutil=1 in all faces used in the computation to indicate these edges are okay to use in later computations. \end{DoxyCompactList}\item 
+int[$\,$] \textbf{ label\+\_\+generations} (int max, \textbf{ Util\+Packet} uP)
+\begin{DoxyCompactList}\small\item\em Return integer array with the generations of verts, generation "{}1"{} being those v with \textquotesingle{}vutil\textquotesingle{} non-\/zero. Additional info is returned via \textquotesingle{}uP\textquotesingle{}. \end{DoxyCompactList}\item 
+int \textbf{ layout\+Packing} ()
+\begin{DoxyCompactList}\small\item\em Use \textquotesingle{}layout\+Order\textquotesingle{} and radii to recompute centers using \textquotesingle{}layout\+Order\textquotesingle{} and normalizing to put alpha at the origin and gamma on the positive y-\/axis. \end{DoxyCompactList}\item 
+int \textbf{ layout\+Packing} (\textbf{ Half\+Edge} first\+HE)
+\begin{DoxyCompactList}\small\item\em Use and radii to recompute centers using \textquotesingle{}layout\+Order\textquotesingle{}. However, first face in layout order is already in position. Do not normallize. \end{DoxyCompactList}\item 
+int \textbf{ layout\+Packing} (\textbf{ Half\+Link} hlink)
+\begin{DoxyCompactList}\small\item\em Use radii to recompute centers using \textquotesingle{}hlink\textquotesingle{}, starting by laying out the first face in normalized position and ending by rotating so gamma is on the positive y-\/axis. \end{DoxyCompactList}\item 
+int \textbf{ layout\+Packing} (boolean use\+Schw)
+\begin{DoxyCompactList}\small\item\em Use schwarzians to recompute centers using \textquotesingle{}layout\+Order\textquotesingle{}, starting by laying out the first face in normalized position and ending by rotating so gamma is on the positive y-\/axis. \end{DoxyCompactList}\item 
+int \textbf{ layout\+Packing} (\textbf{ Half\+Link} hlink, boolean use\+Schw, boolean fix\+First)
+\begin{DoxyCompactList}\small\item\em Use \textquotesingle{}hlink\textquotesingle{} for \textquotesingle{}order\textquotesingle{} (default to \textquotesingle{}layout\+Order\textquotesingle{}) to compute centers. If \textquotesingle{}fix\+First\textquotesingle{} is false, then the first face (generally \textquotesingle{}alpha\textquotesingle{}) is already laid out, so layout remaining in order. If \textquotesingle{}fix\+First\textquotesingle{} is true, then put first edge in normalized position (namely, from 0 to point on positive y-\/axis). Also, if \textquotesingle{}fix\+First\textquotesingle{} is true, then finish by rotating so \textquotesingle{}gamma\textquotesingle{} is on positive y-\/axis. \end{DoxyCompactList}\item 
+int \textbf{ layout\+Report} (int v, boolean place\+\_\+first, boolean norm, boolean use\+Schw)
+\begin{DoxyCompactList}\small\item\em Recompute centers of circles via \textquotesingle{}layout\+Order\textquotesingle{} as usual, but if \textquotesingle{}v\textquotesingle{} is valid vertex, then report its placements, which may be more than one. Option to recompute first face or leave it in current location. Option to apply usual alpha/\+gamma normalization. Option to use schwarzian instead of radii. Note:\+ this command modifies the recorded centers. \end{DoxyCompactList}\item 
+int \textbf{ d\+\_\+draw\+\_\+bdry\+\_\+seg} (int n, boolean do\+\_\+label, boolean do\+\_\+circle, Color ecol, int thickness)
+\begin{DoxyCompactList}\small\item\em Draw an edge-\/pairing boundary segment. \end{DoxyCompactList}\item 
+int \textbf{ flip\+Edges} (Array\+List$<$ \textbf{ Half\+Edge} $>$ flippers)
+\begin{DoxyCompactList}\small\item\em Flip the specified edges. In a triangulation, an interior edge is shared by two faces. To "{}flip"{} the edge means to remove it and replace it with the other diagonal in the union of those faces. The number of faces, edges, and vertices is not changed, but we are out of sync with parent \textquotesingle{}p\textquotesingle{}. ~\newline
+ Note:\+ calling routine must ensure there are no repeats in \textquotesingle{}flippers\textquotesingle{}. \end{DoxyCompactList}\item 
+int \textbf{ local\+Refine} (\textbf{ Node\+Link} vlist)
+\begin{DoxyCompactList}\small\item\em NEEDED FOR CIRCLEPACK "{}local refine"{} is a process for adding additional vertices as barycenters and flipping edges to get a finer circle packing near the designated vertices. \end{DoxyCompactList}\item 
+int \textbf{ local\+Refine} (Array\+List$<$ \textbf{ Vertex} $>$ arrayV)
+\begin{DoxyCompactList}\small\item\em "{}local refine"{} is a process for adding additional vertices as barycenters and flipping edges to get a finer circle packing near the designated vertices. \end{DoxyCompactList}\item 
+int[$\,$][$\,$] \textbf{ get\+Bouquet} ()
+\begin{DoxyCompactList}\small\item\em Form bouquet of the combinatorial flowers, eg., for writing or creating DCEL structure. \end{DoxyCompactList}\item 
+int \textbf{ count\+Petals} (int v)
+\begin{DoxyCompactList}\small\item\em Directly count the distinct petals. (Don\textquotesingle{}t recount first for closed flower). \end{DoxyCompactList}\item 
+int \textbf{ count\+Faces} (\textbf{ Vertex} vert)
+\begin{DoxyCompactList}\small\item\em Count the number of non-\/ideal faces at \textquotesingle{}vert\textquotesingle{}. \end{DoxyCompactList}\item 
+int \textbf{ verts\+\_\+share\+\_\+bdry} (int v1, int v2)
+\begin{DoxyCompactList}\small\item\em Return count of bdry verts from v1 to v2 (inclusive) if v1/\+v2 are on the same bdry component; otherwise 0. \end{DoxyCompactList}\item 
+Array\+List$<$ \textbf{ Half\+Edge} $>$ \textbf{ get\+Bdry\+Edges} ()
+\begin{DoxyCompactList}\small\item\em Based on current \textquotesingle{}bdry\+Faces\textquotesingle{}, find all bdry edges. \end{DoxyCompactList}\item 
+\textbf{ Half\+Edge} \textbf{ dual\+Edge\+\_\+to\+\_\+halfedge} (\textbf{ Edge\+Simple} dedge)
+\begin{DoxyCompactList}\small\item\em Given directed dual (f,g) between faces, return halfedge (v,w) which is cclw to (f,g); so f is on the left of (v,w), g is on the right. \end{DoxyCompactList}\item 
+\textbf{ Complex}[$\,$] \textbf{ get\+Dual\+Edge\+Ends} (\textbf{ Half\+Edge} he)
+\begin{DoxyCompactList}\small\item\em Given \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} (v,w), return ordered ends, g then f, of dual edge (f,g). CAUTION:\+ f is to left of (v,w), g to right, so result goes from right to left across (v,w). Return null if f an ideal face. If (v,w) is a oriented bdry edge (red w/\+o \textquotesingle{}twin\+Red\textquotesingle{}) then go from point on edge (v,w) to center of f. Else if (v,w) is red with \textquotesingle{}twin\+Red\textquotesingle{}, then compute location g would have if it shared edge (v,w) with f and go from g to f. \end{DoxyCompactList}\item 
+\textbf{ Graph\+Link} \textbf{ get\+Dual\+Edges} (boolean ideal)
+\begin{DoxyCompactList}\small\item\em NEEDED FOR CIRCLEPACK Dual graph store in \textquotesingle{}\doxyref{Edge\+Link}{p.}{classlist_manip_1_1_edge_link}\textquotesingle{}. This is linked list of \textquotesingle{}\doxyref{Edge\+Simple}{p.}{classkomplex_1_1_edge_simple}\textquotesingle{} objects, which are just pairs \{f,g\} of indices of faces sharing an edge. \end{DoxyCompactList}\item 
+double \textbf{ get\+Edge\+Angle} (\textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Get angle in \textquotesingle{}edge.\+face\textquotesingle{} at \textquotesingle{}edge.\+origin\textquotesingle{} using current radii. \end{DoxyCompactList}\item 
+double \textbf{ get\+Edge\+Angle} (\textbf{ Half\+Edge} edge, double r)
+\begin{DoxyCompactList}\small\item\em Get angle in \textquotesingle{}edge.\+face\textquotesingle{} at \textquotesingle{}edge.\+origin\textquotesingle{} assuming origin radius is \textquotesingle{}r\textquotesingle{}. If \textquotesingle{}r\textquotesingle{} is $<$= 0, then use current recorded radius. \end{DoxyCompactList}\item 
+double \textbf{ get\+Vert\+Ang\+Sum} (\textbf{ Vertex} vert, double rad)
+\begin{DoxyCompactList}\small\item\em Get the angle sum at \textquotesingle{}vert\textquotesingle{} using radius \textquotesingle{}rad\textquotesingle{}. Note:\+ if \textquotesingle{}rad\textquotesingle{} is $<$= 0, then computation uses current stored radius. \end{DoxyCompactList}\item 
+double \textbf{ get\+Vert\+Ang\+Sum} (\textbf{ Vertex} vert)
+\begin{DoxyCompactList}\small\item\em Get the angle sum at \textquotesingle{}vert\textquotesingle{} using current radii stored for edges, face-\/by-\/face. \end{DoxyCompactList}\item 
+\textbf{ Circle\+Simple} \textbf{ get\+Vert\+Data} (\textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Find the official rad/\+cent for the origin of the given \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{}. If the origin is \textquotesingle{}Red\+Vertex\textquotesingle{}, then look clw for first \textquotesingle{}\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}\textquotesingle{}. If normal non-\/red, then data is stored in \textquotesingle{}Pack\+Data.\+vertices[]\textquotesingle{}. \end{DoxyCompactList}\item 
+double \textbf{ get\+Vert\+Radius} (\textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Get the radius of \textquotesingle{}edge.\+origin\textquotesingle{} appropriate to this \textquotesingle{}edge\textquotesingle{}; e.\+g., it may be stored with nearest clw red edge. Get its internal form (i.\+e., x-\/rad for hyp case). \end{DoxyCompactList}\item 
+\textbf{ Complex} \textbf{ get\+Vert\+Center} (\textbf{ Half\+Edge} edge)
+\begin{DoxyCompactList}\small\item\em Get appropriate center, perhaps in nearest clw red edge. \end{DoxyCompactList}\item 
+\textbf{ Circle\+Simple} \textbf{ get\+Circle\+Simple} (\textbf{ Half\+Edge} he)
+\item 
+void \textbf{ set\+Vert\+Center} (int v, \textbf{ Complex} z)
+\begin{DoxyCompactList}\small\item\em Set center for v in all locations and in any associated \textquotesingle{}Red\+Edges\textquotesingle{}. (Compare with \textquotesingle{}set\+Cent4\+Edge\textquotesingle{} which only set\textquotesingle{}s the value associated with one edge.). \end{DoxyCompactList}\item 
+void \textbf{ set\+Circle4\+Edge} (\textbf{ Half\+Edge} edge, \textbf{ Circle\+Simple} cs)
+\begin{DoxyCompactList}\small\item\em Set cent/\+rad for \textquotesingle{}origin\textquotesingle{} and appropriate \textquotesingle{}\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}\textquotesingle{}s (if a \textquotesingle{}Red\+Vertex\textquotesingle{}). Data for a vert may differ in different \textquotesingle{}\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}\textquotesingle{}s having that vert. \end{DoxyCompactList}\item 
+void \textbf{ set\+Cent4\+Edge} (\textbf{ Half\+Edge} edge, \textbf{ Complex} z)
+\begin{DoxyCompactList}\small\item\em Set center for origin v of given \textquotesingle{}edge\textquotesingle{}. If v is a \textquotesingle{}Red\+Vertex\textquotesingle{}, then v\textquotesingle{}s center is stored in first clw red edge; it may differ in other red edges with origin v and may differ from Vertex.\+origin. (See \textquotesingle{}set\+Vert\+Center\textquotesingle{}, to set center in all locations.). \end{DoxyCompactList}\item 
+void \textbf{ set\+Vert\+Radii} (int v, double rad)
+\begin{DoxyCompactList}\small\item\em Set vert\textquotesingle{}s radius (hyp:\+ in its internal x-\/rad form) in all locations; i.\+e., in \textquotesingle{}\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}\textquotesingle{} and in red edge for any with this origin. (Compare with \textquotesingle{}set\+Rad4\+Edge\textquotesingle{} which only sets it for one associated red edge.). \end{DoxyCompactList}\item 
+void \textbf{ set\+Rad4\+Edge} (\textbf{ Half\+Edge} edge, double rad)
+\begin{DoxyCompactList}\small\item\em Set the radius (in its internal form x-\/rad for hyp case) in \textquotesingle{}\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}\textquotesingle{} and nearest clw red edge, if there is one. (Compare with \textquotesingle{}set\+Vert\+Radii\textquotesingle{} which sets this radius in all occurrences of its origin vertex.). \end{DoxyCompactList}\item 
+void \textbf{ set\+Radii\+\_\+by\+\_\+factor} (int v, double factor)
+\begin{DoxyCompactList}\small\item\em Multiply all radii stored for \textquotesingle{}v\textquotesingle{} by the given positive factor. Initially, intended for eucl geom only as part of affine packing. (3/\+2021). \end{DoxyCompactList}\item 
+int \textbf{ added\+Vert\+Data} (\textbf{ Half\+Link} hlink)
+\begin{DoxyCompactList}\small\item\em When new vertices are created, e.\+g., from "{}add\+\_\+cir"{}, we accumulate associated edges in order. They should already have radii, so we set an approximate center by using it along with data from the edge. \end{DoxyCompactList}\item 
+void \textbf{ set\+Vert\+Data} (\textbf{ Half\+Edge} edge, \textbf{ Circle\+Simple} cS)
+\begin{DoxyCompactList}\small\item\em set center and radius (in its internal form); this sets data only for the given edge, so for \textquotesingle{}Red\+Vertex\textquotesingle{} it stores in the appropriate \textquotesingle{}\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}\textquotesingle{}. \end{DoxyCompactList}\item 
+\textbf{ Half\+Edge} \textbf{ vert\+Is\+Bdry} (\textbf{ Vertex} v)
+\begin{DoxyCompactList}\small\item\em Determine if vertex is bdry; if no, return null, else return first \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{}, that is, one with \textquotesingle{}twin.\+face\textquotesingle{} being an ideal face. (This normally is \textquotesingle{}v.\+halfedge\textquotesingle{}, but calling routine can use return info to reset \textquotesingle{}v.\+halfedge\textquotesingle{} if desired.). \end{DoxyCompactList}\item 
+boolean \textbf{ is\+Bdry} (int v)
+\begin{DoxyCompactList}\small\item\em Is this a boundary vertex? Depends on bdry edges being identified with \textquotesingle{}face\+Indx\textquotesingle{}$<$0. \end{DoxyCompactList}\item 
+boolean \textbf{ is\+Bdry\+Edge} (\textbf{ Half\+Edge} he)
+\begin{DoxyCompactList}\small\item\em boundary edge? Depends on face existing and having negative index, indicating ideal face. \end{DoxyCompactList}\item 
+\textbf{ Half\+Edge} \textbf{ find\+Half\+Edge} (\textbf{ Edge\+Simple} es)
+\begin{DoxyCompactList}\small\item\em Find the \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{} for edge $<$v.\+w$>$. \end{DoxyCompactList}\item 
+\textbf{ Half\+Edge} \textbf{ find\+Half\+Edge} (int v, int w)
+\begin{DoxyCompactList}\small\item\em Find the \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{} for edge $<$v.\+w$>$. \end{DoxyCompactList}\item 
+\textbf{ Half\+Edge} \textbf{ find\+Half\+Edge} (\textbf{ Half\+Edge} he)
+\begin{DoxyCompactList}\small\item\em Find the \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{} based on \textquotesingle{}vert\+Indx\textquotesingle{}s of the given \textquotesingle{}he\textquotesingle{} (typically from a related DCEL structure). \end{DoxyCompactList}\item 
+\textbf{ combinatorics.\+komplex.\+Dcel\+Face} \textbf{ find\+Face} (int v, int w)
+\begin{DoxyCompactList}\small\item\em Find \textquotesingle{}dcel.\+Face\textquotesingle{} for given edge $<$v,w$>$. \end{DoxyCompactList}\item 
+int \textbf{ layout\+Factory} (\textbf{ Half\+Link} he\+Tree, boolean fix, boolean place\+First, boolean use\+Schw)
+\item 
+int \textbf{ layout\+Factory} (\textbf{ Post\+Factory} pF, \textbf{ Half\+Link} he\+Tree, \textbf{ Disp\+Flags} face\+Flags, \textbf{ Disp\+Flags} circ\+Flags, boolean fix, boolean place\+First, boolean use\+Schw, double tx)
+\begin{DoxyCompactList}\small\item\em Recompute, draw, and/\+or post circles and/\+or faces along a specified \doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link}. Typical call has \textquotesingle{}he\+Tree\textquotesingle{} null, in which case we redo the full \textquotesingle{}layout\+Tree\textquotesingle{} using averaging to compute centers. For faces we further draw and/\+or post the faces in \textquotesingle{}stragglers\textquotesingle{}. \end{DoxyCompactList}\item 
+\textbf{ Circle\+Simple} \textbf{ get\+Face\+Incircle} (\textbf{ Dcel\+Face} face)
+\begin{DoxyCompactList}\small\item\em Find the incircle for the given face. For eucl and sph cases, just use 3 centers; for hyp case, use 3 generalized tangency points. \end{DoxyCompactList}\item 
+\textbf{ Circle\+Simple} \textbf{ get\+Face\+Center} (\textbf{ Dcel\+Face} face)
+\begin{DoxyCompactList}\small\item\em Return center of incircle of face with given index. \end{DoxyCompactList}\item 
+\textbf{ Dcel\+Face} \textbf{ what\+Face} (int a, int b, int c)
+\begin{DoxyCompactList}\small\item\em Return Face consisting of vertices \{a,b,c\} or \{a,c,b\}, null on failure, eg. if \textquotesingle{}this\textquotesingle{} face is ideal. \end{DoxyCompactList}\item 
+\textbf{ Complex}[$\,$] \textbf{ get\+Face\+Corners} (\textbf{ Dcel\+Face} face)
+\begin{DoxyCompactList}\small\item\em Return open list of centers of corners of this face. (Generally will have 3 corners). The first corner is for the origin of \textquotesingle{}face.\+edge\textquotesingle{}. \end{DoxyCompactList}\item 
+\textbf{ Complex}[$\,$] \textbf{ get\+Dual\+Face\+Corners} (\textbf{ Vertex} vert)
+\begin{DoxyCompactList}\small\item\em Get open cclw list of face centers for the interior faces around \textquotesingle{}vert\textquotesingle{}. \end{DoxyCompactList}\item 
+\textbf{ Complex} \textbf{ face\+Opp\+Center} (\textbf{ Dcel\+Face} face)
+\begin{DoxyCompactList}\small\item\em Find the complex "{}center"{} of given \textquotesingle{}Face\textquotesingle{}. If the face has three vertices (typical), then return center of incircle of triangle formed by vertices. Else, return average of centers of vertices. TODO:\+ OBE. \end{DoxyCompactList}\item 
+\textbf{ Pack\+DCEL} \textbf{ reverse\+Orientation} ()
+\begin{DoxyCompactList}\small\item\em Create a new pack\+DCEL object, with p=null, whose orientation is opposite to \textquotesingle{}this\textquotesingle{}. \end{DoxyCompactList}\item 
+int \textbf{ swap\+Nodes} (int v, int w)
+\begin{DoxyCompactList}\small\item\em Swap vertices for \textquotesingle{}v\textquotesingle{} and \textquotesingle{}w\textquotesingle{}. This has minimal impact on the DCEL structure, eg., drawing order, etc., but calling routine may adjust various lists. Note that all the \textquotesingle{}\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}\textquotesingle{} info goes along, \textquotesingle{}aim\textquotesingle{}, \textquotesingle{}rad\textquotesingle{}, etc., so if you didn\textquotesingle{}t want to swap this, the calling routine has to swap it back. \end{DoxyCompactList}\item 
+\textbf{ Pack\+DCEL} \textbf{ create\+Dual} (boolean full)
+\begin{DoxyCompactList}\small\item\em Create the dual DCEL structure. \end{DoxyCompactList}\item 
+void \textbf{ zero\+VUtil} ()
+\item 
+void \textbf{ zero\+FUtil} ()
+\item 
+void \textbf{ zero\+EUtil} ()
+\item 
+int \textbf{ update\+Pair\+Mob} ()
+\begin{DoxyCompactList}\small\item\em Update the side-\/pairing maps using updated rededge centers. \end{DoxyCompactList}\item 
+int \textbf{ set\+Alpha} (int v, \textbf{ Node\+Link} nlink, boolean recomb)
+\begin{DoxyCompactList}\small\item\em Set \textquotesingle{}alpha\textquotesingle{} edge; its vert is normally placed at origin, should be interior. \textquotesingle{}v\textquotesingle{}$>$0 indicates preference; if \textquotesingle{}v\textquotesingle{}$<$=0 or \textquotesingle{}v\textquotesingle{} not interior, try current \textquotesingle{}alpha\textquotesingle{} if it\textquotesingle{}s interior. Else look for first interior; nothing works, use current \textquotesingle{}alpha\textquotesingle{} or choose 1. \textquotesingle{}recomb\textquotesingle{} true means if we change \textquotesingle{}alpha\textquotesingle{}, call \textquotesingle{}fill\+Inside\textquotesingle{} to adjust combinatorics. Also, may need to change \textquotesingle{}gamma\textquotesingle{}. (This also, set \textquotesingle{}p.\+alpha\textquotesingle{}, \textquotesingle{}p.\+gamma\textquotesingle{} if \textquotesingle{}p\textquotesingle{} is not null.). \end{DoxyCompactList}\item 
+int \textbf{ set\+Gamma} (int v)
+\begin{DoxyCompactList}\small\item\em Set packing \textquotesingle{}gamma\textquotesingle{} halfedge; it\textquotesingle{}s vertex generally placed on y+ axis and can\textquotesingle{}t be the origin of \textquotesingle{}alpha\textquotesingle{}. Default is \textquotesingle{}gamma=alpha.\+twin\textquotesingle{}. \end{DoxyCompactList}\item 
+int \textbf{ write\+DCEL} (Buffered\+Writer fp)
+\begin{DoxyCompactList}\small\item\em Write this DCEL structure to a file. TODO:\+ This is an early format, 4/\+2017, and should probably be rethought, but need it for 3D modeling work now. \end{DoxyCompactList}\item 
+int \textbf{ hold\+\_\+write\+Dual} (String filename)
+\begin{DoxyCompactList}\small\item\em Write the dual graph to a file. TODO:\+ This is an early format, 4/\+2017, and should probably be rethought, but need if for 3D modeling work now. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \textbf{ Mobius} \textbf{ norm\+\_\+any\+\_\+pack} (\textbf{ Pack\+DCEL} pdcel, \textbf{ Complex} a, \textbf{ Complex} g)
+\begin{DoxyCompactList}\small\item\em Standard normalization:\+ a at origin, g on positive y-\/axis. Not ready for spherical case yet. \end{DoxyCompactList}\item 
+static \textbf{ Circle\+Simple} \textbf{ get\+Tri\+Incircle} (\textbf{ Circle\+Simple} c0, \textbf{ Circle\+Simple} c1, \textbf{ Circle\+Simple} c2, int hes)
+\begin{DoxyCompactList}\small\item\em Get the incircle of the triangle formed by three circles. In hyperbolic case, need radii since we use the generalized tangency points in the computation. \end{DoxyCompactList}\item 
+static int \textbf{ check\+Bouquet} (int[$\,$][$\,$]bouquet)
+\item 
+static int[$\,$] \textbf{ get\+Face} (int[$\,$][$\,$]bouquet, int v, int w)
+\begin{DoxyCompactList}\small\item\em Return the vertices forming the face starting at edge from v to w, one of its petals. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \textbf{ size\+Limit}
+\item 
+\textbf{ Pack\+Data} \textbf{ p}
+\item 
+int \textbf{ vert\+Count}
+\item 
+int \textbf{ edge\+Count}
+\item 
+int \textbf{ face\+Count}
+\item 
+int \textbf{ int\+Face\+Count}
+\item 
+int \textbf{ ideal\+Face\+Count}
+\item 
+\textbf{ Vertex}[$\,$] \textbf{ vertices}
+\item 
+\textbf{ Half\+Edge}[$\,$] \textbf{ edges}
+\item 
+\textbf{ Dcel\+Face}[$\,$] \textbf{ faces}
+\item 
+\textbf{ Dcel\+Face}[$\,$] \textbf{ ideal\+Faces}
+\item 
+\textbf{ Half\+Link} \textbf{ layout\+Order}
+\item 
+\textbf{ Half\+Link} \textbf{ stragglers}
+\item 
+\textbf{ Vertex\+Map} \textbf{ old\+New}
+\item 
+\textbf{ Red\+Edge} \textbf{ red\+Chain}
+\item 
+Array\+List$<$ \textbf{ Red\+Edge} $>$ \textbf{ side\+Starts}
+\item 
+\textbf{ Half\+Edge} \textbf{ alpha}
+\item 
+\textbf{ Half\+Edge} \textbf{ gamma}
+\item 
+\textbf{ Pair\+Link} \textbf{ pair\+Link}
+\item 
+\textbf{ Tri\+Data}[$\,$] \textbf{ tri\+Data}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Doubly-\/connected edge list (DCEL) with circle-\/packing geometry data. 
+
+This is the primary combinatorial data structure for a circle packing. It stores the triangulation as arrays of {\ttfamily \doxyref{combinatorics.\+komplex.\+Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}}, {\ttfamily \doxyref{combinatorics.\+komplex.\+Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}}, and {\ttfamily \doxyref{combinatorics.\+komplex.\+Dcel\+Face}{p.}{classcombinatorics_1_1komplex_1_1_dcel_face}} objects, together with the "{}red chain"{} ({\ttfamily \doxyref{combinatorics.\+komplex.\+Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}}) that encodes boundary and side-\/pairing information for multiply-\/connected surfaces.
+
+\begin{DoxyNote}{Note}
+The DCEL representation replaced an older adjacency-\/list model. Many legacy routines in {\ttfamily \doxyref{packing.\+Pack\+Data}{p.}{classpacking_1_1_pack_data}} delegate to this class for combinatorial queries.
+\end{DoxyNote}
+\begin{DoxySeeAlso}{See also}
+\doxyref{Comb\+DCEL}{p.}{classdcel_1_1_comb_d_c_e_l} Static combinatorial construction and manipulation routines. 
+
+\doxyref{Raw\+Manip}{p.}{classdcel_1_1_raw_manip} Low-\/level DCEL surgery (flips, insertions, deletions). 
+
+\doxyref{packing.\+Pack\+Data}{p.}{classpacking_1_1_pack_data} The top-\/level \doxyref{packing}{p.}{namespacepacking} container that owns a \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l}.
+\end{DoxySeeAlso}
+The "{}\+DCEL"{} is a common way that computer scientists encode graphs; it\textquotesingle{}s also called a \textquotesingle{}half-\/edge\textquotesingle{} structure. I have converted the combinatorics underlying \doxyref{Circle\+Pack}{p.}{classall_mains_1_1_circle_pack} to use this model (at the suggestion of John Bowers).
+
+\textquotesingle{}\doxyref{Circle\+Pack}{p.}{classall_mains_1_1_circle_pack}\textquotesingle{} are marked with "{}\+NEEDED FOR CIRCLEPACK"{}.
+
+Note on indices:\+ Vertices, edges, and faces all get indices; these are independent and all start indexing with 1. Those for vertices are most important, others are more ephemeral and for convenience.
+
+The principal route to creating DCEL structures uses \textquotesingle{}bouquet\textquotesingle{}s in \textquotesingle{}Comb\+DCEL.\+d\+\_\+red\+Chain\+Builder\textquotesingle{}, which first calls \textquotesingle{}Comb\+DCEL.\+create\+VE\textquotesingle{} to build vertices and faces and set \textquotesingle{}alpha\textquotesingle{}, then creates the redchain, and then calls \textquotesingle{}\doxyref{Comb\+DCEL.\+fill\+Inside}{p.}{classdcel_1_1_comb_d_c_e_l_af09405ad2f5418f8d1896eca20575f02}\textquotesingle{} to finish. (This is done because many manipulations, such as adding barycenters, need only call \textquotesingle{}fill\+Inside\textquotesingle{} to adjust the DCEL structure if the redchain was not disturbed.) Note that these routines create only a \textquotesingle{}\doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l}\textquotesingle{} object; a call to \textquotesingle{}Data\+DCEL.\+dcel\+\_\+to\+\_\+packing\textquotesingle{} will create an associated packing.
+
+\begin{DoxyAuthor}{Author}
+kstephe2, July 2016 
+\end{DoxyAuthor}
+
+
+Definition at line \textbf{ 87} of file \textbf{ Pack\+DCEL.\+java}.
+
+
+
+\label{doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\index{dcel.PackDCEL@{dcel.PackDCEL}!PackDCEL@{PackDCEL}}
+\index{PackDCEL@{PackDCEL}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{PackDCEL()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_af1bc37f0a14f12670275dbcd46340c79} 
+dcel.\+Pack\+DCEL.\+Pack\+DCEL (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \textbf{ 141} of file \textbf{ Pack\+DCEL.\+java}.
+
+
+
+\label{doc-func-members}
+\doxysubsection{Member Function Documentation}
+\index{dcel.PackDCEL@{dcel.PackDCEL}!addedVertData@{addedVertData}}
+\index{addedVertData@{addedVertData}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{addedVertData()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_af11e5f15b5de575da51647392a16f1ae} 
+int dcel.\+Pack\+DCEL.\+added\+Vert\+Data (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Link}}]{hlink}{}\end{DoxyParamCaption})}
+
+
+
+When new vertices are created, e.\+g., from "{}add\+\_\+cir"{}, we accumulate associated edges in order. They should already have radii, so we set an approximate center by using it along with data from the edge. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hlink} & \doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+count 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1754} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!alloc\_vert\_space@{alloc\_vert\_space}}
+\index{alloc\_vert\_space@{alloc\_vert\_space}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{alloc\_vert\_space()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_aed2abaadc5bd82f8fa140ea1c87ccac4} 
+int dcel.\+Pack\+DCEL.\+alloc\+\_\+vert\+\_\+space (\begin{DoxyParamCaption}\item[{int}]{new\+\_\+size}{, }\item[{boolean}]{keepit}{}\end{DoxyParamCaption})}
+
+
+
+Reallocate space for \textquotesingle{}vertices\textquotesingle{} in increments of 1000. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em new\+\_\+size} & int \\
+\hline
+{\em keepit} & boolean, true, then copy existing \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int size 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 248} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!allocTriData@{allocTriData}}
+\index{allocTriData@{allocTriData}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{allocTriData()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a9ad87d84becd0b5758cdf6983ee27627} 
+int dcel.\+Pack\+DCEL.\+alloc\+Tri\+Data (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Create and populate \textquotesingle{}tri\+Data[]\textquotesingle{}. This loads \textquotesingle{}radii\textquotesingle{}, \textquotesingle{}inv\+Dist\textquotesingle{}s, \textquotesingle{}aim\textquotesingle{}. 
+
+\begin{DoxyReturn}{Returns}
+int face\+Count 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 263} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!checkBouquet@{checkBouquet}}
+\index{checkBouquet@{checkBouquet}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{checkBouquet()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a8d0d0bd05556bc7f27add20c65a297fe} 
+int dcel.\+Pack\+DCEL.\+check\+Bouquet (\begin{DoxyParamCaption}\item[{int}]{bouquet}{[$\,$][$\,$]}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Various checks on consistency of a bouquet:\+
+\begin{DoxyItemize}
+\item vertices match vertex count
+\item every edge is listed twice and only twice
+\item count the faces.
+\item check euler
+\end{DoxyItemize}
+
+TODO:\+ in progress 
+
+Definition at line \textbf{ 2316} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!compAvgCenter@{compAvgCenter}}
+\index{compAvgCenter@{compAvgCenter}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{compAvgCenter()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ae1ceb43775c4c980e7b9971a0b7f6479} 
+\textbf{ Circle\+Simple} dcel.\+Pack\+DCEL.\+comp\+Avg\+Center (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})}
+
+
+
+Compute center of vert v opposite the given \textquotesingle{}edge\textquotesingle{} in its face. Compute as average of locations based on all edges opposite v whose other centers are already in place, indicated by \textquotesingle{}eutil$>$0\textquotesingle{} for the edge\textquotesingle{}s twin. Set eutil=1 in all faces used in the computation to indicate these edges are okay to use in later computations. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Circle\+Simple}{p.}{classgeometry_1_1_circle_simple}, null on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 547} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!countFaces@{countFaces}}
+\index{countFaces@{countFaces}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{countFaces()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a6403fbb0ca41fa3bd64b9de357e967d0} 
+int dcel.\+Pack\+DCEL.\+count\+Faces (\begin{DoxyParamCaption}\item[{\textbf{ Vertex}}]{vert}{}\end{DoxyParamCaption})}
+
+
+
+Count the number of non-\/ideal faces at \textquotesingle{}vert\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vert} & \doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1268} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!countPetals@{countPetals}}
+\index{countPetals@{countPetals}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{countPetals()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a9601b675cc9d5a4ee50323badd5eaaa4} 
+int dcel.\+Pack\+DCEL.\+count\+Petals (\begin{DoxyParamCaption}\item[{int}]{v}{}\end{DoxyParamCaption})}
+
+
+
+Directly count the distinct petals. (Don\textquotesingle{}t recount first for closed flower). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1253} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!createDual@{createDual}}
+\index{createDual@{createDual}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{createDual()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a1f86602c06116e4b3a93468dc2acb2bd} 
+\textbf{ Pack\+DCEL} dcel.\+Pack\+DCEL.\+create\+Dual (\begin{DoxyParamCaption}\item[{boolean}]{full}{}\end{DoxyParamCaption})}
+
+
+
+Create the dual DCEL structure. 
+
+If \textquotesingle{}full\textquotesingle{} is false, don\textquotesingle{}t include dual edges to ideal faces; in particular, the dual of this dual will not be the original. 
+\begin{DoxyParams}{Parameters}
+{\em full} & boolean, false (default) TODO:\+ what to do for \textquotesingle{}full\textquotesingle{} true??? \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2461} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!d\_compOppCenter@{d\_compOppCenter}}
+\index{d\_compOppCenter@{d\_compOppCenter}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{d\_compOppCenter()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ab811c4daf89c48fa4ff807a9ea3d69ec} 
+\textbf{ Circle\+Simple} dcel.\+Pack\+DCEL.\+d\+\_\+comp\+Opp\+Center (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})}
+
+
+
+Compute the center of the vertex opposite \textquotesingle{}edge\textquotesingle{} in \textquotesingle{}edge.\+face\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Circle\+Simple}{p.}{classgeometry_1_1_circle_simple} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 525} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!d\_draw\_bdry\_seg@{d\_draw\_bdry\_seg}}
+\index{d\_draw\_bdry\_seg@{d\_draw\_bdry\_seg}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{d\_draw\_bdry\_seg()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a2476a7dde7653b0544bc3fe3dcf04c90} 
+int dcel.\+Pack\+DCEL.\+d\+\_\+draw\+\_\+bdry\+\_\+seg (\begin{DoxyParamCaption}\item[{int}]{n}{, }\item[{boolean}]{do\+\_\+label}{, }\item[{boolean}]{do\+\_\+circle}{, }\item[{Color}]{ecol}{, }\item[{int}]{thickness}{}\end{DoxyParamCaption})}
+
+
+
+Draw an edge-\/pairing boundary segment. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & int, index of side-\/pair (indices start at 1) \\
+\hline
+{\em do\+\_\+label} & boolean, label also? \\
+\hline
+{\em do\+\_\+circle} & boolean, circles also? \\
+\hline
+{\em ecol} & Color \\
+\hline
+{\em int} & thickness to draw \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 982} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!dualEdge\_to\_halfedge@{dualEdge\_to\_halfedge}}
+\index{dualEdge\_to\_halfedge@{dualEdge\_to\_halfedge}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{dualEdge\_to\_halfedge()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a4eb6cab8cbe2c320ecee1c1021aec1ae} 
+\textbf{ Half\+Edge} dcel.\+Pack\+DCEL.\+dual\+Edge\+\_\+to\+\_\+halfedge (\begin{DoxyParamCaption}\item[{\textbf{ Edge\+Simple}}]{dedge}{}\end{DoxyParamCaption})}
+
+
+
+Given directed dual (f,g) between faces, return halfedge (v,w) which is cclw to (f,g); so f is on the left of (v,w), g is on the right. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em dedge} & \doxyref{Edge\+Simple}{p.}{classkomplex_1_1_edge_simple} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}, null on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1332} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!faceOppCenter@{faceOppCenter}}
+\index{faceOppCenter@{faceOppCenter}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{faceOppCenter()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a4dabf7c8f8fce392b6d16dd45b704077} 
+\textbf{ Complex} dcel.\+Pack\+DCEL.\+face\+Opp\+Center (\begin{DoxyParamCaption}\item[{\textbf{ Dcel\+Face}}]{face}{}\end{DoxyParamCaption})}
+
+
+
+Find the complex "{}center"{} of given \textquotesingle{}Face\textquotesingle{}. If the face has three vertices (typical), then return center of incircle of triangle formed by vertices. Else, return average of centers of vertices. TODO:\+ OBE. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em face} & Face \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Complex}{p.}{classcomplex_1_1_complex}, null on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2382} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!findFace@{findFace}}
+\index{findFace@{findFace}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{findFace()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a707c58fc5cb679e749a26326081d7e6c} 
+\textbf{ combinatorics.\+komplex.\+Dcel\+Face} dcel.\+Pack\+DCEL.\+find\+Face (\begin{DoxyParamCaption}\item[{int}]{v}{, }\item[{int}]{w}{}\end{DoxyParamCaption})}
+
+
+
+Find \textquotesingle{}dcel.\+Face\textquotesingle{} for given edge $<$v,w$>$. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int \\
+\hline
+{\em w} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+dcel.\+Face or null on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1872} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!findHalfEdge@{findHalfEdge}}
+\index{findHalfEdge@{findHalfEdge}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{findHalfEdge()\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_aa3e7b8d093654d8350911faae3922979} 
+\textbf{ Half\+Edge} dcel.\+Pack\+DCEL.\+find\+Half\+Edge (\begin{DoxyParamCaption}\item[{\textbf{ Edge\+Simple}}]{es}{}\end{DoxyParamCaption})}
+
+
+
+Find the \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{} for edge $<$v.\+w$>$. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em es} & \doxyref{Edge\+Simple}{p.}{classkomplex_1_1_edge_simple} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} or null on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1829} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!findHalfEdge@{findHalfEdge}}
+\index{findHalfEdge@{findHalfEdge}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{findHalfEdge()\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_aa4d2b4e011154e4bee4b28c3d5f53759} 
+\textbf{ Half\+Edge} dcel.\+Pack\+DCEL.\+find\+Half\+Edge (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{he}{}\end{DoxyParamCaption})}
+
+
+
+Find the \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{} based on \textquotesingle{}vert\+Indx\textquotesingle{}s of the given \textquotesingle{}he\textquotesingle{} (typically from a related DCEL structure). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em he} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}, null on failure to find 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1861} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!findHalfEdge@{findHalfEdge}}
+\index{findHalfEdge@{findHalfEdge}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{findHalfEdge()\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a9d95d4d952e17d0011edb85c01d5f507} 
+\textbf{ Half\+Edge} dcel.\+Pack\+DCEL.\+find\+Half\+Edge (\begin{DoxyParamCaption}\item[{int}]{v}{, }\item[{int}]{w}{}\end{DoxyParamCaption})}
+
+
+
+Find the \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{} for edge $<$v.\+w$>$. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int \\
+\hline
+{\em v} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} or null on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1850} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!fixDCEL@{fixDCEL}}
+\index{fixDCEL@{fixDCEL}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{fixDCEL()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a814ef02d6bd94799ee060cd2a0ba82d2} 
+void dcel.\+Pack\+DCEL.\+fix\+DCEL (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+Data}}]{p}{}\end{DoxyParamCaption})}
+
+
+
+Cleanup routine:\+ needed because \textquotesingle{}$\ast$\+\_\+raw\textquotesingle{} routines modify dcel structure w/\+o complete update:\+ \textquotesingle{}vert\+Count\textquotesingle{}, \textquotesingle{}vertices\textquotesingle{}, edge connectivity should be in tact and often \textquotesingle{}red\+Chain\textquotesingle{} is in tact. The calling routine should already have done things like cents/\+radii. If the red chain was broken, the calling routine should set \textquotesingle{}red\+Chain\textquotesingle{}=null so that \textquotesingle{}redchain\+\_\+by\+\_\+edge\textquotesingle{} is called. Faces may be outdated or non-\/existent, \textquotesingle{}edges\textquotesingle{}, \textquotesingle{}faces\textquotesingle{}, counts, etc. need updating, so \textquotesingle{}fill\+Inside\textquotesingle{} is called. Also, need to \textquotesingle{}attach\textquotesingle{} to a packing (usually the current parent) or not if packing is null. This call does not "{}prune"{} the complex. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \doxyref{p}{p.}{classdcel_1_1_pack_d_c_e_l_a4069e56efffec012bac942312b03fa85}} & \doxyref{Pack\+Data}{p.}{classpacking_1_1_pack_data} \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 191} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!fixDCEL@{fixDCEL}}
+\index{fixDCEL@{fixDCEL}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{fixDCEL()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a804f228f0d7ba1f8e22de95dd94cf6d2} 
+void dcel.\+Pack\+DCEL.\+fix\+DCEL (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+Data}}]{p}{, }\item[{boolean}]{prune}{}\end{DoxyParamCaption})}
+
+
+
+Cleanup routine:\+ needed because \textquotesingle{}$\ast$\+\_\+raw\textquotesingle{} routines modify dcel structure w/\+o complete update:\+ \textquotesingle{}vert\+Count\textquotesingle{}, \textquotesingle{}vertices\textquotesingle{}, edge connectivity should be in tact and often \textquotesingle{}red\+Chain\textquotesingle{} is in tact. The calling routine should already have done things like cents/\+radii. If the red chain was broken, the calling routine should set \textquotesingle{}red\+Chain\textquotesingle{}=null so that \textquotesingle{}redchain\+\_\+by\+\_\+edge\textquotesingle{} is called. Faces may be outdated or non-\/existent, \textquotesingle{}edges\textquotesingle{}, \textquotesingle{}faces\textquotesingle{}, counts, etc. need updating, so \textquotesingle{}fill\+Inside\textquotesingle{} is called. Also, need to \textquotesingle{}attach\textquotesingle{} to a packing (usually the current parent) or not if packing is null. If \textquotesingle{}prune\textquotesingle{} is set, then vertices without interior nghbs are prunned. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \doxyref{p}{p.}{classdcel_1_1_pack_d_c_e_l_a4069e56efffec012bac942312b03fa85}} & \doxyref{Pack\+Data}{p.}{classpacking_1_1_pack_data} \\
+\hline
+{\em prune} & boolean \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 212} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!flipEdges@{flipEdges}}
+\index{flipEdges@{flipEdges}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{flipEdges()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a0269f568d74fd11ffe950483d2b69740} 
+int dcel.\+Pack\+DCEL.\+flip\+Edges (\begin{DoxyParamCaption}\item[{Array\+List$<$ \textbf{ Half\+Edge} $>$}]{flippers}{}\end{DoxyParamCaption})}
+
+
+
+Flip the specified edges. In a triangulation, an interior edge is shared by two faces. To "{}flip"{} the edge means to remove it and replace it with the other diagonal in the union of those faces. The number of faces, edges, and vertices is not changed, but we are out of sync with parent \textquotesingle{}p\textquotesingle{}. ~\newline
+ Note:\+ calling routine must ensure there are no repeats in \textquotesingle{}flippers\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em flippers} & Array\+List$<$\+Half\+Edge$>$, edges to be flipped \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int count, -\/count if some redchain was disrupted 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1047} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getBdryEdges@{getBdryEdges}}
+\index{getBdryEdges@{getBdryEdges}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getBdryEdges()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a539c8d83f8e13e7bdbcf02f8fb3b44cf} 
+Array\+List$<$ \textbf{ Half\+Edge} $>$ dcel.\+Pack\+DCEL.\+get\+Bdry\+Edges (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Based on current \textquotesingle{}bdry\+Faces\textquotesingle{}, find all bdry edges. 
+
+\begin{DoxyReturn}{Returns}
+Array\+List$<$\+Half\+Edge$>$ 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1312} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getBouquet@{getBouquet}}
+\index{getBouquet@{getBouquet}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getBouquet()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a2a824a1167873e7b3370661b5153a047} 
+int[$\,$][$\,$] dcel.\+Pack\+DCEL.\+get\+Bouquet (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Form bouquet of the combinatorial flowers, eg., for writing or creating DCEL structure. 
+
+\begin{DoxyReturn}{Returns}
+int[][], null on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1232} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getCircleSimple@{getCircleSimple}}
+\index{getCircleSimple@{getCircleSimple}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getCircleSimple()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_acda741da87fd73d6ee18a06b6d80abae} 
+\textbf{ Circle\+Simple} dcel.\+Pack\+DCEL.\+get\+Circle\+Simple (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{he}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \textbf{ 1585} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getDualEdgeEnds@{getDualEdgeEnds}}
+\index{getDualEdgeEnds@{getDualEdgeEnds}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getDualEdgeEnds()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ad3d2ea2d909f52f91d4121c5a55917aa} 
+\textbf{ Complex}[$\,$] dcel.\+Pack\+DCEL.\+get\+Dual\+Edge\+Ends (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{he}{}\end{DoxyParamCaption})}
+
+
+
+Given \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} (v,w), return ordered ends, g then f, of dual edge (f,g). CAUTION:\+ f is to left of (v,w), g to right, so result goes from right to left across (v,w). Return null if f an ideal face. If (v,w) is a oriented bdry edge (red w/\+o \textquotesingle{}twin\+Red\textquotesingle{}) then go from point on edge (v,w) to center of f. Else if (v,w) is red with \textquotesingle{}twin\+Red\textquotesingle{}, then compute location g would have if it shared edge (v,w) with f and go from g to f. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em he} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Complex}{p.}{classcomplex_1_1_complex}[2], entries may be null 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1358} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getDualEdges@{getDualEdges}}
+\index{getDualEdges@{getDualEdges}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getDualEdges()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_aa004e6600fd505a9a1a09c952cf53e27} 
+\textbf{ Graph\+Link} dcel.\+Pack\+DCEL.\+get\+Dual\+Edges (\begin{DoxyParamCaption}\item[{boolean}]{ideal}{}\end{DoxyParamCaption})}
+
+
+
+NEEDED FOR CIRCLEPACK Dual graph store in \textquotesingle{}\doxyref{Edge\+Link}{p.}{classlist_manip_1_1_edge_link}\textquotesingle{}. This is linked list of \textquotesingle{}\doxyref{Edge\+Simple}{p.}{classkomplex_1_1_edge_simple}\textquotesingle{} objects, which are just pairs \{f,g\} of indices of faces sharing an edge. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ideal} & boolean; if true, include edges to ideal faces. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Graphlink, null on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1400} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getDualFaceCorners@{getDualFaceCorners}}
+\index{getDualFaceCorners@{getDualFaceCorners}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getDualFaceCorners()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a3f4f36e09c343f13cd830d6f27b141cd} 
+\textbf{ Complex}[$\,$] dcel.\+Pack\+DCEL.\+get\+Dual\+Face\+Corners (\begin{DoxyParamCaption}\item[{\textbf{ Vertex}}]{vert}{}\end{DoxyParamCaption})}
+
+
+
+Get open cclw list of face centers for the interior faces around \textquotesingle{}vert\textquotesingle{}. 
+
+TODO:\+ Should lay this out to avoid ambiguity in multiply connected situation.
+
+
+\begin{DoxyParams}{Parameters}
+{\em vert} & \doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Complex}{p.}{classcomplex_1_1_complex}[] 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2293} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getEdgeAngle@{getEdgeAngle}}
+\index{getEdgeAngle@{getEdgeAngle}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getEdgeAngle()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_af835a8898e9c21cd2eb3d6270436dc91} 
+double dcel.\+Pack\+DCEL.\+get\+Edge\+Angle (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})}
+
+
+
+Get angle in \textquotesingle{}edge.\+face\textquotesingle{} at \textquotesingle{}edge.\+origin\textquotesingle{} using current radii. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double, 0.\+0 if bdry edge 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1428} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getEdgeAngle@{getEdgeAngle}}
+\index{getEdgeAngle@{getEdgeAngle}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getEdgeAngle()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_abcbc026dc4386f35995a9d0c72ba1500} 
+double dcel.\+Pack\+DCEL.\+get\+Edge\+Angle (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{edge}{, }\item[{double}]{r}{}\end{DoxyParamCaption})}
+
+
+
+Get angle in \textquotesingle{}edge.\+face\textquotesingle{} at \textquotesingle{}edge.\+origin\textquotesingle{} assuming origin radius is \textquotesingle{}r\textquotesingle{}. If \textquotesingle{}r\textquotesingle{} is $<$= 0, then use current recorded radius. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+{\em r} & double, possibly $<$=0 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double, 0.\+0 if bdry edge 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1439} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getFace@{getFace}}
+\index{getFace@{getFace}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getFace()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ae0e39cb146ad750368ff200114256914} 
+int[$\,$] dcel.\+Pack\+DCEL.\+get\+Face (\begin{DoxyParamCaption}\item[{int}]{bouquet}{[$\,$][$\,$], }\item[{int}]{v}{, }\item[{int}]{w}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Return the vertices forming the face starting at edge from v to w, one of its petals. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em bouquet} & \\
+\hline
+{\em v} & int, vertex \\
+\hline
+{\em w} & int, petal \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int[], null on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2334} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getFaceCenter@{getFaceCenter}}
+\index{getFaceCenter@{getFaceCenter}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getFaceCenter()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_abdc4dc0587b2b3244eba03461a923d24} 
+\textbf{ Circle\+Simple} dcel.\+Pack\+DCEL.\+get\+Face\+Center (\begin{DoxyParamCaption}\item[{\textbf{ Dcel\+Face}}]{face}{}\end{DoxyParamCaption})}
+
+
+
+Return center of incircle of face with given index. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em face} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Circle\+Simple}{p.}{classgeometry_1_1_circle_simple}, null on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2203} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getFaceCorners@{getFaceCorners}}
+\index{getFaceCorners@{getFaceCorners}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getFaceCorners()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a657ceacbe052ed96f8dadfb861ba7cf0} 
+\textbf{ Complex}[$\,$] dcel.\+Pack\+DCEL.\+get\+Face\+Corners (\begin{DoxyParamCaption}\item[{\textbf{ Dcel\+Face}}]{face}{}\end{DoxyParamCaption})}
+
+
+
+Return open list of centers of corners of this face. (Generally will have 3 corners). The first corner is for the origin of \textquotesingle{}face.\+edge\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em face} & Face \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Complex}{p.}{classcomplex_1_1_complex}[] 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2269} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getFaceIncircle@{getFaceIncircle}}
+\index{getFaceIncircle@{getFaceIncircle}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getFaceIncircle()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a295d2d7e89cfed997e62c13af9bf0c86} 
+\textbf{ Circle\+Simple} dcel.\+Pack\+DCEL.\+get\+Face\+Incircle (\begin{DoxyParamCaption}\item[{\textbf{ Dcel\+Face}}]{face}{}\end{DoxyParamCaption})}
+
+
+
+Find the incircle for the given face. For eucl and sph cases, just use 3 centers; for hyp case, use 3 generalized tangency points. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em face} & Face \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Circle\+Simple}{p.}{classgeometry_1_1_circle_simple} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2190} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getTriIncircle@{getTriIncircle}}
+\index{getTriIncircle@{getTriIncircle}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getTriIncircle()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a4d8a4f5acbb6a3b59f78ca81b00a90cd} 
+\textbf{ Circle\+Simple} dcel.\+Pack\+DCEL.\+get\+Tri\+Incircle (\begin{DoxyParamCaption}\item[{\textbf{ Circle\+Simple}}]{c0}{, }\item[{\textbf{ Circle\+Simple}}]{c1}{, }\item[{\textbf{ Circle\+Simple}}]{c2}{, }\item[{int}]{hes}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Get the incircle of the triangle formed by three circles. In hyperbolic case, need radii since we use the generalized tangency points in the computation. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em c0} & \doxyref{Circle\+Simple}{p.}{classgeometry_1_1_circle_simple} \\
+\hline
+{\em c1} & \doxyref{Circle\+Simple}{p.}{classgeometry_1_1_circle_simple} \\
+\hline
+{\em c2} & \doxyref{Circle\+Simple}{p.}{classgeometry_1_1_circle_simple} \\
+\hline
+{\em hes} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Circle\+Simple}{p.}{classgeometry_1_1_circle_simple} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2162} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getVertAngSum@{getVertAngSum}}
+\index{getVertAngSum@{getVertAngSum}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getVertAngSum()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_aae2b030993bd1431b00de514b8db3afd} 
+double dcel.\+Pack\+DCEL.\+get\+Vert\+Ang\+Sum (\begin{DoxyParamCaption}\item[{\textbf{ Vertex}}]{vert}{}\end{DoxyParamCaption})}
+
+
+
+Get the angle sum at \textquotesingle{}vert\textquotesingle{} using current radii stored for edges, face-\/by-\/face. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vert} & \doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1484} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getVertAngSum@{getVertAngSum}}
+\index{getVertAngSum@{getVertAngSum}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getVertAngSum()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a11fb60310259cd86934deef3bc943e0a} 
+double dcel.\+Pack\+DCEL.\+get\+Vert\+Ang\+Sum (\begin{DoxyParamCaption}\item[{\textbf{ Vertex}}]{vert}{, }\item[{double}]{rad}{}\end{DoxyParamCaption})}
+
+
+
+Get the angle sum at \textquotesingle{}vert\textquotesingle{} using radius \textquotesingle{}rad\textquotesingle{}. Note:\+ if \textquotesingle{}rad\textquotesingle{} is $<$= 0, then computation uses current stored radius. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em vert} & \doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex} \\
+\hline
+{\em rad} & double, possibly $<$= 0 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1463} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getVertCenter@{getVertCenter}}
+\index{getVertCenter@{getVertCenter}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getVertCenter()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a30acf3f04020e6d88553e0fa94ebb673} 
+\textbf{ Complex} dcel.\+Pack\+DCEL.\+get\+Vert\+Center (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})}
+
+
+
+Get appropriate center, perhaps in nearest clw red edge. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+new \doxyref{Complex}{p.}{classcomplex_1_1_complex} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1561} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getVertData@{getVertData}}
+\index{getVertData@{getVertData}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getVertData()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ab86104100b05491d74cac881187341f8} 
+\textbf{ Circle\+Simple} dcel.\+Pack\+DCEL.\+get\+Vert\+Data (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})}
+
+
+
+Find the official rad/\+cent for the origin of the given \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{}. If the origin is \textquotesingle{}Red\+Vertex\textquotesingle{}, then look clw for first \textquotesingle{}\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}\textquotesingle{}. If normal non-\/red, then data is stored in \textquotesingle{}Pack\+Data.\+vertices[]\textquotesingle{}. 
+
+\begin{DoxyReturn}{Returns}
+\doxyref{Circle\+Simple}{p.}{classgeometry_1_1_circle_simple} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1502} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!getVertRadius@{getVertRadius}}
+\index{getVertRadius@{getVertRadius}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{getVertRadius()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_acb607619008e5d0ff82631728f4c2775} 
+double dcel.\+Pack\+DCEL.\+get\+Vert\+Radius (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})}
+
+
+
+Get the radius of \textquotesingle{}edge.\+origin\textquotesingle{} appropriate to this \textquotesingle{}edge\textquotesingle{}; e.\+g., it may be stored with nearest clw red edge. Get its internal form (i.\+e., x-\/rad for hyp case). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+double 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1532} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!hold\_writeDual@{hold\_writeDual}}
+\index{hold\_writeDual@{hold\_writeDual}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{hold\_writeDual()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a47ad9edfe623390ed69108a0d5e46143} 
+int dcel.\+Pack\+DCEL.\+hold\+\_\+write\+Dual (\begin{DoxyParamCaption}\item[{String}]{filename}{}\end{DoxyParamCaption})}
+
+
+
+Write the dual graph to a file. TODO:\+ This is an early format, 4/\+2017, and should probably be rethought, but need if for 3D modeling work now. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2746} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!indexFaces@{indexFaces}}
+\index{indexFaces@{indexFaces}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{indexFaces()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a15a070e1df9bee5536b556122e27305a} 
+int dcel.\+Pack\+DCEL.\+index\+Faces (\begin{DoxyParamCaption}\item[{Array\+List$<$ \textbf{ Half\+Edge} $>$}]{edges}{, }\item[{Array\+List$<$ \textbf{ Half\+Edge} $>$}]{bdryedges}{}\end{DoxyParamCaption})}
+
+
+
+Given full set of edges, redo the face numbers. Start by setting all former \textquotesingle{}.face\textquotesingle{} entries to null and, starting with alpha, resetting them, renumbering from 1. Ideal (i.\+e. outside) faces will have the highest indices. NOTE:\+ we assume that any \textquotesingle{}\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}\textquotesingle{} v which is bdry will have \textquotesingle{}v.\+halfedge.\+twin\textquotesingle{} in \textquotesingle{}bdryedges\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em \doxyref{edges}{p.}{classdcel_1_1_pack_d_c_e_l_a65837248ba946da1ef426b30c4867dc6}} & Array\+List$<$\+Half\+Edge$>$ \\
+\hline
+{\em bdryedges} & Array\+List$<$\+Half\+Edge$>$ \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int count, 0 on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 346} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!isBdry@{isBdry}}
+\index{isBdry@{isBdry}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{isBdry()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a85927cee39df3a77b2bab21d3b39cda2} 
+boolean dcel.\+Pack\+DCEL.\+is\+Bdry (\begin{DoxyParamCaption}\item[{int}]{v}{}\end{DoxyParamCaption})}
+
+
+
+Is this a boundary vertex? Depends on bdry edges being identified with \textquotesingle{}face\+Indx\textquotesingle{}$<$0. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1803} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!isBdryEdge@{isBdryEdge}}
+\index{isBdryEdge@{isBdryEdge}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{isBdryEdge()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a6b0ff36b387d49190ee96708dea621c4} 
+boolean dcel.\+Pack\+DCEL.\+is\+Bdry\+Edge (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{he}{}\end{DoxyParamCaption})}
+
+
+
+boundary edge? Depends on face existing and having negative index, indicating ideal face. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em he} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+boolean 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1816} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!label\_generations@{label\_generations}}
+\index{label\_generations@{label\_generations}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{label\_generations()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a9e3252dc7b2bbf6052b10e179597530f} 
+int[$\,$] dcel.\+Pack\+DCEL.\+label\+\_\+generations (\begin{DoxyParamCaption}\item[{int}]{max}{, }\item[{\textbf{ Util\+Packet}}]{uP}{}\end{DoxyParamCaption})}
+
+
+
+Return integer array with the generations of verts, generation "{}1"{} being those v with \textquotesingle{}vutil\textquotesingle{} non-\/zero. Additional info is returned via \textquotesingle{}uP\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em max} & int, if max$>$0, stop at last with gen = max. \\
+\hline
+{\em uP} & \doxyref{Util\+Packet}{p.}{classutil_1_1_util_packet}; instantiated by calling routine:\+ returns last vertex as \textquotesingle{}u\+P.\+rtn\+Flag\textquotesingle{} and count of vertices as \textquotesingle{}u\+P.\+value\textquotesingle{}. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int[], int[u]=generation of u; return null on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 600} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!layoutFactory@{layoutFactory}}
+\index{layoutFactory@{layoutFactory}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{layoutFactory()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ab2c46789160fe635cbe03fb2dc93d010} 
+int dcel.\+Pack\+DCEL.\+layout\+Factory (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Link}}]{he\+Tree}{, }\item[{boolean}]{fix}{, }\item[{boolean}]{place\+First}{, }\item[{boolean}]{use\+Schw}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \textbf{ 1879} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!layoutFactory@{layoutFactory}}
+\index{layoutFactory@{layoutFactory}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{layoutFactory()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a7fd0dbcd201d4d08a7aa2fcbe93c657c} 
+int dcel.\+Pack\+DCEL.\+layout\+Factory (\begin{DoxyParamCaption}\item[{\textbf{ Post\+Factory}}]{pF}{, }\item[{\textbf{ Half\+Link}}]{he\+Tree}{, }\item[{\textbf{ Disp\+Flags}}]{face\+Flags}{, }\item[{\textbf{ Disp\+Flags}}]{circ\+Flags}{, }\item[{boolean}]{fix}{, }\item[{boolean}]{place\+First}{, }\item[{boolean}]{use\+Schw}{, }\item[{double}]{tx}{}\end{DoxyParamCaption})}
+
+
+
+Recompute, draw, and/\+or post circles and/\+or faces along a specified \doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link}. Typical call has \textquotesingle{}he\+Tree\textquotesingle{} null, in which case we redo the full \textquotesingle{}layout\+Tree\textquotesingle{} using averaging to compute centers. For faces we further draw and/\+or post the faces in \textquotesingle{}stragglers\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pF} & \doxyref{Post\+Factory}{p.}{classposting_1_1_post_factory} \\
+\hline
+{\em he\+Tree} & \doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link}, may be null \\
+\hline
+{\em face\+Flags} & \doxyref{Disp\+Flags}{p.}{classutil_1_1_disp_flags}, may be null \\
+\hline
+{\em circ\+Flags} & \doxyref{Disp\+Flags}{p.}{classutil_1_1_disp_flags}, may be null \\
+\hline
+{\em fix} & boolean, store the new centers \\
+\hline
+{\em place\+First} & boolean:\+ true:\+ place anew; false, assume 2 verts in place \\
+\hline
+{\em use\+Schw} & boolean:\+ true use schwarzians than radii \\
+\hline
+{\em tx} & double, thickness, only used for postscript output \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int count 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1900} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!layoutPacking@{layoutPacking}}
+\index{layoutPacking@{layoutPacking}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{layoutPacking()\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a868b4e25891800a9968508556d250da8} 
+int dcel.\+Pack\+DCEL.\+layout\+Packing (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Use \textquotesingle{}layout\+Order\textquotesingle{} and radii to recompute centers using \textquotesingle{}layout\+Order\textquotesingle{} and normalizing to put alpha at the origin and gamma on the positive y-\/axis. 
+
+\begin{DoxyReturn}{Returns}
+int count 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 654} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!layoutPacking@{layoutPacking}}
+\index{layoutPacking@{layoutPacking}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{layoutPacking()\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a01c25d00f562a383cce9744a16e0e061} 
+int dcel.\+Pack\+DCEL.\+layout\+Packing (\begin{DoxyParamCaption}\item[{boolean}]{use\+Schw}{}\end{DoxyParamCaption})}
+
+
+
+Use schwarzians to recompute centers using \textquotesingle{}layout\+Order\textquotesingle{}, starting by laying out the first face in normalized position and ending by rotating so gamma is on the positive y-\/axis. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em use\+Schw} & boolean \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int count 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 688} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!layoutPacking@{layoutPacking}}
+\index{layoutPacking@{layoutPacking}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{layoutPacking()\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a64757aafabb4512f999b9ab9cbc3d159} 
+int dcel.\+Pack\+DCEL.\+layout\+Packing (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{first\+HE}{}\end{DoxyParamCaption})}
+
+
+
+Use and radii to recompute centers using \textquotesingle{}layout\+Order\textquotesingle{}. However, first face in layout order is already in position. Do not normallize. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em first\+HE} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int count 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 665} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!layoutPacking@{layoutPacking}}
+\index{layoutPacking@{layoutPacking}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{layoutPacking()\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a0bd943fba65ba61ec4ae2d667f2bfb55} 
+int dcel.\+Pack\+DCEL.\+layout\+Packing (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Link}}]{hlink}{}\end{DoxyParamCaption})}
+
+
+
+Use radii to recompute centers using \textquotesingle{}hlink\textquotesingle{}, starting by laying out the first face in normalized position and ending by rotating so gamma is on the positive y-\/axis. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em hlink} & \doxyref{Edge\+Link}{p.}{classlist_manip_1_1_edge_link} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int count 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 677} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!layoutPacking@{layoutPacking}}
+\index{layoutPacking@{layoutPacking}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{layoutPacking()\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ab2dc86a0ec8a9ad9c13f018502ddde63} 
+int dcel.\+Pack\+DCEL.\+layout\+Packing (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Link}}]{hlink}{, }\item[{boolean}]{use\+Schw}{, }\item[{boolean}]{fix\+First}{}\end{DoxyParamCaption})}
+
+
+
+Use \textquotesingle{}hlink\textquotesingle{} for \textquotesingle{}order\textquotesingle{} (default to \textquotesingle{}layout\+Order\textquotesingle{}) to compute centers. If \textquotesingle{}fix\+First\textquotesingle{} is false, then the first face (generally \textquotesingle{}alpha\textquotesingle{}) is already laid out, so layout remaining in order. If \textquotesingle{}fix\+First\textquotesingle{} is true, then put first edge in normalized position (namely, from 0 to point on positive y-\/axis). Also, if \textquotesingle{}fix\+First\textquotesingle{} is true, then finish by rotating so \textquotesingle{}gamma\textquotesingle{} is on positive y-\/axis. 
+
+If \textquotesingle{}hlink\textquotesingle{} is null, use \textquotesingle{}layout\+Order\textquotesingle{}, and compute successive centers as averages using all opposite edges which are already laid out. If \textquotesingle{}hlink\textquotesingle{} is not null, successive center are computed only using the one face from \textquotesingle{}hlink\textquotesingle{}. Some circles may get laid down more than once depending on \textquotesingle{}hlink\textquotesingle{}.
+
+Note:\+ When an angle sum at v is not a multiple of 2pi, then using averages for circles around v can end up jumbles, not forming any appropriate face. E.\+g., \textquotesingle{}seed\textquotesingle{} with wrong radii.
+
+Layout can be based on radii or (in tangency setting) using schwarzians. Side-\/pairing maps are updated.
+
+TODO:\+ when using schwarzians, the sphere is the native environment. Should we convert the packing? perhaps after seeing if some circle hits or encloses infinity?
+
+Note:\+ this command modifies the recorded centers.
+
+
+\begin{DoxyParams}{Parameters}
+{\em hlink} & \doxyref{Half\+Link}{p.}{classlist_manip_1_1_half_link} \\
+\hline
+{\em use\+Schw} & boolean \\
+\hline
+{\em fix\+First} & boolean, if true, lay out the first face and also rotate to put gamma on the y-\/axis. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int count 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 730} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!layoutReport@{layoutReport}}
+\index{layoutReport@{layoutReport}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{layoutReport()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a268362d14af16c8299e5cfd5d6ed67f9} 
+int dcel.\+Pack\+DCEL.\+layout\+Report (\begin{DoxyParamCaption}\item[{int}]{v}{, }\item[{boolean}]{place\+\_\+first}{, }\item[{boolean}]{norm}{, }\item[{boolean}]{use\+Schw}{}\end{DoxyParamCaption})}
+
+
+
+Recompute centers of circles via \textquotesingle{}layout\+Order\textquotesingle{} as usual, but if \textquotesingle{}v\textquotesingle{} is valid vertex, then report its placements, which may be more than one. Option to recompute first face or leave it in current location. Option to apply usual alpha/\+gamma normalization. Option to use schwarzian instead of radii. Note:\+ this command modifies the recorded centers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int, vert index ($<$=0 for none) \\
+\hline
+{\em place\+\_\+first} & boolean, if true place the first face \\
+\hline
+{\em norm} & boolean, true then do usual alpha/\+gamma normalization \\
+\hline
+{\em use\+Schw} & boolean, use schwarzians to propogate, not radii \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int, 0 on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 866} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!localRefine@{localRefine}}
+\index{localRefine@{localRefine}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{localRefine()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_aa342637259528e36820e6dd8e82d7c12} 
+int dcel.\+Pack\+DCEL.\+local\+Refine (\begin{DoxyParamCaption}\item[{Array\+List$<$ \textbf{ Vertex} $>$}]{arrayV}{}\end{DoxyParamCaption})}
+
+
+
+"{}local refine"{} is a process for adding additional vertices as barycenters and flipping edges to get a finer circle packing near the designated vertices. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em arrayV} & Array\+List$<$\+Vertex$>$ \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int count 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1134} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!localRefine@{localRefine}}
+\index{localRefine@{localRefine}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{localRefine()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a127732ebbe22e82bb49d6385504fc6bb} 
+int dcel.\+Pack\+DCEL.\+local\+Refine (\begin{DoxyParamCaption}\item[{\textbf{ Node\+Link}}]{vlist}{}\end{DoxyParamCaption})}
+
+
+
+NEEDED FOR CIRCLEPACK "{}local refine"{} is a process for adding additional vertices as barycenters and flipping edges to get a finer circle packing near the designated vertices. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em arrayV} & Array\+List$<$\+Vertex$>$ \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int count 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1110} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!norm\_any\_pack@{norm\_any\_pack}}
+\index{norm\_any\_pack@{norm\_any\_pack}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{norm\_any\_pack()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_af6f232d2d9ecf53564a400cf434c3c16} 
+\textbf{ Mobius} dcel.\+Pack\+DCEL.\+norm\+\_\+any\+\_\+pack (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+DCEL}}]{pdcel}{, }\item[{\textbf{ Complex}}]{a}{, }\item[{\textbf{ Complex}}]{g}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Standard normalization:\+ a at origin, g on positive y-\/axis. Not ready for spherical case yet. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em pdcel} & \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} \\
+\hline
+{\em a} & \doxyref{Complex}{p.}{classcomplex_1_1_complex} \\
+\hline
+{\em g} & \doxyref{Complex}{p.}{classcomplex_1_1_complex} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the \doxyref{Mobius}{p.}{classmath_1_1_mobius} applied 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 477} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!placeFirstEdge@{placeFirstEdge}}
+\index{placeFirstEdge@{placeFirstEdge}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{placeFirstEdge()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ae922e3be604b14c47b383e23b296bdd1} 
+void dcel.\+Pack\+DCEL.\+place\+First\+Edge (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{edge}{}\end{DoxyParamCaption})}
+
+
+
+Place a \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{} so \textquotesingle{}origin\textquotesingle{} is at z=0 and other end is on the positive imaginary axis. Store the centers. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 490} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!redCookie@{redCookie}}
+\index{redCookie@{redCookie}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{redCookie()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a70e2e0ddc99b97585f72b13b98a782fd} 
+\textbf{ Pack\+DCEL} dcel.\+Pack\+DCEL.\+red\+Cookie (\begin{DoxyParamCaption}\item[{\textbf{ Node\+Link}}]{vlist}{}\end{DoxyParamCaption})}
+
+
+
+The "{}red"{} chain is a closed cclw chain of edges about a simply connected fundamental domain for the complex. This is rather difficult because \textquotesingle{}this\textquotesingle{} \doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} should remain unchanged --- we depend on \textquotesingle{}bouquet\textquotesingle{} to create new \textquotesingle{}\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}\textquotesingle{}s and \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{}s. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em arrayV} & Array\+List$<$\+Vertex$>$, vertices to keep, if null, keep all \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 317} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!reverseOrientation@{reverseOrientation}}
+\index{reverseOrientation@{reverseOrientation}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{reverseOrientation()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a9bf250704c8975b2b164933eb940cf84} 
+\textbf{ Pack\+DCEL} dcel.\+Pack\+DCEL.\+reverse\+Orientation (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Create a new pack\+DCEL object, with p=null, whose orientation is opposite to \textquotesingle{}this\textquotesingle{}. 
+
+\begin{DoxyReturn}{Returns}
+\doxyref{Pack\+DCEL}{p.}{classdcel_1_1_pack_d_c_e_l} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2401} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!setAlpha@{setAlpha}}
+\index{setAlpha@{setAlpha}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{setAlpha()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ab196e98d7557449ec655b886a97fff05} 
+int dcel.\+Pack\+DCEL.\+set\+Alpha (\begin{DoxyParamCaption}\item[{int}]{v}{, }\item[{\textbf{ Node\+Link}}]{nlink}{, }\item[{boolean}]{recomb}{}\end{DoxyParamCaption})}
+
+
+
+Set \textquotesingle{}alpha\textquotesingle{} edge; its vert is normally placed at origin, should be interior. \textquotesingle{}v\textquotesingle{}$>$0 indicates preference; if \textquotesingle{}v\textquotesingle{}$<$=0 or \textquotesingle{}v\textquotesingle{} not interior, try current \textquotesingle{}alpha\textquotesingle{} if it\textquotesingle{}s interior. Else look for first interior; nothing works, use current \textquotesingle{}alpha\textquotesingle{} or choose 1. \textquotesingle{}recomb\textquotesingle{} true means if we change \textquotesingle{}alpha\textquotesingle{}, call \textquotesingle{}fill\+Inside\textquotesingle{} to adjust combinatorics. Also, may need to change \textquotesingle{}gamma\textquotesingle{}. (This also, set \textquotesingle{}p.\+alpha\textquotesingle{}, \textquotesingle{}p.\+gamma\textquotesingle{} if \textquotesingle{}p\textquotesingle{} is not null.). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int \\
+\hline
+{\em nlink} & \doxyref{Node\+Link}{p.}{classlist_manip_1_1_node_link}, forbidden vertices \\
+\hline
+{\em recomb} & boolean \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\textquotesingle{}v\textquotesingle{} 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2567} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!setCent4Edge@{setCent4Edge}}
+\index{setCent4Edge@{setCent4Edge}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{setCent4Edge()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a246cc5e14d3a591cc35489b7cd829952} 
+void dcel.\+Pack\+DCEL.\+set\+Cent4\+Edge (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{edge}{, }\item[{\textbf{ Complex}}]{z}{}\end{DoxyParamCaption})}
+
+
+
+Set center for origin v of given \textquotesingle{}edge\textquotesingle{}. If v is a \textquotesingle{}Red\+Vertex\textquotesingle{}, then v\textquotesingle{}s center is stored in first clw red edge; it may differ in other red edges with origin v and may differ from Vertex.\+origin. (See \textquotesingle{}set\+Vert\+Center\textquotesingle{}, to set center in all locations.). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+{\em z} & \doxyref{Complex}{p.}{classcomplex_1_1_complex} \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 1654} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!setCircle4Edge@{setCircle4Edge}}
+\index{setCircle4Edge@{setCircle4Edge}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{setCircle4Edge()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_aa841fd833abbc77cb729ef70d0fe2e4e} 
+void dcel.\+Pack\+DCEL.\+set\+Circle4\+Edge (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{edge}{, }\item[{\textbf{ Circle\+Simple}}]{cs}{}\end{DoxyParamCaption})}
+
+
+
+Set cent/\+rad for \textquotesingle{}origin\textquotesingle{} and appropriate \textquotesingle{}\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}\textquotesingle{}s (if a \textquotesingle{}Red\+Vertex\textquotesingle{}). Data for a vert may differ in different \textquotesingle{}\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}\textquotesingle{}s having that vert. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+{\em cs} & \doxyref{Circle\+Simple}{p.}{classgeometry_1_1_circle_simple} \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 1619} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!setGamma@{setGamma}}
+\index{setGamma@{setGamma}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{setGamma()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a58cb488b41fa97e391acab77f1cae5f0} 
+int dcel.\+Pack\+DCEL.\+set\+Gamma (\begin{DoxyParamCaption}\item[{int}]{v}{}\end{DoxyParamCaption})}
+
+
+
+Set packing \textquotesingle{}gamma\textquotesingle{} halfedge; it\textquotesingle{}s vertex generally placed on y+ axis and can\textquotesingle{}t be the origin of \textquotesingle{}alpha\textquotesingle{}. Default is \textquotesingle{}gamma=alpha.\+twin\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int, preference or 0 \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 on success, 0 on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2652} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!setRad4Edge@{setRad4Edge}}
+\index{setRad4Edge@{setRad4Edge}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{setRad4Edge()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a36e9c51f5e3d2a7476f1ad6598d03193} 
+void dcel.\+Pack\+DCEL.\+set\+Rad4\+Edge (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{edge}{, }\item[{double}]{rad}{}\end{DoxyParamCaption})}
+
+
+
+Set the radius (in its internal form x-\/rad for hyp case) in \textquotesingle{}\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}\textquotesingle{} and nearest clw red edge, if there is one. (Compare with \textquotesingle{}set\+Vert\+Radii\textquotesingle{} which sets this radius in all occurrences of its origin vertex.). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+{\em rad} & double \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 1707} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!setRadii\_by\_factor@{setRadii\_by\_factor}}
+\index{setRadii\_by\_factor@{setRadii\_by\_factor}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{setRadii\_by\_factor()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_abe5b967668f65a8a59b4e58ff611295a} 
+void dcel.\+Pack\+DCEL.\+set\+Radii\+\_\+by\+\_\+factor (\begin{DoxyParamCaption}\item[{int}]{v}{, }\item[{double}]{factor}{}\end{DoxyParamCaption})}
+
+
+
+Multiply all radii stored for \textquotesingle{}v\textquotesingle{} by the given positive factor. Initially, intended for eucl geom only as part of affine packing. (3/\+2021). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int \\
+\hline
+{\em factor} & double \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 1732} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!setVertCenter@{setVertCenter}}
+\index{setVertCenter@{setVertCenter}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{setVertCenter()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a6e2216f9a3d413634c7b6cd08c1f32e7} 
+void dcel.\+Pack\+DCEL.\+set\+Vert\+Center (\begin{DoxyParamCaption}\item[{int}]{v}{, }\item[{\textbf{ Complex}}]{z}{}\end{DoxyParamCaption})}
+
+
+
+Set center for v in all locations and in any associated \textquotesingle{}Red\+Edges\textquotesingle{}. (Compare with \textquotesingle{}set\+Cent4\+Edge\textquotesingle{} which only set\textquotesingle{}s the value associated with one edge.). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int \\
+\hline
+{\em z} & \doxyref{Complex}{p.}{classcomplex_1_1_complex} \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 1596} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!setVertData@{setVertData}}
+\index{setVertData@{setVertData}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{setVertData()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a4da589910c6ffcd207f6b551b0dd16cf} 
+void dcel.\+Pack\+DCEL.\+set\+Vert\+Data (\begin{DoxyParamCaption}\item[{\textbf{ Half\+Edge}}]{edge}{, }\item[{\textbf{ Circle\+Simple}}]{cS}{}\end{DoxyParamCaption})}
+
+
+
+set center and radius (in its internal form); this sets data only for the given edge, so for \textquotesingle{}Red\+Vertex\textquotesingle{} it stores in the appropriate \textquotesingle{}\doxyref{Red\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_red_edge}\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em edge} & \doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge} \\
+\hline
+{\em cS} & \doxyref{Circle\+Simple}{p.}{classgeometry_1_1_circle_simple} \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 1773} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!setVertRadii@{setVertRadii}}
+\index{setVertRadii@{setVertRadii}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{setVertRadii()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a10148c6591416d18f5c0834d415971bf} 
+void dcel.\+Pack\+DCEL.\+set\+Vert\+Radii (\begin{DoxyParamCaption}\item[{int}]{v}{, }\item[{double}]{rad}{}\end{DoxyParamCaption})}
+
+
+
+Set vert\textquotesingle{}s radius (hyp:\+ in its internal x-\/rad form) in all locations; i.\+e., in \textquotesingle{}\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}\textquotesingle{} and in red edge for any with this origin. (Compare with \textquotesingle{}set\+Rad4\+Edge\textquotesingle{} which only sets it for one associated red edge.). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int \\
+\hline
+{\em rad} & double \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 1686} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!swapNodes@{swapNodes}}
+\index{swapNodes@{swapNodes}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{swapNodes()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a05f175bf58209dbfd94b9505f7964c1a} 
+int dcel.\+Pack\+DCEL.\+swap\+Nodes (\begin{DoxyParamCaption}\item[{int}]{v}{, }\item[{int}]{w}{}\end{DoxyParamCaption})}
+
+
+
+Swap vertices for \textquotesingle{}v\textquotesingle{} and \textquotesingle{}w\textquotesingle{}. This has minimal impact on the DCEL structure, eg., drawing order, etc., but calling routine may adjust various lists. Note that all the \textquotesingle{}\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex}\textquotesingle{} info goes along, \textquotesingle{}aim\textquotesingle{}, \textquotesingle{}rad\textquotesingle{}, etc., so if you didn\textquotesingle{}t want to swap this, the calling routine has to swap it back. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int \\
+\hline
+{\em w} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1, 0 on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2417} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!updatePairMob@{updatePairMob}}
+\index{updatePairMob@{updatePairMob}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{updatePairMob()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a54f2198423b76d19a4acc011505b8336} 
+int dcel.\+Pack\+DCEL.\+update\+Pair\+Mob (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Update the side-\/pairing maps using updated rededge centers. 
+
+\begin{DoxyReturn}{Returns}
+0 if \textquotesingle{}red\+Chain\textquotesingle{} or \textquotesingle{}pair\+Link\textquotesingle{} doesn\textquotesingle{}t exist or a computation fails. 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2538} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!updateTriDataRadii@{updateTriDataRadii}}
+\index{updateTriDataRadii@{updateTriDataRadii}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{updateTriDataRadii()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a7be9fb5510ca903d6b1075772160468c} 
+boolean dcel.\+Pack\+DCEL.\+update\+Tri\+Data\+Radii (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Update or create \textquotesingle{}tri\+Data\textquotesingle{}. Return true if there are nontrivial inversive distances so we can set "{}old\+Reliable"{} flag in repacking. 
+
+\begin{DoxyReturn}{Returns}
+boolean 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 277} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!vertIsBdry@{vertIsBdry}}
+\index{vertIsBdry@{vertIsBdry}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{vertIsBdry()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a7604048d75f62292ba0991abc4796eb8} 
+\textbf{ Half\+Edge} dcel.\+Pack\+DCEL.\+vert\+Is\+Bdry (\begin{DoxyParamCaption}\item[{\textbf{ Vertex}}]{v}{}\end{DoxyParamCaption})}
+
+
+
+Determine if vertex is bdry; if no, return null, else return first \textquotesingle{}\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}\textquotesingle{}, that is, one with \textquotesingle{}twin.\+face\textquotesingle{} being an ideal face. (This normally is \textquotesingle{}v.\+halfedge\textquotesingle{}, but calling routine can use return info to reset \textquotesingle{}v.\+halfedge\textquotesingle{} if desired.). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & \doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex} \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Half\+Edge}{p.}{classcombinatorics_1_1komplex_1_1_half_edge}, null if not bdry vertex 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1787} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!verts\_share\_bdry@{verts\_share\_bdry}}
+\index{verts\_share\_bdry@{verts\_share\_bdry}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{verts\_share\_bdry()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a8ad2f17a397a066db2af5b8113e1921d} 
+int dcel.\+Pack\+DCEL.\+verts\+\_\+share\+\_\+bdry (\begin{DoxyParamCaption}\item[{int}]{v1}{, }\item[{int}]{v2}{}\end{DoxyParamCaption})}
+
+
+
+Return count of bdry verts from v1 to v2 (inclusive) if v1/\+v2 are on the same bdry component; otherwise 0. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v1} & int \\
+\hline
+{\em v2} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 1289} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!whatFace@{whatFace}}
+\index{whatFace@{whatFace}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{whatFace()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_af2f7bcccb095b36ce8d0bfb815a61e09} 
+\textbf{ Dcel\+Face} dcel.\+Pack\+DCEL.\+what\+Face (\begin{DoxyParamCaption}\item[{int}]{a}{, }\item[{int}]{b}{, }\item[{int}]{c}{}\end{DoxyParamCaption})}
+
+
+
+Return Face consisting of vertices \{a,b,c\} or \{a,c,b\}, null on failure, eg. if \textquotesingle{}this\textquotesingle{} face is ideal. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & int \\
+\hline
+{\em b} & int \\
+\hline
+{\em c} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Face, null on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2244} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!writeDCEL@{writeDCEL}}
+\index{writeDCEL@{writeDCEL}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{writeDCEL()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a18c2f8b5c17d9a252177ccd4f4e0ac47} 
+int dcel.\+Pack\+DCEL.\+write\+DCEL (\begin{DoxyParamCaption}\item[{Buffered\+Writer}]{fp}{}\end{DoxyParamCaption})}
+
+
+
+Write this DCEL structure to a file. TODO:\+ This is an early format, 4/\+2017, and should probably be rethought, but need it for 3D modeling work now. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+0 on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 2681} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!zeroEUtil@{zeroEUtil}}
+\index{zeroEUtil@{zeroEUtil}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{zeroEUtil()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ad04569edb6ee020a8f35bd480323ee0f} 
+void dcel.\+Pack\+DCEL.\+zero\+EUtil (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+Reset all \textquotesingle{}eutil\textquotesingle{} to zero. 
+
+Definition at line \textbf{ 2523} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!zeroFUtil@{zeroFUtil}}
+\index{zeroFUtil@{zeroFUtil}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{zeroFUtil()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a950c0b69bdfb5a133c57a9ff504ab3b6} 
+void dcel.\+Pack\+DCEL.\+zero\+FUtil (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+Reset all \textquotesingle{}futil\textquotesingle{} to zero. 
+
+Definition at line \textbf{ 2515} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!zeroVUtil@{zeroVUtil}}
+\index{zeroVUtil@{zeroVUtil}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{zeroVUtil()}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a2336e897bf8bfd2b99fbc97930e6f3cd} 
+void dcel.\+Pack\+DCEL.\+zero\+VUtil (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+Reset all \textquotesingle{}vutil\textquotesingle{} to zero. Some \textquotesingle{}\doxyref{Raw\+Manip}{p.}{classdcel_1_1_raw_manip}\textquotesingle{} routines, e.\+g., use \textquotesingle{}vutil\textquotesingle{} to feed back reference indices. 
+
+Definition at line \textbf{ 2507} of file \textbf{ Pack\+DCEL.\+java}.
+
+
+
+\label{doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\index{dcel.PackDCEL@{dcel.PackDCEL}!alpha@{alpha}}
+\index{alpha@{alpha}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{alpha}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ab87d97ec4724bfa460ac33f8f0a1f2a3} 
+\textbf{ Half\+Edge} dcel.\+Pack\+DCEL.\+alpha}
+
+The "{}alpha"{} edge:\+ its origin is normally placed at the origin during layout. 
+
+Definition at line \textbf{ 125} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!edgeCount@{edgeCount}}
+\index{edgeCount@{edgeCount}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{edgeCount}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ae6b012d3d75176b185b4ed76399af4a4} 
+int dcel.\+Pack\+DCEL.\+edge\+Count}
+
+Number of half-\/edges (each undirected edge contributes 2). 
+
+Definition at line \textbf{ 96} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!edges@{edges}}
+\index{edges@{edges}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{edges}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a65837248ba946da1ef426b30c4867dc6} 
+\textbf{ Half\+Edge} [$\,$] dcel.\+Pack\+DCEL.\+edges}
+
+Half-\/edge array, indexed from 1; some carry pointers to Red\+Edges. 
+
+Definition at line \textbf{ 107} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!faceCount@{faceCount}}
+\index{faceCount@{faceCount}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{faceCount}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a4a1b3d94aff077f27db40b7f1218db06} 
+int dcel.\+Pack\+DCEL.\+face\+Count}
+
+Total number of faces (interior + ideal). 
+
+Definition at line \textbf{ 98} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!faces@{faces}}
+\index{faces@{faces}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{faces}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ab61e764401787c496875e1d154601106} 
+\textbf{ Dcel\+Face} [$\,$] dcel.\+Pack\+DCEL.\+faces}
+
+Interior face array, indexed from 1. 
+
+Definition at line \textbf{ 109} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!gamma@{gamma}}
+\index{gamma@{gamma}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{gamma}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_abd4eb1e7d7ce7b6c3990da3b6678535b} 
+\textbf{ Half\+Edge} dcel.\+Pack\+DCEL.\+gamma}
+
+The "{}gamma"{} edge:\+ its origin is normally placed on the positive y-\/axis (default:\+ alpha.\+twin). 
+
+Definition at line \textbf{ 127} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!idealFaceCount@{idealFaceCount}}
+\index{idealFaceCount@{idealFaceCount}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{idealFaceCount}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a7cad8ce006be33fd705bb44a9cf61527} 
+int dcel.\+Pack\+DCEL.\+ideal\+Face\+Count}
+
+Number of ideal (exterior) faces; their face\+Indx values are negative. 
+
+Definition at line \textbf{ 102} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!idealFaces@{idealFaces}}
+\index{idealFaces@{idealFaces}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{idealFaces}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_af64fdf72b183387ffdb08d3593a6cd03} 
+\textbf{ Dcel\+Face} [$\,$] dcel.\+Pack\+DCEL.\+ideal\+Faces}
+
+Ideal (exterior) face array, indexed from 1 (face\+Indx is the negative of the index). 
+
+Definition at line \textbf{ 111} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!intFaceCount@{intFaceCount}}
+\index{intFaceCount@{intFaceCount}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{intFaceCount}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ae7525227c182948225f3d9eb0d1d3267} 
+int dcel.\+Pack\+DCEL.\+int\+Face\+Count}
+
+Number of interior (non-\/ideal) faces. 
+
+Definition at line \textbf{ 100} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!layoutOrder@{layoutOrder}}
+\index{layoutOrder@{layoutOrder}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{layoutOrder}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a9288bb1c8454705a075b16bec5114d43} 
+\textbf{ Half\+Link} dcel.\+Pack\+DCEL.\+layout\+Order}
+
+Ordered list of half-\/edges sufficient to lay out every circle center. 
+
+Definition at line \textbf{ 114} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!oldNew@{oldNew}}
+\index{oldNew@{oldNew}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{oldNew}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ab38ff3aa7bafebf781ea90203bab3a16} 
+\textbf{ Vertex\+Map} dcel.\+Pack\+DCEL.\+old\+New}
+
+Old-\/to-\/new vertex index mapping after renumbering. 
+
+Definition at line \textbf{ 119} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!p@{p}}
+\index{p@{p}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{p}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a4069e56efffec012bac942312b03fa85} 
+\textbf{ Pack\+Data} dcel.\+Pack\+DCEL.\+p}
+
+The owning \doxyref{Pack\+Data}{p.}{classpacking_1_1_pack_data} (may be null for standalone DCEL operations). 
+
+Definition at line \textbf{ 91} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!pairLink@{pairLink}}
+\index{pairLink@{pairLink}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{pairLink}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a1c832f1296fdd952256519fe21a35893} 
+\textbf{ Pair\+Link} dcel.\+Pack\+DCEL.\+pair\+Link}
+
+Linked list of \doxyref{Side\+Data}{p.}{classdcel_1_1_side_data} describing side-\/pairings for multiply-\/connected surfaces. 
+
+Definition at line \textbf{ 130} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!redChain@{redChain}}
+\index{redChain@{redChain}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{redChain}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_aaa556adc688c66809488f1dbb23491e0} 
+\textbf{ Red\+Edge} dcel.\+Pack\+DCEL.\+red\+Chain}
+
+Head of the red chain:\+ a circular doubly-\/linked list of Red\+Edges bounding a fundamental region. 
+
+Definition at line \textbf{ 121} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!sideStarts@{sideStarts}}
+\index{sideStarts@{sideStarts}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{sideStarts}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a46c976c53a63c3df6db2a71edd395a54} 
+Array\+List$<$\textbf{ Red\+Edge}$>$ dcel.\+Pack\+DCEL.\+side\+Starts}
+
+Red edges that start paired sides; each carries a mob\+Indx for side-\/pairing Möbius maps. 
+
+Definition at line \textbf{ 123} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!sizeLimit@{sizeLimit}}
+\index{sizeLimit@{sizeLimit}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{sizeLimit}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a6803af93c39f075cdb1a39fdfd2b3cd4} 
+int dcel.\+Pack\+DCEL.\+size\+Limit}
+
+Maximum allocated vertex index. 
+
+Definition at line \textbf{ 89} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!stragglers@{stragglers}}
+\index{stragglers@{stragglers}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{stragglers}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a46aed0c54fa3791980b44b084ace52a8} 
+\textbf{ Half\+Link} dcel.\+Pack\+DCEL.\+stragglers}
+
+Faces not reached by layout\+Order (disconnected components, etc.). 
+
+Definition at line \textbf{ 116} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!triData@{triData}}
+\index{triData@{triData}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{triData}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a401c93c060269d818d8ef302a52fc22b} 
+\textbf{ Tri\+Data} [$\,$] dcel.\+Pack\+DCEL.\+tri\+Data}
+
+Per-\/face auxiliary data (e.\+g. for repacking, projective structures). Often holds homogeneous (Euclidean) label data. 
+
+Definition at line \textbf{ 136} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!vertCount@{vertCount}}
+\index{vertCount@{vertCount}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{vertCount}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_a7e83075bb335c434091f8046a2e0de2f} 
+int dcel.\+Pack\+DCEL.\+vert\+Count}
+
+Number of vertices. 
+
+Definition at line \textbf{ 94} of file \textbf{ Pack\+DCEL.\+java}.
+
+\index{dcel.PackDCEL@{dcel.PackDCEL}!vertices@{vertices}}
+\index{vertices@{vertices}!dcel.PackDCEL@{dcel.PackDCEL}}
+\doxysubsubsection{vertices}
+{\footnotesize\ttfamily \label{classdcel_1_1_pack_d_c_e_l_ae1a67384d92394e4ff044871e7870115} 
+\textbf{ Vertex} [$\,$] dcel.\+Pack\+DCEL.\+vertices}
+
+\doxyref{Vertex}{p.}{classcombinatorics_1_1komplex_1_1_vertex} array, indexed from 1 to vert\+Count. 
+
+Definition at line \textbf{ 105} of file \textbf{ Pack\+DCEL.\+java}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+C:\+/\+\+Users/\+ashej/\+my\+Git\+Repos/\+\+Circle\+Pack/\+src/\+dcel/\+\textbf{ Pack\+DCEL.\+java}\end{DoxyCompactItemize}

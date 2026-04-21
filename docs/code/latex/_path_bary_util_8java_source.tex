@@ -1,0 +1,425 @@
+\doxysection{Path\+Bary\+Util.\+java}
+\label{_path_bary_util_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/util/PathBaryUtil.java@{C:/Users/ashej/myGitRepos/CirclePack/src/util/PathBaryUtil.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }util;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.geom.Path2D;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ baryStuff.BaryPacket;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ baryStuff.BaryPoint;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ exceptions.CombException;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ geometry.EuclMath;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ komplex.EdgeSimple;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ listManip.BaryCoordLink;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ listManip.EdgeLink;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ listManip.FaceLink;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }PathBaryUtil\ \{}
+\DoxyCodeLine{00034\ \ \ \ \ }
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ doesSegXTri(Complex\ p1,Complex\ p2,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1,Complex\ z2,Complex\ z3)\ \{}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ one\ point\ inside\ or\ on?\ }}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ BaryPoint\ bp1=EuclMath.e\_pt\_to\_bary(p1,\ z1,\ z2,\ z3);}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (BaryPoint.baryPtInside(bp1)>=0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ BaryPoint\ bp2=EuclMath.e\_pt\_to\_bary(p2,\ z1,\ z2,\ z3);}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (BaryPoint.baryPtInside(bp2)>=0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ thus,\ p1\ or\ p2\ must\ be\ on\ opposite\ side\ from\ some\ vert.}}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ both\ on\ opposite\ of\ any\ one\ of\ edges?}}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((bp1.b0<0\ \&\&\ bp2.b0<0)\ ||\ (bp1.b1<0\ \&\&\ bp2.b1<0)\ ||}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (bp1.b2<0\ \&\&\ bp2.b2<0))\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ p1\ must\ be\ on\ neg\ side\ of\ some\ edge,\ p2\ across\ that\ edge.}}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ vx=p2.x-\/p1.x;}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ vy=p2.y-\/p1.y;}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d1=(z1.x-\/p1.x)*vx+(z1.y-\/p1.y)*vy;}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d2=(z2.x-\/p1.x)*vx+(z2.y-\/p1.y)*vy;}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ d3=(z3.x-\/p1.x)*vx+(z3.y-\/p1.y)*vy;}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ all\ dot\ products\ have\ same\ sign,\ false}}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((d1>=0\ \&\&\ d2>=0\ \&\&\ d3>=0)\ ||\ (d1<=0\ \&\&\ d2<=0\ \&\&\ d3<=0))}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00066\ \ \ \ \ \}}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ BaryPoint\ []hitPoints(Complex\ p1,Complex\ p2,}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1,Complex\ z2,Complex\ z3)\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ BaryPoint\ []barys=\textcolor{keyword}{new}\ BaryPoint[2];}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ starts\ inside?}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ BaryPoint\ bp1=EuclMath.e\_pt\_to\_bary(p1,\ z1,\ z2,\ z3);}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ BaryPoint\ bp2=EuclMath.e\_pt\_to\_bary(p2,\ z1,\ z2,\ z3);}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ p1\_inside=\textcolor{keyword}{false};}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ p2\_inside=\textcolor{keyword}{false};}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (BaryPoint.baryPtInside(bp1)>=0)}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ p1\_inside=\textcolor{keyword}{true};}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (BaryPoint.baryPtInside(bp2)>=0)\ }
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ p2\_inside=\textcolor{keyword}{true};}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p1\_inside\ \&\&\ p2\_inside)\ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ barys[0]=bp1;}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ barys[1]=bp2;}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ barys;}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ Complex\ enty\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ Complex\ ext\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ bp1\ outside}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p1\_inside)\ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ enty=\textcolor{keyword}{new}\ Complex(p1);}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ enty=EuclMath.firstHit(p1,p2,z1,z2,z3);}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p2\_inside)}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ ext=\textcolor{keyword}{new}\ Complex(p2);}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ ext=EuclMath.firstHit(p2,p1,z1,z2,z3);}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (enty==\textcolor{keyword}{null}\ ||\ ext==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}error\ hitting\ triangle"{}});}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ barys[0]=EuclMath.e\_pt\_to\_bary(enty,\ z1,\ z2,\ z3);}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ barys[1]=EuclMath.e\_pt\_to\_bary(ext,\ z1,\ z2,\ z3);}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ barys;}
+\DoxyCodeLine{00111\ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Vector<BaryCoordLink>\ fromPath(PackData\ p,Path2D.Double\ path)\ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes!=0)\ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}'BaryLink':\ only\ available\ in\ eucl\ case"{}});}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (path==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ Vector<Vector<Complex>>\ zSegments=PathUtil.gpPolygon(path);}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ Vector<BaryCoordLink>\ Blinks=\textcolor{keyword}{new}\ Vector<BaryCoordLink>(1);}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ iterate\ through\ the\ segments\ if\ 'path'\ has\ more\ than\ one.}}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<zSegments.size();j++)\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<Complex>\ zPath\ =zSegments.get(j);}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zPath!=\textcolor{keyword}{null}\ \&\&\ zPath.size()>0)\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cut\ out\ essentially\ repeated\ entries}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ jj=0;jj<(zPath.size()-\/1);jj++)\ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z=zPath.get(jj);}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((jj+1)<zPath.size()\ \&\&\ }
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ zPath.get(jj+1).minus(z).abs()<.000001)}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ zPath.remove(jj+1);}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zPath.size()>1)\ \{}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ healthy=\textcolor{keyword}{true};}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ segAnswer\ sAns=nextSegment(p,zPath);}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sAns==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ healthy=\textcolor{keyword}{false};}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (sAns.blink!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ healthy=sAns.healthy;}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Blinks.add(sAns.blink);}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (healthy\ \&\&\ zPath.size()>0);}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ for}}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Blinks;}
+\DoxyCodeLine{00155\ \ \ \ \ \}}
+\DoxyCodeLine{00156\ \ \ \ \ }
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ segAnswer\ nextSegment(PackData\ p,Vector<Complex>\ zPath)\ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zPath==\textcolor{keyword}{null}\ ||\ zPath.size()==0)\ }
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(\textcolor{keyword}{true},\textcolor{keyword}{null});}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ Complex\ start=zPath.remove(0);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ BaryPacket\ currfbp=\textcolor{keyword}{null};}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ Complex\ nextz=\textcolor{keyword}{null};}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ Complex\ []z=\textcolor{keyword}{new}\ Complex[3];}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ currFaceIndx=0;}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hitResult=0;}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ gothit=\textcolor{keyword}{false};\ \textcolor{comment}{//\ true\ only\ entering\ carrier\ and\ bdry\ edge\ is\ hit}}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ healthy=\textcolor{keyword}{true};}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ finding\ a\ first\ face:\ can\ be\ tough}}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ FaceLink\ flink=p.tri\_search(start);}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ not\ in\ face?\ must\ be\ outside\ carrier.}}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flink==\textcolor{keyword}{null}\ ||\ flink.size()==0)\ \{\ }
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ We\ pass\ around\ bdry\ edges\ in\ order\ and\ use\ segIntersect}}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ EdgeLink\ elink=\textcolor{keyword}{new}\ EdgeLink(p,\textcolor{stringliteral}{"{}b"{}});}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (elink==\textcolor{keyword}{null}\ ||\ elink.size()==0)}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,\textcolor{keyword}{null});}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ toss\ segments\ of\ zPath\ that\ don't\ get\ a\ hit}}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (zPath.size()>0\ \&\&\ !gothit)\ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ minDist=10000000;}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextz=zPath.remove(0);}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ pathSegLength=start.minus(nextz).abs();}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<EdgeSimple>\ elst=elink.iterator();}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ EdgeSimple\ holdEdge=\textcolor{keyword}{null};}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ holdStart=\textcolor{keyword}{null};}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (elst.hasNext())\ \{}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ EdgeSimple\ edge=elst.next();}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ a=p.getCenter(edge.v);}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ b=p.getCenter(edge.w);}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ hitPt=EuclMath.segIntersect(start,nextz,a,b);}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hitPt!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dist=start.minus(hitPt).abs();}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dist<=pathSegLength\ \&\&\ dist<minDist)\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ holdEdge=\textcolor{keyword}{new}\ EdgeSimple(edge.v,edge.w);}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ holdStart=\textcolor{keyword}{new}\ Complex(hitPt);}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ pass\ through\ bdry\ edges}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (holdEdge!=\textcolor{keyword}{null})\ \{\ \textcolor{comment}{//\ success:\ now,\ which\ face?}}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start=\textcolor{keyword}{new}\ Complex(holdStart);\ \textcolor{comment}{//\ entry\ point}}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (start.minus(nextz).abs()>EuclMath.OKERR*100)\ \{}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ zPath.insertElementAt(nextz,0);\ \textcolor{comment}{//\ need\ to\ get\ 'nextz'\ later}}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (zPath.size()==0)\ \{\ \textcolor{comment}{//\ only\ got\ one\ point}}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,\textcolor{keyword}{null});}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ 'start'\ an\ endpoint?}}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (start.minus(p.getCenter(holdEdge.v)).abs()<EuclMath.OKERR*10)\ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currFaceIndx=faceFromZ(p,holdEdge.v,nextz);}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start=p.getCenter(holdEdge.v);}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (start.minus(p.getCenter(holdEdge.w)).abs()<EuclMath.OKERR*10)\ \{}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currFaceIndx=faceFromZ(p,holdEdge.w,nextz);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start=p.getCenter(holdEdge.w);}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ currFaceIndx=p.getFaceFlower(holdEdge.v,0);\ \textcolor{comment}{//\ face}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gothit=\textcolor{keyword}{true};}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ toss\ segment,\ try\ next}}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start=nextz;}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ outer\ while\ (trying\ new\ segments\ of\ the\ path\ against\ whole\ bdry)}}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ never\ crossed\ the\ boundary?\ zPath\ should\ be\ empty}}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!gothit)\ }
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,\textcolor{keyword}{null});}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ build\ FaceLink\ so\ we\ can\ continue}}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ flink=\textcolor{keyword}{new}\ FaceLink(p);}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ flink.add(currFaceIndx);}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'start'\ should\ be\ in\ face(s)\ of\ this\ list;\ It\ might\ be\ 'nextz'\ }}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zPath.size()>0)\ }
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextz=zPath.remove(0);}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (nextz!=\textcolor{keyword}{null}\ \&\&\ start.minus(nextz).abs()<EuclMath.OKERR*10\ \&\&\ zPath.size()>0);}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextz!=\textcolor{keyword}{null}\ \&\&\ start.minus(nextz).abs()<EuclMath.OKERR*10)\ \{}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,\textcolor{keyword}{null});\ \textcolor{comment}{//\ just\ one\ point}}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextz==\textcolor{keyword}{null})}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,\textcolor{keyword}{null});\ }
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ first\ with\ segment\ actually\ entering\ carrier}}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ gothit=\textcolor{keyword}{false};}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ repeat=2;}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (repeat>0\ \&\&\ !gothit)\ \{}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Integer>\ flst=flink.iterator();}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (flst.hasNext()\ \&\&\ !gothit)\ \{}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currFaceIndx=flst.next();}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ if\ segment\ [start,nextz]\ actually\ enters\ the\ face}}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ fverts=p.getFaceVerts(currFaceIndx);}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z[0]=p.getCenter(fverts[0]);}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z[1]=p.getCenter(fverts[1]);}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z[2]=p.getCenter(fverts[2]);}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currfbp=\textcolor{keyword}{new}\ BaryPacket(p,currFaceIndx);}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currfbp.setStart(EuclMath.e\_pt\_to\_bary(start,\ z[0],z[1],z[2]));}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BaryPoint\ baryNext=EuclMath.e\_pt\_to\_bary(nextz,\ z[0],z[1],z[2]);}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hitResult=currfbp.findEndPt(baryNext);}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hitResult>=1)}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gothit=\textcolor{keyword}{true};}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ inner\ while}}
+\DoxyCodeLine{00273\ }
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ didn't\ enter?\ It\ would\ appear\ that\ 'start'\ is\ on\ edge\ of\ some\ face,\ but}}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ vector\ to\ 'nextz'\ points\ away.\ Need\ to\ shift\ 'start'\ toward\ 'nextz'\ }}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ a\ little\ and\ try\ once\ more.}}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!gothit)\ \{}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ vec=nextz.minus(start);}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ move\ distance\ 1/100\ toward\ 'nextz'}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ start=start.add(vec.times(.01/vec.abs()));}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ repeat-\/-\/;}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ outer\ while}}
+\DoxyCodeLine{00284\ }
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ hit;\ put\ 'nextz'\ back\ in\ zPath\ another\ try\ for\ another\ segment}}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!gothit\ \&\&\ start.minus(nextz).abs()>EuclMath.OKERR*100)\ \{}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ zPath.insertElementAt(nextz,0);}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,\textcolor{keyword}{null});}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Reaching\ here,\ we\ have\ first\ BaryPacket:\ look\ for\ continuations}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ BaryCoordLink\ blk=\textcolor{keyword}{new}\ BaryCoordLink(p);}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety=10*p.faceCount;}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ blk.add(currfbp);}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ start=currfbp.getEndZ(p);}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ did\ we\ (essentially)\ reach\ nextz?}}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (start.minus(nextz).abs()<EuclMath.OKERR*100)\ \{}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zPath.size()==0)\ \{}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,blk);}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextz=zPath.remove(0);}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ start\ new\ packet\ (even\ though\ start\ may\ be\ exit\ point)}}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ currfbp=\textcolor{keyword}{new}\ BaryPacket(p,currFaceIndx);}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ currfbp.setStart(EuclMath.e\_pt\_to\_bary(start,z[0],z[1],z[2]));}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ BaryPoint\ baryNext=EuclMath.e\_pt\_to\_bary(nextz,z[0],z[1],z[2]);}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ end\ in\ direction\ of\ 'baryNext'}}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ locCount=0;}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((hitResult=currfbp.findEndPt(baryNext))<1)\ \{\ \textcolor{comment}{//\ things\ to\ check}}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ locCount++;}
+\DoxyCodeLine{00314\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println("{}goResult\ =\ "{}+\ goResult);}}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hitResult==0)\ \{\ \textcolor{comment}{//\ 'end'\ equals\ 'start'}}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zPath.size()==0)\ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,blk);}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ will\ try\ this\ face\ again\ with\ new\ 'nextz'}}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextz=zPath.remove(0);}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ baryNext=EuclMath.e\_pt\_to\_bary(nextz,\ z[0],z[1],z[2]);}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hitResult==-\/2)\ \{\ \textcolor{comment}{//\ line\ misses:\ find\ new\ face}}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ code=currfbp.isStartOnEdge();}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (code==-\/1)\ \{\ \textcolor{comment}{//\ error:\ start\ should\ be\ on\ some\ edge}}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ healthy=\textcolor{keyword}{false};}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,blk);}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ holdFace=currFaceIndx;}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currFaceIndx=PathBaryUtil.getNextFace(p,holdFace,code,nextz);}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currFaceIndx==holdFace)\ \{}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}'fromPath':didn't\ get\ new\ face"{}});}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ healthy=\textcolor{keyword}{false};}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,blk);}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ next\ face?\ exiting\ carrier,\ so\ finished}}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currFaceIndx==-\/1)\ \{}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,blk);}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ have\ our\ new\ face\ to\ try\ with\ same\ 'nextz'}}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ fverts=p.getFaceVerts(currFaceIndx);}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z[0]=p.getCenter(fverts[0]);}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z[1]=p.getCenter(fverts[1]);}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z[2]=p.getCenter(fverts[2]);}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currfbp=\textcolor{keyword}{new}\ BaryPacket(p,currFaceIndx);}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currfbp.setStart(EuclMath.e\_pt\_to\_bary(start,z[0],z[1],z[2]));}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ baryNext=EuclMath.e\_pt\_to\_bary(nextz,z[0],z[1],z[2]);}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (locCount>2)\ \{}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}currFaceIndx="{}}+currFaceIndx+\textcolor{stringliteral}{"{}\ nextz="{}}+nextz+}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ start="{}}+start);}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ 'nextBary'\ in\ closed\ triangle\ (=\ 'nextz')\ or\ close\ enough\ to\ 'nextz'}}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hitResult>=2\ ||\ }
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currfbp.getEndZ(p).minus(nextz).abs()<EuclMath.OKERR*1000)\ \{\ \textcolor{comment}{//\ 'end'\ strictly\ inside}}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (zPath.size()==0)\ \{}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ blk.add(currfbp);}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,blk);}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextz=zPath.remove(0);}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ 'end'\ came\ out\ on\ bdry}}
+\DoxyCodeLine{00367\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ else\ if\ (hitResult==1)\ \{}}
+\DoxyCodeLine{00368\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println("{}got\ 1,\ currFaceIndx="{}+currFaceIndx);}}
+\DoxyCodeLine{00369\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ safety-\/-\/;}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (safety>0);}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ shouldn't\ reach\ here}}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ healthy=\textcolor{keyword}{false};}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ segAnswer(healthy,blk);}
+\DoxyCodeLine{00376\ \ \ \ \ \}}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00387\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ getNextFace(PackData\ p,\textcolor{keywordtype}{int}\ f,\textcolor{keywordtype}{int}\ code,Complex\ p2)\ \{}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ fverts=p.getFaceVerts(f);}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=0;}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=0;}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (code<10)\ \{\ \textcolor{comment}{//\ at\ corner}}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ v=fverts[code];}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ faceFromZ(p,v,p2);}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (code==12)\ \{}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ w=fverts[1];}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ v=fverts[0];}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (code==31)\ \{}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ w=fverts[0];}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ v=fverts[2];}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (code==23)\ \{}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ w=fverts[2];}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ \ \ v=fverts[1];}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.isBdry(v)\ \&\&\ w==p.getFirstPetal(v))}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;\ }
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.packDCEL!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ wv=p.packDCEL.findHalfEdge(\textcolor{keyword}{new}\ EdgeSimple(w,v));}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ wv.face.faceIndx;}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p.getFaceFlower(w,p.nghb(w,v));\ \textcolor{comment}{//\ to\ left\ of\ \{w,v\}}}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00416\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ System.out.println("{}w,v\ =\ "{}+w+"{}\ "{}+v);}}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}hum???\ bad\ code?\ "{}}+code);}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00419\ \ \ \ \ \}}
+\DoxyCodeLine{00420\ \ \ \ \ }
+\DoxyCodeLine{00429\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ faceFromZ(PackData\ p,\textcolor{keywordtype}{int}\ v,Complex\ p2)\ \{}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=p.countFaces(v);}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ Complex\ me=p.getCenter(v);}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ Complex\ vp2=p2.minus(me);}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=p.getFlower(v);}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ arg1;}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ arg2=p.getCenter(flower[0]).minus(me).divide(vp2).arg();}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=num;j++)\ \{}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ arg1=arg2;}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ arg2=p.getCenter(flower[j]).minus(me).divide(vp2).arg();}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (arg1<=0\ \&\&\ arg2>0)}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p.getFaceFlower(v,j-\/1);}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(arg2)<EuclMath.OKERR)\ \textcolor{comment}{//\ ??\ not\ sure\ what\ this\ does}}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p.getFaceFlower(v,num-\/1);}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00445\ \ \ \ \ \}}
+\DoxyCodeLine{00446\ \ \ \ \ }
+\DoxyCodeLine{00454\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Path2D.Double\ baryLink2path(PackData\ p,BaryCoordLink\ blk)\ \{}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (blk==\textcolor{keyword}{null}\ ||\ blk.size()==0)\ }
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ Path2D.Double\ path=\textcolor{keyword}{new}\ Path2D.Double();}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ Iterator<BaryPacket>\ bit\ =\ blk.iterator();}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ BaryPacket\ bp=bit.next();}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ Complex\ z=bp.getStartZ(p);}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (z!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ path.moveTo(z.x,z.y);}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ z=bp.getEndZ(p);}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (z!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ path.lineTo(z.x,z.y);}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(bit.hasNext())\ \{}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ \ \ z=bit.next().getEndZ(p);}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (z==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ path;}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \ \ path.lineTo(z.x,z.y);}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ path;}
+\DoxyCodeLine{00473\ \ \ \ \ \}}
+\DoxyCodeLine{00474\ \ \ \ \ }
+\DoxyCodeLine{00478\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{class\ }segAnswer\ \{}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ healthy;}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ BaryCoordLink\ blink;}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ segAnswer(\textcolor{keywordtype}{boolean}\ health,BaryCoordLink\ blk)\ \{}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ healthy=health;}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \ \ blink=blk;}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00486\ \ \ \ \ \}}
+\DoxyCodeLine{00487\ \ \ \ \ }
+\DoxyCodeLine{00488\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,1485 @@
+\doxysection{Script\+Manager.\+java}
+\label{_script_manager_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/script/ScriptManager.java@{C:/Users/ashej/myGitRepos/CirclePack/src/script/ScriptManager.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }script;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Component;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.EventQueue;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.Frame;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.MouseInfo;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.Point;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.Rectangle;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.datatransfer.Transferable;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.awt.dnd.DnDConstants;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.awt.dnd.DragGestureEvent;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.awt.dnd.DragGestureListener;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.awt.dnd.DragSource;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ java.awt.event.ActionEvent;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ java.awt.event.ActionListener;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ java.awt.event.KeyEvent;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ java.awt.geom.Point2D;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ java.awt.image.BufferedImage;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ java.io.FileReader;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ java.io.FileWriter;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ java.net.URL;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ java.util.Enumeration;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{import}\ java.util.Random;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{import}\ java.util.StringTokenizer;}
+\DoxyCodeLine{00031\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{import}\ javax.imageio.ImageIO;}
+\DoxyCodeLine{00034\ \textcolor{keyword}{import}\ javax.swing.ImageIcon;}
+\DoxyCodeLine{00035\ \textcolor{keyword}{import}\ javax.swing.JOptionPane;}
+\DoxyCodeLine{00036\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{import}\ javax.swing.event.TreeModelEvent;}
+\DoxyCodeLine{00038\ \textcolor{keyword}{import}\ javax.swing.event.TreeModelListener;}
+\DoxyCodeLine{00039\ \textcolor{keyword}{import}\ javax.swing.tree.TreeCellRenderer;}
+\DoxyCodeLine{00040\ \textcolor{keyword}{import}\ javax.swing.tree.TreeNode;}
+\DoxyCodeLine{00041\ \textcolor{keyword}{import}\ javax.swing.tree.TreePath;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \textcolor{keyword}{import}\ org.w3c.dom.NamedNodeMap;}
+\DoxyCodeLine{00044\ \textcolor{keyword}{import}\ org.w3c.dom.Node;}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00047\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00048\ \textcolor{keyword}{import}\ canvasses.ActiveWrapper;}
+\DoxyCodeLine{00049\ \textcolor{keyword}{import}\ canvasses.CursorCtrl;}
+\DoxyCodeLine{00050\ \textcolor{keyword}{import}\ canvasses.MyCanvasMode;}
+\DoxyCodeLine{00051\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00052\ \textcolor{keyword}{import}\ dragdrop.ToolDragSourceListener;}
+\DoxyCodeLine{00053\ \textcolor{keyword}{import}\ dragdrop.ToolTransferable;}
+\DoxyCodeLine{00054\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00055\ \textcolor{keyword}{import}\ exceptions.InOutException;}
+\DoxyCodeLine{00056\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00057\ \textcolor{keyword}{import}\ frames.AboutFrame;}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{comment}{/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*}}
+\DoxyCodeLine{00060\ \textcolor{comment}{\ Overview:\ \ This\ class\ is\ responsible\ for\ most\ of\ the\ behavior\ for\ handling\ scripts.}}
+\DoxyCodeLine{00061\ \textcolor{comment}{\ It\ implements\ JTree\ methods;\ this\ is\ a\ tree\ of\ CPTreeNode's\ created\ from\ DOM}}
+\DoxyCodeLine{00062\ \textcolor{comment}{\ nodes\ of\ a\ script\ document\ or\ added/modified/deleted\ later.}}
+\DoxyCodeLine{00063\ \textcolor{comment}{\ This\ manager\ listens\ for\ events\ relating\ to\ scripts,\ maintains\ the\ data\ for\ the\ script\ tree,}}
+\DoxyCodeLine{00064\ \textcolor{comment}{\ keeps\ track\ of\ the\ current\ command,\ finds\ the\ next\ command,\ and\ several\ other\ things.}}
+\DoxyCodeLine{00065\ \textcolor{comment}{\ Uses\ a\ DOM\ parser\ to\ read\ in\ a\ script\ file\ and\ CPTreeNode's\ to\ manage\ the\ TreeModel}}
+\DoxyCodeLine{00066\ \textcolor{comment}{\ interface.}}
+\DoxyCodeLine{00067\ \textcolor{comment}{\ *-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*-\/-\/*/}}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \textcolor{keyword}{import}\ images.CPIcon;}
+\DoxyCodeLine{00070\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00071\ \textcolor{keyword}{import}\ input.FileDialogs;}
+\DoxyCodeLine{00072\ \textcolor{keyword}{import}\ mytools.MyTool;}
+\DoxyCodeLine{00073\ \textcolor{keyword}{import}\ mytools.MyToolEditor;}
+\DoxyCodeLine{00074\ \textcolor{keyword}{import}\ packing.CPdrawing;}
+\DoxyCodeLine{00075\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00076\ \textcolor{keyword}{import}\ util.FileUtil;}
+\DoxyCodeLine{00077\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00082\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }ScriptManager\ \textcolor{keyword}{implements}\ ActionListener\ \{}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ WIDTH=535;\ \textcolor{comment}{//\ reset\ on\ script\ startup.}}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ WIDTH\_INC=15;\ \textcolor{comment}{//\ boxes\ narrow\ as\ nesting\ depth\ increases}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{comment}{//\ Script\ data}}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keyword}{public}\ String\ scriptName;\ \textcolor{comment}{//\ name\ of\ current\ script\ (whether\ file\ or\ URL)}}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keyword}{public}\ String\ creationDate;\ \ \textcolor{comment}{//\ TODO:\ not\ yet\ implemented:\ null\ until\ first\ save,\ then\ fixed}}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keyword}{public}\ ImageIcon\ defaultTag;\ \textcolor{comment}{//\ 'tag'\ is\ creator's\ visual\ tag\ (image)}}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keyword}{public}\ ImageIcon\ myScriptTag;\ \textcolor{comment}{//\ 'tag'\ specified\ in\ script.}}
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keyword}{public}\ String\ scriptTagname;\ \textcolor{comment}{//\ 'tag'\ image\ filename}}
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{keyword}{public}\ String\ scriptDescription;\ \textcolor{comment}{//\ from\ <description>\ element}}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ scriptLevel;\ \textcolor{comment}{//\ script\ setting\ for\ 'AdvancedMode'}}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ scriptMapMode;\ \textcolor{comment}{//\ script\ setting\ for\ 'MapCanvasMode'}}
+\DoxyCodeLine{00096\ \ \ \ \ File\ workingFile;\ \textcolor{comment}{//\ working\ copy\ of\ script}}
+\DoxyCodeLine{00097\ }
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{comment}{//\ data\ files\ which\ are\ included\ in\ script}}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keyword}{public}\ Vector<IncludedFile>\ includedFiles=\textcolor{keyword}{new}\ Vector<IncludedFile>();}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{int}\ id;\ \textcolor{comment}{//\ random\ identifier\ for\ tmp\ file\ names}}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keywordtype}{boolean}\ editEnabled;}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ hasChanged;}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keyword}{public}\ CPTreeNode\ rootNode;}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keyword}{public}\ CPTreeNode\ cpScriptNode;}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keyword}{public}\ CPTreeNode\ cpDataNode;}
+\DoxyCodeLine{00107\ \ \ \ \ CPTreeNode\ nextCmdNode;}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \ \ TreePath\ pathToCurrentNode;}
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keyword}{protected}\ Vector<TreeModelListener>\ treeModelListeners;}
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keyword}{protected}\ StringTokenizer\ tokenizer;}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keyword}{protected}\ TreeCellRenderer\ treeRenderer;}
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keyword}{public}\ ScriptLoader\ scriptLoader;}
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keyword}{public}\ TNWriter\ tnWriter;}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keyword}{protected}\ Rectangle\ intendedRect;\ \textcolor{comment}{//\ store\ Rectangle\ that\ should\ appear\ in\ stackScroll.}}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keywordtype}{boolean}\ cmdOpenMode;\ \ \textcolor{comment}{//\ if\ true,\ then\ commands\ not\ in\ edit\ mode\ should\ be\ 'open'.}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{comment}{//\ Static\ variables}}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ padding\ =\ 20;\ \textcolor{comment}{//\ pixel\ padding\ above/below\ for\ viewPort\ adjustment}}
+\DoxyCodeLine{00120\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ cmdCount=0;}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ INSERT\_IN\ =\ 0;}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ INSERT\_ABOVE\ =\ -\/1;}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ INSERT\_BELOW\ =\ 1;}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{comment}{//\ Constructors}}
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keyword}{public}\ ScriptManager()\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ scriptDescription=\textcolor{keyword}{null};}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ scriptTagname=\textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ scriptLevel=\textcolor{keyword}{true};\ \textcolor{comment}{//\ default:\ advanced\ mode}}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ scriptMapMode=\textcolor{keyword}{false};\ \textcolor{comment}{//\ default,\ single\ canvas}}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ editEnabled\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{id}\ =\ \textcolor{keyword}{new}\ Random().nextInt(32000);}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ hasChanged\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ treeModelListeners\ =\ \textcolor{keyword}{new}\ Vector<TreeModelListener>();}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ scriptLoader=\textcolor{keyword}{new}\ ScriptLoader(\textcolor{keyword}{this});}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ tnWriter=\textcolor{keyword}{new}\ TNWriter(\textcolor{keyword}{this});}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ cmdOpenMode=\textcolor{keyword}{false};\ \textcolor{comment}{//\ default\ and\ startup\ value}}
+\DoxyCodeLine{00138\ \ \ \ \ \}}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ redisplayCPscriptSB()\ \{}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ cpScriptNode.stackBox.redisplaySB(cpScriptNode.stackBox.myWidth);}
+\DoxyCodeLine{00142\ \ \ \ \ \}}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ redisplayCPdataSB()\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ cpDataNode.stackBox.redisplaySB(cpDataNode.stackBox.myWidth);}
+\DoxyCodeLine{00146\ \ \ \ \ \}}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ populateDisplay()\ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rootNode==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ recursively\ populate\ CPscript\ and\ CPdata}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \textcolor{comment}{//AF>>>//}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Reverted\ order\ for\ consistency\ -\/\ first\ script,\ then\ data.}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lockable\ JViewport\ fixes\ the\ same\ problem.}}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ repopulateRecurse(cpScriptNode);}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ cpScriptNode.stackBox.redisplaySB(cpScriptNode.stackBox.myWidth);}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ repopulateRecurse(cpDataNode);}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ cpDataNode.stackBox.redisplaySB(cpDataNode.stackBox.myWidth);}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \textcolor{comment}{//<<<AF//}}
+\DoxyCodeLine{00165\ \ \ \ \ \}}
+\DoxyCodeLine{00166\ }
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{comment}{//\ ???\ what\ was\ this\ for?\ (8/2010)}}
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{comment}{//\ \ Runnable\ setViewRect\ =\ new\ Runnable()\ \{}}
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ public\ void\ run()\ \{}}
+\DoxyCodeLine{00170\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.stackScroll.revalidate();}}
+\DoxyCodeLine{00171\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.stackScroll.setVisible(true);}}
+\DoxyCodeLine{00172\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.stackScroll.scrollRectToVisible(intendedRect);}}
+\DoxyCodeLine{00173\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \}\};}}
+\DoxyCodeLine{00174\ }
+\DoxyCodeLine{00178\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ repopulateRecurse(CPTreeNode\ treeNode)\ \{}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ this\ shouldn't\ occur}}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ if\ (treeNode.stackBox==null)\ //\ must\ be\ 'root'\ node}}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ return;}}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (treeNode.stackBox.isOpen\ \&\&\ treeNode.getChildCount()>0)\ \{}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (treeNode.tntype==CPTreeNode.CPSCRIPT\ ||\ treeNode.tntype==CPTreeNode.CPDATA\ ||}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ treeNode.tntype==CPTreeNode.SECTION)}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ treeNode.consolidateNodes();}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ continue\ recursion}}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=treeNode.getChildCount()-\/1;j>=0;j-\/-\/)\ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ child=(CPTreeNode)treeNode.getChild(j);}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ child.stackBox.myWidth=treeNode.stackBox.myWidth-\/WIDTH\_INC;}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ repopulateRecurse(child);}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00195\ }
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ NOTE:\ LINEUP's\ are\ never\ open,\ but\ they\ redisplay\ their\ own\ children}}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ treeNode.stackBox.redisplaySB(treeNode.stackBox.myWidth);}
+\DoxyCodeLine{00198\ \ \ \ \ \}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00205\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ debugLayoutRecurse(CPTreeNode\ treeNode)\ \{}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count;}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((count=treeNode.getChildCount())>0)\ \{}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=count-\/1;j>=0;j-\/-\/)\ \{}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ child=(CPTreeNode)treeNode.getChild(j);}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ child.debugSize();\ \textcolor{comment}{//\ print\ info}}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ debugLayoutRecurse(child);}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00214\ \ \ \ \ \}}
+\DoxyCodeLine{00215\ }
+\DoxyCodeLine{00224\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ repopulateBar()\ \{}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rootNode==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ PackControl.scriptToolHandler.wipeoutTools();}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ CursorCtrl.scriptModes.removeAllElements();}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ barRecurse(rootNode);}
+\DoxyCodeLine{00229\ \ \ \ \ \}}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00235\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ barRecurse(CPTreeNode\ treeNode)\ \{}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=treeNode.getChildCount();}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<count;j++)\ \{\ }
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ child=treeNode.getChild(j);}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((child.tntype==CPTreeNode.COMMAND\ \&\&\ (child.isNamed()\ ||\ child.isXY()))\ ||}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ child.tntype==CPTreeNode.MODE)\ \{}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ deBugging.PrintIcon.printImageIcon(child.tTool.cpIcon.imageIcon,"{}barRecur"{});}}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptToolHandler.updateClone(child.tTool);}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ barRecurse(child);}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00246\ \ \ \ \ \}}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00255\ \ \ \ \ \textcolor{keyword}{protected}\ CPTreeNode\ initCPTreeNode(Node\ domNode)\ \{}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ CPIcon\ cpIcon;}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ isDropable=\textcolor{keyword}{false};}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Misc\ stuff:\ don't\ want\ to\ use,\ but\ may\ }}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ want\ to\ pass\ along\ when\ script\ is\ saved.\ }}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ Caution:\ I\ don't\ know\ proper\ way\ to\ handle}}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ most\ of\ these\ DOM\ types.\ But,\ we\ shouldn't\ }}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ encounter\ them.}}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{short}\ ntype=domNode.getNodeType();}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ntype==Node.COMMENT\_NODE\ ||\ ntype==Node.ATTRIBUTE\_NODE\ ||}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ntype==Node.NOTATION\_NODE\ ||\ ntype==Node.PROCESSING\_INSTRUCTION\_NODE)\ \{}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ initOtherTN(domNode.getNodeValue());}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ NOTE:\ As\ yet\ there\ is\ no\ tree\ node\ for\ these}}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ administrative\ elements.\ Need\ checkboxes\ for}}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ editing\ these\ options\ in\ the\ script.}}
+\DoxyCodeLine{00273\ }
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Script\ description:\ only\ one\ allowed,\ no\ tree\ node\ is\ created}}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (domNode.getNodeType()==Node.ELEMENT\_NODE}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ domNode.getNodeName().equals(\textcolor{stringliteral}{"{}description"{}}))\ \{}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ Node\ node=domNode.getFirstChild();}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (node!=\textcolor{keyword}{null}\ \&\&\ (scriptDescription==\textcolor{keyword}{null}\ ||\ scriptDescription.trim().length()==0))}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scriptDescription=node.getNodeValue();}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ }
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00282\ }
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ command??}}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (domNode.getNodeType()==Node.ELEMENT\_NODE}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ domNode.getNodeName().equals(\textcolor{stringliteral}{"{}cmd"{}}))\ \{}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ String\ cmd\_text\ =\ domNode.getFirstChild().getNodeValue();}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ String\ name\_text=\textcolor{keyword}{null};}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ String\ mnem\_text=\textcolor{keyword}{null};}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ String\ tool\_tip=\textcolor{keyword}{null};}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ String\ icon\_name=\textcolor{keyword}{null};}
+\DoxyCodeLine{00291\ }
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ inLine=\textcolor{keyword}{true};}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (domNode.hasAttributes())\ \{}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NamedNodeMap\ map\ =\ domNode.getAttributes();}
+\DoxyCodeLine{00295\ }
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ name?}}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Node\ name\ =\ map.getNamedItem(\textcolor{stringliteral}{"{}name"{}});}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text\ =\ name.getNodeValue();}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().length()!=0)\ \{}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name\_text=tmp\_text.trim();}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mnem\_text=name\_text.substring(0,1);}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00305\ }
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ mnemonic?}}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name\ =\ map.getNamedItem(\textcolor{stringliteral}{"{}mnemonic"{}});}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text\ =\ name.getNodeValue();}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().length()!=0)\ \{}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mnem\_text=tmp\_text.trim().substring(0,1);}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (name\_text!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mnem\_text=name\_text.substring(0,1);}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00317\ }
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ tooltip?}}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name\ =\ map.getNamedItem(\textcolor{stringliteral}{"{}tooltip"{}});}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text\ =\ name.getNodeValue();}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().length()!=0)\ \{}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tool\_tip=tmp\_text.trim();}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ tool\_tip=\textcolor{keyword}{null};}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00327\ }
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ inline?}}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name=map.getNamedItem(\textcolor{stringliteral}{"{}inline"{}});}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text=name.getNodeValue();}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().length()!=0\ \&\&}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (tmp\_text.trim().charAt(0)==\textcolor{charliteral}{'n'}\ ||\ tmp\_text.trim().charAt(0)==\textcolor{charliteral}{'N'}))}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inLine=\textcolor{keyword}{false};}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00336\ }
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ iconname?}}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name\ =\ map.getNamedItem(\textcolor{stringliteral}{"{}iconname"{}});}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ tmp\_bld\ =\ \textcolor{keyword}{new}\ StringBuilder(name.getNodeValue().trim());}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (tmp\_text!=null\ \&\&\ tmp\_text.trim().length()!=0)\ \{}}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ icon\_name=CPFileManager.getFileName(tmp\_bld);}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00346\ }
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ dropable?}}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name=map.getNamedItem(\textcolor{stringliteral}{"{}dropable"{}});}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ isDropable=\textcolor{keyword}{false};}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text=name.getNodeValue();}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().length()!=0)\ \{}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmp\_text=tmp\_text.trim();}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text.startsWith(\textcolor{stringliteral}{"{}y"{}})\ ||\ tmp\_text.startsWith(\textcolor{stringliteral}{"{}Y"{}}))}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ isDropable=\textcolor{keyword}{true};}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00358\ }
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00360\ }
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ icon}}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (icon\_name!=\textcolor{keyword}{null}\ \&\&\ icon\_name.length()>0)\ \{}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MyToolEditor\ mte=PackControl.scriptToolHandler.toolEditor;}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ indx=mte.getCPIconIndx(\textcolor{stringliteral}{"{}script/"{}}+icon\_name);}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx>=0)}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cpIcon=mte.theCPIcons.get(indx).clone();}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ cpIcon=\textcolor{keyword}{new}\ CPIcon(\textcolor{stringliteral}{"{}script/commandIcon.png"{}});}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cpIcon=new\ CPIcon("{}script/"{}+icon\_name);}}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mte.getCPIconIndx(cpIcon)<0)\ \{}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mte.theCPIcons.add(cpIcon);}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mte.resetIconList();}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ cpIcon=getNextIcon().clone();\ \textcolor{comment}{//\ get\ random\ icon}}
+\DoxyCodeLine{00375\ }
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ tnode=initCmdTN(cmd\_text,name\_text,mnem\_text,tool\_tip,inLine,cpIcon,isDropable);}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ tnode.isCursor=\textcolor{keyword}{false};}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ tnode.isHandy=\textcolor{keyword}{false};}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tnode;}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00381\ }
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ mode}}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (domNode.getNodeType()==Node.ELEMENT\_NODE}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ domNode.getNodeName().equals(\textcolor{stringliteral}{"{}mode"{}}))\ \{}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ String\ cmd\_text\ =\ domNode.getFirstChild().getNodeValue();}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ String\ cmd\_m2\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ String\ cmd\_m3\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ String\ mode\_name=\textcolor{keyword}{null};}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ String\ icon\_name=\textcolor{keyword}{null};}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ String\ short\_tip=\textcolor{keyword}{null};}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ String\ tool\_tip=\textcolor{keyword}{null};\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ String\ handy=null;}}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ hndy=\textcolor{keyword}{true};}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ String\ pt\_str=\textcolor{keyword}{null};\ \textcolor{comment}{//\ hot\ point\ "{}x\ y"{}\ string}}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ Point\ hotPt=\textcolor{keyword}{null};}
+\DoxyCodeLine{00396\ }
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (domNode.hasAttributes())\ \{}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NamedNodeMap\ map\ =\ domNode.getAttributes();}
+\DoxyCodeLine{00399\ }
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ name?}}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Node\ name\ =\ map.getNamedItem(\textcolor{stringliteral}{"{}name"{}});}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text\ =\ name.getNodeValue();}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().length()!=0)\ \{}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mode\_name=tmp\_text.trim();}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00408\ }
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ iconname?}}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name\ =\ map.getNamedItem(\textcolor{stringliteral}{"{}iconname"{}});}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text\ =\ name.getNodeValue();}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().length()!=0)\ \{}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ icon\_name=tmp\_text.trim();}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00417\ }
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ handy?\ default\ is\ true,\ should\ only\ look\ for\ "{}no"{}}}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name=map.getNamedItem(\textcolor{stringliteral}{"{}handy"{}});}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text\ =\ name.getNodeValue();}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().equals(\textcolor{stringliteral}{"{}no"{}}))\ }
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hndy=\textcolor{keyword}{false};}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00425\ }
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ short\_tip?}}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name\ =\ map.getNamedItem(\textcolor{stringliteral}{"{}shorttip"{}});}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text\ =\ name.getNodeValue();}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().length()!=0)\ \{}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ short\_tip=tmp\_text.trim();}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00434\ }
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ tip?}}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name\ =\ map.getNamedItem(\textcolor{stringliteral}{"{}tooltip"{}});}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text\ =\ name.getNodeValue();}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().length()!=0)\ \{}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tool\_tip=tmp\_text.trim();}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00443\ }
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cmd\_m2?}}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name\ =\ map.getNamedItem(\textcolor{stringliteral}{"{}cmd2"{}});}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text\ =\ name.getNodeValue();}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().length()!=0)\ \{}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd\_m2=tmp\_text.trim();}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00452\ }
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cmd\_m3?}}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name\ =\ map.getNamedItem(\textcolor{stringliteral}{"{}cmd3"{}});}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text\ =\ name.getNodeValue();}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().length()!=0)\ \{}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd\_m3=tmp\_text.trim();}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00461\ }
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ pt\_str?}}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name\ =\ map.getNamedItem(\textcolor{stringliteral}{"{}point"{}});}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hotPt=\textcolor{keyword}{null};}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmp\_text\ =\ name.getNodeValue();}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmp\_text!=\textcolor{keyword}{null}\ \&\&\ tmp\_text.trim().length()!=0)\ \{}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pt\_str=tmp\_text.trim();}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<String>\ ptstr=StringUtil.string2vec(pt\_str,\textcolor{keyword}{false});}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ x=Integer.parseInt(ptstr.get(0));}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ y=Integer.parseInt(ptstr.get(1));}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hotPt=\textcolor{keyword}{new}\ Point(x,y);}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00478\ }
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ icon}}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (icon\_name!=\textcolor{keyword}{null}\ \&\&\ icon\_name.length()>0)\ \{}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MyToolEditor\ mte=PackControl.scriptToolHandler.toolEditor;}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ indx=mte.getCPIconIndx(\textcolor{stringliteral}{"{}script/"{}}+icon\_name);}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx>=0)}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cpIcon=mte.theCPIcons.get(indx).clone();}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cpIcon=\textcolor{keyword}{new}\ CPIcon(\textcolor{stringliteral}{"{}script/"{}}+icon\_name);}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mte.getCPIconIndx(cpIcon)<0)\ \{}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mte.theCPIcons.add(cpIcon);}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mte.resetIconList();}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ cpIcon=getNextIcon().clone();\ \textcolor{comment}{//\ get\ random\ icon}}
+\DoxyCodeLine{00492\ }
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ tnode=initModeTN(mode\_name,cpIcon,hotPt,}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd\_text,cmd\_m2,cmd\_m3,short\_tip,tool\_tip,hndy);}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ \ \ tnode.isCursor=\textcolor{keyword}{true};}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \ \ \ \ tnode.isHandy=hndy;}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tnode;}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00499\ }
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ designated\ (versus\ default)\ text??}}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (domNode.getNodeType()==Node.ELEMENT\_NODE}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ domNode.getNodeName().equals(\textcolor{stringliteral}{"{}text"{}}))\ \{}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \ \ \ \ Node\ node=domNode.getFirstChild();}
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ String\ text;}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (node!=\textcolor{keyword}{null}\ \&\&\ (text\ =\ domNode.getFirstChild().getNodeValue())!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ initTextTN(text);}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00509\ }
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ section??}}
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (domNode.getNodeName().equals(\textcolor{stringliteral}{"{}Section"{}}))\ \{}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \ \ \ \ String\ title=\textcolor{keyword}{null};}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (domNode.hasAttributes())\ \{}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NamedNodeMap\ map\ =\ domNode.getAttributes();}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Node\ name\ =\ map.getNamedItem(\textcolor{stringliteral}{"{}title"{}});}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ title=\textcolor{keyword}{new}\ String(name.getNodeValue().trim());}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ initSectionTN(title);}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00522\ }
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ file??}}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (domNode.getNodeName().equals(\textcolor{stringliteral}{"{}file"{}}))\ \{}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ String\ filename=domNode.getFirstChild().getNodeValue();}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CPTreeNode(filename.trim(),CPTreeNode.FILE,\ \textcolor{keyword}{null});}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (domNode.getNodeName().equals(\textcolor{stringliteral}{"{}header"{}}))\ \{\ \textcolor{comment}{//\ header\ was\ handled\ already}}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ default\ is\ probably\ (??)\ text.}}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ String\ text=domNode.getNodeValue();}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ initTextTN(text);}
+\DoxyCodeLine{00534\ \ \ \ \ \}}
+\DoxyCodeLine{00535\ }
+\DoxyCodeLine{00548\ \ \ \ \ \textcolor{keyword}{public}\ CPTreeNode\ initCmdTN(String\ cmd\_text,String\ name\_text,}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \ \ \ \ String\ mnem\_text,String\ tool\_tip,\textcolor{keywordtype}{boolean}\ inLine,}
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \ \ \ \ \ \ CPIcon\ cpIcon,\textcolor{keywordtype}{boolean}\ dropIt)\ \{}
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ String\ cmd=\textcolor{keyword}{null};}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd\_text!=\textcolor{keyword}{null})\ cmd=cmd\_text.trim().replace(\textcolor{charliteral}{'\(\backslash\)n'},\textcolor{charliteral}{'\ '});}
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name\_text!=\textcolor{keyword}{null})\ name\_text=name\_text.trim();}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mnem\_text!=\textcolor{keyword}{null})\ mnem\_text=mnem\_text.trim();}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ MyTool\ myTool=\textcolor{keyword}{new}\ MyTool(cpIcon,cmd,name\_text,mnem\_text,}
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tool\_tip,\textcolor{stringliteral}{"{}SCRIPT:"{}},dropIt,}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptToolHandler.toolListener);}
+\DoxyCodeLine{00558\ }
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myTool.isDropable())\ \{}
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \ \ \ \ DragSource\ dragSource=DragSource.getDefaultDragSource();}
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ \ \ \ \ dragSource.createDefaultDragGestureRecognizer(myTool,DnDConstants.ACTION\_LINK,}
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ DragGestureListener()\ \{}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ dragGestureRecognized(DragGestureEvent\ event)\ \{}
+\DoxyCodeLine{00564\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Transferable\ transferable=\textcolor{keyword}{new}\ ToolTransferable((MyTool)event.getComponent());}
+\DoxyCodeLine{00565\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.startDrag(\textcolor{keyword}{null},transferable,\textcolor{keyword}{new}\ ToolDragSourceListener());}
+\DoxyCodeLine{00566\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00568\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00569\ }
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \ \ CPTreeNode\ tnode=\textcolor{keyword}{new}\ CPTreeNode(cmd,CPTreeNode.COMMAND,inLine,myTool);}
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ tnode.isCursor=\textcolor{keyword}{false};}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ tnode.isHandy=\textcolor{keyword}{false};}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tool\_tip!=\textcolor{keyword}{null}\ \&\&\ tool\_tip.trim().length()>0)}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \ \ \ \ tnode.tipStart=\textcolor{keyword}{true};}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00576\ \ \ \ \ \ \ \ \ \ \ \ \ tnode.tipStart=\textcolor{keyword}{false};}
+\DoxyCodeLine{00577\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tnode;}
+\DoxyCodeLine{00578\ \ \ \ \ \}}
+\DoxyCodeLine{00579\ \ \textcolor{keyword}{public}\ CPTreeNode\ initModeTN(String\ modename,CPIcon\ cpIcon,}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \ \ \ \ \ Point\ hotPt,String\ cmd\_text,String\ cmd2\_text,}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ cmd3\_text,String\ shorttip,}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tip,\textcolor{keywordtype}{boolean}\ hndy)\ \{}
+\DoxyCodeLine{00588\ }
+\DoxyCodeLine{00589\ \ \ \ \ \ \ \ \ \ String\ cmd=\textcolor{keyword}{null};}
+\DoxyCodeLine{00590\ \ \ \ \ \ \ \ \ \ String\ cmd2=\textcolor{keyword}{null};}
+\DoxyCodeLine{00591\ \ \ \ \ \ \ \ \ \ String\ cmd3=\textcolor{keyword}{null};}
+\DoxyCodeLine{00592\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd\_text!=\textcolor{keyword}{null})\ cmd=cmd\_text.trim().replace(\textcolor{charliteral}{'\(\backslash\)n'},\textcolor{charliteral}{'\ '});}
+\DoxyCodeLine{00593\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd2\_text!=\textcolor{keyword}{null})\ cmd2=cmd2\_text.trim().replace(\textcolor{charliteral}{'\(\backslash\)n'},\textcolor{charliteral}{'\ '});}
+\DoxyCodeLine{00594\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd3\_text!=\textcolor{keyword}{null})\ cmd3=cmd3\_text.trim().replace(\textcolor{charliteral}{'\(\backslash\)n'},\textcolor{charliteral}{'\ '});}
+\DoxyCodeLine{00595\ \ \ \ \ \ \ \ \ \ MyCanvasMode\ myMode=\textcolor{keyword}{new}\ MyCanvasMode(modename,cpIcon,hotPt,}
+\DoxyCodeLine{00596\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd,cmd2,cmd3,shorttip,tip,\textcolor{stringliteral}{"{}SCRIPT:"{}},hndy);}
+\DoxyCodeLine{00597\ }
+\DoxyCodeLine{00598\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ re-\/embellish\ cpIcon\ with\ mouse\ hot\ point}}
+\DoxyCodeLine{00599\ \ \ \ \ \ \ \ \ \ cpIcon.embellishMe(modename,\textcolor{keyword}{false},\textcolor{keyword}{true},hndy,\textcolor{keyword}{false});}
+\DoxyCodeLine{00600\ \ \ \ \ \ \ \ \ \ myMode.setButtonIcon();}
+\DoxyCodeLine{00601\ }
+\DoxyCodeLine{00602\ \ \ \ \ \ \ \ \ \ myMode.cursorIcon.setImageIcon(myMode.cursorIcon.}
+\DoxyCodeLine{00603\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ embellishBase(\textcolor{keyword}{null},\textcolor{keyword}{false},\textcolor{keyword}{true},\textcolor{keyword}{false},\textcolor{keyword}{false}));}
+\DoxyCodeLine{00604\ }
+\DoxyCodeLine{00605\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myMode.isDropable())\ \{}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \ \ \ \ \ DragSource\ dragSource=DragSource.getDefaultDragSource();}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ \ \ \ \ \ dragSource.createDefaultDragGestureRecognizer((MyTool)myMode,DnDConstants.ACTION\_LINK,}
+\DoxyCodeLine{00608\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ DragGestureListener()\ \{}
+\DoxyCodeLine{00609\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ dragGestureRecognized(DragGestureEvent\ event)\ \{}
+\DoxyCodeLine{00610\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Transferable\ transferable=\textcolor{keyword}{new}\ ToolTransferable((MyTool)event.getComponent());}
+\DoxyCodeLine{00611\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.startDrag(\textcolor{keyword}{null},transferable,\textcolor{keyword}{new}\ ToolDragSourceListener());}
+\DoxyCodeLine{00612\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00613\ \ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00614\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00615\ }
+\DoxyCodeLine{00616\ \ \ \ \ \ \ \ \ \ CPTreeNode\ tnode=\ \textcolor{keyword}{new}\ CPTreeNode(cmd,CPTreeNode.MODE,\textcolor{keyword}{false},(MyTool)myMode);}
+\DoxyCodeLine{00617\ \ \ \ \ \ \ \ \ \ tnode.isCursor=\textcolor{keyword}{true};}
+\DoxyCodeLine{00618\ \ \ \ \ \ \ \ \ \ tnode.isHandy=\textcolor{keyword}{true};\ \textcolor{comment}{//\ default}}
+\DoxyCodeLine{00619\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tnode;}
+\DoxyCodeLine{00620\ \ \ \ \ \ \}}
+\DoxyCodeLine{00621\ }
+\DoxyCodeLine{00627\ \ \ \ \ \ \textcolor{keyword}{protected}\ CPTreeNode\ initSectionTN(String\ title)\ \{}
+\DoxyCodeLine{00628\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (title==\textcolor{keyword}{null}\ ||\ title.trim().length()==0)}
+\DoxyCodeLine{00629\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CPTreeNode(\textcolor{keyword}{null},CPTreeNode.SECTION);}
+\DoxyCodeLine{00630\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CPTreeNode(title.trim(),CPTreeNode.SECTION);}
+\DoxyCodeLine{00631\ \ \ \ \ \ \}}
+\DoxyCodeLine{00632\ }
+\DoxyCodeLine{00641\ \ \ \ \ \ \textcolor{keyword}{protected}\ CPTreeNode\ initTextTN(String\ text)\ \{}
+\DoxyCodeLine{00642\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (text==\textcolor{keyword}{null}\ ||\ text.trim().length()==0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00643\ \ \ \ \ \ \ \ \ \ text=text.trim();}
+\DoxyCodeLine{00644\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CPTreeNode(text,CPTreeNode.TEXT);}
+\DoxyCodeLine{00645\ \ \ \ \ \ \}}
+\DoxyCodeLine{00646\ }
+\DoxyCodeLine{00647\ }
+\DoxyCodeLine{00653\ \ \ \ \ \ \textcolor{keyword}{protected}\ CPTreeNode\ initOtherTN(String\ contentStr)\ \{}
+\DoxyCodeLine{00654\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CPTreeNode(contentStr,CPTreeNode.OTHER,\textcolor{keyword}{null});}
+\DoxyCodeLine{00655\ \ \ \ \ \ \}}
+\DoxyCodeLine{00656\ }
+\DoxyCodeLine{00662\ \ \ \ \ \ \textcolor{keyword}{public}\ CPTreeNode\ createNEWCmdTN()\ \{}
+\DoxyCodeLine{00663\ \ \ \ \ \ \ \ \ \ MyTool\ myTool=\textcolor{keyword}{new}\ MyTool(getNextIcon(),\textcolor{stringliteral}{"{}"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}SCRIPT:"{}},}
+\DoxyCodeLine{00664\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{false},PackControl.scriptToolHandler.toolListener);}
+\DoxyCodeLine{00665\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CPTreeNode(\textcolor{stringliteral}{"{}"{}},CPTreeNode.EDIT\_CMDorMODE,\textcolor{keyword}{true},myTool);}
+\DoxyCodeLine{00666\ \ \ \ \ \ \}}
+\DoxyCodeLine{00667\ }
+\DoxyCodeLine{00675\ \ \ \ \ \ \textcolor{keyword}{protected}\ CPTreeNode\ createNEWFileTN(String\ filename)\ \{}
+\DoxyCodeLine{00676\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (filename==\textcolor{keyword}{null}\ ||\ filename.trim().length()==0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00677\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ CPTreeNode(filename.trim(),CPTreeNode.FILE,\ \textcolor{keyword}{null});}
+\DoxyCodeLine{00678\ \ \ \ \ \ \}}
+\DoxyCodeLine{00679\ }
+\DoxyCodeLine{00688\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ insertNewTN(CPTreeNode\ refNode,\textcolor{keywordtype}{int}\ type,\textcolor{keywordtype}{int}\ abbel)\ \{}
+\DoxyCodeLine{00689\ \ \ \ \ \ \ \ \ \ CPTreeNode\ tn;}
+\DoxyCodeLine{00690\ \ \ \ \ \ \ \ \ \ String\ orig\_name;}
+\DoxyCodeLine{00691\ \ \ \ \ \ \ \ \ \ String\ tmpName;}
+\DoxyCodeLine{00692\ \ \ \ \ \ \ \ \ \ File\ temp;}
+\DoxyCodeLine{00693\ }
+\DoxyCodeLine{00694\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (type==CPTreeNode.FILE)\ \{\ \textcolor{comment}{//\ open\ dialog\ to\ choose\ file}}
+\DoxyCodeLine{00695\ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ f;}
+\DoxyCodeLine{00696\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((f=FileDialogs.loadDialog(FileDialogs.FILE,\textcolor{keyword}{true}))==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00697\ \ \ \ \ \ \ \ \ \ \ \ \ \ orig\_name=f.getName();}
+\DoxyCodeLine{00698\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ copy\ into\ file\ of\ same\ name\ in\ temporary\ directory}}
+\DoxyCodeLine{00699\ \ \ \ \ \ \ \ \ \ \ \ \ \ tmpName=\textcolor{keyword}{new}\ String(orig\_name);}
+\DoxyCodeLine{00700\ \ \ \ \ \ \ \ \ \ \ \ \ \ temp\ =\ \textcolor{keyword}{new}\ File(System.getProperty(\textcolor{stringliteral}{"{}java.io.tmpdir"{}}),tmpName);}
+\DoxyCodeLine{00701\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00702\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BufferedReader\ reader\ =\ \textcolor{keyword}{new}\ BufferedReader(\textcolor{keyword}{new}\ FileReader(f));}
+\DoxyCodeLine{00703\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ writer\ =\ \textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(temp));}
+\DoxyCodeLine{00704\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ line;}
+\DoxyCodeLine{00705\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ ((line\ =\ reader.readLine())\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00706\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(line);}
+\DoxyCodeLine{00707\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00708\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00709\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ reader.close();}
+\DoxyCodeLine{00710\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.flush();}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.close();}
+\DoxyCodeLine{00712\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ e)\ \{}
+\DoxyCodeLine{00713\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ errmsg=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}IOException\ in\ copying\ file\ for\ script:\ "{}}+e.getMessage());}
+\DoxyCodeLine{00714\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.consoleCmd.dispConsoleMsg(errmsg);}
+\DoxyCodeLine{00715\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.shellManager.recordError(errmsg);}
+\DoxyCodeLine{00716\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00717\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00718\ }
+\DoxyCodeLine{00719\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Create\ CPTreeNode\ and\ add\ to\ tree,\ update\ file\ count}}
+\DoxyCodeLine{00720\ \ \ \ \ \ \ \ \ \ \ \ \ \ includeNewFile(orig\_name);}
+\DoxyCodeLine{00721\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00722\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00723\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (type==CPTreeNode.COMMAND)\ tn=createNEWCmdTN();}
+\DoxyCodeLine{00724\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (type==CPTreeNode.TEXT)\ tn=\textcolor{keyword}{new}\ CPTreeNode(\textcolor{stringliteral}{"{}"{}},CPTreeNode.EDIT\_TEXT);}
+\DoxyCodeLine{00725\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (type==CPTreeNode.SECTION)\ tn=\textcolor{keyword}{new}\ CPTreeNode(\textcolor{stringliteral}{"{}"{}},CPTreeNode.EDIT\_SECTION);}
+\DoxyCodeLine{00726\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return};\ \textcolor{comment}{//\ no\ new\ node}}
+\DoxyCodeLine{00727\ }
+\DoxyCodeLine{00728\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//AF>>>//}}
+\DoxyCodeLine{00729\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ GUI\ changes\ start\ here.}}
+\DoxyCodeLine{00730\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Changed\ flow\ of\ control\ to\ reach\ end\ of\ function\ once\ reaching\ here.}}
+\DoxyCodeLine{00731\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lock\ the\ viewport\ so\ GUI\ changes\ don't\ jitter\ and\ relocate.}}
+\DoxyCodeLine{00732\ \ \ \ \ \ \ \ \ \ ((LockableJViewport)\ PackControl.scriptHover.stackScroll.getViewport()).setLocked(\textcolor{keyword}{true});}
+\DoxyCodeLine{00733\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//<<<AF//}}
+\DoxyCodeLine{00734\ }
+\DoxyCodeLine{00735\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ where\ to\ put?}}
+\DoxyCodeLine{00736\ \ \ \ \ \ \ \ \ \ CPTreeNode\ par=(CPTreeNode)refNode.getParent();}
+\DoxyCodeLine{00737\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (refNode.tntype==CPTreeNode.CPSCRIPT)\ \{}
+\DoxyCodeLine{00738\ \ \ \ \ \ \ \ \ \ \ \ \ \ refNode.stackBox.isOpen=\textcolor{keyword}{true};\ \textcolor{comment}{//\ should\ open\ when\ adding}}
+\DoxyCodeLine{00739\ \ \ \ \ \ \ \ \ \ \ \ \ \ cpScriptNode.add(tn);}
+\DoxyCodeLine{00740\ \ \ \ \ \ \ \ \ \ \ \ \ \ tn.stackBox.myWidth=WIDTH-\/WIDTH\_INC;}
+\DoxyCodeLine{00741\ \ \ \ \ \ \ \ \ \ \ \ \ \ refNode.stackBox.add(tn.stackBox);}
+\DoxyCodeLine{00742\ \ \ \ \ \ \ \ \ \ \ \ \ \ tn.stackBox.manager.repopulateRecurse(refNode);}
+\DoxyCodeLine{00743\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00744\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (refNode.tntype==CPTreeNode.SECTION\ \&\&\ refNode.stackBox.isOpen)\ \{}
+\DoxyCodeLine{00745\ \ \ \ \ \ \ \ \ \ \ \ \ \ tn.stackBox.myWidth=refNode.stackBox.myWidth-\/WIDTH\_INC;}
+\DoxyCodeLine{00746\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (abbel==0)\ \{\ \textcolor{comment}{//\ first\ spot}}
+\DoxyCodeLine{00747\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ refNode.insert(tn,0);}
+\DoxyCodeLine{00748\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ refNode.stackBox.add(tn.stackBox,0);}
+\DoxyCodeLine{00749\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00750\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00751\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ refNode.add(tn);}
+\DoxyCodeLine{00752\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ refNode.stackBox.add(tn.stackBox);}
+\DoxyCodeLine{00753\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00754\ \ \ \ \ \ \ \ \ \ \ \ \ \ tn.stackBox.manager.repopulateRecurse(par);}
+\DoxyCodeLine{00755\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00756\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00757\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ it's\ a\ new\ command\ or\ file\ and\ is\ in\ LINEUP\ box,\ must\ open\ that}}
+\DoxyCodeLine{00758\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (refNode.tntype==CPTreeNode.COMMAND\ ||\ refNode.tntype==CPTreeNode.FILE)\ \{}
+\DoxyCodeLine{00759\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (par.tntype==CPTreeNode.LINEUP)}
+\DoxyCodeLine{00760\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ par.stackBox.open();}
+\DoxyCodeLine{00761\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00762\ }
+\DoxyCodeLine{00763\ \ \ \ \ \ \ \ \ \ \ \ \ \ TreePath\ path=getPathToNode(refNode);}
+\DoxyCodeLine{00764\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ cpTN=(CPTreeNode)path.getLastPathComponent();}
+\DoxyCodeLine{00765\ \ \ \ \ \ \ \ \ \ \ \ \ \ par=(CPTreeNode)refNode.getParent();}
+\DoxyCodeLine{00766\ \ \ \ \ \ \ \ \ \ \ \ \ \ tn.stackBox.myWidth=par.stackBox.myWidth-\/WIDTH\_INC;}
+\DoxyCodeLine{00767\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ index=par.getIndex(cpTN);}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index>=0)\ \{}
+\DoxyCodeLine{00769\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ par.insert(tn,index+abbel);}
+\DoxyCodeLine{00770\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ par.stackBox.add(tn.stackBox);}
+\DoxyCodeLine{00771\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tn.stackBox.manager.repopulateRecurse(par);}
+\DoxyCodeLine{00772\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00773\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00774\ }
+\DoxyCodeLine{00775\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//AF>>>//}}
+\DoxyCodeLine{00776\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Get\ a\ reference\ to\ tn.stackBox\ to\ pass\ to\ the\ event\ queue.}}
+\DoxyCodeLine{00777\ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ StackBox\ tnStackBox\ =\ tn.stackBox;}
+\DoxyCodeLine{00778\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Redisplay\ the\ stack\ box\ (implies\ revalidate()).}}
+\DoxyCodeLine{00779\ \ \ \ \ \ \ \ \ \ tnStackBox.redisplaySB(tnStackBox.myWidth);}
+\DoxyCodeLine{00780\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Unlock\ the\ viewport\ and\ get\ the\ stack\ box\ in\ view.}}
+\DoxyCodeLine{00781\ \ \ \ \ \ \ \ \ \ EventQueue.invokeLater(\textcolor{keyword}{new}\ Runnable()\ \{}
+\DoxyCodeLine{00782\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ run()\ \{}
+\DoxyCodeLine{00783\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((LockableJViewport)\ PackControl.scriptHover.stackScroll.getViewport()).setLocked(\textcolor{keyword}{false});}
+\DoxyCodeLine{00784\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tnStackBox.setViewRect();}
+\DoxyCodeLine{00785\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00786\ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00787\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//<<<AF//}}
+\DoxyCodeLine{00788\ \ \ \ \ \ \}}
+\DoxyCodeLine{00789\ }
+\DoxyCodeLine{00796\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ removeIncludedFile(String\ orig\_name)\ \{}
+\DoxyCodeLine{00797\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (orig\_name==\textcolor{keyword}{null}\ ||\ orig\_name.trim().length()==0}
+\DoxyCodeLine{00798\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ rootNode==\textcolor{keyword}{null}\ ||\ includedFiles==\textcolor{keyword}{null}\ ||\ includedFiles.size()==0)}
+\DoxyCodeLine{00799\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00800\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ i;}
+\DoxyCodeLine{00801\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (i=(cpDataNode.getChildCount()-\/1);i>=0;i-\/-\/)\ \{}
+\DoxyCodeLine{00802\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ tn=(CPTreeNode)cpDataNode.getChild(i);}
+\DoxyCodeLine{00803\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tn.displayString.equals(orig\_name))\ cpDataNode.remove(i);}
+\DoxyCodeLine{00804\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00805\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ remove\ from\ list}}
+\DoxyCodeLine{00806\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=includedFiles.size()-\/1;j>=0;j-\/-\/)\ \{}
+\DoxyCodeLine{00807\ \ \ \ \ \ \ \ \ \ \ \ \ \ IncludedFile\ iFile=includedFiles.get(j);}
+\DoxyCodeLine{00808\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (iFile.origName.equals(orig\_name))\ \{}
+\DoxyCodeLine{00809\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ includedFiles.remove(j);}
+\DoxyCodeLine{00810\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00811\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00812\ \ \ \ \ \ \ \ \ \ DataSBox\ dsb=(DataSBox)cpDataNode.stackBox;}
+\DoxyCodeLine{00813\ \ \ \ \ \ \ \ \ \ dsb.redisplaySB(dsb.myWidth);}
+\DoxyCodeLine{00814\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00815\ \ \ \ \ \ \}}
+\DoxyCodeLine{00816\ }
+\DoxyCodeLine{00822\ \ \ \ \ \ \textcolor{keyword}{public}\ CPIcon\ getNextIcon()\ \{}
+\DoxyCodeLine{00823\ \ \ \ \ \ \ \ \ \ CPIcon\ icon=(CPIcon)PackControl.scriptToolHandler.toolEditor.theCPIcons.get(}
+\DoxyCodeLine{00824\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (cmdCount\ \%\ PackControl.scriptToolHandler.toolEditor.theCPIcons.size()));}
+\DoxyCodeLine{00825\ \ \ \ \ \ \ \ \ \ cmdCount++;}
+\DoxyCodeLine{00826\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ icon;}
+\DoxyCodeLine{00827\ \ \ \ \ \ \}}
+\DoxyCodeLine{00828\ }
+\DoxyCodeLine{00829\ }
+\DoxyCodeLine{00835\ \ \ \ \ \ \textcolor{keyword}{public}\ String\ createDefaultScript()\ \{}
+\DoxyCodeLine{00836\ \ \ \ \ \ \ \ \ \ File\ f=\textcolor{keyword}{null};}
+\DoxyCodeLine{00837\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00838\ \ \ \ \ \ \ \ \ \ \ \ \ \ f\ =\ \textcolor{keyword}{new}\ File(System.getProperty(\textcolor{stringliteral}{"{}java.io.tmpdir"{}}),}
+\DoxyCodeLine{00839\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}new\_script.cps"{}}));}
+\DoxyCodeLine{00840\ \ \ \ \ \ \ \ \ \ \ \ \ \ f.deleteOnExit();}
+\DoxyCodeLine{00841\ }
+\DoxyCodeLine{00842\ \ \ \ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ writer\ =\ \textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(f));}
+\DoxyCodeLine{00843\ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<?xml\ version=\(\backslash\)"{}1.0\(\backslash\)"{}?>"{}});}
+\DoxyCodeLine{00844\ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<CP\_Scriptfile>\(\backslash\)n"{}});}
+\DoxyCodeLine{00845\ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\ \ <CPscript\ title=\(\backslash\)"{}Empty\ script\ for\ editing\(\backslash\)"{}>\(\backslash\)n"{}});}
+\DoxyCodeLine{00846\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ writer.write("{}<text>This\ is\ a\ starter\ script:\ add/edit\ elements\ as\ desired.</text>"{});}}
+\DoxyCodeLine{00847\ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\ \ </CPscript>\(\backslash\)n"{}});}
+\DoxyCodeLine{00848\ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\ \ <CPdata>\(\backslash\)n"{}});}
+\DoxyCodeLine{00849\ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\ \ </CPdata>\(\backslash\)n"{}});}
+\DoxyCodeLine{00850\ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}</CP\_Scriptfile>\(\backslash\)n"{}});}
+\DoxyCodeLine{00851\ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.flush();}
+\DoxyCodeLine{00852\ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.close();}
+\DoxyCodeLine{00853\ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ e)\ \{}
+\DoxyCodeLine{00854\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ errmsg=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}ScriptHandler.createNewDocument:\ "{}}+e.getMessage());}
+\DoxyCodeLine{00855\ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.consoleCmd.dispConsoleMsg(errmsg);}
+\DoxyCodeLine{00856\ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.shellManager.recordError(errmsg);}
+\DoxyCodeLine{00857\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00858\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00859\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ f.getAbsolutePath();}
+\DoxyCodeLine{00860\ \ \ \ \ \ \}}
+\DoxyCodeLine{00861\ }
+\DoxyCodeLine{00876\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ resetNextCmdNode(CPTreeNode\ cpTN)\ \{}
+\DoxyCodeLine{00877\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rootNode==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00878\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00879\ }
+\DoxyCodeLine{00880\ \ \ \ \ \ \ \ \ \ CPTreeNode\ firstCmdNode=\textcolor{keyword}{null};}
+\DoxyCodeLine{00881\ \ \ \ \ \ \ \ \ \ Enumeration<TreeNode>\ tEnum=rootNode.preorderEnumeration();}
+\DoxyCodeLine{00882\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cpTN\ to\ CPSCRIPT\ (so\ it\ will\ be\ downstream\ from\ rootNode)}}
+\DoxyCodeLine{00883\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cpTN==\textcolor{keyword}{null})\ cpTN=cpScriptNode;}
+\DoxyCodeLine{00884\ }
+\DoxyCodeLine{00885\ \ \ \ \ \ \ \ \ \ CPTreeNode\ node=cpTN;}
+\DoxyCodeLine{00886\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ task\ is\ find\ cpTN;\ also,\ observe\ what\ is\ first\ command\ node}}
+\DoxyCodeLine{00887\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(tEnum.hasMoreElements())\ \{}
+\DoxyCodeLine{00888\ \ \ \ \ \ \ \ \ \ \ \ \ \ node=(CPTreeNode)tEnum.nextElement();}
+\DoxyCodeLine{00889\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (firstCmdNode==\textcolor{keyword}{null}\ \&\&\ (node.tntype==CPTreeNode.COMMAND\ }
+\DoxyCodeLine{00890\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ node.tntype==CPTreeNode.EDIT\_CMDorMODE))}
+\DoxyCodeLine{00891\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ firstCmdNode=node;}
+\DoxyCodeLine{00892\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (node==cpTN)\ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00893\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00894\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (node!=cpTN)\ \{\ \textcolor{comment}{//\ didn't\ find\ cpTN;\ this\ shouldn't\ happen}}
+\DoxyCodeLine{00895\ \ \ \ \ \ \ \ \ \ \ \ \ \ nextCmdNode=\textcolor{keyword}{null};}
+\DoxyCodeLine{00896\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00897\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00898\ }
+\DoxyCodeLine{00899\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Found\ cpTN:\ now\ find\ next\ active\ command\ beyond\ (not\ equal)}}
+\DoxyCodeLine{00900\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(tEnum.hasMoreElements())\ \{}
+\DoxyCodeLine{00901\ }
+\DoxyCodeLine{00902\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ remove\ next\ icon\ from\ old\ command}}
+\DoxyCodeLine{00903\ \ \ \ \ \ \ \ \ \ \ \ \ \ nextCmdNode=\textcolor{keyword}{null};}
+\DoxyCodeLine{00904\ \ \ \ \ \ \ \ \ \ \ \ \ \ StackBox\ oldsb=cpTN.stackBox;}
+\DoxyCodeLine{00905\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (oldsb\ instanceof\ CmdSBox)\ oldsb.redisplaySB(oldsb.myWidth);}
+\DoxyCodeLine{00906\ }
+\DoxyCodeLine{00907\ \ \ \ \ \ \ \ \ \ \ \ \ \ node=(CPTreeNode)tEnum.nextElement();}
+\DoxyCodeLine{00908\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ tN=node;}
+\DoxyCodeLine{00909\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((tN.tntype==CPTreeNode.COMMAND\ ||\ tN.tntype==CPTreeNode.EDIT\_CMDorMODE)}
+\DoxyCodeLine{00910\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ tN.isInline())\ \{}
+\DoxyCodeLine{00911\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextCmdNode=node;}
+\DoxyCodeLine{00912\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cpTN.tntype==CPTreeNode.COMMAND}
+\DoxyCodeLine{00913\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ cpTN.tntype==CPTreeNode.EDIT\_CMDorMODE)\ \{\ \textcolor{comment}{//\ redo\ former\ one}}
+\DoxyCodeLine{00914\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CmdSBox\ cb=(CmdSBox)cpTN.stackBox;}
+\DoxyCodeLine{00915\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cb.redisplaySB(cb.myWidth);}
+\DoxyCodeLine{00916\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00917\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CmdSBox\ cb=(CmdSBox)nextCmdNode.stackBox;}
+\DoxyCodeLine{00918\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cb.redisplaySB(cb.myWidth);}
+\DoxyCodeLine{00919\ }
+\DoxyCodeLine{00920\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ enabled\ status\ of\ "{}next"{}\ and\ "{}top"{}\ icons\ in\ all\ 'NextBundle's}}
+\DoxyCodeLine{00921\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptBar.nextBundle.enableNext((\textcolor{keywordtype}{boolean})(nextCmdNode!=\textcolor{keyword}{null}));}
+\DoxyCodeLine{00922\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.vertScriptBar.nextBundle.enableNext((\textcolor{keywordtype}{boolean})(nextCmdNode!=\textcolor{keyword}{null}));}
+\DoxyCodeLine{00923\ }
+\DoxyCodeLine{00924\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ ok=(boolean)(firstCmdNode!=\textcolor{keyword}{null}\ \&\&\ nextCmdNode!=firstCmdNode);}
+\DoxyCodeLine{00925\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptBar.nextBundle.enableTop(ok);}
+\DoxyCodeLine{00926\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.vertScriptBar.nextBundle.enableTop(ok);}
+\DoxyCodeLine{00927\ }
+\DoxyCodeLine{00928\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00929\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00930\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00931\ }
+\DoxyCodeLine{00932\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ didn't\ find\ any\ more\ command\ nodes}}
+\DoxyCodeLine{00933\ \ \ \ \ \ \ \ \ \ nextCmdNode=\textcolor{keyword}{null};}
+\DoxyCodeLine{00934\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//AF>>>//}}
+\DoxyCodeLine{00935\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Removed\ scroll-\/to-\/bottom\ behavior\ on\ script\ completion.}}
+\DoxyCodeLine{00936\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Feel\ free\ to\ delete.}}
+\DoxyCodeLine{00937\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//int\ scrollMaximum\ =\ PackControl.scriptHover.stackScroll.getVerticalScrollBar().getMaximum();}}
+\DoxyCodeLine{00938\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//PackControl.scriptHover.stackScroll.getVerticalScrollBar().setValue(scrollMaximum);}}
+\DoxyCodeLine{00939\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//<<<AF//}}
+\DoxyCodeLine{00940\ }
+\DoxyCodeLine{00941\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ enabled\ status\ of\ "{}next"{}\ and\ "{}top"{}\ icons\ in\ all\ 'NextBundle's}}
+\DoxyCodeLine{00942\ \ \ \ \ \ \ \ \ \ PackControl.scriptBar.nextBundle.enableNext(\textcolor{keyword}{false});}
+\DoxyCodeLine{00943\ \ \ \ \ \ \ \ \ \ PackControl.vertScriptBar.nextBundle.enableNext(\textcolor{keyword}{false});}
+\DoxyCodeLine{00944\ \ \ \ \ \ \ \ \ \ PackControl.scriptBar.nextBundle.enableTop((\textcolor{keywordtype}{boolean})(firstCmdNode!=\textcolor{keyword}{null}));}
+\DoxyCodeLine{00945\ \ \ \ \ \ \ \ \ \ PackControl.vertScriptBar.nextBundle.enableTop((\textcolor{keywordtype}{boolean})(firstCmdNode!=\textcolor{keyword}{null}));}
+\DoxyCodeLine{00946\ }
+\DoxyCodeLine{00947\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00948\ \ \ \ \ \ \}}
+\DoxyCodeLine{00949\ }
+\DoxyCodeLine{00953\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ resetNextCmdNode()\ \{}
+\DoxyCodeLine{00954\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextCmdNode!=\textcolor{keyword}{null}}
+\DoxyCodeLine{00955\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ (nextCmdNode.tntype==CPTreeNode.COMMAND}
+\DoxyCodeLine{00956\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ nextCmdNode.tntype==CPTreeNode.EDIT\_CMDorMODE))\ \{}
+\DoxyCodeLine{00957\ \ \ \ \ \ \ \ \ \ \ \ \ \ StackBox\ sb=nextCmdNode.stackBox;}
+\DoxyCodeLine{00958\ \ \ \ \ \ \ \ \ \ \ \ \ \ nextCmdNode=\textcolor{keyword}{null};}
+\DoxyCodeLine{00959\ \ \ \ \ \ \ \ \ \ \ \ \ \ sb.redisplaySB(sb.myWidth);}
+\DoxyCodeLine{00960\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00961\ \ \ \ \ \ \ \ \ \ resetNextCmdNode(nextCmdNode);}
+\DoxyCodeLine{00962\ \ \ \ \ \ \}}
+\DoxyCodeLine{00963\ }
+\DoxyCodeLine{00972\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getBoxPoint(CPTreeNode\ cpTN)\ \{}
+\DoxyCodeLine{00973\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ height=0;}
+\DoxyCodeLine{00974\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ extra=20;\ \textcolor{comment}{//\ how\ much\ space\ between\ elements?}}
+\DoxyCodeLine{00975\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cpTN==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00976\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (0);}
+\DoxyCodeLine{00977\ }
+\DoxyCodeLine{00978\ \ \ \ \ \ \ \ \ Enumeration<TreeNode>\ tEnum=rootNode.preorderEnumeration();}
+\DoxyCodeLine{00979\ }
+\DoxyCodeLine{00980\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ heights\ until\ you\ reach\ given\ node}}
+\DoxyCodeLine{00981\ \ \ \ \ \ \ \ \ \ CPTreeNode\ node=cpTN;}
+\DoxyCodeLine{00982\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(tEnum.hasMoreElements())\ \{}
+\DoxyCodeLine{00983\ \ \ \ \ \ \ \ \ \ \ \ \ \ node=(CPTreeNode)tEnum.nextElement();}
+\DoxyCodeLine{00984\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (node.tntype==CPTreeNode.CPSCRIPT)\ \{}
+\DoxyCodeLine{00985\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ScriptSBox\ ssb=(ScriptSBox)node.stackBox;}
+\DoxyCodeLine{00986\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ height\ +=ssb.getHeaderHeight()+extra;}
+\DoxyCodeLine{00987\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00988\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (node.tntype==CPTreeNode.SECTION)\ \{}
+\DoxyCodeLine{00989\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ SectionSBox\ ssb=(SectionSBox)node.stackBox;}
+\DoxyCodeLine{00990\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ height\ +=ssb.getHeaderHeight()+extra;}
+\DoxyCodeLine{00991\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00992\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (node.tntype==CPTreeNode.CPDATA\ \ ||\ node==cpTN)}
+\DoxyCodeLine{00993\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.max(0,height);}
+\DoxyCodeLine{00994\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (node.tntype!=CPTreeNode.ROOT)\ height\ +=\ node.stackBox.getHeight()+extra;}
+\DoxyCodeLine{00995\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00996\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;\ \textcolor{comment}{//\ shouldn't\ reach\ here}}
+\DoxyCodeLine{00997\ \ \ \ \ \ \}}
+\DoxyCodeLine{00998\ }
+\DoxyCodeLine{01006\ \ \ \ \ \ \textcolor{keyword}{public}\ String\ getCommandString()\ \{}
+\DoxyCodeLine{01007\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextCmdNode==\textcolor{keyword}{null})}
+\DoxyCodeLine{01008\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01009\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ nextCmdNode.tTool.getCommand();}
+\DoxyCodeLine{01010\ \ \ \ \ \ \}}
+\DoxyCodeLine{01011\ \ \ \ \ \ }
+\DoxyCodeLine{01018\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ check4filename(String\ filename)\ \{}
+\DoxyCodeLine{01019\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<includedFiles.size();j++)}
+\DoxyCodeLine{01020\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (includedFiles.get(j).origName.equals(filename))}
+\DoxyCodeLine{01021\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ j;}
+\DoxyCodeLine{01022\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{01023\ \ \ \ \ \ \}}
+\DoxyCodeLine{01024\ }
+\DoxyCodeLine{01030\ \ \ \ \ \ \textcolor{keyword}{public}\ File\ getTrueIncluded(String\ filename)\ \{}
+\DoxyCodeLine{01031\ \ \ \ \ \ \ \ \ \ Iterator<IncludedFile>\ itf=includedFiles.iterator();}
+\DoxyCodeLine{01032\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (itf.hasNext())\ \{}
+\DoxyCodeLine{01033\ \ \ \ \ \ \ \ \ \ \ \ \ \ IncludedFile\ incfile=itf.next();}
+\DoxyCodeLine{01034\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (incfile.origName.equals(filename))}
+\DoxyCodeLine{01035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ incfile.tmpFile;}
+\DoxyCodeLine{01036\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01037\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ \textcolor{comment}{//\ didn't\ find\ the\ named\ file}}
+\DoxyCodeLine{01038\ \ \ \ \ \ \}}
+\DoxyCodeLine{01039\ }
+\DoxyCodeLine{01045\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ acceptAllEdits()\ \{}
+\DoxyCodeLine{01046\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rootNode==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{01047\ \ \ \ \ \ \ \ \ \ Enumeration<?>\ bFirst=rootNode.breadthFirstEnumeration();}
+\DoxyCodeLine{01048\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (bFirst.hasMoreElements())\ \{}
+\DoxyCodeLine{01049\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ tN=(CPTreeNode)bFirst.nextElement();}
+\DoxyCodeLine{01050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tN.stackBox!=\textcolor{keyword}{null})\ tN.stackBox.acceptEdit();}
+\DoxyCodeLine{01051\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01052\ \ \ \ \ \ \}}
+\DoxyCodeLine{01053\ }
+\DoxyCodeLine{01063\ \ \ \ \ \ \textcolor{keyword}{public}\ URL\ getScriptURL(String\ namE)\ \{}
+\DoxyCodeLine{01064\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (namE==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{01065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01066\ \ \ \ \ \ \ \ \ \ String\ name=namE.trim();}
+\DoxyCodeLine{01067\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name.startsWith(\textcolor{stringliteral}{"{}file:"{}}))\ \{}
+\DoxyCodeLine{01068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name.length()==5)}
+\DoxyCodeLine{01069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01070\ \ \ \ \ \ \ \ \ \ \ \ \ \ name=name.substring(5);}
+\DoxyCodeLine{01071\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01072\ }
+\DoxyCodeLine{01073\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name.startsWith(\textcolor{stringliteral}{"{}www."{}}))}
+\DoxyCodeLine{01074\ \ \ \ \ \ \ \ \ \ \ \ \ \ name=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}http://"{}}+name);}
+\DoxyCodeLine{01075\ }
+\DoxyCodeLine{01076\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ we\ are\ looking\ in\ the\ file\ system\ (versus\ web)}}
+\DoxyCodeLine{01077\ \ \ \ \ \ \ \ \ \ URL\ url=\textcolor{keyword}{null};}
+\DoxyCodeLine{01078\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!name.startsWith(\textcolor{stringliteral}{"{}htt"{}})\ \&\&\ !name.startsWith(\textcolor{stringliteral}{"{}ftp"{}})\ \&\&\ !name.startsWith(\textcolor{stringliteral}{"{}gopher"{}}))\ \{}
+\DoxyCodeLine{01079\ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ temp=\textcolor{keyword}{null};}
+\DoxyCodeLine{01080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ other\ syntax\ for\ home?}}
+\DoxyCodeLine{01081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name.startsWith(\textcolor{stringliteral}{"{}\string~"{}}))\ \{}
+\DoxyCodeLine{01082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name=name.substring(1);}
+\DoxyCodeLine{01083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ temp=\textcolor{keyword}{new}\ File(CPFileManager.HomeDirectory,name);}
+\DoxyCodeLine{01084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ temp\ =\ \textcolor{keyword}{new}\ File(name);}
+\DoxyCodeLine{01086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (temp==\textcolor{keyword}{null}\ ||\ !temp.exists())\ \{}
+\DoxyCodeLine{01087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ next,\ try\ in\ 'ScriptDirectory':}}
+\DoxyCodeLine{01088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ temp=\textcolor{keyword}{new}\ File(CPFileManager.ScriptDirectory,name);}
+\DoxyCodeLine{01089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!temp.exists())\ \{}
+\DoxyCodeLine{01090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ errmsg=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}Requested\ script\ '"{}}+namE+\textcolor{stringliteral}{"{}'\ not\ found"{}});}
+\DoxyCodeLine{01091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.consoleCmd.dispConsoleMsg(errmsg);}
+\DoxyCodeLine{01092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.shellManager.recordError(errmsg);}
+\DoxyCodeLine{01093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01096\ \ \ \ \ \ \ \ \ \ \ \ \ \ name=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}file:"{}}+temp.toString());}
+\DoxyCodeLine{01097\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01098\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ if\ from\ web,\ need\ to\ pick\ off\ file\ name\ from\ end}}
+\DoxyCodeLine{01099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ index=name.lastIndexOf(File.separatorChar);}
+\DoxyCodeLine{01100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index<0)\ index=0;}
+\DoxyCodeLine{01101\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ nameonly=name.substring(index+1,name.length());}
+\DoxyCodeLine{01102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nameonly.length()==0)}
+\DoxyCodeLine{01103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01104\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01105\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:}}
+\DoxyCodeLine{01106\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((url=\ FileUtil.tryURL(name))==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01107\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ errmsg=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}IOException\ in\ finding\ "{}}+name);}
+\DoxyCodeLine{01108\ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.consoleCmd.dispConsoleMsg(errmsg);}
+\DoxyCodeLine{01109\ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.shellManager.recordError(errmsg);}
+\DoxyCodeLine{01110\ \ \ \ \ \ \ \ \ \ \ \ \ \ url=\textcolor{keyword}{null};}
+\DoxyCodeLine{01111\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01112\ }
+\DoxyCodeLine{01113\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ url;}
+\DoxyCodeLine{01114\ \ \ \ \ \ \}}
+\DoxyCodeLine{01115\ }
+\DoxyCodeLine{01128\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ loadNamedScript(String\ name,}
+\DoxyCodeLine{01129\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ origName,\textcolor{keywordtype}{boolean}\ keepName)\ \{}
+\DoxyCodeLine{01130\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{01131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{01132\ \ \ \ \ \ \ \ \ \ URL\ url=getScriptURL(name);}
+\DoxyCodeLine{01133\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (url==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{01134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{01135\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ result=0;}
+\DoxyCodeLine{01136\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hasChanged)\ \{\ \textcolor{comment}{//\ has\ there\ been\ editing\ in\ current\ script?}}
+\DoxyCodeLine{01137\ \ \ \ \ \ \ \ \ \ \ \ \ \ result=queryUserForSave();}
+\DoxyCodeLine{01138\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01139\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (result<0)\ }
+\DoxyCodeLine{01140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;\ \textcolor{comment}{//\ closed\ or\ cancelled}}
+\DoxyCodeLine{01141\ \ \ \ \ \ \ \ \ \ File\ fle=\textcolor{keyword}{new}\ File(url.getPath());}
+\DoxyCodeLine{01142\ \ \ \ \ \ \ \ \ \ scriptName=fle.getName();}
+\DoxyCodeLine{01143\ \textcolor{comment}{//\ \ \ \ \ \ \ String\ endname=url.toString();\ //\ Note:\ seems\ to\ convert\ separator\ to\ standard\ '/'}}
+\DoxyCodeLine{01144\ \textcolor{comment}{//\ \ \ \ \ \ \ int\ k=endname.lastIndexOf('/');}}
+\DoxyCodeLine{01145\ \textcolor{comment}{//\ \ \ \ \ \ \ if\ (k>0\ \&\&\ k<endname.length())}}
+\DoxyCodeLine{01146\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ endname=endname.substring(k+1);}}
+\DoxyCodeLine{01147\ \textcolor{comment}{//\ \ \ \ \ \ \ scriptName=endname;}}
+\DoxyCodeLine{01148\ }
+\DoxyCodeLine{01149\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Alex,\ how\ do\ I\ find\ if\ this\ is\ a\ file?\ }}
+\DoxyCodeLine{01150\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ If\ it\ is\ (and\ name\ is\ not\ 'new\_script'),}}
+\DoxyCodeLine{01151\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ may\ want\ to\ change\ 'scriptDirectory'.}}
+\DoxyCodeLine{01152\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ here\ is\ actual\ loading}}
+\DoxyCodeLine{01153\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (scriptLoader.loadScriptURL(url))\ \{}
+\DoxyCodeLine{01154\ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdOpenMode=\textcolor{keyword}{false};\ }
+\DoxyCodeLine{01155\ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptBar.setOpenAllButton(\textcolor{keyword}{false});}
+\DoxyCodeLine{01156\ \ \ \ \ \ \ \ \ \ \ \ \ \ repopulateBar();}
+\DoxyCodeLine{01157\ \ \ \ \ \ \ \ \ \ \ \ \ \ populateDisplay();}
+\DoxyCodeLine{01158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{01159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{01160\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ fulname\ =\ new\ StringBuilder();}}
+\DoxyCodeLine{01161\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (url.getAuthority()!=null)}}
+\DoxyCodeLine{01162\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fulname.append(url.getAuthority());}}
+\DoxyCodeLine{01163\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fulname.append(url.getPath());}}
+\DoxyCodeLine{01164\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{01165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (keepName)\ ScriptBundle.m\_locator.}
+\DoxyCodeLine{01166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ add2List(origName.toString(),\textcolor{keyword}{false});\ \textcolor{comment}{//true);}}
+\DoxyCodeLine{01167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{01168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}exception\ in\ saving\ script\ file\ name"{}});}
+\DoxyCodeLine{01169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01170\ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}Loaded\ script:\ "{}}+name);}
+\DoxyCodeLine{01171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!scriptName.startsWith(\textcolor{stringliteral}{"{}new\_script"{}}))}
+\DoxyCodeLine{01172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.scriptTitle(scriptName,\textcolor{keyword}{false});}
+\DoxyCodeLine{01173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{01174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.scriptTitle(scriptName,\textcolor{keyword}{true});}
+\DoxyCodeLine{01175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01176\ \ \ \ \ \ \ \ \ \ \ \ \ \ resetNextCmdNode(\textcolor{keyword}{null});}
+\DoxyCodeLine{01177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Tell\ Swing\ to\ redo\ the\ layout\ because\ it\ has\ changed.}}
+\DoxyCodeLine{01178\ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.revalidate();}
+\DoxyCodeLine{01179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Push\ viewport\ change\ to\ EventQueue\ end,\ in\ case\ queued\ events\ change\ the\ view.}}
+\DoxyCodeLine{01180\ \ \ \ \ \ \ \ \ \ \ \ \ \ EventQueue.invokeLater(\textcolor{keyword}{new}\ Runnable()\ \{}
+\DoxyCodeLine{01181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ run()\ \{}
+\DoxyCodeLine{01182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Scroll\ to\ top.}}
+\DoxyCodeLine{01183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.stackScroll.getViewport().setViewPosition(\textcolor{keyword}{new}\ Point(0,0));}
+\DoxyCodeLine{01184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{01186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{01187\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01188\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{01189\ \ \ \ \ \ \}}
+\DoxyCodeLine{01190\ }
+\DoxyCodeLine{01202\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getScript(String\ filename,String\ origName,\textcolor{keywordtype}{boolean}\ keepname)\ \{}
+\DoxyCodeLine{01203\ \ \ \ \ \ \ \ \ \ String\ oName=\textcolor{keyword}{null};}
+\DoxyCodeLine{01204\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (origName!=\textcolor{keyword}{null})}
+\DoxyCodeLine{01205\ \ \ \ \ \ \ \ \ \ \ \ \ \ oName=\textcolor{keyword}{new}\ String(origName);}
+\DoxyCodeLine{01206\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ name?\ pop\ up\ dialog}}
+\DoxyCodeLine{01207\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (filename==\textcolor{keyword}{null}\ ||\ filename.length()==0)\ \{\ }
+\DoxyCodeLine{01208\ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ f;}
+\DoxyCodeLine{01209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{01210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((f=FileDialogs.loadDialog(FileDialogs.SCRIPT,\textcolor{keyword}{true}))!=\textcolor{keyword}{null})}
+\DoxyCodeLine{01211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ filename=f.getCanonicalPath();}
+\DoxyCodeLine{01212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (filename==\textcolor{keyword}{null}\ ||\ filename.trim().length()==0)}
+\DoxyCodeLine{01213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{01214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ oName=\textcolor{keyword}{new}\ String(filename);}
+\DoxyCodeLine{01215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ iox)\ \{}
+\DoxyCodeLine{01216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}dialog\ failed\ to\ get\ script\ name"{}});}
+\DoxyCodeLine{01217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01218\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01219\ }
+\DoxyCodeLine{01220\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reaching\ here,\ we\ have\ a\ filename\ and\ oName\ }}
+\DoxyCodeLine{01221\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{01222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ lf=CPBase.scriptManager.loadNamedScript(filename,oName,keepname);}
+\DoxyCodeLine{01223\ }
+\DoxyCodeLine{01224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Check\ for\ execute\_on\_load\ command.\ If\ next\ command\ is\ }}
+\DoxyCodeLine{01225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ named\ "{}*"{},\ then\ execute\ it\ (and\ move\ next);\ else\ look}}
+\DoxyCodeLine{01226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ for\ first\ "{}*"{}\ named\ command.}}
+\DoxyCodeLine{01227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ more\ than\ one\ *\ command\ is\ allowed;\ do\ we\ only}}
+\DoxyCodeLine{01228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ want\ to\ execute\ one?}}
+\DoxyCodeLine{01229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lf>0)\ \{}
+\DoxyCodeLine{01230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ ncn=CPBase.scriptManager.getNextCmdName();}
+\DoxyCodeLine{01231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ncn!=\textcolor{keyword}{null}\ \&\&\ ncn.equals(\textcolor{stringliteral}{"{}*"{}}))\ }
+\DoxyCodeLine{01232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.scriptManager.executeNextCmd();}
+\DoxyCodeLine{01233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ \ brktcmd\ =\ (String)CPBase.scriptManager.findCmdByName(\textcolor{stringliteral}{"{}*"{}},1);}
+\DoxyCodeLine{01235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (brktcmd!=\textcolor{keyword}{null})}
+\DoxyCodeLine{01236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.trafficCenter.parseWrapper(brktcmd,}
+\DoxyCodeLine{01237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.getActivePackData(),\textcolor{keyword}{true},\textcolor{keyword}{true},0,\textcolor{keyword}{null});}
+\DoxyCodeLine{01238\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ lf;}
+\DoxyCodeLine{01241\ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{01242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}usage:\ <filename>:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{01243\ \ \ \ \ \ \ \ \ \ \}\ \ }
+\DoxyCodeLine{01244\ \ \ \ \ \ \}}
+\DoxyCodeLine{01245\ }
+\DoxyCodeLine{01253\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ includeNewFile(String\ newName)\ \{}
+\DoxyCodeLine{01254\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newName==\textcolor{keyword}{null}\ ||\ newName.trim().length()==0\ ||\ dup\_name(newName))\ \{}
+\DoxyCodeLine{01255\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ errmsg=\textcolor{stringliteral}{"{}Error:\ proposed\ name\ must\ not\ be\ empty\ or\ a\ duplicate"{}};}
+\DoxyCodeLine{01256\ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.consoleCmd.dispConsoleMsg(errmsg);}
+\DoxyCodeLine{01257\ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.shellManager.recordError(errmsg);}
+\DoxyCodeLine{01258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{01259\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01260\ }
+\DoxyCodeLine{01261\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ new\_id\ =\ \textcolor{keyword}{new}\ Random().nextInt(32000);\ }
+\DoxyCodeLine{01262\ \ \ \ \ \ \ \ \ \ File\ newFile\ =\ CPFileManager.renameTmpFile(newName,\textcolor{keyword}{new}\ String(new\_id+newName));}
+\DoxyCodeLine{01263\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ datatype=IncludedFile.setDataType(newName,newFile);}
+\DoxyCodeLine{01264\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newFile!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01265\ \ \ \ \ \ \ \ \ \ \ \ \ \ newFile.deleteOnExit();}
+\DoxyCodeLine{01266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (datatype==IncludedFile.ABOUT\_IMAGE)\ \textcolor{comment}{//\ put\ at\ front}}
+\DoxyCodeLine{01267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ includedFiles.insertElementAt(\textcolor{keyword}{new}\ IncludedFile(datatype,newName,newFile),0);}
+\DoxyCodeLine{01268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{01269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ includedFiles.add(\textcolor{keyword}{new}\ IncludedFile(datatype,newName,newFile));}
+\DoxyCodeLine{01270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!hasChanged)\ \{}
+\DoxyCodeLine{01271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hasChanged\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.scriptTitle(}
+\DoxyCodeLine{01273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptManager.scriptName,\textcolor{keyword}{true});}
+\DoxyCodeLine{01274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01275\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ cptn=cpDataNode;}
+\DoxyCodeLine{01276\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ tn=\textcolor{keyword}{new}\ CPTreeNode(newName.trim(),CPTreeNode.FILE,\ \textcolor{keyword}{null});}
+\DoxyCodeLine{01277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (datatype==IncludedFile.ABOUT\_IMAGE)}
+\DoxyCodeLine{01278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cptn.insert(tn,0);\ \textcolor{comment}{//\ put\ at\ front}}
+\DoxyCodeLine{01279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ cptn.add(tn);}
+\DoxyCodeLine{01280\ \ \ \ \ \ \ \ \ \ \ \ \ \ DataSBox\ dsb=(DataSBox)cptn.stackBox;}
+\DoxyCodeLine{01281\ \ \ \ \ \ \ \ \ \ \ \ \ \ tn.stackBox.myWidth=cptn.stackBox.myWidth-\/WIDTH\_INC;}
+\DoxyCodeLine{01282\ \ \ \ \ \ \ \ \ \ \ \ \ \ dsb.updateCount();}
+\DoxyCodeLine{01283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dsb.isOpen)\ \{}
+\DoxyCodeLine{01284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dsb.add(tn.stackBox);}
+\DoxyCodeLine{01285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ redisplayCPdataSB();}
+\DoxyCodeLine{01286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01287\ \ \ \ \ \ \ \ \ \ \ \ \ \ repopulateRecurse(cptn);}
+\DoxyCodeLine{01288\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01289\ \ \ \ \ \ \}}
+\DoxyCodeLine{01290\ }
+\DoxyCodeLine{01296\ \ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{boolean}\ dup\_name(String\ name)\ \{}
+\DoxyCodeLine{01297\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ i;}
+\DoxyCodeLine{01298\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (i=0;i<includedFiles.size();i++)\ \{}
+\DoxyCodeLine{01299\ \ \ \ \ \ \ \ \ \ \ \ \ \ IncludedFile\ icf=includedFiles.get(i);}
+\DoxyCodeLine{01300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name.equals(icf.origName))\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01301\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01302\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01303\ \ \ \ \ \ \}}
+\DoxyCodeLine{01304\ }
+\DoxyCodeLine{01310\ \ \ \ \ \ \textcolor{keyword}{public}\ String\ findCmdByName(String\ key,\textcolor{keywordtype}{int}\ mode)\ \{}
+\DoxyCodeLine{01311\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key==\textcolor{keyword}{null}\ ||\ key.trim().length()==0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01312\ \ \ \ \ \ \ \ \ \ key=key.trim();}
+\DoxyCodeLine{01313\ \ \ \ \ \ \ \ \ \ Enumeration<?>\ bFirst=rootNode.breadthFirstEnumeration();}
+\DoxyCodeLine{01314\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (bFirst.hasMoreElements())\ \{}
+\DoxyCodeLine{01315\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ tN=(CPTreeNode)bFirst.nextElement();}
+\DoxyCodeLine{01316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tN.isNamed())\ \{}
+\DoxyCodeLine{01317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tnname=tN.getName();}
+\DoxyCodeLine{01318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ okay=\textcolor{keyword}{false};}
+\DoxyCodeLine{01319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode==0)\ \{}
+\DoxyCodeLine{01320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c=key.charAt(0);}
+\DoxyCodeLine{01321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tnname!=\textcolor{keyword}{null}\ \&\&\ c==tnname.charAt(0))\ okay=\textcolor{keyword}{true};}
+\DoxyCodeLine{01322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (mode==1\ \&\&\ key.equals(tnname))\ }
+\DoxyCodeLine{01324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ okay=\textcolor{keyword}{true};}
+\DoxyCodeLine{01325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ return\ cmd\ to\ execute.\ (For\ mode,\ this\ "{}mode\_change\ <name>"{}}}
+\DoxyCodeLine{01326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (okay)\ \{}
+\DoxyCodeLine{01327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tN.tntype==CPTreeNode.COMMAND)\ \textcolor{comment}{//\ command\ to\ e}}
+\DoxyCodeLine{01328\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ tN.tTool.getCommand();}
+\DoxyCodeLine{01329\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tN.tntype==CPTreeNode.MODE)}
+\DoxyCodeLine{01330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}mode\_change\ "{}}+tN.tTool.nameString);}
+\DoxyCodeLine{01331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01333\ \ \ \ \ \ \ \ \ \ \}\ \ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{01334\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01335\ \ \ \ \ \ \}}
+\DoxyCodeLine{01336\ }
+\DoxyCodeLine{01343\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ executeCmdByKey(KeyEvent\ e,String\ key)\ \{}
+\DoxyCodeLine{01344\ \ \ \ \ \ \ \ \ \ String\ cmd=findCmdByName(key,0);\ \textcolor{comment}{//\ find\ based\ on\ first\ char\ only}}
+\DoxyCodeLine{01345\ \ \ \ \ \ \ \ \ \ Component\ myComp=e.getComponent();}
+\DoxyCodeLine{01346\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd==\textcolor{keyword}{null}\ ||\ !(myComp\ instanceof\ ActiveWrapper))\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{01347\ \ \ \ \ \ \ \ \ \ ActiveWrapper\ aWrapper=(ActiveWrapper)myComp;}
+\DoxyCodeLine{01348\ \ \ \ \ \ \ \ \ \ CPdrawing\ cpS=aWrapper.getCPDrawing();}
+\DoxyCodeLine{01349\ \ \ \ \ \ \ \ \ \ PackData\ thePack=cpS.getPackData();}
+\DoxyCodeLine{01350\ }
+\DoxyCodeLine{01351\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ command\ for\ variables\ '\#..':\ Currently\ check\ only\ '\ \#XY'}}
+\DoxyCodeLine{01352\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.contains(\textcolor{stringliteral}{"{}\ \#XY"{}})\ ||\ cmd.contains(\textcolor{stringliteral}{"{}\ \#xy"{}}))\ \{\ \textcolor{comment}{//\ command\ requires\ mouse\ location;}}
+\DoxyCodeLine{01353\ \ \ \ \ \ \ \ \ \ \ \ \ \ Point\ mousept;}
+\DoxyCodeLine{01354\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{01355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mousept=MouseInfo.getPointerInfo().getLocation();}
+\DoxyCodeLine{01356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ exc)\ \{}
+\DoxyCodeLine{01357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ errmsg=\textcolor{stringliteral}{"{}Error\ getting\ mouse\ location"{}};}
+\DoxyCodeLine{01358\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.consoleCmd.dispConsoleMsg(errmsg);}
+\DoxyCodeLine{01359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.shellManager.recordError(errmsg);}
+\DoxyCodeLine{01360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{01361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01362\ \ \ \ \ \ \ \ \ \ \ \ \ \ Dimension\ dim=aWrapper.getSize();}
+\DoxyCodeLine{01363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ screen\ coords\ of\ 'activeScreen'\ top\ left\ corner}}
+\DoxyCodeLine{01364\ \ \ \ \ \ \ \ \ \ \ \ \ \ Point\ onScreen=aWrapper.getLocationOnScreen();\ }
+\DoxyCodeLine{01365\ \ \ \ \ \ \ \ \ \ \ \ \ \ Point\ pt=\textcolor{keyword}{new}\ Point(mousept.x-\/onScreen.x,mousept.y-\/onScreen.y);}
+\DoxyCodeLine{01366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pt.x<=0\ ||\ pt.y<=0\ ||\ pt.x>=dim.width\ ||\ pt.y>=dim.height)\ \{}
+\DoxyCodeLine{01367\ }
+\DoxyCodeLine{01368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ errmsg=\textcolor{stringliteral}{"{}Mouse\ not\ in\ ActiveCanvas"{}};}
+\DoxyCodeLine{01369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.consoleCmd.dispConsoleMsg(errmsg);}
+\DoxyCodeLine{01370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.shellManager.recordError(errmsg);}
+\DoxyCodeLine{01371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};\ \textcolor{comment}{//\ mouse\ was\ not\ in\ the\ ActiveCanvas}}
+\DoxyCodeLine{01372\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01373\ \ \ \ \ \ \ \ \ \ \ \ \ \ Point2D.Double\ pot=cpS.pt2RealPt(pt,\ dim.width,dim.height);}
+\DoxyCodeLine{01374\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ subxy=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+pot.x+\textcolor{stringliteral}{"{}\ "{}}+pot.y+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{01375\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ newCmd=cmd.replaceAll(\textcolor{stringliteral}{"{}\ \#XY"{}},subxy).replaceAll(\textcolor{stringliteral}{"{}\ \#xy"{}},subxy);}
+\DoxyCodeLine{01376\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ NOTE:\ for\ spherical\ packing,\ parser\ must\ convert\ to\ real\ point\ }}
+\DoxyCodeLine{01377\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.trafficCenter.parseWrapper(newCmd,thePack,\textcolor{keyword}{false},\textcolor{keyword}{true},0,\textcolor{keyword}{null});}
+\DoxyCodeLine{01378\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{01379\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01380\ }
+\DoxyCodeLine{01381\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd!=\textcolor{keyword}{null}\ \&\&\ cmd.length()>0)\ \{}
+\DoxyCodeLine{01382\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.trafficCenter.parseWrapper(cmd,thePack,\textcolor{keyword}{true},\textcolor{keyword}{true},0,\textcolor{keyword}{null});}
+\DoxyCodeLine{01383\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01384\ \ \ \ \ \ \}}
+\DoxyCodeLine{01385\ }
+\DoxyCodeLine{01390\ \ \ \ \ \ \textcolor{keyword}{public}\ String\ getNextCmdName()\ \{}
+\DoxyCodeLine{01391\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextCmdNode==\textcolor{keyword}{null}\ ||\ nextCmdNode.tTool==\textcolor{keyword}{null}\ ||}
+\DoxyCodeLine{01392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextCmdNode.tTool.nameString==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01393\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String(nextCmdNode.tTool.nameString);}
+\DoxyCodeLine{01394\ \ \ \ \ \ \}}
+\DoxyCodeLine{01395\ }
+\DoxyCodeLine{01400\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ executeNextCmd()\ \{}
+\DoxyCodeLine{01401\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextCmdNode\ ==\ \textcolor{keyword}{null})}
+\DoxyCodeLine{01402\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{01403\ \ \ \ \ \ \ \ \ \ String\ s\ =\ getCommandString();}
+\DoxyCodeLine{01404\ \ \ \ \ \ \ \ \ \ String\ oldname=\textcolor{keyword}{new}\ String(PackControl.scriptManager.scriptName);}
+\DoxyCodeLine{01405\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (s!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01406\ }
+\DoxyCodeLine{01407\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ part\ of\ continuing\ problem:\ want\ thread\ in\ many\ cases,\ e.g.\ shows}}
+\DoxyCodeLine{01408\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ progress\ bar,\ but\ don't\ want\ it\ in\ others.\ }}
+\DoxyCodeLine{01409\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ useThread=\textcolor{keyword}{true};}
+\DoxyCodeLine{01410\ }
+\DoxyCodeLine{01411\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.trafficCenter.parseWrapper(s,CirclePack.cpb.getActivePackData(),\textcolor{keyword}{false},useThread,0,\textcolor{keyword}{null});}
+\DoxyCodeLine{01412\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ command\ loaded\ new\ script,\ avoid\ resetting\ 'next'}}
+\DoxyCodeLine{01413\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!PackControl.scriptManager.scriptName.equals(oldname))\ \textcolor{keywordflow}{return};\ }
+\DoxyCodeLine{01414\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01415\ \ \ \ \ \ \ \ \ \ resetNextCmdNode(nextCmdNode);}
+\DoxyCodeLine{01416\ \ \ \ \ \ \}}
+\DoxyCodeLine{01417\ }
+\DoxyCodeLine{01423\ \ \ \ \ \ \textcolor{keyword}{public}\ TreePath\ getPathToNode(CPTreeNode\ node)\ \{}
+\DoxyCodeLine{01424\ \ \ \ \ \ \ \ \ \ Enumeration<?>\ bFirst=rootNode.breadthFirstEnumeration();}
+\DoxyCodeLine{01425\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (bFirst.hasMoreElements())\ \{}
+\DoxyCodeLine{01426\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ cptn=(CPTreeNode)bFirst.nextElement();}
+\DoxyCodeLine{01427\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cptn==node)\ \{}
+\DoxyCodeLine{01428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ TreePath(cptn.getPath());}
+\DoxyCodeLine{01429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01430\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01431\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01432\ \ \ \ \ \ \}}
+\DoxyCodeLine{01433\ }
+\DoxyCodeLine{01434\ \ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{void}\ fireTreeStructureChanged(TreePath\ path)\ \{}
+\DoxyCodeLine{01435\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ length\ =\ treeModelListeners.size();}
+\DoxyCodeLine{01436\ \ \ \ \ \ \ \ \ \ TreeModelEvent\ evt\ =\ \textcolor{keyword}{new}\ TreeModelEvent(\textcolor{keyword}{this},\ path);}
+\DoxyCodeLine{01437\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ length;\ i++)\ \{}
+\DoxyCodeLine{01438\ \ \ \ \ \ \ \ \ \ \ \ \ \ treeModelListeners.elementAt(i)}
+\DoxyCodeLine{01439\ \ \ \ \ \ \ \ \ \ \ \ \ \ .treeStructureChanged(evt);}
+\DoxyCodeLine{01440\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01441\ \ \ \ \ \ \}}
+\DoxyCodeLine{01442\ }
+\DoxyCodeLine{01447\ \ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{void}\ fireTreeNodesInserted(TreePath\ path)\ \{}
+\DoxyCodeLine{01448\ \ \ \ \ \ \ \ \ \ CPTreeNode\ changedChild\ =\ (CPTreeNode)path.getLastPathComponent();}
+\DoxyCodeLine{01449\ \ \ \ \ \ \ \ \ \ CPTreeNode\ parent\ =\ (CPTreeNode)path.getParentPath().getLastPathComponent();}
+\DoxyCodeLine{01450\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ changedIndex\ =\ parent.getIndex(changedChild);}
+\DoxyCodeLine{01451\ }
+\DoxyCodeLine{01452\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ index\ =\ \{\ changedIndex\ \};}
+\DoxyCodeLine{01453\ \ \ \ \ \ \ \ \ \ Object[]\ child\ =\ \{\ changedChild\ \};}
+\DoxyCodeLine{01454\ \ \ \ \ \ \ \ \ \ TreeModelEvent\ evt\ =\ \textcolor{keyword}{new}\ TreeModelEvent(\textcolor{keyword}{this},\ path.getParentPath(),}
+\DoxyCodeLine{01455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ index,\ child);}
+\DoxyCodeLine{01456\ }
+\DoxyCodeLine{01457\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ length\ =\ treeModelListeners.size();}
+\DoxyCodeLine{01458\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ length;\ i++)\ \{}
+\DoxyCodeLine{01459\ \ \ \ \ \ \ \ \ \ \ \ \ \ treeModelListeners.elementAt(i)}
+\DoxyCodeLine{01460\ \ \ \ \ \ \ \ \ \ \ \ \ \ .treeNodesInserted(evt);}
+\DoxyCodeLine{01461\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01462\ \ \ \ \ \ \}}
+\DoxyCodeLine{01463\ }
+\DoxyCodeLine{01468\ \ \ \ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{void}\ fireTreeNodesRemoved(TreePath\ path,\ \textcolor{keywordtype}{int}\ index,}
+\DoxyCodeLine{01469\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ deletedChild)\ \{}
+\DoxyCodeLine{01470\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ indeces[]\ =\ \{\ index\ \};}
+\DoxyCodeLine{01471\ \ \ \ \ \ \ \ \ \ Object[]\ child\ =\ \{\ deletedChild\ \};}
+\DoxyCodeLine{01472\ }
+\DoxyCodeLine{01473\ \ \ \ \ \ \ \ \ \ TreeModelEvent\ evt\ =\ \textcolor{keyword}{new}\ TreeModelEvent(\textcolor{keyword}{this},\ path,\ indeces,\ child);}
+\DoxyCodeLine{01474\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ length\ =\ treeModelListeners.size();}
+\DoxyCodeLine{01475\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ length;\ i++)\ \{}
+\DoxyCodeLine{01476\ \ \ \ \ \ \ \ \ \ \ \ \ \ treeModelListeners.elementAt(i)}
+\DoxyCodeLine{01477\ \ \ \ \ \ \ \ \ \ \ \ \ \ .treeNodesRemoved(evt);}
+\DoxyCodeLine{01478\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01479\ \ \ \ \ \ \}}
+\DoxyCodeLine{01480\ }
+\DoxyCodeLine{01487\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ queryUserForSave()\ \{}
+\DoxyCodeLine{01488\ \ \ \ \ \ \ \ \ \ Object[]\ options=\{\textcolor{stringliteral}{"{}Yes,\ save"{}},\textcolor{stringliteral}{"{}No,\ Discard"{}},\textcolor{stringliteral}{"{}Cancel"{}}\};}
+\DoxyCodeLine{01489\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!hasChanged)\ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{01490\ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ result\ =\ JOptionPane.showOptionDialog(\textcolor{keyword}{null},\ \textcolor{comment}{//\ PackControl.scriptFrame,}}
+\DoxyCodeLine{01491\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}File\ contents\ have\ changed.\(\backslash\)n"{}}}
+\DoxyCodeLine{01492\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}Would\ you\ like\ to\ save\ before\ proceeding?"{}},\ \textcolor{stringliteral}{"{}Save?"{}},}
+\DoxyCodeLine{01493\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ JOptionPane.YES\_NO\_CANCEL\_OPTION,JOptionPane.QUESTION\_MESSAGE,\textcolor{keyword}{null},}
+\DoxyCodeLine{01494\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ options,options[0]);}
+\DoxyCodeLine{01495\ }
+\DoxyCodeLine{01496\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (result\ ==\ JOptionPane.YES\_OPTION)\ \{}
+\DoxyCodeLine{01497\ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ f;}
+\DoxyCodeLine{01498\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((f=FileDialogs.saveDialog(FileDialogs.SCRIPT,\textcolor{keyword}{true}))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01499\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tnWriter.Write\_from\_TN(f);}
+\DoxyCodeLine{01500\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hasChanged=\textcolor{keyword}{false};}
+\DoxyCodeLine{01501\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.scriptTitle(scriptName,\textcolor{keyword}{false});}
+\DoxyCodeLine{01502\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01503\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{01504\ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{01505\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (result\ ==\ JOptionPane.CLOSED\_OPTION}
+\DoxyCodeLine{01506\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ result\ ==\ JOptionPane.CANCEL\_OPTION)\ \{}
+\DoxyCodeLine{01507\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{01508\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01509\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;\ \textcolor{comment}{//\ no}}
+\DoxyCodeLine{01510\ \ \ \ \ \ \}}
+\DoxyCodeLine{01511\ }
+\DoxyCodeLine{01515\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ isScriptLoaded()\ \{}
+\DoxyCodeLine{01516\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (workingFile\ ==\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01517\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{01518\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01519\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{01520\ \ \ \ \ \ \}}
+\DoxyCodeLine{01521\ }
+\DoxyCodeLine{01526\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ actionPerformed(ActionEvent\ e)\ \{}
+\DoxyCodeLine{01527\ \ \ \ \ \ \ \ \ \ String\ command\ =\ e.getActionCommand();}
+\DoxyCodeLine{01528\ \ \ \ \ \ \ \ \ \ Object\ source\ =\ e.getSource();}
+\DoxyCodeLine{01529\ }
+\DoxyCodeLine{01530\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (source\ instanceof\ JTextField)\ \{}
+\DoxyCodeLine{01531\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01532\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01533\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ scriptAction\ tool\ actions}}
+\DoxyCodeLine{01534\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}SCRIPT:Load\ script\ file"{}}))\ \{}
+\DoxyCodeLine{01535\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=CPBase.scriptManager.getScript(\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{keyword}{true});}
+\DoxyCodeLine{01536\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n>0)\ \{}
+\DoxyCodeLine{01537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ScriptBundle.m\_locator.setSuccess();}
+\DoxyCodeLine{01538\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01539\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{01540\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ suspend\ until\ browser\ is\ fixed}}
+\DoxyCodeLine{01541\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ else\ if\ (command.equals("{}SCRIPT:open\ browser"{}))\ \{}}
+\DoxyCodeLine{01542\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.browserFrame.setVisible(true);}}
+\DoxyCodeLine{01543\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.browserFrame.setState(Frame.NORMAL);}}
+\DoxyCodeLine{01544\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{01545\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}SCRIPT:New\ script"{}}))\ \{}
+\DoxyCodeLine{01546\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tmpname=createDefaultScript();}
+\DoxyCodeLine{01547\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmpname!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01548\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadNamedScript(tmpname,tmpname,\textcolor{keyword}{true});}
+\DoxyCodeLine{01549\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.aboutFrame.setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{01550\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01551\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01552\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ errmsg=\textcolor{stringliteral}{"{}Failed\ to\ create\ starter\ script"{}};}
+\DoxyCodeLine{01553\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.consoleCmd.dispConsoleMsg(errmsg);}
+\DoxyCodeLine{01554\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.shellManager.recordError(errmsg);}
+\DoxyCodeLine{01555\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01556\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{01557\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}SCRIPT:Next\ script\ cmd"{}}))\ \{}
+\DoxyCodeLine{01558\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ executeNextCmd();}
+\DoxyCodeLine{01559\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:}}
+\DoxyCodeLine{01560\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextCmdNode!=\textcolor{keyword}{null})\ nextCmdNode.stackBox.setViewRect();\ \textcolor{comment}{//\ scroll\ new\ 'next'\ into\ view}}
+\DoxyCodeLine{01561\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{01562\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}SCRIPT:Reset\ script"{}}))\ \{}
+\DoxyCodeLine{01563\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ resetNextCmdNode();}
+\DoxyCodeLine{01564\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextCmdNode!=\textcolor{keyword}{null})\ redisplayCPscriptSB();}
+\DoxyCodeLine{01565\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ }}
+\DoxyCodeLine{01566\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.stackScroll.getViewport().setViewPosition(\textcolor{keyword}{new}\ Point(0,0));}
+\DoxyCodeLine{01567\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{01568\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}SCRIPT:Save\ script"{}}))\ \{}
+\DoxyCodeLine{01569\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ f;}
+\DoxyCodeLine{01570\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((f=FileDialogs.saveDialog(FileDialogs.SCRIPT,\textcolor{keyword}{true}))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01571\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tnWriter.Write\_from\_TN(f);}
+\DoxyCodeLine{01572\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hasChanged=\textcolor{keyword}{false};}
+\DoxyCodeLine{01573\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{01574\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ScriptBundle.m\_locator.}
+\DoxyCodeLine{01575\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ add2List(f.getCanonicalPath(),\textcolor{keyword}{false});}
+\DoxyCodeLine{01576\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\{\}}
+\DoxyCodeLine{01577\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scriptName=f.getName();}
+\DoxyCodeLine{01578\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.scriptTitle(scriptName,\textcolor{keyword}{false});}
+\DoxyCodeLine{01579\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01580\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01581\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ end\ of\ scriptAction\ tools}}
+\DoxyCodeLine{01582\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01583\ \ \ \ \ \ \}}
+\DoxyCodeLine{01584\ }
+\DoxyCodeLine{01607\ \ \ \ \ \ \textcolor{keyword}{public}\ ImageIcon\ getTagImage(String\ tagname)\ \{}
+\DoxyCodeLine{01608\ \ \ \ \ \ \ \ \ \ URL\ url=\textcolor{keyword}{null};}
+\DoxyCodeLine{01609\ \ \ \ \ \ \ \ \ \ File\ aboutFile=\textcolor{keyword}{null};}
+\DoxyCodeLine{01610\ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01611\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tagname!=\textcolor{keyword}{null}\ \&\&\ (tagname=tagname.trim()).length()>0)\ \{}
+\DoxyCodeLine{01612\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ search\ among\ script's\ file}}
+\DoxyCodeLine{01613\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{01614\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=includedFiles.size()-\/1;j>=0;j-\/-\/)\ \{}
+\DoxyCodeLine{01615\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ IncludedFile\ iFile=includedFiles.get(j);}
+\DoxyCodeLine{01616\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (iFile.origName.equals(tagname))\ }
+\DoxyCodeLine{01617\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ url=\textcolor{keyword}{new}\ URL(\textcolor{stringliteral}{"{}file:///"{}}+iFile.tmpFile);}
+\DoxyCodeLine{01618\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01619\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{01620\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}Problem\ getting\ 'tag'\ file\ from\ script"{}});}
+\DoxyCodeLine{01621\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01622\ }
+\DoxyCodeLine{01623\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ search\ 'myCirclePack'}}
+\DoxyCodeLine{01624\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (url==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01625\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{01626\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ pth=\textcolor{keyword}{new}\ String(CPFileManager.HomeDirectory+File.separator+\textcolor{stringliteral}{"{}myCirclePack"{}}+}
+\DoxyCodeLine{01627\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ File.separator+tagname);}
+\DoxyCodeLine{01628\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{new}\ File(pth).exists())\ \{\ }
+\DoxyCodeLine{01629\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ url=\textcolor{keyword}{new}\ URL(\textcolor{stringliteral}{"{}file:"{}}+pth);}
+\DoxyCodeLine{01630\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scriptTagname=\textcolor{keyword}{new}\ String(tagname);}
+\DoxyCodeLine{01631\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01632\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{01633\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}tag\ imagefile\ problem"{}});}
+\DoxyCodeLine{01634\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01635\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01636\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01637\ }
+\DoxyCodeLine{01638\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ otherwise,\ search\ resources\ }}
+\DoxyCodeLine{01639\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (url==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01640\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ url=CPBase.getResourceURL(\textcolor{stringliteral}{"{}/Icons/tags/"{}}+tagname);}
+\DoxyCodeLine{01641\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01642\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01643\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (url!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01644\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scriptTagname=\textcolor{keyword}{new}\ String(tagname);}
+\DoxyCodeLine{01645\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01646\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01647\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (url==null)\ \{}}
+\DoxyCodeLine{01648\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg("{}failed\ loading\ script\ tag\ image\ '"{}+tagname+"{}'"{});}}
+\DoxyCodeLine{01649\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ url=CPBase.getResourceURL("{}/Icons/tags/myCPtag.jpg"{});}}
+\DoxyCodeLine{01650\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg("{}try\ default\ tag\ 'myCPtag.jpg'"{});}}
+\DoxyCodeLine{01651\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{01652\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01653\ }
+\DoxyCodeLine{01654\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ look\ for\ 'AboutImage',\ then\ default}}
+\DoxyCodeLine{01655\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (url==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01656\ \ \ \ \ \ \ \ \ \ \ \ \ \ aboutFile=this.getAboutTmpFile();}
+\DoxyCodeLine{01657\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (aboutFile!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01658\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scriptTagname=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{01659\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tagname=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{01660\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01661\ }
+\DoxyCodeLine{01662\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ go\ for\ default?}}
+\DoxyCodeLine{01663\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (aboutFile==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01664\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ url=CPBase.getResourceURL(\textcolor{stringliteral}{"{}/Icons/tags/myCPtag.jpg"{}});}
+\DoxyCodeLine{01665\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (url!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01666\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scriptTagname=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{01667\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tagname=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{01668\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01669\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01670\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}failed\ loading\ default\ script\ tag"{}});}
+\DoxyCodeLine{01671\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01672\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01673\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01674\ \ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ }
+\DoxyCodeLine{01675\ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01676\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (url==\textcolor{keyword}{null}\ \&\&\ aboutFile==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{01677\ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}failed\ loading\ script\ tag\ image\ '"{}}+tagname+\textcolor{stringliteral}{"{}'"{}});}
+\DoxyCodeLine{01678\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01679\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01680\ }
+\DoxyCodeLine{01681\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ load/resize\ image}}
+\DoxyCodeLine{01682\ \ \ \ \ \ \ \ \ \ BufferedImage\ bI=\textcolor{keyword}{null};}
+\DoxyCodeLine{01683\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{01684\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (url!=\textcolor{keyword}{null})\ }
+\DoxyCodeLine{01685\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bI\ =\ ImageIO.read(url);}
+\DoxyCodeLine{01686\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ }
+\DoxyCodeLine{01687\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bI=ImageIO.read(aboutFile);}
+\DoxyCodeLine{01688\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bI==\textcolor{keyword}{null})}
+\DoxyCodeLine{01689\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}'about'\ problem:\ mayby\ not\ decoded?"{}});}
+\DoxyCodeLine{01690\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01691\ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ e)\ \{}
+\DoxyCodeLine{01692\ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}Error\ loading\ 'tag'\ image:\ "{}}+e.getMessage());}
+\DoxyCodeLine{01693\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01694\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01695\ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01696\ \ \ \ \ \ \ \ \ \ ImageIcon\ iI=\textcolor{keyword}{new}\ ImageIcon(util.GetScaleImage.scaleBufferedImage(bI,AboutFrame.ABOUTWIDTH,AboutFrame.ABOUTHEIGHT));}
+\DoxyCodeLine{01697\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ iI;}
+\DoxyCodeLine{01698\ \ \ \ \ \ \}}
+\DoxyCodeLine{01699\ }
+\DoxyCodeLine{01700\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ getOpenMode()\ \{}
+\DoxyCodeLine{01701\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cmdOpenMode;}
+\DoxyCodeLine{01702\ \ \ \ \ \ \}}
+\DoxyCodeLine{01703\ }
+\DoxyCodeLine{01704\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setOpenMode(\textcolor{keywordtype}{boolean}\ open)\ \{}
+\DoxyCodeLine{01705\ \ \ \ \ \ \ \ \ \ cmdOpenMode=open;}
+\DoxyCodeLine{01706\ \ \ \ \ \ \}}
+\DoxyCodeLine{01707\ }
+\DoxyCodeLine{01711\ \ \ \ \ \ \textcolor{keyword}{public}\ Object\ getRoot()\ \{}
+\DoxyCodeLine{01712\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rootNode;}
+\DoxyCodeLine{01713\ \ \ \ \ \ \}}
+\DoxyCodeLine{01717\ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ toggleCmdOpenMode()\ \{}
+\DoxyCodeLine{01718\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdOpenMode)\ \{}
+\DoxyCodeLine{01719\ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdOpenMode=\textcolor{keyword}{false};}
+\DoxyCodeLine{01720\ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptBar.setOpenAllButton(\textcolor{keyword}{false});}
+\DoxyCodeLine{01721\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01722\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{01723\ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdOpenMode=\textcolor{keyword}{true};}
+\DoxyCodeLine{01724\ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptBar.setOpenAllButton(\textcolor{keyword}{true});}
+\DoxyCodeLine{01725\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01726\ \ \ \ \ \ \}}
+\DoxyCodeLine{01727\ }
+\DoxyCodeLine{01733\ \ \ \ \ \ \textcolor{keyword}{public}\ File\ getAboutTmpFile()\ \{}
+\DoxyCodeLine{01734\ \ \ \ \ \ \ \ \ \ File\ aboutFile=\textcolor{keyword}{null};}
+\DoxyCodeLine{01735\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{01736\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=includedFiles.size()-\/1;j>=0;j-\/-\/)\ \{}
+\DoxyCodeLine{01737\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ IncludedFile\ iFile=includedFiles.get(j);}
+\DoxyCodeLine{01738\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (iFile.origName.startsWith(\textcolor{stringliteral}{"{}AboutImage"{}}))\ \{}
+\DoxyCodeLine{01739\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aboutFile=iFile.tmpFile;}
+\DoxyCodeLine{01740\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (aboutFile.exists())}
+\DoxyCodeLine{01741\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ aboutFile;}
+\DoxyCodeLine{01742\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{01743\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}Putative\ 'About'\ file,\ "{}}+aboutFile.getName()+\textcolor{stringliteral}{"{}\ does\ not\ exist"{}});}
+\DoxyCodeLine{01744\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01745\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01746\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg("{}There\ seems\ to\ be\ no\ 'AboutImage'\ for\ this\ script"{});}}
+\DoxyCodeLine{01747\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01748\ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{01749\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg("{}Problem\ getting\ 'AboutImage'\ file\ from\ script"{});}}
+\DoxyCodeLine{01750\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01751\ \ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01752\ \ \ \ \ \ \}}
+\DoxyCodeLine{01753\ }
+\DoxyCodeLine{01754\ \}}
+
+\end{DoxyCode}

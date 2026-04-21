@@ -1,0 +1,510 @@
+\doxysection{Sphere\+Layout.\+java}
+\label{_sphere_layout_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/SphereLayout.java@{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/SphereLayout.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }ftnTheory;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ exceptions.InOutException;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ geometry.HyperbolicMath;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ geometry.SphericalMath;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ math.Point3D;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ packing.ReadWrite;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ util.CmdStruct;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ util.ColorUtil;}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00066\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }SphereLayout\ \textcolor{keyword}{extends}\ PackExtender\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ NodeLink\ beacons;}
+\DoxyCodeLine{00068\ \ \ \ \ VertGPS\ []vertGPS;}
+\DoxyCodeLine{00069\ \ \ \ \ PackData\ layoutPack;}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keywordtype}{double}\ [][]bD;\ \ \textcolor{comment}{//\ matrix\ of\ 4\ beacon's\ pairwise\ inv\ distances\ d\_ij}}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ computed\ from\ hyperbolic\ radii\ of\ max\ packings\ in\ disc.}}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{double}\ [][]M;\ \ \ \textcolor{comment}{//\ positioning\ matrix,\ derived\ by\ putting\ beacons}}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ in\ normalized\ positions\ based\ on\ their\ inversive}}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ distances.\ Each\ row\ is\ (t,x,y,z)\ representation\ of\ }}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ circle,\ t\string^2-\/x\string^2-\/y\string^2-\/z\string^2\ =\ -\/1.\ First\ is\ (0,0,0,-\/1),\ }}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ the\ southern\ hemisphere.\ Second\ is\ (*,0,0,d\_01),}}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ centered\ at\ north\ pole.\ Third\ is\ (*,0,*,d\_02),\ on}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ imaginary\ axis.\ Last\ is\ (*,*,*,d\_03).\ }}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ TODO:\ possible\ ambiguity\ regarding\ orientation?}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ e.g.\ if\ 4th\ is\ on\ imaginary\ axis.}}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keywordtype}{boolean}\ debug;\ \ \textcolor{comment}{//\ set\ for\ debugging\ mode}}
+\DoxyCodeLine{00082\ \ \ \ \ }
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keyword}{public}\ SphereLayout(PackData\ p)\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ extensionType=\textcolor{stringliteral}{"{}SPHERE\_LAYOUT"{}};}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ extensionAbbrev=\textcolor{stringliteral}{"{}SL"{}};}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ toolTip=\textcolor{stringliteral}{"{}'Sphere\ Layout':\ experiment\ with\ an\ alternate\ method\ for\ "{}}+}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}computing\ sphere\ layouts,\ quadrangulating\ using\ inversive\ distances"{}};}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ registerXType();}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.hes<=0)\ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}geom\_to\_s"{}});}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.getBdryCompCount()>0\ ||\ extenderPD.genus>0\ ||\ extenderPD.euler!=2)\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}SL\ Warning:\ this\ does\ not\ seem\ to\ be\ a\ topological\ sphere"{}});}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (running)\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ initiate\ with\ 4\ random\ beacons,\ starting\ with\ 1.\ Can\ reset\ at\ will}}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ beacons=extenderPD.antipodal\_verts(\textcolor{keyword}{null},4);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ extenderPD.vlist=beacons.makeCopy();}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ bD=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[4][4];}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ debug=\textcolor{keyword}{true};}
+\DoxyCodeLine{00106\ \ \ \ \ \}}
+\DoxyCodeLine{00107\ \ \ \ \ }
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cmdParser(String\ cmd,Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ Vector<String>\ items=\textcolor{keyword}{null};}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flagSegs!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}colo"{}}))\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(vertGPS==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}GPS\ coordinates\ must\ be\ set\ first"{}});}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ rescale\ info:\ minima=1,\ get\ max\ for\ each\ beacon}}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []Max=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ gps=-\/1.0;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((gps=vertGPS[v].coord[j])>Max[j])}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Max[j]=gps;}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ color\ intensities\ in\ [0,1]:\ colors\ r\ g\ b\ are\ for\ b0\ b1\ b2,\ resp.\ \ }}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []div=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ div[j]=1.0/(Max[j]-\/1.0);}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vertGPS[v].colIntensity[j]=(Max[j]-\/vertGPS[v].coord[j])*div[j];}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ================\ choice\ of\ colors\ ===================}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ adjust\ to\ combine:\ E.g.\ set\ b\ =\ 255*sqrt\{(1-\/r)*(1-\/g)*b\}}}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []tmpI=vertGPS[v].colIntensity;}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ r=(int)(255.0*Math.sqrt((1.0-\/tmpI[1])*(1.0-\/tmpI[2])*vertGPS[v].colIntensity[0]));}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ g=(int)(255.0*Math.sqrt((1.0-\/tmpI[0])*(1.0-\/tmpI[2])*vertGPS[v].colIntensity[1]));}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ b=(int)(255.0*Math.sqrt((1.0-\/tmpI[0])*(1.0-\/tmpI[1])*vertGPS[v].colIntensity[2]));}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vertGPS[v].color=\textcolor{keyword}{new}\ Color(r,g,b);}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ certainty,\ reset\ colors\ for\ beacons\ b0,b1,b2}}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ vertGPS[beacons.get(0)].color=Color.red;}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ vertGPS[beacons.get(1)].color=Color.green;}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ vertGPS[beacons.get(2)].color=Color.blue;}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ record\ color\ in\ packData}}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ should\ be\ able\ to\ clone\ color\ more\ easily}}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(v,ColorUtil.cloneMe(vertGPS[v].color));}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_beac"{}}))\ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ bcns=\textcolor{keyword}{null};}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bcns=\textcolor{keyword}{new}\ NodeLink(extenderPD,items);}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bcns.size()>4)}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bcns=\textcolor{keyword}{null};}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ beacons=extenderPD.antipodal\_verts(bcns,4);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ vertGPS=\textcolor{keyword}{null};}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ M=\textcolor{keyword}{null};}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ bD=\textcolor{keyword}{null};}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.vlist=beacons.makeCopy();}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_GPS"{}}))\ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (beacons==\textcolor{keyword}{null}\ ||\ beacons.size()!=4)}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}set\ beacons\ first"{}});}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []bea=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[4];}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<4;j++)}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bea[j]=beacons.get(j);}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ See\ if\ a\ cycle\ count\ is\ specified}}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cycles=CPBase.RIFFLE\_COUNT;}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cyc;}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cyc=Integer.parseInt(items.get(0));}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items.remove(0);}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cyc=cycles;}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ cycles=cyc;}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Check\ for\ input\ packings\ (instead\ of\ computing)}}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ PackData\ []puncturedPack=\textcolor{keyword}{new}\ PackData[4];}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ String\ baseName=\textcolor{keyword}{null};}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ String\ fname\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ baseName=\textcolor{keyword}{new}\ String(items.get(0));}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items.remove(0);}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ prepare\ storage\ space}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ vertGPS=\textcolor{keyword}{null};}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ vertGPS=\textcolor{keyword}{new}\ VertGPS[extenderPD.nodeCount+1];}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vertGPS[v]=\textcolor{keyword}{new}\ VertGPS(v);}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ may\ want\ to\ re-\/establish\ old\ results\ to\ do\ further\ computation}}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Now\ fill\ in\ the\ 'coord'\ data}}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nodes=extenderPD.nodeCount;}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ bD=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[4][4];}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Now\ either\ READ\ 4\ punctured\ packings\ or\ compute\ them}}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Note:\ must\ be\ punctured\ at\ the\ appropriate\ beacon\ vertex.}}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ gotThem=\textcolor{keyword}{false};}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (baseName!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gotThem=\textcolor{keyword}{true};}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ puncturedPack=\textcolor{keyword}{new}\ PackData[4];}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ n=0;(n<4\ \&\&\ gotThem);n++)\ \{}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ dir=CPFileManager.PackingDirectory;}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fname=\textcolor{keyword}{new}\ String(baseName+n+\textcolor{stringliteral}{"{}.p"{}});}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BufferedReader\ fp=}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.openReadFP(dir,fname,\textcolor{keyword}{false});}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ flags=ReadWrite.readpack(fp,puncturedPack[n],fname);}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ need\ combinatorics\ and\ radii\ at\ a\ minimum}}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flags<=0\ ||\ (flags\ \&\ 00011)!=00011)\ }
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gotThem=\textcolor{keyword}{false};}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}reading\ failed\ for\ "{}}+dir+File.separator+fname);}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (gotThem)\ }
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}Read\ in\ 4\ packings\ with\ radii"{}});}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}Failed\ to\ get\ 4\ packings\ '"{}}+fname+\textcolor{stringliteral}{"{}?.p'"{}});}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ compute\ here\ (and\ optionally\ STORE\ in\ 'SL\_pack?.p')}}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00242\ }
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ b\ =\ 0;\ b\ <\ 4;\ b++)\ \{}
+\DoxyCodeLine{00244\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg("{}starting\ GPS\ for\ vert\ "{}\ +\ bea[b]);}}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ puncturedPack[b]\ =\ extenderPD.copyPackTo();}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ puncturedPack[b].puncture\_vert(bea[b]);}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ puncturedPack[b].geom\_to\_h();}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ puncturedPack[b].set\_aim\_default();}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ blist\ =\ \textcolor{keyword}{new}\ NodeLink(puncturedPack[b],\ \textcolor{stringliteral}{"{}b"{}});}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Integer>\ blt\ =\ blist.iterator();}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (blt.hasNext())\ \{}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k\ =\ blt.next();}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ puncturedPack[b].setRadiusActual(k,\ 10.0);}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ repackCount\ =\ puncturedPack[b].repack\_call(cycles,\textcolor{keyword}{false},}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{false});}
+\DoxyCodeLine{00257\ }
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (debug)\ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ dir\ =\ CPFileManager.PackingDirectory;}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fname\ =\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}SL\_pack"{}}\ +\ b\ +\ \textcolor{stringliteral}{"{}.p"{}});}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ fp\ =\ CPFileManager.openWriteFP(dir,}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{false},\ fname,\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{\ \textcolor{comment}{//\ cgri\ options}}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ReadWrite.writePack(fp,puncturedPack[b],0017,\textcolor{keyword}{false});\ }
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}write\ of\ 'wP'\ failed"{}});}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}Wrote\ temp\ packing\ to\ "{}}}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ dir.getPath()\ +\ File.separator\ +\ fname);}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00271\ }
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ the\ inversive\ distances}}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v\ =\ 1;\ v\ <\ bea[b];\ v++)\ \{}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vertGPS[v].coord[b]\ =\ HyperbolicMath}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .x\_rad2invdist(puncturedPack[b].getRadius(v));\ }
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v\ =\ bea[b]\ +\ 1;\ v\ <=\ nodes;\ v++)\ \{\ \textcolor{comment}{//\ indices\ are}}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ shifted\ due}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ to\ puncture}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vertGPS[v].coord[b]\ =\ HyperbolicMath}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .x\_rad2invdist(puncturedPack[b].getRadius(v-\/1));}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vertGPS[bea[b]].coord[b]\ =\ -\/1.0;}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ 4;\ j++)\ \{}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j\ !=\ b)\ \{}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bea[j]\ <\ bea[b])\ \{}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bD[j][b]\ +=\ HyperbolicMath}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .x\_rad2invdist(puncturedPack[b].getRadius(bea[j]));}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Double.isNaN(bD[j][b]))}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}bD["{}}\ +\ j\ +\ \textcolor{stringliteral}{"{}]["{}}}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ b\ +\ \textcolor{stringliteral}{"{}]\ is\ NaN"{}});}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bD[j][b]\ +=\ HyperbolicMath}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .x\_rad2invdist(puncturedPack[b].getRadius(bea[j]\ -\/\ 1));}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Double.isNaN(bD[j][b]))}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}bD["{}}\ +\ j\ +\ \textcolor{stringliteral}{"{}]["{}}}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ b\ +\ \textcolor{stringliteral}{"{}]\ is\ NaN"{}});}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}finished\ GPS,\ vert\ "{}}\ +\ bea[b]}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{},\ count\ "{}}\ +\ repackCount);}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ bD\ should\ be\ symmetric:\ make\ it\ symmetric\ here\ to\ accomodate}}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ roundoff\ error.\ }}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ can\ put\ quality\ check\ here}}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<4;j++)\ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ b=0;b<j;b++)\ \{}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bD[j][b]\ +=\ bD[b][j];}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bD[j][b]\ /=2.0;}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bD[b][j]=bD[j][b];}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bD[j][j]=-\/1.0;}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Seems\ there\ can\ be\ two\ levels\ of\ ambiguity\ regarding}}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ orientation.\ Once\ b0,\ b1,\ b2\ are\ in\ standard\ position,}}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ there\ should\ be\ two\ positions\ for\ b3.}}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ But\ also,\ if\ b3\ is\ on\ the\ circle\ through\ b0,\ b1,\ and\ b2,\ then}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ each\ individual\ circle\ placement\ may\ have\ ambiguity.}}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_M"{}}))\ \{}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ positioning\ matrix\ M:\ rows\ are\ t,\ x,\ y,\ z\ coords}}
+\DoxyCodeLine{00330\ }
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ M=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[4][4];}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ M[0][3]=-\/1.0;}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ M[1][3]=bD[1][0];}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ M[2][3]=bD[2][0];}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ M[3][3]=bD[3][0];}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ M[1][0]=Math.sqrt(M[1][3]*M[1][3]-\/1.0);}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ M[2][0]=(bD[0][1]*bD[0][2]+bD[1][2])/(M[1][0]);}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ M[2][2]=Math.sqrt(1.0+M[2][0]*M[2][0]-\/bD[0][2]*bD[0][2]);}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ M[3][0]=(bD[0][1]*bD[0][3]+bD[1][3])/(M[1][0]);}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ M[3][2]=(M[2][0]*M[3][0]\ -\/bD[2][3]-\/bD[0][2]*bD[0][3])/M[2][2];}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ M[3][1]=Math.sqrt(1.0+M[3][0]*M[3][0]-\/M[3][2]*M[3][2]-\/bD[0][3]*bD[0][3]);}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ that\ inner\ products\ between\ rows\ are\ the\ given\ inversive\ distances}}
+\DoxyCodeLine{00344\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ double\ [][]MIP=new\ double[4][4];}}
+\DoxyCodeLine{00345\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ for\ (int\ i=0;\ i<4;\ i++)\{}}
+\DoxyCodeLine{00346\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ for\ (int\ j=0;\ j<4;\ j++)\{}}
+\DoxyCodeLine{00347\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MIP[i][j]=M[i][0]*M[j][0]+M[i][1]*M[j][1]\ +\ M[i][2]*M[j][2]\ -\/\ M[i][3]*M[j][3];}}
+\DoxyCodeLine{00348\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00349\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ ii=0;ii<4;ii++)\ \{}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ jj=0;jj<=ii;jj++)}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Double.isNaN(M[ii][jj]))}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}M["{}}+ii+\textcolor{stringliteral}{"{}]["{}}+jj+\textcolor{stringliteral}{"{}]\ is\ NaN"{}});}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00355\ }
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ M[3][1]\ entry\ causes\ ambiguity:}}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ M[3][1]\ is\ essentially\ 0,\ then\ beacons\ all\ lie\ on\ imaginary\ axis,}}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ leading\ to\ ambiguity\ in\ placement\ -\/-\/-\/\ not\ global\ ambiguity,\ but}}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ circle-\/by-\/circle\ ambiguity,\ which\ is\ worse.}}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(M[3][1])<.00000001)}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}Note:\ M\ matrix\ in\ 'SphereLayout'\ may\ lead\ to\ ambiguous\ placements"{}});}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Otherwise,\ sign\ of\ M[3][1]\ affects\ global\ orientation.\ Find\ oriented\ triple\ \{b3,v,w\},}}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ locate\ circle\ centers\ (should\ be\ in\ one\ hemisphere\ since\ b0,b1,b2\ are\ on\ y-\/axis).\ }}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ Find\ b3,\ v,\ w\ centers,\ compute\ a\ X\ b,\ a\ =\ vector\ b3\ to\ v,\ \ b\ =\ vector\ of\ b3\ w.}}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ Dot\ product\ of\ b3\ with\ a\ X\ b\ should\ be\ positive.}}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ b3=beacons.get(3);}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=extenderPD.getFlower(b3);}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=flower[0];}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=flower[1];}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ center\ for\ b3}}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ VertGPS\ gps=vertGPS[b3];}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ z=gps.coord[0];}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t=(z*M[1][3]+gps.coord[1])/(M[1][0]);}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ y=(t*M[2][0]-\/gps.coord[2]-\/z*M[2][3])/(M[2][2]);}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=(t*M[3][0]-\/gps.coord[3]-\/y*M[3][2]-\/z*M[3][3])/(M[3][1]);}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ nm=Math.sqrt(x*x+y*y+z*z);}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ ptb3\ =\textcolor{keyword}{new}\ Point3D(x/nm,y/nm,z/nm);}
+\DoxyCodeLine{00382\ }
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ center\ for\ v}}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gps=vertGPS[v];}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z=gps.coord[0];}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t=(z*M[1][3]+gps.coord[1])/(M[1][0]);}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ y=(t*M[2][0]-\/gps.coord[2]-\/z*M[2][3])/(M[2][2]);}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ x=(t*M[3][0]-\/gps.coord[3]-\/y*M[3][2]-\/z*M[3][3])/(M[3][1]);}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nm=Math.sqrt(x*x+y*y+z*z);}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ ptv\ =\textcolor{keyword}{new}\ Point3D(x/nm,y/nm,z/nm);}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ center\ for\ w}}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gps=vertGPS[w];}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z=gps.coord[0];}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t=(z*M[1][3]+gps.coord[1])/(M[1][0]);}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ y=(t*M[2][0]-\/gps.coord[2]-\/z*M[2][3])/(M[2][2]);}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ x=(t*M[3][0]-\/gps.coord[3]-\/y*M[3][2]-\/z*M[3][3])/(M[3][1]);}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nm=Math.sqrt(x*x+y*y+z*z);}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ ptw\ =\textcolor{keyword}{new}\ Point3D(x/nm,y/nm,z/nm);}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ bv=Point3D.displacement(ptb3,ptv);}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ bw=Point3D.displacement(ptb3,ptw);}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ cross=Point3D.CrossProduct(bv,\ bw);}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dot=Point3D.DotProduct(ptb3,\ cross);}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ misoriented,\ then\ switch\ entry\ of\ M}}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dot<0)}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ M[3][1]=-\/M[3][1];}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}layout"{}}))\ \{}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ our\ matrix}}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ cmdParser(\textcolor{stringliteral}{"{}set\_M"{}},\textcolor{keyword}{null});}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ layoutPack=extenderPD.copyPackTo();}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ read\ desired\ vertices,\ default\ to\ 'all'}}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ vertlist=\textcolor{keyword}{new}\ NodeLink(extenderPD,items);}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Integer>\ vlst=vertlist.iterator();}
+\DoxyCodeLine{00423\ }
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ compute\ circle\ rep\ as\ (t,x,y,z)\ and\ store\ sph\ centers/radii}}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ M\ has\ rows\ tj,xj,yj,zj,\ j=0,1,2,3,\ where\ (tj,xj,yj,zj)\ represents}}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ the\ j\_th\ beacon\ in\ normalized\ position.\ For\ each\ circle\ we}}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ have\ its\ GPS\ coords,\ we\ solve\ }}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ M[t\ -\/x\ -\/y\ -\/z]\string^T=[GPS[0],GPS[1],GPS[2],GPS[3]]\string^T}}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ to\ get\ the\ circle\ (t,x,y,z).}}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ VertGPS\ gps=\textcolor{keyword}{null};}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (vlst.hasNext())\ \{}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=vlst.next();}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gps=vertGPS[v];}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ z=gps.coord[0];}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t=(z*M[1][3]+gps.coord[1])/(M[1][0]);}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ y=(t*M[2][0]-\/gps.coord[2]-\/z*M[2][3])/(M[2][2]);}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=(t*M[3][0]-\/gps.coord[3]-\/y*M[3][2]-\/z*M[3][3])/(M[3][1]);}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ why\ is\ this\ fudge\ needed?\ (We\ need\ to\ avoid\ NaN)}}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ maybe\ need\ better\ way\ to\ take\ care\ of\ inaccuracies.}}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t=Math.sqrt(x*x+y*y+z*z-\/1.0);}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ spherical\ centers,\ radii\ in\ layoutPack}}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ R=Math.sqrt(x*x+y*y+z*z);}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ layoutPack.setCenter(v,SphericalMath.proj\_vec\_to\_sph(x,y,z));}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rho=Math.acos(t/R);}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Double.isNaN(rho))\ \{}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}vertex\ "{}}+v+\textcolor{stringliteral}{"{}:\ t\ is\ "{}}+t+\textcolor{stringliteral}{"{}\ and\ R\ is\ "{}}+R);}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ layoutPack.setRadius(v,rho);}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ orientation\ should\ be\ ambiguous,\ need\ way\ to\ }}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ determine\ if\ it\ is\ correct\ or\ not.\ Perhaps\ lay\ out}}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ one\ face\ of\ b3\ and\ see\ if\ it\ is\ correctly\ oriented.}}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ Or,\ perhaps\ go\ back\ and\ pick\ a\ different\ b3.}}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}go"{}}))\ \{}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (beacons==\textcolor{keyword}{null}\ ||\ beacons.size()!=4)\ }
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdParser(\textcolor{stringliteral}{"{}set\_beacons"{}},flagSegs);}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((count=cmdParser(\textcolor{stringliteral}{"{}set\_GPS"{}},flagSegs))!=0\ \&\&\ cmdParser(\textcolor{stringliteral}{"{}layout"{}},flagSegs)!=0)\ \{}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}'go'\ seems\ to\ have\ succeeded;\ use\ '|sl|\ copy'\ to\ copy\ results"{}});}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}something\ went\ wrong\ in\ 'go'"{}});}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ==========\ copy\ <pnum>\ }}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}copy"{}}))\ \{\ \textcolor{comment}{//\ copy\ 'outputData'\ in\ some\ pack}}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)flagSegs.get(0);}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pnum=Integer.parseInt((String)items.get(0));}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pnum==extenderPD.packNum)}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.swapPackData(layoutPack,pnum,\textcolor{keyword}{false});}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ==========\ queries}}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}?beac"{}}))\ \{}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (beacons==\textcolor{keyword}{null}\ ||\ beacons.size()!=4)\ \{\ }
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}beacons\ not\ yet\ set"{}});}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}beacons\ are:\ "{}}+beacons.get(0)+\textcolor{stringliteral}{"{},\ "{}}+beacons.get(1)+\textcolor{stringliteral}{"{},\ "{}}+}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ beacons.get(2)+\textcolor{stringliteral}{"{},\ "{}}+beacons.get(3));}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ super.cmdParser(cmd,\ flagSegs);}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00501\ \ \ \ \ \}}
+\DoxyCodeLine{00502\ }
+\DoxyCodeLine{00506\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initCmdStruct()\ \{}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ super.initCmdStruct();}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}copy"{}},\textcolor{stringliteral}{"{}\{p\}"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}copy\ 'layoutPack'\ to\ pack\ p."{}}));}
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_beacons"{}},\textcolor{stringliteral}{"{}[v1,v2,v3,v4]"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Choose\ beacons:\ "{}}+}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}4\ are\ needed,\ from\ 0\ to\ 4\ may\ be\ specified\ as\ arguments"{}}));}
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_GPS"{}},\textcolor{stringliteral}{"{}[n]\ [basename]"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Compute\ the\ inversive\ distances;\ optional\ n=cycles,\ "{}}}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\textcolor{stringliteral}{"{}and/or\ 'basename'\ to\ use\ existing\ packings\ 'basename[0-\/3].p'"{}}));}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_M"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Compute\ M,\ the\ beacon\ matrix\ (automatic\ in\ 'set\_GPS'"{}}));}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}layout"{}},\textcolor{stringliteral}{"{}\{v..\}"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Do\ the\ layout\ for\ the\ given\ vertices"{}}));}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}go"{}},\textcolor{stringliteral}{"{}[b0,..]"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}do\ everything\ through\ layout;\ optionally\ "{}}+}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}specify\ some\ or\ all\ beacons\ b0,...."{}}));}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}color"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}interpolate\ Color\ using\ inv\ distances,\ rgb\ =\ b0,\ b1,\ b2"{}}));}
+\DoxyCodeLine{00518\ \ \ \ \ \}}
+\DoxyCodeLine{00519\ \ \ \ \ }
+\DoxyCodeLine{00520\ \}}
+\DoxyCodeLine{00521\ }
+\DoxyCodeLine{00522\ \textcolor{keyword}{class\ }VertGPS\ \{}
+\DoxyCodeLine{00523\ \ \ \ \ \textcolor{keywordtype}{double}\ []coord;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ coord[j]\ is\ inversive\ distance\ to\ beacon[j]}}
+\DoxyCodeLine{00524\ \ \ \ \ \textcolor{keywordtype}{double}\ []colIntensity;\ \ \textcolor{comment}{//\ scaled\ intensities\ to\ [0,1]\ for\ r,g,b}}
+\DoxyCodeLine{00525\ \ \ \ \ Color\ color;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ stored\ color:\ r,g,b\ for\ b0,b1,b2,\ resp.}}
+\DoxyCodeLine{00526\ \ \ \ \ \textcolor{keywordtype}{int}\ vert;}
+\DoxyCodeLine{00527\ \ \ \ \ }
+\DoxyCodeLine{00528\ \ \ \ \ \textcolor{keyword}{public}\ VertGPS(\textcolor{keywordtype}{int}\ v)\ \{}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ vert=v;}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ coord=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[4];}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ colIntensity=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ color=ColorUtil.getFGColor();}
+\DoxyCodeLine{00533\ \ \ \ \ \}}
+\DoxyCodeLine{00534\ \ \ \ \ }
+\DoxyCodeLine{00535\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ getGPS(\textcolor{keywordtype}{int}\ j)\ \{}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j<0\ ||\ j>3)}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}VertCPS\ has\ only\ 4\ coords"{}});}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ coord[j];}
+\DoxyCodeLine{00539\ \ \ \ \ \}}
+\DoxyCodeLine{00540\ \ \ \ \ }
+\DoxyCodeLine{00541\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ getIntensity(\textcolor{keywordtype}{int}\ j)\ \{}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (j<0\ ||\ j>2)}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}Only\ 3\ intensities"{}});}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ colIntensity[j];}
+\DoxyCodeLine{00545\ \ \ \ \ \}}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00547\ \}}
+
+\end{DoxyCode}

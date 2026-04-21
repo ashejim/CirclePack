@@ -1,0 +1,163 @@
+\doxysection{Mobius\+Frame.\+java}
+\label{_mobius_frame_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/frames/MobiusFrame.java@{C:/Users/ashej/myGitRepos/CirclePack/src/frames/MobiusFrame.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }frames;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Container;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.event.ActionEvent;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.event.ActionListener;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.event.WindowAdapter;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.event.WindowEvent;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ javax.swing.BorderFactory;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ javax.swing.JButton;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ javax.swing.JFrame;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ javax.swing.WindowConstants;}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ dcel.SideData;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ dcel.PackDCEL;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ handlers.MOBIUSHandler;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ handlers.PACKMOBHandler;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ images.CPIcon;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ mytools.MyTool;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{import}\ util.PopupBuilder;}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00038\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }MobiusFrame\ \textcolor{keyword}{extends}\ JFrame\ implements\ ActionListener\ \{}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00041\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00042\ \ \ \ \ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{public}\ PACKMOBHandler\ sidePairHandler;\ \textcolor{comment}{//\ sidepairing\ mobius\ for\ active\ pack}}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{public}\ MOBIUSHandler\ mobiusHandler;\ \textcolor{comment}{//\ General\ mobius\ transform\ tools}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{private}\ JPanel\ genMobPanel;}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keyword}{public}\ MobiusFrame()\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ this.addWindowListener(\textcolor{keyword}{new}\ WAdapter());}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ File\ mobLoc=CPFileManager.getMyTFile(\textcolor{stringliteral}{"{}.mobiustools.myt"{}});}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mobLoc.exists())\ mobiusHandler\ =\ \textcolor{keyword}{new}\ MOBIUSHandler(mobLoc);}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ mobiusHandler\ =\ \textcolor{keyword}{new}\ MOBIUSHandler(\textcolor{keyword}{null});}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\{\}}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ File\ mobLoc=CPFileManager.getMyTFile(\textcolor{stringliteral}{"{}.sidepairtools.myt"{}});}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mobLoc.exists())\ sidePairHandler\ =\ \textcolor{keyword}{new}\ PACKMOBHandler(mobLoc);}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ sidePairHandler\ =\ \textcolor{keyword}{new}\ PACKMOBHandler(\textcolor{keyword}{null});}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\{\}}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ initGUI();}
+\DoxyCodeLine{00062\ \ \ \ \ \}}
+\DoxyCodeLine{00063\ \ \ \ \ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ initGUI()\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ this.setTitle(\textcolor{stringliteral}{"{}Mobius\ Transformations"{}});}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ setDefaultCloseOperation(WindowConstants.DISPOSE\_ON\_CLOSE);}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ Container\ pane=getContentPane();}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ pane.setLayout(\textcolor{keyword}{null});}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ side-\/pair\ panel}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ JPanel\ sidePairs=\textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{null});}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ sidePairs.setBorder(BorderFactory.}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ createTitledBorder(\textcolor{stringliteral}{"{}Active\ Pack\ Side\ Pairings"{}}));}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ sidePairHandler.toolBar.setBounds(5,20,PackControl.ControlDim1.width-\/20,30);}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ sidePairs.add(sidePairHandler.toolBar);}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ JButton\ button\ =\ \textcolor{keyword}{new}\ JButton();}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ button.setText(\textcolor{stringliteral}{"{}Update\ (only)"{}});}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ button.setActionCommand(\textcolor{stringliteral}{"{}reset"{}});}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ button.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ button.setBounds(5,55,150,20);}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ sidePairs.add(button);}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ button=\textcolor{keyword}{new}\ JButton();}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ button.setText(\textcolor{stringliteral}{"{}layout\ and\ update"{}});}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ button.setActionCommand(\textcolor{stringliteral}{"{}layout\_reset"{}});}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ button.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ button.setBounds(160,55,180,20);}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ sidePairs.add(button);}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ sidePairs.setBounds(0,0,PackControl.ControlDim1.width-\/5,80);}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ pane.add(sidePairs);}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ bottom\ panel\ }}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ genMobPanel\ =\ \textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{null});}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ genMobPanel.setBorder(BorderFactory.}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ createTitledBorder(\textcolor{stringliteral}{"{}General\ Transformations"{}}));}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ mobiusHandler.toolBar.setBounds(5,20,PackControl.ControlDim1.width-\/20,30);}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ genMobPanel.add(mobiusHandler.toolBar);}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ genMobPanel.setBounds(0,85,PackControl.ControlDim1.width-\/10,55);}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ pane.add(genMobPanel);}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ pack();}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ this.setSize(\textcolor{keyword}{new}\ Dimension(PackControl.ControlDim1.width,180));}
+\DoxyCodeLine{00106\ \ \ \ \ \}}
+\DoxyCodeLine{00107\ \ \ \ \ }
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ loadSidePairs()\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ PackData\ p=CirclePack.cpb.getActivePackData();}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ PackDCEL\ pdcel=p.packDCEL;}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ sidePairHandler.wipeoutTools();}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ sidePairHandler.clearToolBar();}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pdcel.redChain==\textcolor{keyword}{null}\ ||\ pdcel.pairLink==\textcolor{keyword}{null}\ ||}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcel.pairLink.size()<2)}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ Iterator<SideData>\ sides=pdcel.pairLink.iterator();}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ SideData\ sd=sides.next();\ \textcolor{comment}{//\ first\ spot\ empty}}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (sides.hasNext())\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ sd=(SideData)sides.next();}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ yes,\ this\ is\ part\ of\ a\ side-\/pairing,\ add\ its\ tool\ }}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sd.label!=\textcolor{keyword}{null}\ \&\&\ sd.mateIndex>0)\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ letterIcon=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}mobius/mob\_"{}}+sd.label+\textcolor{stringliteral}{"{}.png"{}});}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ mobCmd=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}appMob\ "{}}+sd.mob.a.x+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sd.mob.a.y+\textcolor{stringliteral}{"{}\ "{}}+sd.mob.b.x+\textcolor{stringliteral}{"{}\ "{}}+sd.mob.b.y+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sd.mob.c.x+\textcolor{stringliteral}{"{}\ "{}}+sd.mob.c.y+\textcolor{stringliteral}{"{}\ "{}}+sd.mob.d.x+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sd.mob.d.y);}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MyTool\ but=\textcolor{keyword}{new}\ MyTool(\textcolor{keyword}{new}\ CPIcon(letterIcon),mobCmd,\textcolor{keyword}{null},\textcolor{keyword}{null},}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}Drop:\ Mobius\ transformation\ for\ side-\/pairing\ '"{}}+sd.label+\textcolor{stringliteral}{"{}'"{}}),}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}MOBIUS:"{}},\textcolor{keyword}{true},\textcolor{keyword}{this},(PopupBuilder)\textcolor{keyword}{null});}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sidePairHandler.addTool(but);}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ sidePairHandler.repopulateTools();}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00143\ \ \ \ \ \}}
+\DoxyCodeLine{00144\ \ \ \ \ }
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ actionPerformed(ActionEvent\ e)\ \{}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ String\ command\ =\ e.getActionCommand();}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}reset"{}}))\ }
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadSidePairs();}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}layout\_reset"{}}))\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackData\ p=CirclePack.cpb.getActivePackData();}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.packDCEL.layoutPacking();}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.fillcurves();}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loadSidePairs();}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}'layout'\ failed:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00159\ \ \ \ \ \}}
+\DoxyCodeLine{00160\ \ \ \ \ }
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keyword}{class\ }WAdapter\ \textcolor{keyword}{extends}\ WindowAdapter\ \{}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ windowClosing(WindowEvent\ wevt)\ \{}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wevt.getID()==WindowEvent.WINDOW\_CLOSING)}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.mobiusFrame.setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00166\ \ \ \ \ \}}
+\DoxyCodeLine{00167\ \ \ \ \ }
+\DoxyCodeLine{00168\ \}}
+
+\end{DoxyCode}

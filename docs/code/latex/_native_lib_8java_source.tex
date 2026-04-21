@@ -1,0 +1,148 @@
+\doxysection{Native\+Lib.\+java}
+\label{_native_lib_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/JNI/NativeLib.java@{C:/Users/ashej/myGitRepos/CirclePack/src/JNI/NativeLib.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }JNI;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.io.FileOutputStream;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.io.InputStream;}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00025\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }NativeLib}
+\DoxyCodeLine{00026\ \{}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ String\ writeLibrary(String\ path,\ String\ libname)\ }
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throws}\ IOException}
+\DoxyCodeLine{00030\ \ \ \ \ \{}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Gets\ the\ name\ of\ the\ platform\ dependent\ library\ */}}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ libname\ =\ System.mapLibraryName(libname);}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ String\ jarURL\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Gets\ the\ URL\ for\ the\ file\ in\ the\ jar\ */}}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(path.length()\ >\ 0)}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ jarURL\ =\ path+\textcolor{stringliteral}{"{}/"{}}+libname;}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \}\textcolor{keywordflow}{else}}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ jarURL\ =\ libname;}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ System.out.printf(\textcolor{stringliteral}{"{}\%s:\%s\(\backslash\)n"{}},\ System.getProperty(\textcolor{stringliteral}{"{}os.name"{}}),\ }
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.getProperty(\textcolor{stringliteral}{"{}os.arch"{}}));}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ For\ Linux,\ either\ the\ 32\ or\ 64\ bit\ library\ gets\ selected\ */}}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(System.getProperty(\textcolor{stringliteral}{"{}os.name"{}}).equals(\textcolor{stringliteral}{"{}Linux"{}}))}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ String\ arch\ =\ System.getProperty(\textcolor{stringliteral}{"{}os.arch"{}});}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println(\textcolor{stringliteral}{"{}arch\ =\ "{}}\ +\ arch);}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(arch.equals(\textcolor{stringliteral}{"{}amd64"{}})\ ||\ arch.equals(\textcolor{stringliteral}{"{}x86\_64"{}}))}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ jarURL\ =\ jarURL.replaceFirst(\textcolor{stringliteral}{"{}.so\$"{}},\ \textcolor{stringliteral}{"{}-\/x86\_64.so"{}});}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \}\textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(arch.equals(\textcolor{stringliteral}{"{}i386"{}}))}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ jarURL\ =\ jarURL.replaceFirst(\textcolor{stringliteral}{"{}.so\$"{}},\ \textcolor{stringliteral}{"{}-\/i586.so"{}});}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ System.out.printf(\textcolor{stringliteral}{"{}Jar\ url\ =\ \%s\(\backslash\)n"{}},\ jarURL);}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ For\ Mac\ OS\ X,\ check\ if\ there\ is\ a\ 32\ or\ 64\ bit\ variant\ */}}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(System.getProperty(\textcolor{stringliteral}{"{}os.name"{}}).equals(\textcolor{stringliteral}{"{}Mac\ OS\ X"{}}))}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ String\ arch\ =\ System.getProperty(\textcolor{stringliteral}{"{}os.arch"{}});}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println(\textcolor{stringliteral}{"{}arch\ =\ "{}}\ +\ arch);}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ System.out.printf(\textcolor{stringliteral}{"{}Jar\ url\ =\ \%s\(\backslash\)n"{}},\ jarURL);}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Gets\ an\ input\ stream\ to\ the\ library\ in\ the\ jar\ */}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ InputStream\ is\ =\ NativeLib.class.getClassLoader().getResourceAsStream(jarURL);}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ System.out.printf(\textcolor{stringliteral}{"{}Inputstream\ is\ =\ \%s\(\backslash\)n"{}},\ is);}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Creates\ a\ file\ in\ the\ current\ working\ directory\ of\ the\ java\ process}}
+\DoxyCodeLine{00085\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ and\ sets\ the\ file\ to\ being\ deleted\ on\ exit.\ */}}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ File\ libFile\ =\ \textcolor{keyword}{new}\ File(\textcolor{keyword}{new}\ File\ (\textcolor{stringliteral}{"{}."{}}).getCanonicalPath()\ +\ \textcolor{stringliteral}{"{}/"{}}\ +\ libname);}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ libFile.createNewFile();}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ libFile.deleteOnExit();}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Creates\ an\ output\ stream\ to\ the\ temporary\ library\ file\ */}}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ FileOutputStream\ os\ =\ \textcolor{keyword}{new}\ FileOutputStream(libFile);}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Creates\ a\ buffer\ for\ copying\ data\ */}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{byte}[]\ buf\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{byte}[4192];}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Copies\ the\ library\ file\ in\ the\ jar\ to\ the\ temporary\ library\ file\ */}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ amtRead\ =\ is.read(buf);\ amtRead\ >\ 0;\ amtRead\ =\ is.read(buf))}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ os.write(buf,\ 0,\ amtRead);}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Closes\ the\ streams\ */}}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ os.flush();}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ os.close();}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ is.close();}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ System.out.printf(\textcolor{stringliteral}{"{}Path\ to\ file\ \%s\(\backslash\)n"{}},\ libFile.getPath());}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Returns\ the\ path\ to\ the\ library\ on\ the\ system\ */}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ libFile.getPath();}
+\DoxyCodeLine{00111\ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \ \ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ String\ writeLibrary(String\ libname)\ \textcolor{keywordflow}{throws}\ IOException}
+\DoxyCodeLine{00114\ \ \ \ \ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ writeLibrary(\textcolor{stringliteral}{"{}"{}},\ libname);}
+\DoxyCodeLine{00116\ \ \ \ \ \}}
+\DoxyCodeLine{00117\ \ \ \ \ }
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ loadLibrary(String\ path,\ String\ libname)\ \textcolor{keywordflow}{throws}\ IOException}
+\DoxyCodeLine{00119\ \ \ \ \ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Writes\ the\ library\ from\ the\ jar\ file\ to\ the\ system\ and\ then\ gets}}
+\DoxyCodeLine{00121\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ the\ path\ to\ the\ library\ file\ so\ it\ can\ be\ loaded\ */}}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ String\ pathToLibrary\ =\ writeLibrary(path,\ libname);}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ System.out.printf(\textcolor{stringliteral}{"{}Loading\ \%s\(\backslash\)n"{}},\ pathToLibrary);}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ System.out.printf(\textcolor{stringliteral}{"{}library\ path\ =\ \%s\(\backslash\)n"{}},\ System.getProperty(\textcolor{stringliteral}{"{}java.library.path"{}}));}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ System.out.printf(\textcolor{stringliteral}{"{}new\ path\ =\ \%s\(\backslash\)n"{}},\ \textcolor{keyword}{new}\ File(pathToLibrary).getAbsoluteFile().getParent());}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ System.setProperty(\textcolor{stringliteral}{"{}java.library.path"{}},\ String.format(\textcolor{stringliteral}{"{}\%s:\%s"{}},\ \textcolor{keyword}{new}\ File(pathToLibrary).getAbsoluteFile().getParent(),\ System.getProperty(\textcolor{stringliteral}{"{}java.library.path"{}})));}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Loads\ the\ library\ */}}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ System.load(pathToLibrary);}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Error\ e)\ \{}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println(e);}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ e;}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00141\ \ \ \ \ \}}
+\DoxyCodeLine{00142\ }
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ loadLibrary(String\ libname)\ \textcolor{keywordflow}{throws}\ IOException}
+\DoxyCodeLine{00144\ \ \ \ \ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Writes\ the\ library\ from\ the\ jar\ file\ to\ the\ system\ and\ then\ gets}}
+\DoxyCodeLine{00146\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ the\ path\ to\ the\ library\ file\ so\ it\ can\ be\ loaded\ */}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ String\ pathToLibrary\ =\ writeLibrary(libname);}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ Loads\ the\ library\ */}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ System.load(pathToLibrary);}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Error\ e)\ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ System.out.println(e);}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ e;}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00158\ \ \ \ \ \}}
+\DoxyCodeLine{00159\ \}}
+
+\end{DoxyCode}

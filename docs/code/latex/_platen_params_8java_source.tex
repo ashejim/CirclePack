@@ -1,0 +1,114 @@
+\doxysection{Platen\+Params.\+java}
+\label{_platen_params_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/util/PlatenParams.java@{C:/Users/ashej/myGitRepos/CirclePack/src/util/PlatenParams.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }util;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }PlatenParams\ \{}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keyword}{public}\ Double\ minR;}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keyword}{public}\ Double\ maxR;}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keyword}{public}\ Double\ ratioQ;\ \ \ }
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ intensityUp;\ \ \ \ \ \textcolor{comment}{//\ is\ an\ intensity\ method\ installed?}}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ chgTrigger;\ \ \ \ \ \ \textcolor{comment}{//\ set\ true\ if\ there's\ been\ a\ change\ requiring\ platen\ reset}}
+\DoxyCodeLine{00018\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ only\ changed\ in\ reset\ call}}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{comment}{//\ Constructor(s)}}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keyword}{public}\ PlatenParams()\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ minR=Double.valueOf(.1);}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ maxR=Double.valueOf(1.0);}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ ratioQ=Double.valueOf(1.5);}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ intensityUp=\textcolor{keyword}{false};}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ chgTrigger=\textcolor{keyword}{false};}
+\DoxyCodeLine{00027\ \ \ \ \ \}}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{public}\ PlatenParams(Double\ mnR,Double\ mxR,Double\ ratQ)\ \{}
+\DoxyCodeLine{00030\ \textcolor{comment}{//\ \ \ \ \ \ super();}}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mnR!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \ \ \ \ minR=Double.valueOf(mnR);}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mxR!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \ \ maxR=Double.valueOf(mxR);}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ratQ!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \ \ \ ratioQ=Double.valueOf(ratQ);}
+\DoxyCodeLine{00037\ \ \ \ \ \}}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00040\ \textcolor{comment}{\ \ \ \ \ *\ set\ 'minR'\ (and\ possibly\ adjust\ 'maxR')\ but\ with\ constraints}}
+\DoxyCodeLine{00041\ \textcolor{comment}{\ \ \ \ \ *\ \ *\ minR>=microRad/200}}
+\DoxyCodeLine{00042\ \textcolor{comment}{\ \ \ \ \ *\ \ *\ maxR>minR*1.1\ \ (at\ least\ 10\%\ difference)}}
+\DoxyCodeLine{00043\ \textcolor{comment}{\ \ \ \ \ *\ \ *\ maxR<2*minR}}
+\DoxyCodeLine{00044\ \textcolor{comment}{\ \ \ \ \ *\ @param\ enc\_Rad\ double,\ circle\ enclosing\ whole\ region}}
+\DoxyCodeLine{00045\ \textcolor{comment}{\ \ \ \ \ *\ @param\ mR\ double}}
+\DoxyCodeLine{00046\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ set\_minR(\textcolor{keywordtype}{double}\ enc\_Rad,\textcolor{keywordtype}{double}\ mR)\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mR<=0)\ }
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ not\ too\ small:\ TODO}}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mR<enc\_Rad/250.0)}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ mR=enc\_Rad/250.0;}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ change\ significant\ enough\ to\ actually\ do?}}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(minR.doubleValue()-\/mR)/mR>.01)\ \{\ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ minR=Double.valueOf(mR);}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ chgTrigger=\textcolor{keyword}{true};}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ don't\ let\ 'maxR'\ be\ less\ than\ 1.1*minR}}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (maxR<1.1*minR)\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ maxR=1.1*minR;}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ chgTrigger=\textcolor{keyword}{true};}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00068\ \ \ \ \ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ set\_maxR(\textcolor{keywordtype}{double}\ mxR)\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mxR<=0)\ }
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mxR<1.1*minR)\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mxR=1.1*minR;}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ change\ significant\ enough\ to\ actually\ do?}}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(maxR.doubleValue()-\/mxR)/mxR>.01)\ \{\ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ maxR=Double.valueOf(mxR);}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ chgTrigger=\textcolor{keyword}{true};}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00088\ \ \ \ \ \}}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ set\_Q(\textcolor{keywordtype}{double}\ Q)\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Q<.05)}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ Q=.05;}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Q>2.0)}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ Q=2.0;}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ratioQ!=\textcolor{keyword}{null}\ \&\&\ Math.abs(ratioQ.doubleValue()-\/Q)/Q<.01)}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};\ \ \ \textcolor{comment}{//\ didn't\ really\ change\ enough}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ ratioQ=Double.valueOf(Q);}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ chgTrigger=\textcolor{keyword}{true};}
+\DoxyCodeLine{00099\ \ \ \ \ \}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ get\_trigger()\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ chgTrigger;}
+\DoxyCodeLine{00103\ \ \ \ \ \}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ set\_trigger(\textcolor{keywordtype}{boolean}\ trig)\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ chgTrigger=trig;}
+\DoxyCodeLine{00107\ \ \ \ \ \}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ get\_minR()\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keywordtype}{double})minR;}
+\DoxyCodeLine{00111\ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ get\_maxR()\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keywordtype}{double})maxR;}
+\DoxyCodeLine{00115\ \ \ \ \ \}}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00117\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ get\_Q()\ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keywordtype}{double})ratioQ;}
+\DoxyCodeLine{00119\ \ \ \ \ \}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \}}
+
+\end{DoxyCode}

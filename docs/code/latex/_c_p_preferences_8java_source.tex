@@ -1,0 +1,524 @@
+\doxysection{CPPreferences.\+java}
+\label{_c_p_preferences_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/panels/CPPreferences.java@{C:/Users/ashej/myGitRepos/CirclePack/src/panels/CPPreferences.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }panels;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ frames.PairedFrame;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.BorderLayout;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.GridLayout;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.event.ActionEvent;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.event.ActionListener;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.awt.event.ItemEvent;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.awt.event.ItemListener;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ java.io.FileReader;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ java.io.FileWriter;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ java.util.StringTokenizer;}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ javax.swing.JButton;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ javax.swing.JFrame;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ javax.swing.JLabel;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ javax.swing.JOptionPane;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ javax.swing.border.EtchedBorder;}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{import}\ canvasses.MainFrame;}
+\DoxyCodeLine{00031\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00032\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }CPPreferences\ \textcolor{keyword}{implements}\ ActionListener,\ ItemListener\{}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ @SuppressWarnings(\textcolor{stringliteral}{"{}unused"{}})}
+\DoxyCodeLine{00044\ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00045\ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ started=\textcolor{keyword}{false};}
+\DoxyCodeLine{00048\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ draft;}
+\DoxyCodeLine{00049\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ displayDebug;}
+\DoxyCodeLine{00050\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ displayToolTips;}
+\DoxyCodeLine{00051\ \ \ \textcolor{keyword}{private}\ JTextField\ scriptDirText;}
+\DoxyCodeLine{00052\ \ \ \textcolor{keyword}{private}\ JTextField\ packingDirText;}
+\DoxyCodeLine{00053\ \ \ \textcolor{keyword}{private}\ JTextField\ imageDirText;}
+\DoxyCodeLine{00054\ \ \ \textcolor{keyword}{private}\ JTextField\ toolDirText;}
+\DoxyCodeLine{00055\ \ \ \textcolor{keyword}{private}\ JTextField\ extenderDirText;\ \ }
+\DoxyCodeLine{00056\ \ \ \textcolor{keyword}{private}\ JTextField\ gvCmdText;}
+\DoxyCodeLine{00057\ \ \ \textcolor{keyword}{private}\ JTextField\ webURLField;}
+\DoxyCodeLine{00058\ \ \ \textcolor{keyword}{private}\ JTextField\ scriptURLField;}
+\DoxyCodeLine{00059\ \ \ \textcolor{keyword}{private}\ JTextField\ cmdHistoryFile;}
+\DoxyCodeLine{00060\ \ \ \textcolor{keyword}{private}\ JTextField\ printCmdText;}
+\DoxyCodeLine{00061\ \ \ \textcolor{keyword}{private}\ JTextField\ canvasSizeText;}
+\DoxyCodeLine{00062\ \ \ \textcolor{keyword}{private}\ JTextField\ pairSizeText;}
+\DoxyCodeLine{00063\ \ \ \textcolor{keyword}{private}\ JTextField\ fontSizeText;}
+\DoxyCodeLine{00064\ \ \ }
+\DoxyCodeLine{00065\ \ \ \textcolor{keyword}{protected}\ \textcolor{keyword}{static}\ JFrame\ locframe;}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \textcolor{comment}{/*\ \ This\ static\ block\ guarantees\ that\ all\ values\ are\ initialized\ and}}
+\DoxyCodeLine{00068\ \textcolor{comment}{\ \ \ *\ \ usable.\ \ This\ block\ is\ executed\ when\ the\ class\ is\ loaded\ as\ opposed}}
+\DoxyCodeLine{00069\ \textcolor{comment}{\ \ \ *\ \ to\ the\ constructor\ that\ is\ executed\ when\ an\ object\ is\ actually\ }}
+\DoxyCodeLine{00070\ \textcolor{comment}{\ \ \ *\ \ instantiated.}}
+\DoxyCodeLine{00071\ \textcolor{comment}{\ \ \ */}}
+\DoxyCodeLine{00072\ \ \ \textcolor{keyword}{static}\{}
+\DoxyCodeLine{00073\ \ \ \ \ draft\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00074\ \ \ \ \ displayToolTips\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00075\ \ \ \ \ displayDebug\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00076\ \ \ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \textcolor{comment}{//\ \ Constructor}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{public}\ CPPreferences()\{}
+\DoxyCodeLine{00080\ \ \ \ \ File\ prefFile\ =\ CPBase.CPprefFile;\ \textcolor{comment}{//\ should\ have\ been\ set\ in\ 'initPackControl'}}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{comment}{//\ set\ defaults}}
+\DoxyCodeLine{00083\ \ \ \ \ scriptDirText\ =\ \textcolor{keyword}{new}\ JTextField(CPBase.SCRIPT\_DIR,20);}
+\DoxyCodeLine{00084\ \ \ \ \ scriptDirText.setToolTipText(\textcolor{stringliteral}{"{}directory\ for\ your\ scripts"{}});}
+\DoxyCodeLine{00085\ \ \ \ \ packingDirText\ =\ \textcolor{keyword}{new}\ JTextField(CPBase.PACKINGS\_DIR,20);}
+\DoxyCodeLine{00086\ \ \ \ \ packingDirText.setToolTipText(\textcolor{stringliteral}{"{}directory\ for\ your\ circle\ packing\ files"{}});}
+\DoxyCodeLine{00087\ \ \ \ \ imageDirText\ =\ \textcolor{keyword}{new}\ JTextField(CPBase.IMAGE\_DIR,20);}
+\DoxyCodeLine{00088\ \ \ \ \ imageDirText.setToolTipText(\textcolor{stringliteral}{"{}directory\ for\ your\ screen\ shots"{}});}
+\DoxyCodeLine{00089\ \ \ \ \ printCmdText\ =\ \textcolor{keyword}{new}\ JTextField(CPBase.PRINT\_COMMAND,20);}
+\DoxyCodeLine{00090\ \ \ \ \ printCmdText.setToolTipText(\textcolor{stringliteral}{"{}system\ command\ to\ print\ something"{}});}
+\DoxyCodeLine{00091\ \ \ \ \ toolDirText\ =\ \textcolor{keyword}{new}\ JTextField(CPBase.TOOL\_DIR,20);}
+\DoxyCodeLine{00092\ \ \ \ \ toolDirText.setToolTipText(\textcolor{stringliteral}{"{}directory\ of\ your\ 'tools',\ icon-\/encapsulated\ command\ strings"{}});}
+\DoxyCodeLine{00093\ \ \ \ \ extenderDirText\ =\ \textcolor{keyword}{new}\ JTextField(CPBase.EXTENDER\_DIR,20);}
+\DoxyCodeLine{00094\ \ \ \ \ extenderDirText.setToolTipText(\textcolor{stringliteral}{"{}directory\ for\ 'PackExtender'\ inherited\ Java\ class\ files"{}});}
+\DoxyCodeLine{00095\ \ \ \ \ webURLField=\ \textcolor{keyword}{new}\ JTextField(CPBase.WEB\_URL\_FILE,20);}
+\DoxyCodeLine{00096\ \ \ \ \ webURLField.setToolTipText(\textcolor{stringliteral}{"{}file\ containing\ most\ recently\ visited\ URLs"{}});}
+\DoxyCodeLine{00097\ \ \ \ \ scriptURLField=\ \textcolor{keyword}{new}\ JTextField(CPBase.SCRIPT\_URL\_FILE,20);}
+\DoxyCodeLine{00098\ \ \ \ \ scriptURLField.setToolTipText(\textcolor{stringliteral}{"{}file\ containing\ most\ recently\ loaded\ scripts"{}});}
+\DoxyCodeLine{00099\ \ \ \ \ canvasSizeText=\textcolor{keyword}{new}\ JTextField(CPBase.ACTIVE\_CANVAS\_SIZE,10);}
+\DoxyCodeLine{00100\ \ \ \ \ canvasSizeText.setToolTipText(\textcolor{stringliteral}{"{}Main\ packing\ canvas\ size,\ 200\ to\ 1200\ pixels"{}});}
+\DoxyCodeLine{00101\ \ \ \ \ pairSizeText=\textcolor{keyword}{new}\ JTextField(CPBase.PAIR\_CANVAS\_SIZE,10);}
+\DoxyCodeLine{00102\ \ \ \ \ pairSizeText.setToolTipText(\textcolor{stringliteral}{"{}Side-\/by-\/side\ packing\ canvas\ size,\ 200\ to\ 800\ pixels"{}});}
+\DoxyCodeLine{00103\ \ \ \ \ fontSizeText=\textcolor{keyword}{new}\ JTextField(CPBase.FONT\_INCREMENT,10);}
+\DoxyCodeLine{00104\ \ \ \ \ fontSizeText.setToolTipText(\textcolor{stringliteral}{"{}Font\ sizes\ (e.g.,\ in\ script)\ can\ be\ increased\ by\ 1\ to\ 6\ increment"{}});}
+\DoxyCodeLine{00105\ \ \ \ \ }
+\DoxyCodeLine{00106\ \ \ \ \ CPFileManager.ScriptDirectory\ =\ \textcolor{keyword}{new}\ File(System.getProperty(\textcolor{stringliteral}{"{}user.home"{}}));}
+\DoxyCodeLine{00107\ \ \ \ \ CPFileManager.PackingDirectory\ =\ \textcolor{keyword}{new}\ File(System.getProperty(\textcolor{stringliteral}{"{}user.home"{}}));}
+\DoxyCodeLine{00108\ \ \ \ \ CPFileManager.ImageDirectory\ =\ \textcolor{keyword}{new}\ File(System.getProperty(\textcolor{stringliteral}{"{}user.home"{}}));}
+\DoxyCodeLine{00109\ \ \ \ \ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{comment}{//\ this\ will\ force\ use\ of\ jar\ 'Resources'\ if\ not\ explicitly\ reset}}
+\DoxyCodeLine{00111\ \ \ \ \ CPFileManager.ToolDirectory=\ \textcolor{keyword}{null};\ }
+\DoxyCodeLine{00112\ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keywordflow}{if}(prefFile.exists())\{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \textcolor{keywordflow}{try}\{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ BufferedReader\ reader\ =\ \textcolor{keyword}{new}\ BufferedReader(\textcolor{keyword}{new}\ FileReader(prefFile));}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ String\ s;}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}((s\ =\ reader.readLine())\ !=\ \textcolor{keyword}{null})\ \{\ }
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ StringTokenizer\ tok\ =\ \textcolor{keyword}{new}\ StringTokenizer(s);}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ignore\ blank\ lines\ or\ lines\ without\ at\ least\ a\ pair\ of\ tokens}}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(s.trim().length()>0\ \&\&\ s.charAt(0)!=\textcolor{charliteral}{'\#'}\ \&\&\ tok.countTokens()\ >=\ 2)\{}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ String\ keyword\ =\ tok.nextToken().trim();}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ value=\textcolor{keyword}{new}\ StringBuilder(tok.nextToken().trim());}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (tok.hasMoreTokens())\ }
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ value.append(\textcolor{stringliteral}{"{}\ "{}}+tok.nextToken().trim());}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (keyword.equals(\textcolor{stringliteral}{"{}PACKINGS\_DIR"{}}))\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.PACKINGS\_DIR=value.toString().trim();}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ packingDirText.setText(CPBase.PACKINGS\_DIR);}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.PackingDirectory=\ adjustFileHome(CPBase.PACKINGS\_DIR);}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (CPFileManager.PackingDirectory==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.PackingDirectory=\textcolor{keyword}{new}\ File(CPBase.PACKINGS\_DIR);}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!CPFileManager.PackingDirectory.exists())\ \textcolor{comment}{//\ didn't\ find\ it?\ look\ in\ 'home'}}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.PackingDirectory=}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ File(CPFileManager.CurrentDirectory,CPBase.PACKINGS\_DIR);}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (keyword.equals(\textcolor{stringliteral}{"{}IMAGE\_DIR"{}}))\ \{}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.IMAGE\_DIR=value.toString().trim();}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scriptDirText.setText(CPBase.IMAGE\_DIR);}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ImageDirectory=adjustFileHome(CPBase.IMAGE\_DIR);}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (CPFileManager.ImageDirectory==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ImageDirectory=\textcolor{keyword}{new}\ File(CPBase.IMAGE\_DIR);}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!CPFileManager.ImageDirectory.exists())\ \textcolor{comment}{//\ didn't\ find\ it?\ look\ in\ 'home'}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ImageDirectory=}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ File(CPFileManager.CurrentDirectory,CPBase.SCRIPT\_DIR);}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (keyword.equals(\textcolor{stringliteral}{"{}SCRIPT\_DIR"{}}))\ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.SCRIPT\_DIR=value.toString().trim();}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scriptDirText.setText(CPBase.SCRIPT\_DIR);}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ScriptDirectory=adjustFileHome(CPBase.SCRIPT\_DIR);}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (CPFileManager.ScriptDirectory==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ScriptDirectory=\textcolor{keyword}{new}\ File(CPBase.SCRIPT\_DIR);}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!CPFileManager.ScriptDirectory.exists())\ \textcolor{comment}{//\ didn't\ find\ it?\ look\ in\ 'home'}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ScriptDirectory=}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ File(CPFileManager.CurrentDirectory,CPBase.SCRIPT\_DIR);}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (keyword.equals(\textcolor{stringliteral}{"{}TOOL\_DIR"{}}))\ \{}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.TOOL\_DIR=value.toString().trim();}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ toolDirText.setText(CPBase.TOOL\_DIR);}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ToolDirectory=\ adjustFileHome(CPBase.TOOL\_DIR);}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (CPFileManager.ToolDirectory==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ToolDirectory=\ }
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ File(CPFileManager.CurrentDirectory,CPBase.TOOL\_DIR);}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (keyword.equals(\textcolor{stringliteral}{"{}EXTENDER\_DIR"{}}))\ \{}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.EXTENDER\_DIR=value.toString().trim();}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderDirText.setText(CPBase.EXTENDER\_DIR);}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ExtenderDirectory=\ adjustFileHome(CPBase.EXTENDER\_DIR);}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (CPFileManager.ExtenderDirectory==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ExtenderDirectory=\ }
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ File(CPFileManager.CurrentDirectory,CPBase.EXTENDER\_DIR);}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (keyword.equals(\textcolor{stringliteral}{"{}WEB\_URL\_FILE"{}}))\ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.WEB\_URL\_FILE=value.toString().trim();}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ ff=adjustFileHome(CPBase.WEB\_URL\_FILE);}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ff==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ff=\textcolor{keyword}{new}\ File(CPFileManager.HomeDirectory,CPBase.WEB\_URL\_FILE);}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ webURLField.setText(ff.toString());}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (keyword.equals(\textcolor{stringliteral}{"{}SCRIPT\_URL\_FILE"{}}))\ \{}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.SCRIPT\_URL\_FILE=value.toString().trim();}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ File\ ff=adjustFileHome(CPBase.SCRIPT\_URL\_FILE);}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ff==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ff=\textcolor{keyword}{new}\ File(CPFileManager.HomeDirectory,CPBase.SCRIPT\_URL\_FILE);}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ scriptURLField.setText(ff.toString());}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(keyword.equals(\textcolor{stringliteral}{"{}PRINT\_COMMAND"{}}))\{}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.PRINT\_COMMAND=value.toString().trim()+\textcolor{stringliteral}{"{}\ "{}};}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ printCmdText.setText(CPBase.PRINT\_COMMAND);}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00202\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ else\ if\ (keyword.equals("{}POSTSCRIPT\_VIEWER"{}))\ \{}}
+\DoxyCodeLine{00203\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.POSTSCRIPT\_VIEWER=value.toString().trim()+"{}\ "{};}}
+\DoxyCodeLine{00204\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ gvCmdText.setText(CPBase.POSTSCRIPT\_VIEWER);}}
+\DoxyCodeLine{00205\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (keyword.equals(\textcolor{stringliteral}{"{}ACTIVE\_CANVAS\_SIZE"{}}))\ \{}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ sz=Integer.parseInt(value.toString().trim());}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sz<PackControl.MinActiveSize)\ sz=PackControl.MinActiveSize;}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sz>PackControl.MaxActiveSize)\ sz=PackControl.MaxActiveSize;}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.ACTIVE\_CANVAS\_SIZE=Integer.toString(sz);}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.setActiveCanvasDim(sz);}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ canvasSizeText.setText(CPBase.ACTIVE\_CANVAS\_SIZE);}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (keyword.equals(\textcolor{stringliteral}{"{}PAIR\_CANVAS\_SIZE"{}}))\ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ sz=Integer.parseInt(value.toString().trim());}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sz<PackControl.MinMapSize)\ sz=PackControl.MinMapSize;}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sz>PackControl.MaxMapSize)\ sz=PackControl.MaxMapSize;}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.PAIR\_CANVAS\_SIZE=Integer.toString(sz);}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.setPairedCanvasDim(sz);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pairSizeText.setText(CPBase.PAIR\_CANVAS\_SIZE);}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (keyword.equals(\textcolor{stringliteral}{"{}FONT\_INCREMENT"{}}))\ \{}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.FONT\_INCREMENT=value.toString().trim();}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ sz=Integer.parseInt(CPBase.FONT\_INCREMENT);}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.setFontIncrement(sz);}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fontSizeText.setText(CPBase.FONT\_INCREMENT);}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ reader.close();}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ }
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \textcolor{keywordflow}{catch}(IOException\ e)\{}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ e.printStackTrace();}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00240\ \ \ \ \ \}}
+\DoxyCodeLine{00241\ \ \ \ \ }
+\DoxyCodeLine{00242\ \ \ \ \ \textcolor{comment}{//\ popup\ warning\ message\ if\ display\ is\ too\ small}}
+\DoxyCodeLine{00243\ \ \ \ \ \textcolor{keywordflow}{if}\ (PackControl.displayDimension.width<600\ ||\ PackControl.displayDimension.height<600)\ \{}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ JFrame\ tmpframe=\textcolor{keyword}{new}\ JFrame();}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ tmpframe.setSize(200,300);}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ JLabel\ lab=\textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}CirclePack"{}});}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ tmpframe.add(lab);}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ tmpframe.setVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ JOptionPane.showMessageDialog(tmpframe,}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Your\ display\ area\ is\ quite\ small\ and\ CirclePack\ will\ be\ "{}}+}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}difficult\ to\ use.\ The\ CirclePack\ Owl\ suggests\ you\ use\ a\ "{}}+}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}different\ computer."{}},}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Warning"{}},\ JOptionPane.ERROR\_MESSAGE);}
+\DoxyCodeLine{00254\ \ \ \ \ \}}
+\DoxyCodeLine{00255\ \ \ \}}
+\DoxyCodeLine{00256\ }
+\DoxyCodeLine{00264\ \ \ \textcolor{keyword}{public}\ File\ adjustFileHome(String\ value)\ \{}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ String\ home=CPFileManager.HomeDirectory.toString();}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (value==\textcolor{keyword}{null}\ ||\ value.trim().length()==0)}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keyword}{new}\ File(home));}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ value=value.trim();}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (value.startsWith(\textcolor{stringliteral}{"{}\string~"{}}))\ \{}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keyword}{new}\ File(home,value.substring(1)));}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (value.startsWith(home))\ \textcolor{keywordflow}{return}\ (\textcolor{keyword}{new}\ File(value));}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00274\ \ \ \}}
+\DoxyCodeLine{00275\ }
+\DoxyCodeLine{00280\ \ \ \textcolor{keyword}{public}\ JFrame\ displayPreferencesWindow()\{}
+\DoxyCodeLine{00281\ \ \ \ \ locframe\ =\ \textcolor{keyword}{new}\ JFrame(\textcolor{stringliteral}{"{}Preferences"{}});}
+\DoxyCodeLine{00282\ \ \ \ \ locframe.setDefaultCloseOperation(JFrame.DISPOSE\_ON\_CLOSE);}
+\DoxyCodeLine{00283\ }
+\DoxyCodeLine{00284\ \ \ \ \ JPanel\ overall\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00285\ \ \ \ \ overall.setLayout(\textcolor{keyword}{new}\ BorderLayout());}
+\DoxyCodeLine{00286\ }
+\DoxyCodeLine{00287\ \ \ \ \ JPanel\ panel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00288\ \ \ \ \ String\ prefname=CPBase.CPprefFile.getAbsolutePath();}
+\DoxyCodeLine{00289\ \ \ \ \ String\ home=CPFileManager.HomeDirectory.getAbsolutePath()+File.separator;}
+\DoxyCodeLine{00290\ \ \ \ \ \textcolor{keywordflow}{if}\ (prefname.startsWith(home));}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ prefname=prefname.substring(home.length());}
+\DoxyCodeLine{00292\ \ \ \ \ JLabel\ topwords=\textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}Preferences\ file:\ \(\backslash\)"{}\string~/"{}}+prefname+\textcolor{stringliteral}{"{}\(\backslash\)"{}"{}});}
+\DoxyCodeLine{00293\ \ \ \ \ panel.setBorder(\textcolor{keyword}{new}\ EtchedBorder());}
+\DoxyCodeLine{00294\ \ \ \ \ panel.add(topwords);}
+\DoxyCodeLine{00295\ \ \ \ \ overall.add(panel,BorderLayout.NORTH);}
+\DoxyCodeLine{00296\ }
+\DoxyCodeLine{00297\ \ \ \ \ JPanel\ mainPanel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00298\ }
+\DoxyCodeLine{00299\ \ \ \ \ mainPanel.setLayout(\textcolor{keyword}{new}\ GridLayout(0,1));}
+\DoxyCodeLine{00300\ }
+\DoxyCodeLine{00301\ \ \ \ \ panel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00302\ \ \ \ \ JLabel\ label\ =\ \textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}SCRIPT\_DIR"{}});}
+\DoxyCodeLine{00303\ \ \ \ \ panel.add(label);}
+\DoxyCodeLine{00304\ \ \ \ \ panel.add(scriptDirText);}
+\DoxyCodeLine{00305\ \ \ \ \ mainPanel.add(panel);}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \ \ \ \ panel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00308\ \ \ \ \ label\ =\ \textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}PACKINGS\_DIR"{}});}
+\DoxyCodeLine{00309\ \ \ \ \ panel.add(label);}
+\DoxyCodeLine{00310\ \ \ \ \ panel.add(packingDirText);}
+\DoxyCodeLine{00311\ \ \ \ \ mainPanel.add(panel);}
+\DoxyCodeLine{00312\ }
+\DoxyCodeLine{00313\ \ \ \ \ panel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00314\ \ \ \ \ label\ =\ \textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}IMAGE\_DIR"{}});}
+\DoxyCodeLine{00315\ \ \ \ \ panel.add(label);}
+\DoxyCodeLine{00316\ \ \ \ \ panel.add(imageDirText);}
+\DoxyCodeLine{00317\ \ \ \ \ mainPanel.add(panel);}
+\DoxyCodeLine{00318\ }
+\DoxyCodeLine{00319\ \ \ \ \ panel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00320\ \ \ \ \ label\ =\ \textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}TOOL\_DIR"{}});}
+\DoxyCodeLine{00321\ \ \ \ \ panel.add(label);}
+\DoxyCodeLine{00322\ \ \ \ \ panel.add(toolDirText);}
+\DoxyCodeLine{00323\ \ \ \ \ mainPanel.add(panel);}
+\DoxyCodeLine{00324\ }
+\DoxyCodeLine{00325\ \ \ \ \ panel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00326\ \ \ \ \ label\ =\ \textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}EXTENDER\_DIR"{}});}
+\DoxyCodeLine{00327\ \ \ \ \ panel.add(label);}
+\DoxyCodeLine{00328\ \ \ \ \ panel.add(extenderDirText);}
+\DoxyCodeLine{00329\ \ \ \ \ mainPanel.add(panel);}
+\DoxyCodeLine{00330\ }
+\DoxyCodeLine{00331\ \ \ \ \ panel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00332\ \ \ \ \ label\ =\ \textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}PRINT\_COMMAND"{}});}
+\DoxyCodeLine{00333\ \ \ \ \ panel.add(label);}
+\DoxyCodeLine{00334\ \ \ \ \ panel.add(printCmdText);}
+\DoxyCodeLine{00335\ \ \ \ \ mainPanel.add(panel);}
+\DoxyCodeLine{00336\ }
+\DoxyCodeLine{00337\ \ \ \ \ panel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00338\ \ \ \ \ label\ =\ \textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}WEB\_URL\_FILE"{}});}
+\DoxyCodeLine{00339\ \ \ \ \ panel.add(label);}
+\DoxyCodeLine{00340\ \ \ \ \ panel.add(webURLField);}
+\DoxyCodeLine{00341\ \ \ \ \ mainPanel.add(panel);}
+\DoxyCodeLine{00342\ }
+\DoxyCodeLine{00343\ \ \ \ \ panel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00344\ \ \ \ \ label\ =\ \textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}CMD\_URL\_FILE"{}});}
+\DoxyCodeLine{00345\ \ \ \ \ panel.add(label);}
+\DoxyCodeLine{00346\ \ \ \ \ panel.add(scriptURLField);}
+\DoxyCodeLine{00347\ \ \ \ \ mainPanel.add(panel);}
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ \ \ \ \ panel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00350\ \ \ \ \ label\ =\ \textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}ACTIVE\_CANVAS\_SIZE"{}});}
+\DoxyCodeLine{00351\ \ \ \ \ panel.add(label);}
+\DoxyCodeLine{00352\ \ \ \ \ panel.add(canvasSizeText);}
+\DoxyCodeLine{00353\ \ \ \ \ mainPanel.add(panel);}
+\DoxyCodeLine{00354\ }
+\DoxyCodeLine{00355\ \ \ \ \ panel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00356\ \ \ \ \ label\ =\ \textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}PAIR\_CANVAS\_SIZE"{}});}
+\DoxyCodeLine{00357\ \ \ \ \ panel.add(label);}
+\DoxyCodeLine{00358\ \ \ \ \ panel.add(pairSizeText);}
+\DoxyCodeLine{00359\ \ \ \ \ mainPanel.add(panel);}
+\DoxyCodeLine{00360\ }
+\DoxyCodeLine{00361\ \ \ \ \ panel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00362\ \ \ \ \ label\ =\ \textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}FONT\_INCREMENT"{}});}
+\DoxyCodeLine{00363\ \ \ \ \ panel.add(label);}
+\DoxyCodeLine{00364\ \ \ \ \ panel.add(fontSizeText);}
+\DoxyCodeLine{00365\ \ \ \ \ mainPanel.add(panel);}
+\DoxyCodeLine{00366\ }
+\DoxyCodeLine{00367\ \ \ \ \ overall.add(mainPanel,BorderLayout.CENTER);}
+\DoxyCodeLine{00368\ }
+\DoxyCodeLine{00369\ \ \ \ \ JPanel\ bottomPanel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00370\ \ \ \ \ JButton\ confirm\ =\ \textcolor{keyword}{new}\ JButton(\textcolor{stringliteral}{"{}Apply"{}});}
+\DoxyCodeLine{00371\ \ \ \ \ confirm.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00372\ \ \ \ \ confirm.setActionCommand(\textcolor{stringliteral}{"{}accept"{}});}
+\DoxyCodeLine{00373\ \ \ \ \ JButton\ cancel\ =\ \textcolor{keyword}{new}\ JButton(\textcolor{stringliteral}{"{}Cancel"{}});}
+\DoxyCodeLine{00374\ \ \ \ \ cancel.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00375\ \ \ \ \ cancel.setActionCommand(\textcolor{stringliteral}{"{}cancel"{}});}
+\DoxyCodeLine{00376\ \ \ \ \ JButton\ applysave\ =\ \textcolor{keyword}{new}\ JButton(\textcolor{stringliteral}{"{}Apply/Save"{}});}
+\DoxyCodeLine{00377\ \ \ \ \ applysave.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00378\ \ \ \ \ applysave.setActionCommand(\textcolor{stringliteral}{"{}applysave"{}});}
+\DoxyCodeLine{00379\ \ \ \ \ bottomPanel.add(confirm);}
+\DoxyCodeLine{00380\ \ \ \ \ bottomPanel.add(cancel);}
+\DoxyCodeLine{00381\ \ \ \ \ bottomPanel.add(applysave);}
+\DoxyCodeLine{00382\ \ \ \ \ overall.add(bottomPanel,BorderLayout.SOUTH);}
+\DoxyCodeLine{00383\ }
+\DoxyCodeLine{00384\ \ \ \ \ locframe.getContentPane().add(overall);}
+\DoxyCodeLine{00385\ \ \ \ \ locframe.pack();}
+\DoxyCodeLine{00386\ \ \ \ \ \textcolor{keywordflow}{return}\ locframe;}
+\DoxyCodeLine{00387\ \ \ \}}
+\DoxyCodeLine{00388\ }
+\DoxyCodeLine{00392\ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{void}\ savePrefs()\ \{}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ File\ f=CPBase.CPprefFile;}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ writer\ =\ \textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(f));}
+\DoxyCodeLine{00396\ }
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}PACKINGS\_DIR\ "{}}+packingDirText.getText());}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}SCRIPT\_DIR\ "{}}+scriptDirText.getText());}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}IMAGE\_DIR\ "{}}+scriptDirText.getText());}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}TOOL\_DIR\ "{}}+toolDirText.getText());}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}EXTENDER\_DIR\ "{}}+extenderDirText.getText());}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}PRINT\_COMMAND\ "{}}+printCmdText.getText());}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}WEB\_URL\_FILE\ "{}}+webURLField.getText());}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}SCRIPT\_URL\_FILE\ "{}}+scriptURLField.getText());}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ writer.newLine();\ }
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}ACTIVE\_CANVAS\_SIZE\ "{}}+canvasSizeText.getText());}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ writer.newLine();\ }
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}PAIR\_CANVAS\_SIZE\ "{}}+pairSizeText.getText());}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}FONT\_INCREMENT\ "{}}+fontSizeText.getText());}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ writer.flush();}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ writer.close();}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ ioe)\ \{}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ String\ fto=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}Failed\ to\ open\ "{}}+CPBase.CPprefFile.getAbsolutePath());}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ PackControl.consoleCmd.dispConsoleMsg(fto);}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ PackControl.shellManager.recordError(fto);}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00425\ \ \ \}}
+\DoxyCodeLine{00426\ }
+\DoxyCodeLine{00431\ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{void}\ applyPrefs()\ \{}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ File\ file=\textcolor{keyword}{null};}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ file=\textcolor{keyword}{new}\ File(scriptDirText.getText());}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (file.exists())\ }
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ScriptDirectory=file;}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ CPFileManager.ScriptDirectory=CPFileManager.HomeDirectory;}
+\DoxyCodeLine{00439\ }
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ file=\textcolor{keyword}{new}\ File(packingDirText.getText());}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (file.exists())}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.PackingDirectory=file;}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ CPFileManager.PackingDirectory=CPFileManager.HomeDirectory;}
+\DoxyCodeLine{00444\ }
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \ \ file=\textcolor{keyword}{new}\ File(imageDirText.getText());}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (file.exists())}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ImageDirectory=file;}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ CPFileManager.ImageDirectory=CPFileManager.HomeDirectory;}
+\DoxyCodeLine{00449\ }
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ file=\textcolor{keyword}{new}\ File(toolDirText.getText());}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (file.exists())}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ToolDirectory=file;}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ CPFileManager.ToolDirectory=CPFileManager.HomeDirectory;}
+\DoxyCodeLine{00454\ }
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ file=\textcolor{keyword}{new}\ File(extenderDirText.getText());}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (file.exists())}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.ExtenderDirectory=file;}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ CPFileManager.ExtenderDirectory=CPFileManager.HomeDirectory;}
+\DoxyCodeLine{00459\ }
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ active\ canvas\ preferred\ size}}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ sz=Integer.parseInt(canvasSizeText.getText());}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sz<PackControl.MinActiveSize)\ sz=PackControl.MinActiveSize;}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sz>PackControl.MaxActiveSize)\ sz=PackControl.MaxActiveSize;}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ PackControl.setActiveCanvasDim(sz);\ \textcolor{comment}{//\ store}}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sz!=MainFrame.getCanvasDim().height)}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.activeFrame.layMeOut(\textcolor{keyword}{new}\ Dimension(sz,sz));}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ PackControl.activeFrame.repaint();}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ paired\ canvas\ preferred\ size}}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ psz=Integer.parseInt(pairSizeText.getText());}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (psz<PackControl.MinMapSize)\ psz=PackControl.MinMapSize;}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (psz>PackControl.MaxMapSize)\ psz=PackControl.MaxMapSize;}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \ PackControl.setPairedCanvasDim(psz);\ \textcolor{comment}{//\ store\ }}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (psz!=PairedFrame.getCanvasDim().height)}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.mapPairFrame.layMeOut(\textcolor{keyword}{new}\ Dimension(psz,psz));}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ PackControl.mapPairFrame.repaint();}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \ \ ex.printStackTrace();}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00482\ \ \ \}}
+\DoxyCodeLine{00483\ }
+\DoxyCodeLine{00487\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ actionPerformed(ActionEvent\ e)\{}
+\DoxyCodeLine{00488\ \ \ \ \ String\ command\ =\ e.getActionCommand();}
+\DoxyCodeLine{00489\ }
+\DoxyCodeLine{00490\ \ \ \ \ \textcolor{keywordflow}{if}(command.equals(\textcolor{stringliteral}{"{}apply"{}}))\{\ \textcolor{comment}{//\ Any\ changes\ apply\ to\ current\ session}}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ applyPrefs();}
+\DoxyCodeLine{00492\ \ \ \ \ \}}
+\DoxyCodeLine{00493\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (command.equals(\textcolor{stringliteral}{"{}applysave"{}}))\{\ \textcolor{comment}{//\ apply\ changes\ and\ save\ to\ CPprefFile}}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ applyPrefs();}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ savePrefs();}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ locframe.setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ locframe.dispose();}
+\DoxyCodeLine{00498\ \ \ \ \ \}}
+\DoxyCodeLine{00499\ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}(command.equals(\textcolor{stringliteral}{"{}cancel"{}}))\{\ \textcolor{comment}{//\ No\ changes\ accepted}}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ locframe.setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ locframe.dispose();}
+\DoxyCodeLine{00502\ \ \ \ \ \}}
+\DoxyCodeLine{00503\ \ \ \}\ }
+\DoxyCodeLine{00504\ }
+\DoxyCodeLine{00505\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ itemStateChanged(ItemEvent\ e)\{\}\ }
+\DoxyCodeLine{00506\ }
+\DoxyCodeLine{00507\ \ \ \textcolor{keyword}{public}\ String\ getPrintCmd()\ \{}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ printCmdText.getText();}
+\DoxyCodeLine{00509\ \ \ \}}
+\DoxyCodeLine{00510\ }
+\DoxyCodeLine{00511\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setPrintCmd(String\ printCmd)\ \{}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ printCmdText.setText(printCmd);}
+\DoxyCodeLine{00513\ \ \ \}}
+\DoxyCodeLine{00514\ }
+\DoxyCodeLine{00515\ \ \ \textcolor{keyword}{public}\ String\ getGvCmd()\ \{}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ gvCmdText.getText();}
+\DoxyCodeLine{00517\ \ \ \}}
+\DoxyCodeLine{00518\ }
+\DoxyCodeLine{00519\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setGvCmd(String\ gvCmd)\ \{}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ gvCmdText.setText(gvCmd);}
+\DoxyCodeLine{00521\ \ \ \}}
+\DoxyCodeLine{00522\ }
+\DoxyCodeLine{00523\ \ \ \textcolor{keyword}{public}\ String\ getWebURLfile()\ \{}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ webURLField.getText().trim();}
+\DoxyCodeLine{00525\ \ \ \}}
+\DoxyCodeLine{00526\ }
+\DoxyCodeLine{00527\ \ \ \textcolor{keyword}{public}\ String\ getCmdURLfile()\ \{}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ scriptURLField.getText().trim();}
+\DoxyCodeLine{00529\ \ \ \}}
+\DoxyCodeLine{00530\ }
+\DoxyCodeLine{00531\ \ \ \textcolor{keyword}{public}\ String\ getCmdHistoryFile()\ \{}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cmdHistoryFile.getText().trim();}
+\DoxyCodeLine{00533\ \ \ \}}
+\DoxyCodeLine{00534\ \ \ }
+\DoxyCodeLine{00535\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setWebURLfile(String\ webFile)\ \{}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ webURLField.setText(webFile);}
+\DoxyCodeLine{00537\ \ \ \}}
+\DoxyCodeLine{00538\ }
+\DoxyCodeLine{00539\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setCmdURLfile(String\ webFile)\ \{}
+\DoxyCodeLine{00540\ \ \ \ \ \ \ scriptURLField.setText(webFile);}
+\DoxyCodeLine{00541\ \ \ \}}
+\DoxyCodeLine{00542\ }
+\DoxyCodeLine{00543\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ getDisplayToolTips()\{}
+\DoxyCodeLine{00544\ \ \ \ \ \textcolor{keywordflow}{return}\ displayToolTips;}
+\DoxyCodeLine{00545\ \ \ \}}
+\DoxyCodeLine{00546\ \ \ }
+\DoxyCodeLine{00547\ \}}
+
+\end{DoxyCode}

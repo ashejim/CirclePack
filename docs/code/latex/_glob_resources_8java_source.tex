@@ -1,0 +1,126 @@
+\doxysection{Glob\+Resources.\+java}
+\label{_glob_resources_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/util/GlobResources.java@{C:/Users/ashej/myGitRepos/CirclePack/src/util/GlobResources.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }util;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.net.JarURLConnection;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.net.URISyntaxException;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.net.URL;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.util.Arrays;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.util.Collections;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.util.Enumeration;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.util.List;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.util.Set;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.util.TreeSet;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ java.util.jar.JarEntry;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ java.util.regex.Matcher;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ java.util.regex.Pattern;}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }GlobResources\ \{}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Set<String>\ glob(String\ dir,List<String>\ globs)\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ try\ to\ get\ the\ url\ for\ the\ directory}}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ URL\ dir\_url\ =\ CPBase.getResourceURL(dir);}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dir\_url\ ==\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ couldn't\ find\ the\ directory,\ so\ return\ an\ empty\ set}}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Collections.emptySet();}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (dir\_url.getProtocol().equals(\textcolor{stringliteral}{"{}file"{}}))\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ globFileURL(dir\_url,\ globs);}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (dir\_url.getProtocol().equals(\textcolor{stringliteral}{"{}jar"{}}))\ \{}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ globJarURL(dir\_url,\ globs);}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ URL\ is\ a\ protocol\ I\ don't\ know\ how\ to\ handle}}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Collections.emptySet();}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ ArrayList<String>\ glob2regexList(List<String>\ globs)\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ ArrayList<String>\ regexes\ =\ \textcolor{keyword}{new}\ ArrayList<String>();}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (String\ g\ :\ globs)\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ regexes.add(glob2regex(g));}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ regexes;}
+\DoxyCodeLine{00071\ \ \ \ \ \}}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ String\ glob2regex(String\ g)\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ pattern\ that\ matches\ any\ number\ of\ characters\ that\ aren't\ '*'\ or}}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ '?'\ followed\ by\ one\ of\ those\ characters\ or\ the\ end\ of\ the\ string.}}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ Pattern\ p\ =\ Pattern.compile(\textcolor{stringliteral}{"{}([\string^\(\backslash\)\(\backslash\)*\(\backslash\)\(\backslash\)?]*)([\(\backslash\)\(\backslash\)*\(\backslash\)\(\backslash\)?]|\$)"{}});}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ matcher\ to\ look\ through\ matches\ to\ p\ in\ g}}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ Matcher\ m\ =\ p.matcher(g);}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ I'll\ build\ up\ my\ regular\ expression\ in\ this\ string}}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ StringBuilder\ regex\ =\ \textcolor{keyword}{new}\ StringBuilder();}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ glob\ pattern\ has\ to\ start\ matching\ at\ the\ beginning}}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ regex.append(\textcolor{stringliteral}{"{}\string^"{}});}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ String\ literal;}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ String\ special;}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (m.find())\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ literal\ =\ m.group(1);\ \textcolor{comment}{//\ literal\ string\ before\ special}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ special\ =\ m.group(2);\ \textcolor{comment}{//\ "{}*"{},\ "{}?"{},\ or\ "{}"{}\ (at\ end\ of\ string)}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ quote\ literal\ in\ case\ it\ contains\ special\ characters}}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ regex.append(Pattern.quote(literal));}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ convert\ '*'\ or\ '?'\ to\ equivalent\ regular\ expression}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (special.equals(\textcolor{stringliteral}{"{}*"{}}))\ \{}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ regex.append(\textcolor{stringliteral}{"{}.*"{}});}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (special.equals(\textcolor{stringliteral}{"{}?"{}}))\{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ regex.append(\textcolor{stringliteral}{"{}."{}});}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ must\ be\ empty\ string,\ nothing\ to\ append}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ glob\ pattern\ has\ to\ match\ all\ the\ way\ to\ the\ end}}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ regex.append(\textcolor{stringliteral}{"{}\$"{}});}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ regex.toString();}
+\DoxyCodeLine{00115\ \ \ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keyword}{static}\ Set<String>\ globJarURL(URL\ url,\ List<String>\ globs)\ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ Set<String>\ results\ =\ \textcolor{keyword}{new}\ TreeSet<String>();}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ convert\ glob\ patterns\ with\ path\ to\ regular\ expressions}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ List<String>\ patterns\ =\ glob2regexList(globs);}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ JarURLConnection\ conn\ =\ (JarURLConnection)url.openConnection();}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ the\ name\ of\ the\ directory\ from\ the\ URL}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ String\ dir\ =\ conn.getJarEntry().getName();}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ make\ sure\ the\ directory\ ends\ with\ a\ '/'}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ dir\ =\ dir.replaceFirst(\textcolor{stringliteral}{"{}/?\$"{}},\ \textcolor{stringliteral}{"{}/"{}});}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ all\ entries\ from\ the\ jar\ file\ that\ match\ the\ patterns.}}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ Enumeration<JarEntry>\ entries\ =\ conn.getJarFile().entries();}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ String\ path;\ \textcolor{comment}{//\ path\ within\ the\ jar\ file}}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (entries.hasMoreElements())\ \{}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ path\ =\ entries.nextElement().getName();}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (path.startsWith(dir))\ \{}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ name\ =\ path.substring(dir.length(),\ path.length());}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (String\ p\ :\ patterns)\ \{}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name.matches(p))\ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ results.add(name);}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ results;}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ e)\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ e.printStackTrace();}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Collections.emptySet();}
+\DoxyCodeLine{00155\ \ \ \ \ \}}
+\DoxyCodeLine{00156\ }
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ Set<String>\ globFileURL(URL\ url,\ List<String>\ patterns)\ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ File\ dir\ =\ \textcolor{keyword}{new}\ File(url.toURI());}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ String[]\ names\ =\ dir.list(\textcolor{keyword}{new}\ GlobFilter(patterns));}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ TreeSet<String>(Arrays.asList(names));}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (URISyntaxException\ e)\ \{}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ e.printStackTrace();}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Collections.emptySet();}
+\DoxyCodeLine{00175\ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \}}
+
+\end{DoxyCode}

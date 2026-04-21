@@ -1,0 +1,111 @@
+\doxysection{Tool\+Drop\+Listener.\+java}
+\label{_tool_drop_listener_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/dragdrop/ToolDropListener.java@{C:/Users/ashej/myGitRepos/CirclePack/src/dragdrop/ToolDropListener.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }dragdrop;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Point;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.datatransfer.DataFlavor;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.datatransfer.Transferable;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.dnd.DnDConstants;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.dnd.DropTargetDragEvent;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.dnd.DropTargetDropEvent;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.dnd.DropTargetEvent;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.dnd.DropTargetListener;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.awt.geom.Point2D;}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ canvasses.MyCanvasMode;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ mytools.MyTool;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ packing.CPdrawing;}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }ToolDropListener\ \textcolor{keyword}{implements}\ DropTargetListener\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{private}\ JPanel\ theCanvas;}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{private}\ String\ theKey;}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{int}\ thePackNum;}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{boolean}\ whichPackFlag;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{public}\ ToolDropListener(JPanel\ canvas,\textcolor{keywordtype}{int}\ packnum,\textcolor{keywordtype}{boolean}\ active)\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ theCanvas=canvas;}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ thePackNum=packnum;}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ whichPackFlag=active;}
+\DoxyCodeLine{00046\ \ \ \ \ \}}
+\DoxyCodeLine{00047\ \ \ \ \ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ dragEnter(DropTargetDragEvent\ event)\ \{\}}
+\DoxyCodeLine{00053\ \ \ \ \ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ dragExit(DropTargetEvent\ event)\ \{\}}
+\DoxyCodeLine{00059\ \ \ \ \ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ dragOver(DropTargetDragEvent\ event)\ \{\}}
+\DoxyCodeLine{00065\ \ \ \ \ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ dropActionChanged(DropTargetDragEvent\ event)\ \{\}}
+\DoxyCodeLine{00071\ \ \ \ \ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ drop(DropTargetDropEvent\ event)\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!isDropOK(event))\ \{}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.rejectDrop();}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.acceptDrop(DnDConstants.ACTION\_LINK);}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ Transferable\ transferable\ =\ \textcolor{keyword}{event}.getTransferable();}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ theKey=\textcolor{keyword}{null};}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ theKey=(String)transferable.getTransferData(DataFlavor.stringFlavor);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ e)\ \{\}}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (theKey==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return};\ \textcolor{comment}{//\ some\ failure}}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ MyTool\ mytool=(MyTool)CPBase.hashedTools.get(theKey);}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mytool!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mytool\ instanceof\ MyCanvasMode)\ \{\ \textcolor{comment}{//\ just\ change\ canvas\ mode}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (theCanvas.equals(PackControl.activeFrame.activeScreen))\ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.activeFrame.activeScreen.}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ activeMode=(MyCanvasMode)mytool;}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (theCanvas.equals(PackControl.mapPairFrame.getDomainCPS()))\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.mapPairFrame.domainScreen.activeMode=(MyCanvasMode)mytool;}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (theCanvas.equals(PackControl.mapPairFrame.getRangeCPS()))\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.mapPairFrame.rangeScreen.activeMode=(MyCanvasMode)mytool;}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ have\ to\ find\ the\ packing\ number}}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (whichPackFlag)\ \{\ }
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (theCanvas.equals(PackControl.activeFrame.activeScreen))\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ thePackNum=CirclePack.cpb.getActivePackData().packNum;}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (theCanvas.equals(PackControl.mapPairFrame.getDomainCPS()))\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ thePackNum=PackControl.mapPairFrame.getDomainNum();}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (theCanvas.equals(PackControl.mapPairFrame.getRangeCPS()))\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ thePackNum=PackControl.mapPairFrame.getRangeNum();}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ command\ for\ variables\ '\#..':\ Currently\ check\ only\ '\ \#XY'}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mytool.getCommand().contains(\textcolor{stringliteral}{"{}\ \#XY"{}})\ ||\ mytool.getCommand().contains(\textcolor{stringliteral}{"{}\ \#xy"{}}))\ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point\ pt=\textcolor{keyword}{event}.getLocation();}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPdrawing\ cpS=CPBase.cpDrawing[thePackNum];}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point2D.Double\ pot=cpS.pt2RealPt(pt,\ theCanvas.getWidth(),theCanvas.getHeight());}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ subxy=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}\ "{}}+pot.x+\textcolor{stringliteral}{"{}\ "{}}+pot.y+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ newCmd=mytool.getCommand().replaceAll(\textcolor{stringliteral}{"{}\ \#XY"{}},subxy).replaceAll(\textcolor{stringliteral}{"{}\ \#xy"{}},subxy);}
+\DoxyCodeLine{00123\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println("{}got\ here:\ newCmd\ "{}+newCmd);}}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ NOTE:\ for\ spherical\ packing,\ parser\ must\ convert\ to\ real\ point\ }}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.trafficCenter.parseWrapper(newCmd,}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.cpDrawing[thePackNum].getPackData(),\textcolor{keyword}{false},\textcolor{keyword}{false},0,\textcolor{keyword}{null});}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ mytool.execute(CPBase.cpDrawing[thePackNum].getPackData());}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00131\ \ \ \ \ \}}
+\DoxyCodeLine{00132\ \ \ \ \ }
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ isDropOK(DropTargetDropEvent\ event)\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (event.getDropAction()\ \&\ DnDConstants.ACTION\_LINK)!=0;}
+\DoxyCodeLine{00135\ \ \ \ \ \}}
+\DoxyCodeLine{00136\ \}}
+
+\end{DoxyCode}

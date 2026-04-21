@@ -1,0 +1,346 @@
+\doxysection{micro\+Lattice.\+Smoother Class Reference}
+\label{classmicro_lattice_1_1_smoother}\index{microLattice.Smoother@{microLattice.Smoother}}
+
+
+This code was started by John Bowers in our work on 3D printing.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Smoother} (\textbf{ Pack\+Data} p, \textbf{ Micro\+Grid} mg)
+\item 
+int \textbf{ compute\+Cycles} (int cycles, int mode)
+\begin{DoxyCompactList}\small\item\em This actually iterates the radius/\+center adjustments some given number of times using the current parameters. There are two modes (for now):\+ \end{DoxyCompactList}\item 
+int \textbf{ compute\+Cycles} (int cycles)
+\begin{DoxyCompactList}\small\item\em Compute using default mode=1. \end{DoxyCompactList}\item 
+int \textbf{ disp\+New\+Data} (Vector$<$ Vector$<$ String $>$ $>$ flag\+Segs)
+\begin{DoxyCompactList}\small\item\em display on the screen for my\+Pack\+Data using normal display flags \end{DoxyCompactList}\item 
+int \textbf{ accept\+New\+Data} ()
+\begin{DoxyCompactList}\small\item\em Replace \textquotesingle{}my\+Pack\+Data.\+rdata\textquotesingle{} by \textquotesingle{}new\+RData\textquotesingle{}, which has newly computed radii and centers. \end{DoxyCompactList}\item 
+void \textbf{ calc\+Force} (int v)
+\begin{DoxyCompactList}\small\item\em code does here, have to revisit this. compute \textquotesingle{}ctr\+\_\+force\textquotesingle{} and \textquotesingle{}rad\+\_\+force\textquotesingle{} for vertex v \end{DoxyCompactList}\item 
+void \textbf{ apply\+Force} (int v, double t)
+\begin{DoxyCompactList}\small\item\em Use the force data to compute \textquotesingle{}new\+Radii\textquotesingle{}, \textquotesingle{}new\+Centers\textquotesingle{}. \end{DoxyCompactList}\item 
+int \textbf{ set\+Bdry\+Mode} (int mode)
+\begin{DoxyCompactList}\small\item\em What happens to bdry circles? mode=0, freeze in place; mode=1, move to put centers on the polygon; mode=2, make tangent to the polygon. Default is 0. \end{DoxyCompactList}\item 
+int \textbf{ set\+Rad\+Pressure} (double b)
+\begin{DoxyCompactList}\small\item\em Set the \textquotesingle{}rad\+Pressure\textquotesingle{} in [0,1]. Towards 1 means more weight on matching radius to the value based on intensity. \end{DoxyCompactList}\item 
+int \textbf{ set\+Speed} (double s)
+\begin{DoxyCompactList}\small\item\em Set the \textquotesingle{}speed\textquotesingle{}, normally small in (0,1]. Larger means more aggressive adjustments. \end{DoxyCompactList}\item 
+int \textbf{ exit} ()
+\begin{DoxyCompactList}\small\item\em kill this smoother \end{DoxyCompactList}\item 
+int \textbf{ reset} ()
+\begin{DoxyCompactList}\small\item\em Reset \textquotesingle{}new\+Radii\textquotesingle{}/\+\textquotesingle{}new\+Centers\textquotesingle{} and \textquotesingle{}orig\+Radii\textquotesingle{}/\+\textquotesingle{}orig\+Centers\textquotesingle{} to values in \textquotesingle{}my\+Pack\+Data\textquotesingle{}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+final double \textbf{ MIN\+\_\+\+INV\+\_\+\+DIST} =0.\+5
+\item 
+final double \textbf{ MAX\+\_\+\+INV\+\_\+\+DIST} =3.\+0
+\item 
+final double \textbf{ TARGET\+\_\+\+INV\+\_\+\+DIST} =1.\+0
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This code was started by John Bowers in our work on 3D printing. 
+
+This code was started by John Bowers in our work on 3D printing. It does the "{}field-\/based smoothing"{} step in our infill pattern work, which modifies an existing packing by moving centers in response to some combination of the usual packing criterion and the effects of an ambient field, such as a stress field.
+
+This normally is created in concert with a \textquotesingle{}\doxyref{Micro\+Grid}{p.}{classmicro_lattice_1_1_micro_grid}\textquotesingle{} \doxyref{Pack\+Extender}{p.}{classpacking_1_1_pack_extender}, \textquotesingle{}parent\+MG\textquotesingle{} because of the access to the ambient field and the path. Commands may then be sent via the \textquotesingle{}Micr\+Grid\textquotesingle{} parent. However, even then, it is associated with a separate packing obtained in \doxyref{Micro\+Grid}{p.}{classmicro_lattice_1_1_micro_grid}\textquotesingle{}s "{}tailored sectioning"{} step.
+
+If \textquotesingle{}parent\+MG\textquotesingle{} is null, then the packing must be euclidean. Intensity defaults to 1.\+0 everywhere, the path defaults to \textquotesingle{}\doxyref{CPBase.\+Closed\+Path}{p.}{classall_mains_1_1_c_p_base_a23c728f5a90fcc5cafd5a75ddeae6ccb}\textquotesingle{} or to unit circle, min/\+max radii are taken from the packing.
+
+\begin{DoxyAuthor}{Author}
+kstephe2, June 2020 
+\end{DoxyAuthor}
+
+
+Definition at line \textbf{ 37} of file \textbf{ Smoother.\+java}.
+
+
+
+\label{doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\index{microLattice.Smoother@{microLattice.Smoother}!Smoother@{Smoother}}
+\index{Smoother@{Smoother}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{Smoother()}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_a66d5e2531369904e8b99154e6fc014b8} 
+micro\+Lattice.\+Smoother.\+Smoother (\begin{DoxyParamCaption}\item[{\textbf{ Pack\+Data}}]{p}{, }\item[{\textbf{ Micro\+Grid}}]{mg}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \textbf{ 70} of file \textbf{ Smoother.\+java}.
+
+
+
+\label{doc-func-members}
+\doxysubsection{Member Function Documentation}
+\index{microLattice.Smoother@{microLattice.Smoother}!acceptNewData@{acceptNewData}}
+\index{acceptNewData@{acceptNewData}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{acceptNewData()}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_a2e1c8a197897e61067e6a7bbc5a2fa57} 
+int micro\+Lattice.\+Smoother.\+accept\+New\+Data (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Replace \textquotesingle{}my\+Pack\+Data.\+rdata\textquotesingle{} by \textquotesingle{}new\+RData\textquotesingle{}, which has newly computed radii and centers. 
+
+\begin{DoxyReturn}{Returns}
+1 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 199} of file \textbf{ Smoother.\+java}.
+
+\index{microLattice.Smoother@{microLattice.Smoother}!applyForce@{applyForce}}
+\index{applyForce@{applyForce}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{applyForce()}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_a84839245963a220ade0138ef6de4318f} 
+void micro\+Lattice.\+Smoother.\+apply\+Force (\begin{DoxyParamCaption}\item[{int}]{v}{, }\item[{double}]{t}{}\end{DoxyParamCaption})}
+
+
+
+Use the force data to compute \textquotesingle{}new\+Radii\textquotesingle{}, \textquotesingle{}new\+Centers\textquotesingle{}. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em v} & int \\
+\hline
+{\em t} & double \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 257} of file \textbf{ Smoother.\+java}.
+
+\index{microLattice.Smoother@{microLattice.Smoother}!calcForce@{calcForce}}
+\index{calcForce@{calcForce}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{calcForce()}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_acde83261ecc91a4e594e3cc6bed92ff8} 
+void micro\+Lattice.\+Smoother.\+calc\+Force (\begin{DoxyParamCaption}\item[{int}]{v}{}\end{DoxyParamCaption})}
+
+
+
+code does here, have to revisit this. compute \textquotesingle{}ctr\+\_\+force\textquotesingle{} and \textquotesingle{}rad\+\_\+force\textquotesingle{} for vertex v 
+
+TODO:\+ I don\textquotesingle{}t understand what John\textquotesingle{}s code in \textquotesingle{}Force\+Graph\+Circles\+With\+Polygon\textquotesingle{} 
+\begin{DoxyParams}{Parameters}
+{\em v} & int \\
+\hline
+\end{DoxyParams}
+
+
+Definition at line \textbf{ 215} of file \textbf{ Smoother.\+java}.
+
+\index{microLattice.Smoother@{microLattice.Smoother}!computeCycles@{computeCycles}}
+\index{computeCycles@{computeCycles}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{computeCycles()\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_a46931e73b339a83dfead2e09a45c3a81} 
+int micro\+Lattice.\+Smoother.\+compute\+Cycles (\begin{DoxyParamCaption}\item[{int}]{cycles}{}\end{DoxyParamCaption})}
+
+
+
+Compute using default mode=1. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em cycles} & \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 168} of file \textbf{ Smoother.\+java}.
+
+\index{microLattice.Smoother@{microLattice.Smoother}!computeCycles@{computeCycles}}
+\index{computeCycles@{computeCycles}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{computeCycles()\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_ac51a4d832261ce2c20f9accfbdfe3939} 
+int micro\+Lattice.\+Smoother.\+compute\+Cycles (\begin{DoxyParamCaption}\item[{int}]{cycles}{, }\item[{int}]{mode}{}\end{DoxyParamCaption})}
+
+
+
+This actually iterates the radius/\+center adjustments some given number of times using the current parameters. There are two modes (for now):\+ 
+
+
+\begin{DoxyItemize}
+\item mode=1 (default):\+ first compute all the adjustments based on current data, then apply all the adjustments.
+\item mode=2:\+ Compute and apply one after the other 
+\begin{DoxyParams}{Parameters}
+{\em cycles} & \\
+\hline
+{\em t} & \\
+\hline
+{\em mode} & int, \\
+\hline
+\end{DoxyParams}
+
+\end{DoxyItemize}
+
+Definition at line \textbf{ 141} of file \textbf{ Smoother.\+java}.
+
+\index{microLattice.Smoother@{microLattice.Smoother}!dispNewData@{dispNewData}}
+\index{dispNewData@{dispNewData}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{dispNewData()}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_a85c2886d8b88bc5be759e994b45b1739} 
+int micro\+Lattice.\+Smoother.\+disp\+New\+Data (\begin{DoxyParamCaption}\item[{Vector$<$ Vector$<$ String $>$ $>$}]{flag\+Segs}{}\end{DoxyParamCaption})}
+
+
+
+display on the screen for my\+Pack\+Data using normal display flags 
+
+
+\begin{DoxyParams}{Parameters}
+{\em flag\+Segs} & Vector$<$\+Vector$<$\+String$>$$>$ \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int result for execution call 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 177} of file \textbf{ Smoother.\+java}.
+
+\index{microLattice.Smoother@{microLattice.Smoother}!exit@{exit}}
+\index{exit@{exit}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{exit()}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_af1ca7aa604a34a681201ed328ca8256b} 
+int micro\+Lattice.\+Smoother.\+exit (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+kill this smoother 
+
+\begin{DoxyReturn}{Returns}
+int, 0 on failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 309} of file \textbf{ Smoother.\+java}.
+
+\index{microLattice.Smoother@{microLattice.Smoother}!reset@{reset}}
+\index{reset@{reset}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{reset()}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_a76f45c54c9cac11b2ee34a010229f07b} 
+int micro\+Lattice.\+Smoother.\+reset (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Reset \textquotesingle{}new\+Radii\textquotesingle{}/\+\textquotesingle{}new\+Centers\textquotesingle{} and \textquotesingle{}orig\+Radii\textquotesingle{}/\+\textquotesingle{}orig\+Centers\textquotesingle{} to values in \textquotesingle{}my\+Pack\+Data\textquotesingle{}. 
+
+\begin{DoxyReturn}{Returns}
+1 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 325} of file \textbf{ Smoother.\+java}.
+
+\index{microLattice.Smoother@{microLattice.Smoother}!setBdryMode@{setBdryMode}}
+\index{setBdryMode@{setBdryMode}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{setBdryMode()}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_a7c64c4103c7bd08d121cbb27d083e285} 
+int micro\+Lattice.\+Smoother.\+set\+Bdry\+Mode (\begin{DoxyParamCaption}\item[{int}]{mode}{}\end{DoxyParamCaption})}
+
+
+
+What happens to bdry circles? mode=0, freeze in place; mode=1, move to put centers on the polygon; mode=2, make tangent to the polygon. Default is 0. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em mode} & int \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 272} of file \textbf{ Smoother.\+java}.
+
+\index{microLattice.Smoother@{microLattice.Smoother}!setRadPressure@{setRadPressure}}
+\index{setRadPressure@{setRadPressure}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{setRadPressure()}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_a2663b9813c4f3ab083733361f68ecb86} 
+int micro\+Lattice.\+Smoother.\+set\+Rad\+Pressure (\begin{DoxyParamCaption}\item[{double}]{b}{}\end{DoxyParamCaption})}
+
+
+
+Set the \textquotesingle{}rad\+Pressure\textquotesingle{} in [0,1]. Towards 1 means more weight on matching radius to the value based on intensity. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em b} & double \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 on success, else 0 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 283} of file \textbf{ Smoother.\+java}.
+
+\index{microLattice.Smoother@{microLattice.Smoother}!setSpeed@{setSpeed}}
+\index{setSpeed@{setSpeed}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{setSpeed()}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_ad61621089bb21f0282416ab6c6e7b0bb} 
+int micro\+Lattice.\+Smoother.\+set\+Speed (\begin{DoxyParamCaption}\item[{double}]{s}{}\end{DoxyParamCaption})}
+
+
+
+Set the \textquotesingle{}speed\textquotesingle{}, normally small in (0,1]. Larger means more aggressive adjustments. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em s} & double \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+1 on success, else 0 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 297} of file \textbf{ Smoother.\+java}.
+
+
+
+\label{doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\index{microLattice.Smoother@{microLattice.Smoother}!MAX\_INV\_DIST@{MAX\_INV\_DIST}}
+\index{MAX\_INV\_DIST@{MAX\_INV\_DIST}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{MAX\_INV\_DIST}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_a11053a55b622b5f74506fb5437bcd876} 
+final double micro\+Lattice.\+Smoother.\+MAX\+\_\+\+INV\+\_\+\+DIST =3.\+0}
+
+
+
+Definition at line \textbf{ 40} of file \textbf{ Smoother.\+java}.
+
+\index{microLattice.Smoother@{microLattice.Smoother}!MIN\_INV\_DIST@{MIN\_INV\_DIST}}
+\index{MIN\_INV\_DIST@{MIN\_INV\_DIST}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{MIN\_INV\_DIST}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_a00f23b94f7de5483b5c192e29be898fa} 
+final double micro\+Lattice.\+Smoother.\+MIN\+\_\+\+INV\+\_\+\+DIST =0.\+5}
+
+
+
+Definition at line \textbf{ 39} of file \textbf{ Smoother.\+java}.
+
+\index{microLattice.Smoother@{microLattice.Smoother}!TARGET\_INV\_DIST@{TARGET\_INV\_DIST}}
+\index{TARGET\_INV\_DIST@{TARGET\_INV\_DIST}!microLattice.Smoother@{microLattice.Smoother}}
+\doxysubsubsection{TARGET\_INV\_DIST}
+{\footnotesize\ttfamily \label{classmicro_lattice_1_1_smoother_a151fd1cd31b2ba051646c495dbf6279a} 
+final double micro\+Lattice.\+Smoother.\+TARGET\+\_\+\+INV\+\_\+\+DIST =1.\+0}
+
+
+
+Definition at line \textbf{ 41} of file \textbf{ Smoother.\+java}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+C:\+/\+\+Users/\+ashej/\+my\+Git\+Repos/\+\+Circle\+Pack/\+src/\+micro\+Lattice/\+\textbf{ Smoother.\+java}\end{DoxyCompactItemize}

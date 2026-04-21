@@ -1,0 +1,434 @@
+\doxysection{Hilbert\+Transform.\+java}
+\label{_hilbert_transform_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/cpContributed/HilbertTransform.java@{C:/Users/ashej/myGitRepos/CirclePack/src/cpContributed/HilbertTransform.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }cpContributed;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.Frame;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.Graphics;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.Toolkit;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.event.WindowEvent;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.event.WindowListener;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ util.CmdStruct;}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }HilbertTransform\ \textcolor{keyword}{extends}\ PackExtender\ }
+\DoxyCodeLine{00022\ \{}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{int}[]\ bndry;\ \textcolor{comment}{//\ number\ of\ vertices\ which\ belong\ to\ the\ boundary}}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{int}\ sz\_bndry;\ \textcolor{comment}{//\ how\ many\ boundary\ circles}}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keyword}{private}\ Complex[]\ cz\_hyper;\ \textcolor{comment}{//\ hyperbolic\ centers\ of\ boundary\ circles}}
+\DoxyCodeLine{00026\ \ \ \ \ }
+\DoxyCodeLine{00027\ \ \ \ \ @SuppressWarnings(\textcolor{stringliteral}{"{}unused"{}})}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keyword}{private}\ String\ var;\ \textcolor{comment}{//\ independent\ variable}}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{private}\ String\ fct;\ \textcolor{comment}{//\ function\ to\ be\ transformed}}
+\DoxyCodeLine{00030\ \ \ \ \ }
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{double}[]\ tau;\ \textcolor{comment}{//\ angle\ of\ the\ hyperbolic\ centers}}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{double}[]\ values\_fct;\ \textcolor{comment}{//\ store\ the\ values\ of\ the\ function\ "{}fct"{}}}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{double}[]\ values\_HilbTransform;\ \textcolor{comment}{//\ store\ the\ values\ of\ the\ Hilbert\ transform}}
+\DoxyCodeLine{00034\ \ \ \ \ }
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keyword}{private}\ ShowFrame\ frame\ =\ \textcolor{keyword}{null};\ \textcolor{comment}{//\ frame\ for\ showing\ the\ Hilbert\ transform}}
+\DoxyCodeLine{00036\ \ \ \ \ }
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{public}\ HilbertTransform(PackData\ p)\ }
+\DoxyCodeLine{00038\ \ \ \ \ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ extensionType\ =\ \textcolor{stringliteral}{"{}Hilbert\_Transform"{}};}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ extensionAbbrev\ =\ \textcolor{stringliteral}{"{}HT"{}};}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ toolTip\ =\ \textcolor{stringliteral}{"{}'Hilbert\ Transform'\ for\ computing\ the\ Hilbert\ transform\ of\ a\ given\ function"{}};}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ registerXType();}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ max\ pack\ the\ packing\ p}}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ cpCommand(extenderPD,\ \textcolor{stringliteral}{"{}max\_pack"{}});}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ store\ the\ boundary\ centers\ in\ hyperbolic\ metric}}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ temp\_bndry\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[extenderPD.nodeCount\ +\ 1];\ \textcolor{comment}{//\ not\ the\ right\ size}}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ Complex[]\ temp\_cz\ =\ \textcolor{keyword}{new}\ Complex[extenderPD.nodeCount\ +\ 1];\ \textcolor{comment}{//\ not\ the\ right\ size}}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ sz\_bndry\ =\ 0;}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k\ =\ 1;\ k\ <=\ extenderPD.nodeCount;\ k++)}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.isBdry(k))}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ temp\_bndry[sz\_bndry]\ =\ k;\ }
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ temp\_cz[sz\_bndry]\ =\ extenderPD.getCenter(k);}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sz\_bndry++;}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ bndry\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[sz\_bndry];\ \textcolor{comment}{//\ right\ size}}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ cz\_hyper\ =\ \textcolor{keyword}{new}\ Complex[sz\_bndry];\ \textcolor{comment}{//\ right\ size}}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k\ =\ 0;\ k\ <\ sz\_bndry;\ k++)}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ bndry[k]\ =\ temp\_bndry[k];}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ cz\_hyper[k]\ =\ temp\_cz[k];}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ sort\ the\ vertices\ such\ that\ bndry[k]\ and\ bndry[k+1]\ are\ neighbors}}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ sortBoundary();}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ convert\ to\ euclidean\ metric}}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ cpCommand(extenderPD,\ \textcolor{stringliteral}{"{}geom\_to\_e"{}});}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ show\ maximal\ packing}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ cpCommand(extenderPD,\ \textcolor{stringliteral}{"{}disp\ -\/w\ -\/c"{}});}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ default\ function}}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ var\ =\ \textcolor{stringliteral}{"{}t"{}};}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ fct\ =\ \textcolor{stringliteral}{"{}re(t)"{}};}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ allocate\ space\ for\ tau,\ the\ function\ values\ and\ its\ Hilbert\ transform}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ tau\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[sz\_bndry];}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ values\_fct\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[sz\_bndry];}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ values\_HilbTransform\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[sz\_bndry];}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (running)}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00087\ \ \ \ \ \}}
+\DoxyCodeLine{00088\ \ \ \ \ }
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cmdParser(String\ cmd,\ Vector<Vector<String>>\ flagSegs)}
+\DoxyCodeLine{00096\ \ \ \ \ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ String\ str;}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_fct"{}}))}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ the\ function\ to\ be\ transformed}}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Vector<String>>\ iter\ =\ flagSegs.iterator();}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(iter.hasNext())}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<String>\ items\ =\ iter.next();}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str\ =\ items.remove(0);}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c\ =\ str.charAt(1);}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (c)}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'z'}:}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ =\ \textcolor{stringliteral}{"{}z"{}};}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fct\ =\ items.remove(0);}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'t'}:}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ var\ =\ \textcolor{stringliteral}{"{}t"{}};}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fct\ =\ items.remove(0);}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.FtnSpecification=\textcolor{keyword}{new}\ StringBuilder(fct);}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}calc\_Hilbert\_transform"{}})}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ cmd.startsWith(\textcolor{stringliteral}{"{}calc\_HT"{}}))}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ calculate\ the\ Hilbert\ transform}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ there\ a\ lambda\ given?}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ lambda\ =\ 1;}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flagSegs\ !=\ \textcolor{keyword}{null})}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<String>\ item\ =\ flagSegs.get(0);}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<String>\ items\ =\ item.iterator();}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ option\ =\ items.next();}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (option.compareToIgnoreCase(\textcolor{stringliteral}{"{}-\/l"{}})\ ==\ 0)}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items.hasNext())}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lambda\ =\ Double.valueOf(items.next());}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lambda\ =\ 1;}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ a\ copy\ of\ the\ packing}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ PackData\ newPack\ =\ extenderPD.copyPackTo();}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.swapPackData(newPack,\ 1,\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ modify\ the\ radii\ of\ the\ boundary\ circles}}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (CPBase.GUImode!=0)}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.newftnFrame.setFunctionText();}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ val;}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k\ =\ 0;\ k\ <\ sz\_bndry;\ k++)}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ val\ =\ CirclePack.cpb.getFtnValue(cz\_hyper[k]);}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ krad=newPack.getRadius(k);}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newPack.setRadius(bndry[k],krad*\ Math.exp(lambda\ *\ val.real()));}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ values\_fct[k]\ =\ val.real();}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ copy\ the\ new\ packing\ to\ the\ panel\ 1\ and\ then\ repack\ it}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(newPack,\ \textcolor{stringliteral}{"{}repack"{}});}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(newPack,\ \textcolor{stringliteral}{"{}layout"{}});}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(newPack,\ \textcolor{stringliteral}{"{}set\_screen\ -\/a"{}});}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(newPack,\ \textcolor{stringliteral}{"{}disp\ -\/w\ -\/c"{}});}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(extenderPD,\ \textcolor{stringliteral}{"{}Map\ 0\ 1\ -\/o"{}});}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ calculate\ the\ change\ of\ the\ angle\ of\ the\ boundary\ edges}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1,\ z2,\ z3,\ w1,\ w2,\ w3,\ z,\ w;}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ arg1,\ arg2,\ shift;}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ mean\ =\ 0;}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ tau1,\ tau2;}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//values\_HilbTransform\ =\ new\ double[sz\_bndry];}}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//tau\ =\ new\ double[sz\_bndry];}}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k\ =\ 0;\ k\ <\ sz\_bndry;\ k++)}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k\ <=\ 0)}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z1\ =\ extenderPD.getCenter(bndry[sz\_bndry\ -\/\ 1]);}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z1\ =\ extenderPD.getCenter(bndry[k\ -\/\ 1]);}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z2\ =\ extenderPD.getCenter(bndry[k]);}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z3\ =\ extenderPD.getCenter(bndry[(k\ +\ 1)\ \%\ sz\_bndry]);}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z\ =\ z1.minus(z2);}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w\ =\ z3.minus(z2);}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z\ =\ z.divide(w);}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ shift\ =\ Math.atan2(z.y,\ z.x);}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (shift\ <\ 0)}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ shift\ +=\ 2\ *\ Math.PI;}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ arg1\ =\ Math.atan2(w.y,\ w.x)\ +\ shift\ /\ 2;}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ arg1\ =\ Math.atan2(Math.sin(arg1),\ Math.cos(arg1));\ \textcolor{comment}{//\ normalize\ to\ [-\/pi,\ pi]}}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k\ <=\ 0)}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w1\ =\ newPack.getCenter(bndry[sz\_bndry\ -\/\ 1]);}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w1\ =\ newPack.getCenter(bndry[k\ -\/\ 1]);}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w2\ =\ newPack.getCenter(bndry[k]);}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w3\ =\ newPack.getCenter(bndry[(k\ +\ 1)\ \%\ sz\_bndry]);}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z\ =\ w1.minus(w2);}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w\ =\ w3.minus(w2);}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z\ =\ z.divide(w);}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ shift\ =\ Math.atan2(z.y,\ z.x);}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (shift\ <\ 0)}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ shift\ +=\ 2\ *\ Math.PI;}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ arg2\ =\ Math.atan2(w.y,\ w.x)\ +\ shift\ /\ 2;}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ arg2\ =\ Math.atan2(Math.sin(arg2),\ Math.cos(arg2));\ \textcolor{comment}{//\ normalize\ to\ [-\/pi,\ pi]}}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ elimate\ a\ possible\ jump\ in\ the\ argument}}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((arg1\ >=\ 3\ *\ Math.PI\ /\ 4)\ \&\&\ (arg2\ <=\ -\/\ 3\ *\ Math.PI\ /\ 4))}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ arg2\ +=\ 2\ *\ Math.PI;}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((arg2\ >=\ 3\ *\ Math.PI\ /\ 4)\ \&\&\ (arg1\ <=\ -\/\ 3\ *\ Math.PI\ /\ 4))}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ arg1\ +=\ 2\ *\ Math.PI;}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ values\_HilbTransform[k]\ =\ (arg2\ -\/\ arg1)\ /\ lambda;}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tau1\ =\ Math.atan2(cz\_hyper[k].y,\ cz\_hyper[k].x);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tau[k]\ =\ tau1;}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tau2\ =\ Math.atan2(cz\_hyper[(k\ +\ 1)\ \%\ sz\_bndry].y,\ cz\_hyper[(k\ +\ 1)\ \%\ sz\_bndry].x);}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ mean\ value\ of\ the\ Hilbert\ transform}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((tau2\ -\/\ tau1)\ <\ 0)}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mean\ +=\ (arg2\ -\/\ arg1)\ *\ (tau2\ -\/\ tau1\ +\ 2\ *\ Math.PI)\ /\ 2\ /\ Math.PI;}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mean\ +=\ (arg2\ -\/\ arg1)\ *\ (tau2\ -\/\ tau1)\ /\ (2\ *\ Math.PI);}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k\ =\ 0;\ k\ <\ sz\_bndry;\ k++)}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ values\_HilbTransform[k]\ -\/=\ mean\ /\ lambda;}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}show"{}}))}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \{\ \ \ \ \ \ \ }
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ show\ the\ function\ and\ its\ Hilbert\ transform}}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ Dimension\ scrsz\ =\ Toolkit.getDefaultToolkit().getScreenSize();}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ left\ =\ (scrsz.width\ -\/\ 670)\ /\ 2;}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ top\ =\ (scrsz.height\ -\/\ 670)\ /\ 2;}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (frame\ ==\ \textcolor{keyword}{null})}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ frame\ =\ \textcolor{keyword}{new}\ ShowFrame(tau,\ values\_fct,\ values\_HilbTransform);}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ frame.setValues(tau,\ values\_fct,\ values\_HilbTransform);}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ frame.setTitle(\textcolor{stringliteral}{"{}Hilbert\ transform\ (red)\ and\ original\ function\ (blue)"{}});}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ frame.setSize(670,\ 670);}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ frame.setLocation(left,\ top);}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ frame.setResizable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ frame.setVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ frame.repaint();}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ super.cmdParser(cmd,\ flagSegs);}
+\DoxyCodeLine{00259\ \ \ \ \ \}}
+\DoxyCodeLine{00260\ \ \ \ \ }
+\DoxyCodeLine{00264\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initCmdStruct()\ }
+\DoxyCodeLine{00265\ \ \ \ \ \{}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ description\ of\ the\ commands\ in\ the\ help\ window}}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ super.initCmdStruct();}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_fct"{}},\ \textcolor{stringliteral}{"{}-\/[tz]\ \{fct\}"{}},\ \textcolor{keyword}{null},}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Define\ the\ function\ to\ be\ transformed.\ It\ depends\ either\ on\ t\ or\ on\ z."{}}));}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}calc\_HT"{}},\ \textcolor{stringliteral}{"{}[-\/l\ lambda]"{}},\ \textcolor{keyword}{null},}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Calculate\ the\ Hilbert\ transform.\ With\ the\ option\ -\/l\ the\ function\ is\ scaled\ by\ lambda."{}}));}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}show"{}},\ \textcolor{stringliteral}{"{}"{}},\ \textcolor{keyword}{null},}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Show\ the\ function\ and\ its\ Hilbert\ transform\ in\ a\ new\ window."{}}));}
+\DoxyCodeLine{00274\ \ \ \ \ \}}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00279\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ StartUpMsg()\ }
+\DoxyCodeLine{00280\ \ \ \ \ \{}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ display\ in\ the\ message\ box\ if\ the\ user\ types\ help}}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ helpMsg(\textcolor{stringliteral}{"{}\(\backslash\)nOverview\ of\ PackExtender\ "{}}\ +\ extensionAbbrev\ +\ \textcolor{stringliteral}{"{}\ (Hilbert\ transform):"{}});}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ helpMsg(\textcolor{stringliteral}{"{}Given\ a\ maximal\ packing\ and\ a\ function\ f\ the\ goal\ is\ to\ compute\ "{}}\ +\ }
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}the\ Hilbert\ transform\ of\ f.\ It\ is\ done\ by\ multiplying\ the\ boundary\ radii\ "{}}\ +\ }
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}with\ exp(f(t))\ where\ t\ is\ the\ hyperbolic\ center\ of\ the\ boundary\ circle.\ "{}}\ +\ }
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Then\ repack\ the\ packing\ and\ determine\ the\ difference\ of\ the\ argument\ of\ "{}}\ +}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}the\ boundary\ edges."{}});}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ helpMsg(\textcolor{stringliteral}{"{}Commands\ for\ PackExtender\ "{}}\ +\ extensionAbbrev\ +\ \textcolor{stringliteral}{"{}\ (Hilbert\ transform)"{}});}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ helpMsg(\textcolor{stringliteral}{"{}\ \ set\_fct\ -\/[tz]\ \{fct\}\ \ \ \ Set\ the\ function\ f\(\backslash\)n"{}}\ +}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ \(\backslash\)n"{}}\ +\ }
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ \(\backslash\)n"{}}\ +}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ calc\_HT\ [-\/l\ lambda]\ \ \ \ Determine\ the\ Hilbert\ transform\ of\ lambda*f\(\backslash\)n"{}}\ +\ }
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ \(\backslash\)n"{}}\ +\ }
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ \(\backslash\)n"{}}\ +}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ show\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Show\ the\ function\ f\ and\ its\ Hilbert\ transform"{}});}
+\DoxyCodeLine{00296\ \ \ \ \ \}}
+\DoxyCodeLine{00297\ \ \ \ \ }
+\DoxyCodeLine{00298\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{void}\ sortBoundary()}
+\DoxyCodeLine{00299\ \ \ \ \ \{}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ sort\ the\ boundary\ such\ that\ bndry[k]\ and\ bndry[k+1]\ are\ neighbors}}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ nb;}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k\ =\ 1;\ k\ <\ sz\_bndry;\ k++)}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \{\textcolor{comment}{//\ the\ first\ is\ unchanged}}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ nb\ =\ BoundaryNeighbors(bndry[k\ -\/\ 1]);}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k\ <=\ 1)}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ decide\ for\ one\ direction}}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bndry[k]\ =\ nb[0];}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (Math.abs(bndry[k\ -\/\ 2]\ -\/\ \ nb[0])\ <=\ 0)}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ which\ of\ the\ neighbors\ is\ not\ yet\ considered}}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bndry[k]\ =\ nb[1];}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bndry[k]\ =\ nb[0];}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00316\ \ \ \ \ \}}
+\DoxyCodeLine{00317\ \ \ \ \ }
+\DoxyCodeLine{00318\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{int}[]\ BoundaryNeighbors(\textcolor{keywordtype}{int}\ vert)}
+\DoxyCodeLine{00319\ \ \ \ \ \{}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ determine\ which\ neighbor\ of\ vert\ belongs\ to\ the\ boundary}}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ nb\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[2];}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ sz\_flwr;}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count\ =\ 0;}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flwr\ =\ extenderPD.getFlower(vert);}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.isBdry(vert))}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ vert\ is\ a\ boundary\ vertex}}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ sz\_flwr\ =\ flwr.length;}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ sz\_flwr\ =\ flwr.length\ -\/\ 1;}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k\ =\ 0;\ k\ <\ sz\_flwr;\ k++)\ \{}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.isBdry(flwr[k]))\ \{}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nb[count]\ =\ flwr[k];}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ nb;}
+\DoxyCodeLine{00339\ \ \ \ \ \}}
+\DoxyCodeLine{00340\ \ \ \ \ }
+\DoxyCodeLine{00341\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }ShowFrame\ \textcolor{keyword}{extends}\ Frame\ implements\ WindowListener}
+\DoxyCodeLine{00342\ \ \ \ \ \{}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ class\ to\ show\ the\ function\ and\ its\ Hilbert\ transform}}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keywordtype}{double}[][]\ values;\ \textcolor{comment}{//\ the\ values\ to\ display}}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ ShowFrame(\textcolor{keywordtype}{double}[]\ tau,\ \textcolor{keywordtype}{double}[]\ val\_f,\ \textcolor{keywordtype}{double}[]\ val\_Hf)}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ setValues(tau,\ val\_f,\ val\_Hf);}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//repaint();}}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ addWindowListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setValues(\textcolor{keywordtype}{double}[]\ tau,\ \textcolor{keywordtype}{double}[]\ val\_f,\ \textcolor{keywordtype}{double}[]\ val\_Hf)}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ the\ values\ to\ display}}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ values\ =\ \textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3][tau.length];}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k\ =\ 0;\ k\ <\ tau.length;\ k++)}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ values[0][k]\ =\ tau[k];}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ values[1][k]\ =\ val\_f[k];}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ values[2][k]\ =\ val\_Hf[k];}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ paint(Graphics\ g)}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ Dimension\ scrsz\ =\ Toolkit.getDefaultToolkit().getScreenSize();}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ left\ =\ (scrsz.width\ -\/\ 670)\ /\ 2;}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ top\ =\ (scrsz.height\ -\/\ 670)\ /\ 2;}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ max\_f\ =\ 0;}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ max\_Hf\ =\ 0;}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ max\ =\ 0;}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k\ =\ 0;\ k\ <\ values[0].length;\ k++)}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(values[1][k])\ >\ max\_f)}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_f\ =\ Math.abs(values[1][k]);}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(values[2][k])\ >\ max\_Hf)}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\_Hf\ =\ Math.abs(values[2][k]);}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (max\_f\ >\ max\_Hf)}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\ =\ max\_f;}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ max\ =\ max\_Hf;}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ width\ =\ 630;}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ setSize(width\ +\ 40,\ width\ +\ 40);}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ setLocation(left,\ top);}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ g.setColor(Color.black);}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ g.drawLine(width\ /\ 2\ +\ 20,\ width\ +\ 30,\ width\ /\ 2\ +\ 20,\ 30);}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ g.drawLine(20,\ width\ /\ 2\ +\ 30,\ width\ +\ 20,\ width\ /\ 2\ +\ 30);}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ g.drawString(\textcolor{stringliteral}{"{}0"{}},\ width\ /\ 2\ +\ 10,\ width\ /\ 2\ +\ 45);}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ \ \ g.drawLine(20,\ width\ /\ 2\ +\ 25,\ 20,\ width\ /\ 2\ +\ 35);}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ g.drawString(\textcolor{stringliteral}{"{}-\/pi"{}},\ 15,\ width\ /\ 2\ +\ 45);}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ g.drawLine(width\ +\ 20,\ width\ /\ 2\ +\ 25,\ width\ +\ 20,\ width\ /\ 2\ +\ 35);}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ g.drawString(\textcolor{stringliteral}{"{}pi"{}},\ width\ +\ 15,\ width\ /\ 2\ +\ 45);}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ g.setColor(Color.blue);}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k\ =\ 0;\ k\ <\ values[0].length;\ k++)}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ g.drawOval((\textcolor{keywordtype}{int})(100\ *\ values[0][k])\ +\ 315\ +\ 15,\ }
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 315\ +\ 25\ -\/\ (\textcolor{keywordtype}{int})(315\ *\ values[1][k]\ /\ max),\ 10,\ 10);}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ g.setColor(Color.red);}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ k\ =\ 0;\ k\ <\ values[0].length;\ k++)}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ g.drawOval((\textcolor{keywordtype}{int})(100\ *\ values[0][k])\ +\ 315\ +\ 15,\ }
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 315\ +\ 25\ -\/\ (\textcolor{keywordtype}{int})(315\ *\ values[2][k]\ /\ max),\ 10,\ 10);}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00425\ }
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ windowActivated(WindowEvent\ e)\ \{\}}
+\DoxyCodeLine{00431\ }
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ windowClosed(WindowEvent\ e)\ \{\}}
+\DoxyCodeLine{00437\ }
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ windowClosing(WindowEvent\ e)\ }
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \ \ \ \ setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \ \ \ \ dispose();}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00447\ }
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ windowDeactivated(WindowEvent\ e)\{\}}
+\DoxyCodeLine{00453\ }
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ windowDeiconified(WindowEvent\ e)\ \{\}}
+\DoxyCodeLine{00459\ }
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ windowIconified(WindowEvent\ e)\ \{\}}
+\DoxyCodeLine{00465\ }
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ windowOpened(WindowEvent\ e)\ \{\}}
+\DoxyCodeLine{00471\ \ \ \ \ \}}
+\DoxyCodeLine{00472\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,84 @@
+\doxysection{Pack\+Methods.\+java}
+\label{_pack_methods_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/packing/PackMethods.java@{C:/Users/ashej/myGitRepos/CirclePack/src/packing/PackMethods.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }packing;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.geom.Path2D;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ baryStuff.BaryPacket;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ exceptions.InOutException;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ komplex.EdgeSimple;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ listManip.BaryCoordLink;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ listManip.FaceLink;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ listManip.GraphLink;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ util.PathBaryUtil;}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00025\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }PackMethods\ \{}
+\DoxyCodeLine{00026\ \ \ \ \ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ writeDualBarys(BufferedWriter\ fp,\ PackData\ p,\ PackData\ bp)\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes\ !=\ 0)}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}usage:\ writeDualBarys\ must\ be\ euclidean"{}});}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count\ =\ 0;}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ GraphLink\ dualgraph\ =\ \textcolor{keyword}{new}\ GraphLink(p,\ \textcolor{stringliteral}{"{}a"{}});}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ Iterator<EdgeSimple>\ dits\ =\ dualgraph.iterator();}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (dits.hasNext())\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ EdgeSimple\ edge\ =\ dits.next();}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex[]\ pts\ =\ p.ends\_dual\_edge(edge);\ \textcolor{comment}{//\ ends}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Path2D.Double\ path\ =\ \textcolor{keyword}{new}\ Path2D.Double();}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ path.moveTo(pts[0].x,\ pts[0].y);}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ path.lineTo(pts[1].x,\ pts[1].y);}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<BaryCoordLink>\ barycoordlink\ =\ PathBaryUtil.fromPath(bp,\ path);}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ iterate\ through;\ there\ may\ be\ more\ than\ one\ barycoordlink}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<BaryCoordLink>\ bclits\ =\ barycoordlink.iterator();}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bclits.hasNext())}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(\textcolor{stringliteral}{"{}BARY\_PATH:\(\backslash\)n"{}});}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (bclits.hasNext())\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BaryCoordLink\ bcl\ =\ bclits.next();}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<BaryPacket>\ bits\ =\ bcl.iterator();}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (bits.hasNext())\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BaryPacket\ bpkt\ =\ bits.next();}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ verts=bp.getFaceVerts(bpkt.faceIndx);}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ in\ the\ three\ vertices\ of\ this\ face}}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(verts[0]+\textcolor{stringliteral}{"{}\ \ \ "{}}+verts[1]+\textcolor{stringliteral}{"{}\ \ \ "{}}+verts[2]+\textcolor{stringliteral}{"{}\(\backslash\)n\ \ \ "{}});}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.write(String.format(\textcolor{stringliteral}{"{}\%.6f"{}},bpkt.start.b0)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6f"{}},\ bpkt.start.b1)\ +\ \textcolor{stringliteral}{"{}\(\backslash\)n\ \ \ "{}}+}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6f"{}},\ bpkt.end.b0)+\textcolor{stringliteral}{"{}\ "{}}+}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String.format(\textcolor{stringliteral}{"{}\%.6f"{}},\ bpkt.end.b1)+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ InOutException(\textcolor{stringliteral}{"{}error\ in\ writing\ barycenters\ for\ dual"{}}\ +\ ex.getMessage());}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00097\ \ \ \ \ \}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Vector<Double>\ areaRatio(PackData\ p,FaceLink\ flink)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes!=0\ ||\ ColorCoding.setXYZ\_areas(p)==0)}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flink==\textcolor{keyword}{null}\ ||\ flink.size()==0)}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ flink=\textcolor{keyword}{new}\ FaceLink(p,\textcolor{stringliteral}{"{}a"{}});}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ Vector<Double>ratios=\textcolor{keyword}{new}\ Vector<Double>(flink.size()+1);}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ ratios.add(0,\textcolor{keyword}{null});\ \textcolor{comment}{//\ first\ spot\ unused}}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ Iterator<Integer>\ flist=flink.iterator();}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(flist.hasNext())\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ f=flist.next();}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ ratios.add(p.utilDoubles.get(f)/p.faceArea(f));}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ratios;}
+\DoxyCodeLine{00119\ \ \ \ \ \}}
+\DoxyCodeLine{00120\ \ \ \ \ }
+\DoxyCodeLine{00121\ \}}
+
+\end{DoxyCode}

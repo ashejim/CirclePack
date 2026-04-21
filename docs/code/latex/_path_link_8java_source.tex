@@ -1,0 +1,146 @@
+\doxysection{Path\+Link.\+java}
+\label{_path_link_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/listManip/PathLink.java@{C:/Users/ashej/myGitRepos/CirclePack/src/listManip/PathLink.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }listManip;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.geom.Path2D;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.util.LinkedList;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ util.PathUtil;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }PathLink\ \textcolor{keyword}{extends}\ LinkedList<Complex>\ \{}
+\DoxyCodeLine{00028\ \ \ \ \ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00030\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00031\ \ \ \ \ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ THRESH=.0000001;\ \textcolor{comment}{//\ threshold\ for\ closure}}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ closed;\ \textcolor{comment}{//\ closure\ is\ determined\ from\ data}}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ hes;\ \textcolor{comment}{//\ spherical\ or\ euclidean;\ hes<0\ only\ means\ have\ to\ check\ in\ disc.}}
+\DoxyCodeLine{00035\ \ \ \ \ }
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{comment}{//\ Constructors}}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{public}\ PathLink(\textcolor{keywordtype}{int}\ heS,String\ datastr)\ \{}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ hes=heS;}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (datastr!=\textcolor{keyword}{null})\ addNodeLinks(datastr);}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ autoClosure();}
+\DoxyCodeLine{00042\ \ \ \ \ \}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{public}\ PathLink(\textcolor{keywordtype}{int}\ heS,\textcolor{keywordtype}{double}\ x,\textcolor{keywordtype}{double}\ y)\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ hes=heS;}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ Complex\ z=\textcolor{keyword}{new}\ Complex(x,y);}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ add(z);}
+\DoxyCodeLine{00049\ \ \ \ \ \}}
+\DoxyCodeLine{00050\ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{public}\ PathLink(\textcolor{keywordtype}{int}\ heS,Vector<String>\ items)\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ hes=heS;}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ addNodeLinks(items);}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ autoClosure();}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ }
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{public}\ PathLink()\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(0,(String)\textcolor{keyword}{null});}
+\DoxyCodeLine{00063\ \ \ \ \ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ autoClosure()\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this.size()<2)\ \textcolor{keywordflow}{return};\ \textcolor{comment}{//\ nothing\ to\ do}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this.getFirst().minus(this.getLast()).abs()<THRESH)}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ closed=\textcolor{keyword}{true};}
+\DoxyCodeLine{00069\ \ \ \ \ \}}
+\DoxyCodeLine{00070\ \ \ \ \ }
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ isPathClosed()\ \{}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ closed;}
+\DoxyCodeLine{00073\ \ \ \ \ \}}
+\DoxyCodeLine{00074\ \ \ \ \ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ toggleClosed()\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ closed=!closed;}
+\DoxyCodeLine{00077\ \ \ \ \ \}}
+\DoxyCodeLine{00078\ \ \ \ \ }
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ add(Complex\ z)\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0\ \&\&\ z.abs()>1.0)\ z.divide(z.abs());\ \textcolor{comment}{//\ project\ to\ unit\ circle}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ super.add(\textcolor{keyword}{new}\ Complex(z));}
+\DoxyCodeLine{00082\ \ \ \ \ \}}
+\DoxyCodeLine{00083\ \ \ \ \ \ }
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ addNodeLinks(String\ datastr)\ \{}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ Vector<String>\ items=StringUtil.string2vec(datastr,\textcolor{keyword}{true});}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ addNodeLinks(items);}
+\DoxyCodeLine{00094\ \ \ \ \ \}}
+\DoxyCodeLine{00095\ \ \ \ \ }
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ addNodeLinks(Vector<String>\ items)\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items==\textcolor{keyword}{null}\ ||\ items.size()==0)\ \{\ \textcolor{comment}{//\ default\ to\ 'ClosedPath',\ if\ it\ exists}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (CPBase.ClosedPath!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<Vector<Complex>>\ gp=PathUtil.gpPolygon(CPBase.ClosedPath);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<Complex>\ comp1=gp.get(0);}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<comp1.size();j++)\ \{\ }
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ add(comp1.get(j));}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}error\ in\ 'PathLink'\ option:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}no\ path\ specified"{}});}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ Iterator<String>\ its=items.iterator();}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ String\ str=\textcolor{keyword}{null};}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=0.0;}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ y=0.0;}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ Complex\ z=\textcolor{keyword}{new}\ Complex(0.0);}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (its!=\textcolor{keyword}{null}\ \&\&\ its.hasNext())\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ str=(String)its.next();}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ x=Double.parseDouble(str);}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (its.hasNext())\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str=(String)its.next();}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ y=Double.parseDouble(str);}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z=\textcolor{keyword}{new}\ Complex(x,y);}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ add(z);}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}error\ in\ 'PathLink':\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00142\ \ \ \ \ \}}
+\DoxyCodeLine{00143\ \ \ \ \ }
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keyword}{public}\ Path2D.Double\ toPath2D()\ \{}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (this.size()==0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ Path2D.Double\ path=\textcolor{keyword}{new}\ Path2D.Double();}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ Iterator<Complex>\ itt=this.iterator();}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ Complex\ z=itt.next();}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ path.moveTo(z.x,z.y);}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (itt.hasNext())\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ z=itt.next();}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ path.lineTo(z.x,z.y);}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (closed)\ path.closePath();}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ path;}
+\DoxyCodeLine{00161\ \ \ \ \ \}}
+\DoxyCodeLine{00162\ \ \ \ \ }
+\DoxyCodeLine{00163\ \ \ \ \ \textcolor{comment}{//\ TODO:\ conversions\ from\ plane\ to/from\ sphere.\ (Same\ in\ PathManager?)}}
+\DoxyCodeLine{00164\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,262 @@
+\doxysection{Dual\+Tri.\+java}
+\label{_dual_tri_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/komplex/DualTri.java@{C:/Users/ashej/myGitRepos/CirclePack/src/komplex/DualTri.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }komplex;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ dcel.PackDCEL;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ geometry.CommonMath;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ geometry.HyperbolicMath;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ geometry.SphericalMath;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ math.Mobius;}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00025\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }DualTri\ \{}
+\DoxyCodeLine{00026\ \ \ \ \ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ OKERR=.0000000001;\ }
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keyword}{public}\ Complex\ []corners;\ \textcolor{comment}{//\ vertices}}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{public}\ Complex\ []TangPts;\ \ \textcolor{comment}{//\ incircle\ tangency\ points}}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{int}\ hes;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{comment}{//\ constructors}}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{public}\ DualTri()\ \{}
+\DoxyCodeLine{00034\ \ \ \ \ \}}
+\DoxyCodeLine{00035\ \ \ \ \ }
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{public}\ DualTri(Complex\ z0,Complex\ z1,Complex\ z2,\textcolor{keywordtype}{int}\ hs)\ \{}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ hes=hs;}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ corners=\textcolor{keyword}{new}\ Complex[3];}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ corners[0]=\textcolor{keyword}{new}\ Complex(z0);}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ corners[1]=\textcolor{keyword}{new}\ Complex(z1);}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ corners[2]=\textcolor{keyword}{new}\ Complex(z2);}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ TangPts=\textcolor{keyword}{new}\ Complex[3];\ \textcolor{comment}{//\ filled\ in\ other\ calls}}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ setInCirclePts();}
+\DoxyCodeLine{00044\ \ \ \ \ \}}
+\DoxyCodeLine{00045\ \ \ \ \ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{public}\ DualTri(PackDCEL\ pdcel,combinatorics.komplex.DcelFace\ face)\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ HalfEdge\ he=face.edge;\ \textcolor{comment}{//\ based\ on\ face\ edges}}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ hes=pdcel.p.hes;}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ corners=\textcolor{keyword}{new}\ Complex[3];}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ corners[0]=pdcel.getVertCenter(he);}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ corners[1]=pdcel.getVertCenter(he.next);}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ corners[2]=pdcel.getVertCenter(he.next.next);}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ TangPts=\textcolor{keyword}{new}\ Complex[3];\ \textcolor{comment}{//\ filled\ in\ other\ calls}}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ setInCirclePts();}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \ \ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setInCirclePts()\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []len=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []r=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ mindist;}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)\ \{\ \textcolor{comment}{//\ hyp\ }}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ legality,\ number\ on\ unit\ circle}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ \{\ }
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (corners[j].abs()>1.0001)\ \{\ \textcolor{comment}{//\ clearly\ illegal,\ error\ }}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TangPts=\textcolor{keyword}{null};}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (corners[j].abs()>1.0)\ \{\ \textcolor{comment}{//\ roundoff?\ proj\ to\ unit\ circle}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ corners[j]=corners[j].divide(corners[j].abs());}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (corners[j].abs()>.99999)}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tick>0)\ \{\ \textcolor{comment}{//\ some\ point(s)\ on\ the\ unit\ circle}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ case:\ all\ three\ on\ unit\ circle}}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tick==3)\ \{}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ corners[j]=corners[j].divide(corners[j].abs());}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ If\ verts\ were\ at\ 1,\ +-\/i,\ then\ tangency\ points}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ are\ t1=origin,\ t0=(c)+(c)i,\ t2=(c)-\/(c)i,\ where}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ c=1-\/1/sqrt(2).}}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Strategy:\ find\ Mobius\ m\ mapping\ verts\ to\ 1,\ i,\ -\/i,}}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ tangency\ points\ are\ inverses\ of\ tj's.}}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ }}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1=corners[1].divide(corners[0]);}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z2=corners[2].divide(corners[0]);}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ v1=z1.y/(1-\/z1.x);}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ v2=z2.y/(1-\/z2.x);}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ phi(z)=(1+z)/(1-\/z)\ maps\ 1\ to\ inf,\ zj\ to\ (vj)i}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a=2/(v1-\/v2);}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ b=(v2+v1)/(v2-\/v1);}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ psi(z)=(a)(i)z\ +\ b(i):\ phi(z1)=i,\ phi(z2)=-\/i}}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ rot=\textcolor{keyword}{new}\ Mobius(corners[0].reciprocal(),}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Complex(0.0),\textcolor{keyword}{new}\ Complex(0.0),}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Complex(1.0));}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ phi=\textcolor{keyword}{new}\ Mobius(\textcolor{keyword}{new}\ Complex(1.0),\textcolor{keyword}{new}\ Complex(1.0),}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Complex(-\/1.0),\textcolor{keyword}{new}\ Complex(1.0));}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ psi=\textcolor{keyword}{new}\ Mobius(\textcolor{keyword}{new}\ Complex(0,a),\textcolor{keyword}{new}\ Complex(0,b),}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Complex(0.0),\textcolor{keyword}{new}\ Complex(1.0));}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Here's\ m}}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ m=(Mobius)rot.lmultby(phi.lmultby(psi).lmultby(phi.inverse()));}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ m\_inv=(Mobius)m.inverse();}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c=1-\/1/Math.sqrt(2);}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TangPts[0]=m\_inv.apply(\textcolor{keyword}{new}\ Complex(c,c));}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TangPts[1]=m\_inv.apply(\textcolor{keyword}{new}\ Complex(0.0));}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TangPts[2]=m\_inv.apply(\textcolor{keyword}{new}\ Complex(c,-\/c));}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ handle\ second\ case:\ two\ points\ on\ unit\ circle}}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ offset=-\/1;}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tick==2)\ \{\ }
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ }
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (offset<0\ \&\&\ corners[j].abs()<=.99999)}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ offset=j;}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (offset<0)}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}error\ with\ points\ on\ unit\ circle"{}});}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z0=corners[offset];}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1=corners[(offset+1)\%3];}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z2=corners[(offset+2)\%3];}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ map\ z0\ to\ origin\ z1\ to\ 1}}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ lad=\textcolor{keyword}{new}\ Complex(1.0);}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lad=lad.minus(z0.conj().times(z1));}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lad=lad.divide(\textcolor{keyword}{new}\ Complex(z1.x-\/z0.x,z1.y-\/z0.y));}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ phi=\textcolor{keyword}{new}\ Mobius(lad,lad.times(z0).times(-\/1.0),}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z0.conj().times(-\/1.0),\textcolor{keyword}{new}\ Complex(1.0));}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ nz2=phi.apply(z2);}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ag=nz2.arg()/2.0;}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ rot=\textcolor{keyword}{new}\ Mobius(\textcolor{keyword}{new}\ Complex(Math.cos(ag),Math.sin(-\/ag)),}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Complex(0.0),\textcolor{keyword}{new}\ Complex(0.0),\textcolor{keyword}{new}\ Complex(1.0));}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ m=(Mobius)phi.lmultby(rot);}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ m\_inv=(Mobius)m.inverse();}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Mobius\ m\ maps\ z0\ to\ origin,\ z1,\ z2\ equidistant\ from\ 1}}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ h=Math.sin(ag);}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ s=h/(1+h);}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad=1-\/2*s;\ \textcolor{comment}{//\ radius\ of\ circle\ at\ origin}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ In\ this\ standard\ position,\ tangency\ points\ are}}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rr=Math.pow(rad,1.5);}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ t0=\textcolor{keyword}{new}\ Complex(rr/(rad+s),-\/rad*h);}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ t2=t0.conj();}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ t1=\textcolor{keyword}{new}\ Complex(Math.sqrt(rad));\ \textcolor{comment}{//\ this\ is\ real}}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ tangency\ points}}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TangPts[offset]=m\_inv.apply(t0);}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TangPts[(offset+1)\%3]=m\_inv.apply(t1);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TangPts[(offset+2)\%3]=m\_inv.apply(t2);}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ last\ case,\ one\ on\ boundary}}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tick==1)\ \{\ }
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ }
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (offset<0\ \&\&\ corners[j].abs()>.99999)}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ offset=j;}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (offset<0)}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}error\ with\ points\ on\ unit\ circle"{}});}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z0=corners[offset];}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1=corners[(offset+1)\%3];}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z2=corners[(offset+2)\%3];}
+\DoxyCodeLine{00183\ }
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Mobius\ m\ maps\ disc\ to\ upper\ half\ plane,\ z0\ to\ infinity}}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ m=\textcolor{keyword}{new}\ Mobius(\textcolor{keyword}{new}\ Complex(0.0,1.0),\textcolor{keyword}{new}\ Complex(-\/z0.y,z0.x),}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Complex(-\/1.0),z0);}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ h\_len=HyperbolicMath.h\_dist(z1,z2);}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ w1=m.apply(z1);}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ w2=m.apply(z2);}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ lg=Math.log(w1.y/w2.y);}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ hyperbolic\ radii}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r1=(0.5)*(h\_len-\/lg);\ }
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2=(0.5)*(h\_len+lg);}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ Y1=Math.exp(r1)*w1.y;}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ Y2=Math.exp(r2)*w2.y;}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ t0=\textcolor{keyword}{new}\ Complex(w1.x,Y1);}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ t2=\textcolor{keyword}{new}\ Complex(w2.x,Y2);}
+\DoxyCodeLine{00198\ }
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ m\_inv=(Mobius)m.inverse();}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ tangency\ points}}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TangPts[offset]=m\_inv.apply(t0);}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TangPts[(offset+2)\%3]=m\_inv.apply(t2);}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ For\ tangency\ between\ finite\ points,\ need\ x-\/radii}}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(r1\ >\ 0.0001)\ }
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r1\ =\ 1-\/Math.exp(-\/2.0*r1);\ \textcolor{comment}{//\ x=1-\/exp(-\/2h)}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r1\ =\ 2.0*r1*(1.0\ -\/\ r1*(1.0-\/2.0*r1/3.0));}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(r2\ >\ 0.0001)\ }
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r2\ =\ 1-\/Math.exp(-\/2.0*r2);}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r2\ =\ 2.0*r2*(1.0\ -\/\ r2*(1.0-\/2.0*r2/3.0));}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TangPts[(offset+1)\%3]=HyperbolicMath.hyp\_tangency(z1,\ z2,\ r1,\ r2);}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}Mobius\ processing\ error:"{}}+ex.getMessage());}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ len[0]=mindist=HyperbolicMath.h\_dist(corners[0],corners[1]);}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ len[1]=mindist=HyperbolicMath.h\_dist(corners[1],corners[2]);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ len[2]=mindist=HyperbolicMath.h\_dist(corners[2],corners[0]);}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hes>0)\ \{\ \textcolor{comment}{//\ sph}}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ len[0]=mindist=SphericalMath.s\_dist(corners[0],corners[1]);}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ len[1]=mindist=SphericalMath.s\_dist(corners[1],corners[2]);}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ len[2]=mindist=SphericalMath.s\_dist(corners[2],corners[0]);}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ eucl}}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ len[0]=mindist=corners[1].minus(corners[0]).abs();}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ len[1]=corners[2].minus(corners[1]).abs();}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ len[2]=corners[0].minus(corners[2]).abs();}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ are\ some\ points\ too\ close?}}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ mindist=(mindist<len[1])\ ?\ mindist\ :\ len[1];}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ mindist=(mindist<len[2])\ ?\ mindist\ :\ len[2];}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mindist<OKERR)\ \{}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ TangPts=\textcolor{keyword}{null};}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ "{}effective"{}\ radii\ at\ vertices:\ radii\ of\ circles}}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ that\ would\ form\ this\ triangles.}}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ \{}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ op=len[(j+1)\%3];}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ r[j]=(len[j]+len[(j+2)\%3]-\/op)/2.0;}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (r[j]<0.000001*op)\ \{\ \textcolor{comment}{//\ extremely\ thin\ triangle}}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TangPts=\textcolor{keyword}{null};}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ work\ on\ case\ of\ one\ or\ more\ points\ on\ unit\ circle}}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)\ \{}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ hyperbolic:\ need\ these\ as\ x-\/radii}}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ \{}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(r[j]\ >\ 0.0001)\ }
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r[j]\ =\ 1-\/Math.exp(-\/2.0*r[j]);\ \textcolor{comment}{//\ x=1-\/exp(-\/2h)}}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r[j]\ =\ 2.0*r[j]*(1.0\ -\/\ r[j]*(1.0-\/2.0*r[j]/3.0));}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00266\ }
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ here's\ the\ actual\ computation}}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ \{}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TangPts[j]=CommonMath.get\_tang\_pt(corners[j],corners[(j+1)\%3],}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r[j],r[(j+1)\%3],hes);}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00273\ \ \ \ \ \}\ \ \ \ \ \ \ }
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00279\ \ \ \ \ \textcolor{keyword}{public}\ Complex\ getTP(\textcolor{keywordtype}{int}\ j)\ \{}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (TangPts==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ Complex\ z=\textcolor{keyword}{new}\ Complex(TangPts[j]);}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ z;}
+\DoxyCodeLine{00283\ \ \ \ \ \}}
+\DoxyCodeLine{00284\ \ \ \ \ }
+\DoxyCodeLine{00285\ \}}
+
+\end{DoxyCode}

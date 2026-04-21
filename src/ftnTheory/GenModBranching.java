@@ -32,8 +32,6 @@ import util.CmdStruct;
 import util.StringUtil;
 
 /**
- * @brief Generalized branch points are small subcomplexes of
- *
  * Generalized branch points are small subcomplexes of 
  * circle packing complexes which are structured to 
  * support local branching-like behavior via various 
@@ -308,7 +306,16 @@ public class GenModBranching extends PackExtender {
 			double frobNorm=Mobius.frobeniusNorm(holomob);
 			if (frobNorm<0)
 				return 0;
+			msg("holonomy_error: "+frobNorm);
 			return 1;
+		}
+		
+		// =========== sweep ===================
+		// Grid search over (x,y) for second branch point,
+		// recording holonomy error. See GBExperiments.java.
+		if (cmd.startsWith("sweep")) {
+			GBExperiments exp=new GBExperiments(this);
+			return exp.runSweep(flagSegs);
 		}
 		
 		// =========== delete =====================
@@ -691,7 +698,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief This creates 'layoutOrder' by partially lays out 
+	 * This creates 'layoutOrder' by partially lays out 
 	 * the parent, circumventing the branch points, and then
 	 * appending edges to handle its additional circles.
 	 * @return HalfLink
@@ -728,7 +735,7 @@ public class GenModBranching extends PackExtender {
 	}
 
 	/**
-	 * @brief First, position the parent's outer circles using 'outerLayout'.
+	 * First, position the parent's outer circles using 'outerLayout'.
 	 * Then layout each branch point as follows: layout 'myHoloBorder'
 	 * whose first edge was positioned by the parent, then 
 	 * 'lastLayoutEdge' to pick up 'newBrPoint'. 
@@ -745,7 +752,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief See if index j (face or vertex, depending) is already a branch
+	 * See if index j (face or vertex, depending) is already a branch
 	 * point with 'myType' type. If yes, return first matching index
 	 * @param j int, face or vertex
 	 * @param type int, 'myType'
@@ -784,7 +791,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Return true if j is one of the "excluded" vertices, not
+	 * Return true if j is one of the "excluded" vertices, not
 	 * eligible for supporting a new branch point.
 	 * @param j int
 	 * @return boolean
@@ -800,7 +807,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Given the branch point ID, find its index in current 
+	 * Given the branch point ID, find its index in current 
 	 * 'branchPts' vector. ID is assigned on creation, but 
 	 * may get out of line with index in 'branchPts'
 	 * @param bpID int, assigned on creation
@@ -823,7 +830,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Return a list of branch ID's for branch points having vert in
+	 * Return a list of branch ID's for branch points having vert in
 	 * the given list.
 	 * @param nlink NodeLink
 	 * @return int vector, empty if none found
@@ -844,7 +851,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Return a list of branch ID's for branch points having a face in
+	 * Return a list of branch ID's for branch points having a face in
 	 * the given list.
 	 * @param flink FaceLink
 	 * @return int vector, empty if none found
@@ -865,7 +872,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Find the circles which are branch circles for some branch point
+	 * Find the circles which are branch circles for some branch point
 	 * @return NodeLink, empty if none found
 	 */
 	public NodeLink getBPverts() {
@@ -882,7 +889,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Find the faces which are branch faces for some branch point
+	 * Find the faces which are branch faces for some branch point
 	 * @return FaceLink, empty if none found
 	 */
 	public FaceLink getBPfaces() {
@@ -899,7 +906,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Designed for use in study of generalized branching.
+	 * Designed for use in study of generalized branching.
 	 * Given a point 'pt', determine if it determines
 	 * 'singular' (interstice) or 'chaperone' branching 
 	 * (relative to 'refPack') and return appropriate 
@@ -1057,7 +1064,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Transform x in [0,pi/2] into return T(x) in [mn,mx], 
+	 * Transform x in [0,pi/2] into return T(x) in [mn,mx], 
 	 * with T(0)=mn, T(pi/2)=mx. Note that mn may be less 
 	 * than or greater than mx, so we may have to reverse.
 	 * 
@@ -1085,7 +1092,7 @@ public class GenModBranching extends PackExtender {
 	// OBE: I've remove 'old_getClickData'
 	
 	/**
-	 * @brief Given argument 'spot' and closed list of arguments to petals 
+	 * Given argument 'spot' and closed list of arguments to petals 
 	 * {v_1, v_2, ... v_n, v_1}, return double j+f where j is the 
 	 * petal index 'spot' lies in (i.e., spot is between the arguments 
 	 * for v_j and v_{j+1}) and f is the proportion of that petal 
@@ -1109,7 +1116,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Given 'myang' (adjusted to lie in [0,2pi)) and array of 
+	 * Given 'myang' (adjusted to lie in [0,2pi)) and array of 
 	 * angles in faces of a flower, return 'pseudoangle', which
 	 * is pi times the number of face angles myang covers completely 
 	 * plus the proportion (of pi) that myang covers in the next
@@ -1144,7 +1151,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Install a new branch point
+	 * Install a new branch point
 	 * parameters. 
 	 * @param bpt GenBrModPt
 	 * @return int
@@ -1165,7 +1172,7 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Dismantle and then delete a branch point
+	 * Dismantle and then delete a branch point
 	 * @param bpID
 	 * @return 0 on error or not found
 	 */
@@ -1251,13 +1258,21 @@ public class GenModBranching extends PackExtender {
 				"optional jump vertices, petals 'w1' 'w2', "+
 				"overlap parameters 'o1', 'o2' in [0,1]."));
 
+		// experimental commands (see GBExperiments.java):
+		cmdStruct.add(new CmdStruct("sweep",
+				"-v {vert} -a {aim1} -A {aim2} "+
+				"-b {xmin xmax ymin ymax} -n {gridsize} -o {file}",null,
+				"Sweep grid of (x,y) positions for second branch point. "+
+				"Fixed traditional BP at vertex 'vert' with aim 'aim1'*Pi. "+
+				"Sweep BP aim is 'aim2'*Pi. "+
+				"Outputs CSV of (x,y,holonomy_error). "+
+				"Defaults: aim1=aim2=4.0, grid=20, file=sweep_output.csv"));
+
 	}
 
 }
 
 /**
- * @brief Utility class: 'spot' in [0,2pi] has integer part 'petal' (an index
- *
  * Utility class: 'spot' in [0,2pi] has integer part 'petal' (an index
  * to petals of some flower) and 'fraction', the cclw fraction of the
  * petal's opening that spot occupies.

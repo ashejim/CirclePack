@@ -1,0 +1,255 @@
+\doxysection{Hover\+Panel.\+java}
+\label{_hover_panel_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/frames/HoverPanel.java@{C:/Users/ashej/myGitRepos/CirclePack/src/frames/HoverPanel.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }frames;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Component;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.Insets;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.Point;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.event.MouseEvent;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.event.MouseListener;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.event.WindowAdapter;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.event.WindowEvent;}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ javax.swing.JFrame;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ javax.swing.SwingUtilities;}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }HoverPanel\ \textcolor{keyword}{extends}\ JPanel\ implements\ MouseListener\ \{}
+\DoxyCodeLine{00038\ \ \ \ \ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00040\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \ \ \ \ Component\ parent;\ \textcolor{comment}{//\ component\ this\ is\ tethered\ to}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{public}\ JFrame\ lockedFrame;\ \textcolor{comment}{//\ decorated\ frame\ }}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{public}\ JFrame\ hoverFrame;\ \textcolor{comment}{//\ undecorated\ frame}}
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ locked;\ \textcolor{comment}{//\ status}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ APPEAR\_DELAY\ =\ 1000;\ \textcolor{comment}{//\ delay\ on\ tooltip\ appearance\ in\ milliseconds}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ DISAPPEAR\_DELAY\ =\ 100;\ \textcolor{comment}{//\ delay\ on\ tooltip\ disappearance\ in\ milliseconds}}
+\DoxyCodeLine{00050\ \ \ \ \ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{comment}{//\ default\ starting\ location}}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ XLoc=120;\ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ YLoc=60;}
+\DoxyCodeLine{00054\ \ \ \ \ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{comment}{//\ location\ offsets\ from\ mouse}}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ XOffset=15;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ YOffset=15;}
+\DoxyCodeLine{00058\ \ \ \ \ }
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ myWidth;}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ myHeight;}
+\DoxyCodeLine{00061\ \ \ \ \ Thread\ appearSleeper;\ \textcolor{comment}{//sleeper\ thread,\ to\ count\ down\ until\ displaying\ tooltip}}
+\DoxyCodeLine{00062\ \ \ \ \ Thread\ disappearSleeper;\ \textcolor{comment}{//sleeper\ thread,\ to\ count\ down\ until\ hiding\ tooltip}}
+\DoxyCodeLine{00063\ \ \ \ \ Insets\ insets;\ \textcolor{comment}{//frame\ border\ size}}
+\DoxyCodeLine{00064\ \ \ \ \ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keyword}{public}\ HoverPanel(\textcolor{keywordtype}{int}\ wide,\textcolor{keywordtype}{int}\ high,String\ title)\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ myWidth=wide;}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ myHeight=high;}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ locked=\textcolor{keyword}{false};\ \textcolor{comment}{//\ user\ must\ call\ 'lockframe'\ to\ show}}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ hoverFrame\ =\ \textcolor{keyword}{new}\ JFrame();}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ hoverFrame.setLocation(XLoc,YLoc);}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ hoverFrame.setResizable(\textcolor{keyword}{true});\ \textcolor{comment}{//\ ??\ false\ ??}}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ hoverFrame.setPreferredSize(\textcolor{keyword}{new}\ Dimension(myWidth,myHeight));}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ hoverFrame.setUndecorated(\textcolor{keyword}{true});}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ hoverFrame.setVisible(\textcolor{keyword}{false});\ \ \ }
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ lockedFrame\ =\ \textcolor{keyword}{new}\ JFrame();}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ lockedFrame.setLocation(XLoc,YLoc);}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ lockedFrame.setResizable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ lockedFrame.setPreferredSize(\textcolor{keyword}{new}\ Dimension(myWidth,myHeight));}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ lockedFrame.addWindowListener(\textcolor{keyword}{new}\ LockAdapter());\ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ lockedFrame.setUndecorated(\textcolor{keyword}{false});}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ lockedFrame.setTitle(title);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ lockedFrame.setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ initComponents();}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ setInitPanel();}
+\DoxyCodeLine{00090\ \ \ \ \ \}}
+\DoxyCodeLine{00091\ \ \ \ \ }
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{comment}{//\ ====================\ methods\ to\ override\ =================}}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initComponents()\ \{\}}
+\DoxyCodeLine{00097\ \ \ \ \ }
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setInitPanel()\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ loadHover();}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ .pack()\ will\ be\ called\ when\ hover\ is\ started}}
+\DoxyCodeLine{00104\ \ \ \ \ \}}
+\DoxyCodeLine{00105\ \ \ \ \ }
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ loadHover()\ \{\}}
+\DoxyCodeLine{00110\ \ \ \ \ }
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ hoverCall()\ \{\}}
+\DoxyCodeLine{00115\ \ \ \ \ }
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ loadLocked()\ \{\}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{comment}{//\ ==================}}
+\DoxyCodeLine{00122\ \ \ \ \ }
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ reloadHover()\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ loadHover();}
+\DoxyCodeLine{00125\ \ \ \ \ \}}
+\DoxyCodeLine{00126\ \ \ \ \ }
+\DoxyCodeLine{00130\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ lockframe()\ \{}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ hoverFrame.setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ loadLocked();}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ lockedFrame.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ locked=\textcolor{keyword}{true};}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ lockedFrame.pack();}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ lockedFrame.setVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00137\ \ \ \ \ \}}
+\DoxyCodeLine{00138\ \ \ \ \ }
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ isLocked()\ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ locked;}
+\DoxyCodeLine{00145\ \ \ \ \ \}}
+\DoxyCodeLine{00146\ \ \ \ \ }
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ addThis(JFrame\ jF)\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ jF.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00153\ \ \ \ \ \}}
+\DoxyCodeLine{00154\ \ \ \ \ }
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{keyword}{public}\ Point\ setXY(MouseEvent\ me)\ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ the\ user\ mouses\ over\ the\ component}}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ Point\ mousePoint=\textcolor{keyword}{null};}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (me==\textcolor{keyword}{null})}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Point(XLoc,YLoc);}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ mousePoint\ =\ \textcolor{keyword}{new}\ Point(me.getX(),\ me.getY());}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ SwingUtilities.convertPointToScreen(mousePoint,\ me.getComponent());}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ x\ =\ (int)\ mousePoint.getX()\ +\ XOffset;}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ y\ =\ (int)\ mousePoint.getY()\ +\ YOffset;}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ the\ hoverFrame\ would\ display\ off\ the\ screen}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ move\ it\ to\ other\ side\ of\ mouse}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (x\ +\ myWidth\ >\ PackControl.displayDimension.width)\ x\ =\ x\ -\/\ myWidth\ -\/\ 10;}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (y\ +\ myHeight\ >\ PackControl.displayDimension.height)\ y\ =\ y\ -\/\ myHeight\ -\/\ 10;}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Point(x,y);}
+\DoxyCodeLine{00177\ \ \ \ \ \}}
+\DoxyCodeLine{00178\ \ \ \ \ }
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseReleased(MouseEvent\ me)\ \{\}}
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseClicked(MouseEvent\ me)\ \{\}}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mousePressed(MouseEvent\ me)\ \{}
+\DoxyCodeLine{00183\ \textcolor{comment}{/*\ TODO:\ Need\ method\ to\ disable:\ I'm\ getting\ deep\ error\ of\ some\ sort\ as\ of\ 6/2020\ \ \ \ \ \ \ //\ if\ the\ user\ presses\ the\ mouse,\ interrupt\ hoverFrame\ waiting\ to\ lock}}
+\DoxyCodeLine{00184\ \textcolor{comment}{\ \ \ \ \ \ \ \ appearSleeper.interrupt();}}
+\DoxyCodeLine{00185\ \textcolor{comment}{*/}\ \ \ \ \ \ }
+\DoxyCodeLine{00186\ \ \ \ \ \}}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseEntered(MouseEvent\ me)\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ }
+\DoxyCodeLine{00190\ \textcolor{comment}{/*\ TODO:\ Need\ method\ to\ disable:\ I'm\ getting\ deep\ error\ of\ some\ sort\ as\ of\ 6/2020}}
+\DoxyCodeLine{00191\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ final\ Point\ pt=setXY(me);}}
+\DoxyCodeLine{00192\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00193\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ create\ a\ new\ thread}}
+\DoxyCodeLine{00194\ \textcolor{comment}{\ \ \ \ \ \ \ \ appearSleeper\ =\ new\ Thread(new\ Runnable()\ \{}}
+\DoxyCodeLine{00195\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ public\ void\ run()\ \{}}
+\DoxyCodeLine{00196\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ boolean\ interrupted\ =\ false;}}
+\DoxyCodeLine{00197\ \textcolor{comment}{}}
+\DoxyCodeLine{00198\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ try\ \{}}
+\DoxyCodeLine{00199\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ sleep\ before\ hover\ or\ before\ bringing\ locked\ to\ top}}
+\DoxyCodeLine{00200\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (!locked)}}
+\DoxyCodeLine{00201\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Thread.sleep(APPEAR\_DELAY);}}
+\DoxyCodeLine{00202\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ else}}
+\DoxyCodeLine{00203\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Thread.sleep(2*APPEAR\_DELAY);}}
+\DoxyCodeLine{00204\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ catch\ (InterruptedException\ ie)\ \{}}
+\DoxyCodeLine{00205\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ if\ interrupted,\ flag\ it}}
+\DoxyCodeLine{00206\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interrupted\ =\ true;}}
+\DoxyCodeLine{00207\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00208\ \textcolor{comment}{}}
+\DoxyCodeLine{00209\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ if\ not\ interrupted,\ show\ hoverFrame\ near\ mouse}}
+\DoxyCodeLine{00210\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (!interrupted\ \&\&\ !locked)\ \{}}
+\DoxyCodeLine{00211\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hoverCall();}}
+\DoxyCodeLine{00212\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ addThis(hoverFrame);}}
+\DoxyCodeLine{00213\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hoverFrame.pack();}}
+\DoxyCodeLine{00214\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hoverFrame.setLocation(pt);}}
+\DoxyCodeLine{00215\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hoverFrame.setVisible(true);}}
+\DoxyCodeLine{00216\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00217\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ if\ locked,\ bring\ lockedFrame\ to\ top}}
+\DoxyCodeLine{00218\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ else\ if\ (!interrupted)\ \{}}
+\DoxyCodeLine{00219\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lockedFrame.setState(Frame.NORMAL);}}
+\DoxyCodeLine{00220\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lockedFrame.toFront();}}
+\DoxyCodeLine{00221\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ TODO:\ how\ to\ un-\/iconify\ if\ iconified?}}
+\DoxyCodeLine{00222\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00223\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00224\ \textcolor{comment}{\ \ \ \ \ \ \ \ \});}}
+\DoxyCodeLine{00225\ \textcolor{comment}{}}
+\DoxyCodeLine{00226\ \textcolor{comment}{\ \ \ \ \ \ \ \ //run\ the\ thread}}
+\DoxyCodeLine{00227\ \textcolor{comment}{\ \ \ \ \ \ \ \ appearSleeper.start();}}
+\DoxyCodeLine{00228\ \textcolor{comment}{\ \ \ \ \ \ \ \ */}}
+\DoxyCodeLine{00229\ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ }
+\DoxyCodeLine{00231\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseExited(MouseEvent\ me)\ \{}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00233\ \textcolor{comment}{/*\ \ TODO:\ Need\ method\ to\ disable:\ I'm\ getting\ deep\ error\ of\ some\ sort\ as\ of\ 6/2020\ \ \ \ \ \ }}
+\DoxyCodeLine{00234\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ if\ mouse\ leaves\ the\ parent\ component}}
+\DoxyCodeLine{00235\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ (no\ need\ to\ run\ this\ code\ if\ frame\ is\ locked)}}
+\DoxyCodeLine{00236\ \textcolor{comment}{\ \ \ \ \ \ \ \ appearSleeper.interrupt();}}
+\DoxyCodeLine{00237\ \textcolor{comment}{}}
+\DoxyCodeLine{00238\ \textcolor{comment}{\ \ \ \ \ \ \ \ if\ (!locked)\ \{}}
+\DoxyCodeLine{00239\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ //\ interrupt\ the\ appearance\ sleeper\ thread}}
+\DoxyCodeLine{00240\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ //\ (hoverFrame\ may\ or\ may\ not\ be\ already\ visible,\ doesn't\ matter)}}
+\DoxyCodeLine{00241\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ me.consume();}}
+\DoxyCodeLine{00242\ \textcolor{comment}{}}
+\DoxyCodeLine{00243\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ //\ start\ a\ disappearance\ sleeper\ thread\ if\ hoverFrame\ is\ visible;}}
+\DoxyCodeLine{00244\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ //\ \ \ this\ allows\ time\ for\ the\ mouse\ to\ enter\ the\ hover\ and\ lock\ it}}
+\DoxyCodeLine{00245\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ if\ (hoverFrame.isVisible())\ \{}}
+\DoxyCodeLine{00246\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ final\ Point\ pt=hoverFrame.getLocation();}}
+\DoxyCodeLine{00247\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ disappearSleeper\ =\ new\ Thread(new\ Runnable()\ \{}}
+\DoxyCodeLine{00248\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ public\ void\ run()\ \{}}
+\DoxyCodeLine{00249\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ boolean\ interrupted\ =\ false;}}
+\DoxyCodeLine{00250\ \textcolor{comment}{}}
+\DoxyCodeLine{00251\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ try\ \{}}
+\DoxyCodeLine{00252\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Thread.sleep(DISAPPEAR\_DELAY);}}
+\DoxyCodeLine{00253\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ catch\ (InterruptedException\ e)\ \{}}
+\DoxyCodeLine{00254\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ interrupted\ =\ true;}}
+\DoxyCodeLine{00255\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00256\ \textcolor{comment}{}}
+\DoxyCodeLine{00257\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ if\ mouse\ is\ in\ hoverFrame,\ thread\ is\ not\ interrupted,\ }}
+\DoxyCodeLine{00258\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ \ \ and\ frame\ is\ not\ currently\ locked,\ then\ lock\ it}}
+\DoxyCodeLine{00259\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (isMouseInHover()\ \&\&\ !interrupted\ \&\&\ !isLocked())\ \{\ }}
+\DoxyCodeLine{00260\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lockedFrame.setLocation(pt);}}
+\DoxyCodeLine{00261\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lockframe();}}
+\DoxyCodeLine{00262\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00263\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ otherwise\ hide\ the\ hoverFrame}}
+\DoxyCodeLine{00264\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ else\ hoverFrame.setVisible(false);}}
+\DoxyCodeLine{00265\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00266\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \});}}
+\DoxyCodeLine{00267\ \textcolor{comment}{}}
+\DoxyCodeLine{00268\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //run\ the\ thread}}
+\DoxyCodeLine{00269\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ disappearSleeper.start();}}
+\DoxyCodeLine{00270\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00271\ \textcolor{comment}{\ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00272\ \textcolor{comment}{*/}\ \ \ \ \ \ }
+\DoxyCodeLine{00273\ \ \ \ \ \}}
+\DoxyCodeLine{00274\ \ \ \ \ }
+\DoxyCodeLine{00275\ \textcolor{comment}{/*\ \ }}
+\DoxyCodeLine{00276\ \textcolor{comment}{\ \ \ \ private\ boolean\ isMouseInHover()\ \{}}
+\DoxyCodeLine{00277\ \textcolor{comment}{\ \ TODO:\ Need\ method\ to\ disable:\ I'm\ getting\ deep\ error\ of\ some\ sort\ as\ of\ 6/2020\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ return\ true\ if\ mouse\ is\ in\ hoverFrame,\ false\ otherwise}}
+\DoxyCodeLine{00278\ \textcolor{comment}{\ \ \ \ \ \ \ \ int\ curX\ =\ (int)\ MouseInfo.getPointerInfo().getLocation().x;}}
+\DoxyCodeLine{00279\ \textcolor{comment}{\ \ \ \ \ \ \ \ int\ curY\ =\ (int)\ MouseInfo.getPointerInfo().getLocation().y;}}
+\DoxyCodeLine{00280\ \textcolor{comment}{}}
+\DoxyCodeLine{00281\ \textcolor{comment}{\ \ \ \ \ \ \ \ Point\ pt=hoverFrame.getLocation();}}
+\DoxyCodeLine{00282\ \textcolor{comment}{\ \ \ \ \ \ \ \ if\ (curX\ >=\ pt.x\ \&\&\ curX\ <=\ pt.x\ +\ myWidth\ \&\&\ curY\ >=\ pt.y\ \&\&\ curY\ <=\ pt.y\ +\ myHeight)\ \{}}
+\DoxyCodeLine{00283\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ return\ true;}}
+\DoxyCodeLine{00284\ \textcolor{comment}{\ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00285\ \textcolor{comment}{\ \ \ \ \ \ \ \ return\ false;}}
+\DoxyCodeLine{00286\ \textcolor{comment}{\ \ \ \ \}}}
+\DoxyCodeLine{00287\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00293\ \ \ \ \ \textcolor{keyword}{class\ }LockAdapter\ \textcolor{keyword}{extends}\ WindowAdapter\ \{}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ windowClosing(WindowEvent\ wevt)\ \{}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wevt.getID()\ ==\ WindowEvent.WINDOW\_CLOSING)\ \{}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ lockedFrame.setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ locked=\textcolor{keyword}{false};}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hoverFrame.setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ reloadHover();}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00302\ \ \ \ \ \}}
+\DoxyCodeLine{00303\ }
+\DoxyCodeLine{00304\ \}}
+
+\end{DoxyCode}

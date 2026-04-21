@@ -1,0 +1,115 @@
+\doxysection{Shell\+Manager.\+java}
+\label{_shell_manager_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/input/ShellManager.java@{C:/Users/ashej/myGitRepos/CirclePack/src/input/ShellManager.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }input;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ frames.MessageHover;}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.util.List;}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ util.ResultPacket;}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }ShellManager\ \{}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ StringBuffer\ runHistory;}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ MAXHISTORY=20000;}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ histHeadEnd;\ \textcolor{comment}{//\ keeps\ track\ of\ old\ end\ for\ pruning}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{comment}{//\ TODO:\ in\ future,\ may\ want\ to\ store\ contents}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{static}\ BufferedWriter\ bufWriter;\ }
+\DoxyCodeLine{00043\ \ \ \ \ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{//\ command\ strings\ are\ kept\ in\ 'cmdHistory'\ for\ shell\ up/down\ action}}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ List<String>\ cmdHistory\ =\ \textcolor{keyword}{new}\ ArrayList<String>();\ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ cmdHistoryIndex;}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{comment}{//\ Constructors}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keyword}{public}\ ShellManager()\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ runHistory=\textcolor{keyword}{new}\ StringBuffer(\textcolor{stringliteral}{"{}<html><head><style>\{\ font-\/family:\ courier;\ font-\/size:\ 8px;\ \}CirclePack\ run,\ ID\ "{}}+}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Integer.toString(CPBase.debugID)+\textcolor{stringliteral}{"{}</style></head>\(\backslash\)n"{}});}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ runHistory.append(\textcolor{stringliteral}{"{}<body>\(\backslash\)n"{}});}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ runHistory.append(\textcolor{stringliteral}{"{}History\ of\ commands\ and\ messages\ will\ be\ displayed\ here.\(\backslash\)n"{}});}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ runHistory.append(\textcolor{stringliteral}{"{}<!-\/-\/HEAD\ BDRY-\/-\/>\(\backslash\)n"{}});\ \textcolor{comment}{//\ top\ anchor\ string,\ may\ be\ needed\ to\ find\ head}}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ histHeadEnd=runHistory.length()+1;}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ cmdHistoryIndex=-\/1;}
+\DoxyCodeLine{00058\ \ \ \ \ \}}
+\DoxyCodeLine{00059\ \ \ \ \ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ processCmdResults(ResultPacket\ rP,MyConsole\ mycon)\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ MyConsole\ myconsole=PackControl.consoleCmd;\ \textcolor{comment}{//\ default\ source}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mycon!=\textcolor{keyword}{null})\ myconsole=mycon;}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ retCount=rP.cmdCount;}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ PackControl.shellManager.recordCmd(rP.origCmdString,retCount);}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.msgs!=\textcolor{keyword}{null})\ PackControl.shellManager.recordMsg(rP.msgs);}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.errorMsgs!=\textcolor{keyword}{null})\ PackControl.shellManager.recordError(rP.errorMsgs);}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (retCount<=0)\ \{\ \textcolor{comment}{//\ error/err\ msg\ ?}}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.errorMsgs!=\textcolor{keyword}{null}\ \&\&\ rP.errorMsgs.trim().length()>0)\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myconsole.dispConsoleMsg(rP.errorMsgs.trim());}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ command\ to\ history\ and\ update\ position\ pointer}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rP.memoryFlag)\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ cmdHistory.add(rP.origCmdString);}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ I\ think\ this\ used\ to\ keep\ one\ at\ location\ of\ history\ recall}}
+\DoxyCodeLine{00082\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ if(\ histPos==cmdNum\ )\ histPos++;\ }}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ myconsole.showCmdCount(retCount);}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ MessageHover.updateShellPane();}
+\DoxyCodeLine{00088\ \ \ \ \ \}}
+\DoxyCodeLine{00089\ \ \ \ \ }
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ recordCmd(String\ cmd,Integer\ count)\ \{}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd==\textcolor{keyword}{null}\ ||\ cmd.length()==0)}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ checkLength();}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (count!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=count.intValue();}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n<0)\ }
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ runHistory.append(\textcolor{stringliteral}{"{}>\ "{}}+cmd+\textcolor{stringliteral}{"{}\ \ \ \ <font\ color=\(\backslash\)"{}red\(\backslash\)"{}>["{}}+n+\textcolor{stringliteral}{"{}]</font><br>"{}});}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ runHistory.append(\textcolor{stringliteral}{"{}>\ "{}}+cmd+\textcolor{stringliteral}{"{}\ \ \ \ ["{}}+n+\textcolor{stringliteral}{"{}]<br>"{}});}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ runHistory.append(\textcolor{stringliteral}{"{}>\ "{}}+cmd+\textcolor{stringliteral}{"{}<br>"{}});}
+\DoxyCodeLine{00109\ \ \ \ \ \}}
+\DoxyCodeLine{00110\ \ \ \ \ }
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ recordMsg(String\ msg)\ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (msg==\textcolor{keyword}{null}\ ||\ msg.length()==0)}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ checkLength();}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ runHistory.append(\textcolor{stringliteral}{"{}<font\ color=\(\backslash\)"{}blue\(\backslash\)"{}>\ "{}}+msg+\textcolor{stringliteral}{"{}</font><br>"{}});}
+\DoxyCodeLine{00120\ \ \ \ \ \}}
+\DoxyCodeLine{00121\ \ \ \ \ }
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ recordError(String\ errmsg)\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (errmsg==\textcolor{keyword}{null}\ ||\ errmsg.length()==0)}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ checkLength();}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ runHistory.append(\textcolor{stringliteral}{"{}<font\ color=\(\backslash\)"{}red\(\backslash\)"{}>\ "{}}+errmsg+\textcolor{stringliteral}{"{}</font><br>"{}});}
+\DoxyCodeLine{00131\ \ \ \ \ \}}
+\DoxyCodeLine{00132\ \ \ \ \ }
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ recordDebug(String\ bugmsg)\ \{}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bugmsg==\textcolor{keyword}{null}\ ||\ bugmsg.length()==0)}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ checkLength();}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ runHistory.append(\textcolor{stringliteral}{"{}<font\ XScolor=\(\backslash\)"{}green\(\backslash\)"{}>\ "{}}+bugmsg+\textcolor{stringliteral}{"{}</font><br>"{}});}
+\DoxyCodeLine{00142\ \ \ \ \ \}}
+\DoxyCodeLine{00143\ \ \ \ \ }
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ checkLength()\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (runHistory.length()>MAXHISTORY)\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{synchronized}\ (runHistory)\ \{}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cutat\ =\ runHistory.indexOf(\textcolor{stringliteral}{"{}<br>>"{}},\ MAXHISTORY/2);}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cutat\ >\ runHistory.length())}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ runHistory.delete(histHeadEnd,\ cutat);}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ in\ future,\ may\ want\ to\ save\ deleted\ stuff\ in\ a\ file}}
+\DoxyCodeLine{00159\ \ \ \ \ \}}
+\DoxyCodeLine{00160\ \}}
+
+\end{DoxyCode}

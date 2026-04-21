@@ -1,0 +1,1109 @@
+\doxysection{Gen\+Mod\+Branching.\+java}
+\label{_gen_mod_branching_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/GenModBranching.java@{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/GenModBranching.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }ftnTheory;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ baryStuff.BaryPoint;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ branching.ChapBrModPt;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ branching.GenBrModPt;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ branching.SingBrModPt;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ branching.TradBrModPt;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ combinatorics.komplex.Vertex;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ dcel.CombDCEL;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ geometry.HyperbolicMath;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ komplex.EdgeSimple;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ listManip.BaryLink;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ listManip.EdgeLink;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ listManip.FaceLink;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ listManip.HalfLink;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ listManip.PointLink;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{import}\ math.Mobius;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{00031\ \textcolor{keyword}{import}\ util.CmdStruct;}
+\DoxyCodeLine{00032\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00063\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }GenModBranching\ \textcolor{keyword}{extends}\ PackExtender\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ Stored\ copy\ of\ original\ packing,\ with\ layout\ and\ everything.}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//\ NOTE:\ Usually\ displayed\ on\ a\ separate\ canvas\ for\ interactive}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{comment}{//\ \ \ "{}clicks"{},\ but\ the\ data\ is\ computed\ using\ the\ stored}}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{//\ \ \ 'refPack',\ not\ its\ copy.}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{public}\ PackData\ refPack;\ \ }
+\DoxyCodeLine{00070\ \ \ \ \ }
+\DoxyCodeLine{00071\ \ \ \ \ Vector<GenBrModPt>\ branchPts;\ \textcolor{comment}{//\ indexing\ starts\ with\ 1}}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ LAYOUT\_THRESHOLD=.00001;\ \textcolor{comment}{//\ for\ layouts\ based\ on\ quality}}
+\DoxyCodeLine{00073\ \ \ \ \ \textcolor{keyword}{public}\ HalfLink\ holoBorder;\ \textcolor{comment}{//\ for\ holonomy\ about\ the\ parent's\ red\ chain}}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ m2pi=2.0*Math.PI;}
+\DoxyCodeLine{00075\ \ \ \ \ ArrayList<Vertex>\ exclusions;\ \textcolor{comment}{//\ vertices\ to\ avoid\ when\ choosing\ 'alpha'}}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keyword}{private}\ HalfLink\ poisonHEdges;\ \textcolor{comment}{//\ migrate\ to\ this}}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{public}\ GenModBranching(PackData\ p)\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ extensionType=\textcolor{stringliteral}{"{}GENERALIZED\_BRANCHING\_MOD"{}};}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ extensionAbbrev=\textcolor{stringliteral}{"{}GB"{}};}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ toolTip=\textcolor{stringliteral}{"{}'Generalized\_Branching'\ provides\ methods\ for\ "{}}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}incorporating\ various\ generalized\ branched\ "{}}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}points\ into\ the\ parent\ circle\ packing.\ "{}}}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}(For\ purposes\ of\ interaction,\ a\ copy\ of\ the\ "{}}}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}original\ parent\ is\ held\ in\ 'refPack'.)"{}};}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ registerXType();}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (running)\ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ poisonHEdges=\textcolor{keyword}{null};}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ refPack=extenderPD.copyPackTo();\ \textcolor{comment}{//\ maintains\ original}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ initialize\ 'holoBorder'\ along\ full\ red\ chain}}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ holoBorder=HalfLink.HoloHalfLink(extenderPD.packDCEL,-\/1);}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ branchPts=\textcolor{keyword}{new}\ Vector<GenBrModPt>(3);}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ branchPts.add((GenBrModPt)\textcolor{keyword}{null});\ \textcolor{comment}{//\ index\ 0\ empty;\ number\ from\ 1}}
+\DoxyCodeLine{00099\ \ \ \ \ \}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cmdParser(String\ cmd,\ Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ Vector<String>\ items\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ GenBrModPt\ cmdBranchPt=\textcolor{keyword}{null};\ \textcolor{comment}{//\ designated\ branch\ point\ for\ this\ command?}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ for\ -\/b\{n\}\ (or\ -\/b\ \{n\})\ flag\ designating\ a\ branch\ point\ n>=1;\ }}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ Note:\ we\ remove\ the\ -\/b\ flag\ and\ number,\ leaving\ the\ rest}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flagSegs!=\textcolor{keyword}{null}\ \&\&\ flagSegs.size()>0)\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ str=items.get(0);}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ this\ a\ '-\/b'\ flag?}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (StringUtil.isFlag(str)\ \&\&\ str.charAt(1)==\textcolor{charliteral}{'b'})\ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items.remove(0);}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str.length()>2)\ }
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str=str.substring(2);}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str=items.remove(0);}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ was\ there\ anything\ else\ to\ keep\ in\ this\ segment?}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items.size()==0)\ \ \textcolor{comment}{//\ no}}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flagSegs.remove(0);}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ this\ is\ given\ ID}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bn=Integer.parseInt(str);}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bpIndx=findBPindex(bn);}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ want\ 'delete'\ command\ to\ go\ through\ even\ }}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ if\ no\ branch\ point}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bpIndx<0)\ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}delet"{}}))}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ }
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}no\ branch\ point\ found\ for\ ID\ =\ "{}}+bn);}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdBranchPt=branchPts.get(bpIndx);}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}parse\ error\ with\ branch\ ID:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ event\ ======\ (append\ horizon\ to\ 'vlist')}}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}event"{}}))\ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (branchPts.size()==1)}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ GenBrModPt\ gbp=branchPts.get(1);}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdBranchPt!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gbp=cmdBranchPt;}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.elist==\textcolor{keyword}{null})}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.elist=\textcolor{keyword}{new}\ EdgeLink();}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<HalfEdge>\ bis=gbp.eventHorizon.iterator();}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (bis.hasNext())\ \{}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=bis.next();}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.elist.add(\textcolor{keyword}{new}\ EdgeSimple(he.origin.vertIndx,}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he.twin.origin.vertIndx));}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ click\ ===================}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}click"{}}))\ \{}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ localWipe=\textcolor{keyword}{false};}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ fullWipe=\textcolor{keyword}{false};}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ theAim=4.0;}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Vector<String>>\ its=flagSegs.iterator();}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (its.hasNext())\ \{}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=its.next();}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ str=items.get(0);}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (StringUtil.isFlag(str))\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items.remove(0);}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c=str.charAt(1);}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(c)\ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'x'}:\ }
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ localWipe=\textcolor{keyword}{true};}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'X'}:\ \textcolor{comment}{//\ global\ revert}}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ revert();}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'a'}:}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ theAim=Double.parseDouble(items.get(0));}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items.remove(0);}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ theAim=4.0;}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ pt=PointLink.grab\_one\_z(StringUtil.reconItem(items));}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ key\ routine:\ find\ type\ of\ branching/parameters\ at\ 'pt'}}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []data=getClickData(refPack,pt);}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ mode=(int)data[0];}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ indx=(int)data[1];}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ nlink=\textcolor{keyword}{null};}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FaceLink\ flink=\textcolor{keyword}{null};}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ handle\ wipeouts\ first}}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode<0\ ||\ mode>3\ ||\ indx<=0\ ||\ indx>extenderPD.nodeCount)\ }
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00222\ }
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ wipe\ out\ contiguous\ branch\ points\ }}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ (including,\ possibly\ the\ current\ circle)}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (localWipe)\ \{}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode>1)\ \textcolor{comment}{//\ circle\ case}}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nlink=\textcolor{keyword}{new}\ NodeLink(extenderPD,\textcolor{stringliteral}{"{}Iv\ "{}}+indx);}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{comment}{//\ face\ case}}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nlink=\textcolor{keyword}{new}\ NodeLink(extenderPD,\textcolor{stringliteral}{"{}If\ "{}}+indx);}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<Integer>\ vIDs=bps4verts(nlink);}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Integer>\ vs=vIDs.iterator();}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (vs.hasNext())}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ deleteBP(vs.next());}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode>1)}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flink=\textcolor{keyword}{new}\ FaceLink(extenderPD,\textcolor{stringliteral}{"{}Iv\ "{}}+indx);}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flink=\textcolor{keyword}{new}\ FaceLink(extenderPD,\textcolor{stringliteral}{"{}If\ "{}}+indx);}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vIDs=bps4faces(flink);}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vs=vIDs.iterator();}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (vs.hasNext())}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ deleteBP(vs.next());}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (fullWipe)\ \{}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ branchPts=\textcolor{keyword}{new}\ Vector<GenBrModPt>(3);}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ branchPts.add((GenBrModPt)\textcolor{keyword}{null});}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.set\_aim\_default();}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ circle?}}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode==2)\ \{\ \textcolor{comment}{//\ data[2]/[3]\ are\ the\ jump\ petals,\ data[4]/[5]\ the\ overlaps}}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ChapBrModPt\ cbp=\textcolor{keyword}{new}\ ChapBrModPt(\textcolor{keyword}{this},branchPts.size(),}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ theAim*Math.PI,indx,(\textcolor{keywordtype}{int})data[2],(\textcolor{keywordtype}{int})data[3],data[4],data[5]);}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ installBrPt(cbp);}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00256\ }
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ traditional\ branch\ point}}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (mode==3)\ \{\ \textcolor{comment}{//\ traditional\ branch\ point}}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TradBrModPt\ tbp=\textcolor{keyword}{new}\ TradBrModPt(\textcolor{keyword}{this},}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ branchPts.size(),theAim*Math.PI,indx);}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ installBrPt(tbp);}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00263\ }
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ interstice?}}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (mode==1)\ \{\ \textcolor{comment}{//\ find\ data\ and\ create\ }}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ SingBrModPt\ sbp=\textcolor{keyword}{new}\ SingBrModPt(\textcolor{keyword}{this},branchPts.size(),}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ theAim*Math.PI,indx,data[2],data[3]);\ }
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ installBrPt(sbp);}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ drawing\ order\ for\ outside\ of\ branch\ regions}}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}failed\ in\ 'click'\ processing"{}});}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ==========\ copy\ <pnum>\ }}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}copy"{}}))\ \{\ \textcolor{comment}{//\ copy\ 'refPack'\ to\ some\ pack}}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)flagSegs.get(0);}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pnum=Integer.parseInt((String)items.get(0));}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackData\ newCopy=refPack.copyPackTo();}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=newCopy.nodeCount;v++)}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newCopy.setPlotFlag(v,\ 1);}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ CirclePack.cpb.swapPackData(newCopy,pnum,\textcolor{keyword}{false}).nodeCount;}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ revert\ ===========}}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}revert"{}}))\ \{\ \textcolor{comment}{//\ revert\ 'packData'\ to\ 'refPack'}}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ revert();}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ holonomy\ ===================}}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}holon"{}}))\ \{}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Idea\ is\ to\ use\ holoBorder\ to\ check\ holonomy\ of\ full\ packing}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Note:\ this\ does\ not\ actually\ change\ any\ centers}}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ holomob=PackData.holonomyMobius(extenderPD,holoBorder);}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ frobNorm=Mobius.frobeniusNorm(holomob);}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (frobNorm<0)}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ msg(\textcolor{stringliteral}{"{}holonomy\_error:\ "{}}+frobNorm);}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ sweep\ ===================}}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Grid\ search\ over\ (x,y)\ for\ second\ branch\ point,}}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ recording\ holonomy\ error.\ See\ GBExperiments.java.}}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}sweep"{}}))\ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ GBExperiments\ exp=\textcolor{keyword}{new}\ GBExperiments(\textcolor{keyword}{this});}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ exp.runSweep(flagSegs);}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ delete\ =====================}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}dele"{}}))\ \{}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bps=branchPts.size()-\/1;}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bps==0)\ \{}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}The\ packing\ has\ no\ generalized\ branch\ points\ to\ delete."{}});}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ all\ is\ specified\ or\ there's\ only\ one\ branch\ pt,\ revert.\ }}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ items=(Vector<String>)flagSegs.get(0);}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (items!=\textcolor{keyword}{null}\ \&\&\ items.get(0).startsWith(\textcolor{stringliteral}{"{}a"{}})\ ||\ bps==1)\ \{\ }
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ revert();}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ nothing\ specified?}}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdBranchPt==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (branchPts.size()>1)}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}branch\ pt\ wasn't\ specified."{}});}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ otherwise,\ delete\ specified\ one}}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ deleteBP(cmdBranchPt.branchID);}
+\DoxyCodeLine{00346\ }
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reset\ parent's\ drawing\ order}}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ==========\ reset\_overlaps\ =========}}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}reset\_o"{}}))\ \{}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdBranchPt==\textcolor{keyword}{null}\ ||\ (cmdBranchPt.myType!=GenBrModPt.CHAPERONE\ \&\&}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmdBranchPt.myType!=GenBrModPt.SINGULAR))}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []ovlp=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[2];}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ovlp[0]=Double.parseDouble(items.get(0));}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ovlp[1]=Double.parseDouble(items.get(1));}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}didn't\ get\ 2\ overlap\ parameters"{}});}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdBranchPt.myType==GenBrModPt.CHAPERONE)\ \{}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ChapBrModPt\ cbp=(ChapBrModPt)cmdBranchPt;}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cbp.resetOverlaps(ovlp[0],ovlp[1]);}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ SingBrModPt\ sbp=(SingBrModPt)cmdBranchPt;}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sbp.resetOverlaps(ovlp[0],ovlp[1]);}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00378\ }
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ local\ display\ command\ =================}}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}disp"{}}))\ \{}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ count=1;\ \textcolor{comment}{//\ in\ case\ there\ are\ no\ branch\ points}}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ do\ one,\ if\ designated}}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdBranchPt!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count=0;}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count\ =\ cmdBranchPt.displayMe(flagSegs);}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ do\ all}}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ p=1;p<branchPts.size();p++)}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count\ +=\ branchPts.get(p).displayMe(flagSegs);}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ set\_parameters\ =================}}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_para"{}}))\ \{}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdBranchPt==\textcolor{keyword}{null})}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}usage\ (depends\ on\ type):\ set\_param\ -\/b\{b\}\ \{parameters\}"{}});}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ans=-\/1;}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans=cmdBranchPt.setParameters(flagSegs);}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ans==0)\ }
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException();}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}Branch\ ID="{}}+cmdBranchPt.branchID+}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{},\ set\ parameters\ failed:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.abs(ans);}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ get\_parameters\ =================}}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}get\_para"{}}))\ \{}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmdBranchPt==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (branchPts!=\textcolor{keyword}{null}\ \&\&\ branchPts.size()>1)\ \{}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(branchPts.get(1).getParameters());}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(cmdBranchPt.getParameters());}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ branch\ point\ status\ =================}}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}statu"{}}))\ \{}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (branchPts.size()<2)\ \{\ \textcolor{comment}{//\ first\ index\ is\ empty}}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ msg(\textcolor{stringliteral}{"{}Pack\ p"{}}+extenderPD.packNum+\textcolor{stringliteral}{"{}\ has\ no\ branch\ points"{}});}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmdBranchPt!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ msg(cmdBranchPt.reportStatus());}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ b=1;b<branchPts.size();b++)\ \{}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ msg(branchPts.get(b).reportStatus());}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ msg(\textcolor{stringliteral}{"{}parent\ anglesum\ error:\ "{}}+extenderPD.angSumError());}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ============\ anglesum\ error}}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}angsum\_err"{}}))\ \{}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ tmp=extenderPD.angSumError();}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ msg(\textcolor{stringliteral}{"{}anglesum\ l\string^2\ error\ =\ "{}}+tmp);}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ create\ various\ branch\ types\ =============}}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ============\ traditional}}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}bp\_trad"{}}))\ \{\ \textcolor{comment}{//\ type=1}}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ aim=2.0;}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ getV=0;}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Vector<String>>\ fit=flagSegs.iterator();}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fit.hasNext())\ \{}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=fit.next();}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!StringUtil.isFlag(items.get(0)))}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}bp\_trad\ requires\ flags\ -\/[ai]"{}});}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ sstr=items.remove(0);}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (sstr.charAt(1))\ \{}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'a'}:\ \textcolor{comment}{//\ aim,\ multiplied\ by\ 2pi\ here}}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aim=Double.parseDouble(items.get(0))*Math.PI;}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'v'}:\ \textcolor{comment}{//\ OBE:\ deprecated}}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'i'}:\ \textcolor{comment}{//\ index\ of\ vertex}}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ vl=\textcolor{keyword}{new}\ NodeLink(extenderPD,items);}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getV=vl.get(0);}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'X'}:\ \ \textcolor{comment}{//\ wipe\ out\ all\ old}}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ revert();}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while\ \ \ }}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}usage:\ -\/a\ \{a\}\ -\/i\ \{v\}\ "{}}+}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ex.getMessage());}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00484\ }
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ match\ against\ 'exclusions'.}}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ HalfLink\ hlink=extenderPD.packDCEL.vertices[getV].getOuterEdges();}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<HalfEdge>\ his=hlink.iterator();}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ hitx=\textcolor{keyword}{false};}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (exclusions!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (his.hasNext()\ \&\&\ !hitx)\ \{}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (exclusions.contains(his.next().origin))}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hitx=\textcolor{keyword}{true};}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (exclusions.contains(extenderPD.packDCEL.vertices[getV]))}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hitx=\textcolor{keyword}{true};}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hitx)}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}traditional\ branch\ at\ "{}}+getV+}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ would\ interfere\ with\ another\ branch\ point"{}});}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \ \ \ \ TradBrModPt\ tbp=\textcolor{keyword}{new}\ TradBrModPt(\textcolor{keyword}{this},}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ branchPts.size(),aim,getV);}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \ \ \ \ count=installBrPt(tbp);}
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00505\ }
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ============\ singular}}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}bp\_sing"{}}))\ \{\ \textcolor{comment}{//\ type=4}}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ getAim=4.0;}
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ getF=-\/1;}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ getO1=.3333333333;}
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ getO2=.3333333333;}
+\DoxyCodeLine{00512\ }
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Vector<String>>\ fit=flagSegs.iterator();}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fit.hasNext())\ \{}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=fit.next();}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!StringUtil.isFlag(items.get(0)))}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}bp\_sing\ requires\ flags\ -\/[abio]"{}});}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ sstr=items.remove(0);}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (sstr.charAt(1))\ \{}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'a'}:\ \textcolor{comment}{//\ aim,\ multiplied\ by\ 2pi\ here}}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getAim=Double.parseDouble(items.get(0));}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getAim\ *=Math.PI;}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'b'}:\ \textcolor{comment}{//\ 'BaryLink'\ processing}}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BaryLink\ bl=\textcolor{keyword}{new}\ BaryLink(extenderPD,items);}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bl.size()==0)}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BaryPoint\ bp=bl.get(0);}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bp.face>0)}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getF=bp.face;}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ bary\ coords\ are\ angle\ based\ appropriate\ }}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ to\ interstice\ (not\ to\ face\ itself)}}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getO1=(1-\/bp.b0)/2.0;}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getO2=(1-\/bp.b1)/2.0;}
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'f'}:\ \textcolor{comment}{//\ OBE:\ deprecated}}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'i'}:\ \textcolor{comment}{//\ index\ of\ face}}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FaceLink\ fl=\textcolor{keyword}{new}\ FaceLink(extenderPD,items);}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getF=fl.get(0);}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'o'}:\ \textcolor{comment}{//\ overlaps,\ should\ be\ in\ [0,1]}}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getO1=Double.parseDouble(items.get(0));}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getO2=Double.parseDouble(items.get(1));}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00558\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'X'}:\ \ \textcolor{comment}{//\ wipe\ out\ all\ old}}
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ revert();}
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00563\ }
+\DoxyCodeLine{00564\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00565\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00566\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}usage:\ -\/a\ \{a\}\ -\/i\ \{f\}\ -\/o\ \{o1\ o2\}\ [-\/b\ \{blist\}].\ "{}}+}
+\DoxyCodeLine{00568\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ex.getMessage());}
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (getF<1\ ||\ getF>extenderPD.faceCount)}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}singular\ face\ missing\ or\ inappropriate"{}});}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ match\ again\ 'exclusions'.}}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ \ \ \ \ combinatorics.komplex.DcelFace\ singFace=extenderPD.packDCEL.faces[getF];}
+\DoxyCodeLine{00576\ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=singFace.edge;}
+\DoxyCodeLine{00577\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ hitx=\textcolor{keyword}{false};}
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (exclusions!=\textcolor{keyword}{null}\ \&\&\ exclusions.contains(he.origin))}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hitx=\textcolor{keyword}{true};}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.next;}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (he!=singFace.edge\ \&\&\ !hitx);}
+\DoxyCodeLine{00583\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hitx)}
+\DoxyCodeLine{00584\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}singular\ face\ "{}}+singFace+\textcolor{stringliteral}{"{}\ would\ "{}}+}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}interfere\ with\ another\ branch\ point"{}});}
+\DoxyCodeLine{00586\ }
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ the\ branch\ point}}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ \ \ \ \ \ \ SingBrModPt\ sbp=\textcolor{keyword}{new}\ SingBrModPt(\textcolor{keyword}{this},branchPts.size(),}
+\DoxyCodeLine{00589\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getAim,getF,getO1,getO2);}
+\DoxyCodeLine{00590\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00591\ \ \ \ \ \ \ \ \ \ \ \ \ count=installBrPt(sbp);}
+\DoxyCodeLine{00592\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00593\ }
+\DoxyCodeLine{00594\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ============\ chaperone}}
+\DoxyCodeLine{00595\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}bp\_chap"{}}))\ \{\ \textcolor{comment}{//\ type=6}}
+\DoxyCodeLine{00596\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ getAim=4.0;}
+\DoxyCodeLine{00597\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ getV=-\/1;}
+\DoxyCodeLine{00598\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ getW1=-\/1;}
+\DoxyCodeLine{00599\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ getW2=-\/1;}
+\DoxyCodeLine{00600\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ getO1=.3333333333;}
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ getO2=.3333333333;}
+\DoxyCodeLine{00602\ }
+\DoxyCodeLine{00603\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00604\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Vector<String>>\ fit=flagSegs.iterator();}
+\DoxyCodeLine{00605\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (fit.hasNext())\ \{}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=fit.next();}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!StringUtil.isFlag(items.get(0)))}
+\DoxyCodeLine{00608\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}missing\ flag\ -\/[aijo]\ or\ -\/z\ \{x\ y\}\ "{}});}
+\DoxyCodeLine{00609\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ sstr=items.remove(0);}
+\DoxyCodeLine{00610\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (sstr.charAt(1))\ \{}
+\DoxyCodeLine{00611\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'a'}:\ \textcolor{comment}{//\ new\ aim}}
+\DoxyCodeLine{00612\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00613\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getAim=Double.parseDouble(items.get(0));}
+\DoxyCodeLine{00614\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00615\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00616\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00617\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'j'}:\ \textcolor{comment}{//\ jump\ petals\ indices\ }}
+\DoxyCodeLine{00618\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00619\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getW1=Integer.parseInt(items.get(0));}
+\DoxyCodeLine{00620\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getW2=Integer.parseInt(items.get(1));}
+\DoxyCodeLine{00621\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count\ +=\ 2;}
+\DoxyCodeLine{00622\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00623\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00624\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'o'}:\ \textcolor{comment}{//\ overlaps}}
+\DoxyCodeLine{00625\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00626\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getO1=Double.parseDouble(items.get(0));}
+\DoxyCodeLine{00627\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getO2=Double.parseDouble(items.get(1));}
+\DoxyCodeLine{00628\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00629\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00630\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00631\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'v'}:\ \textcolor{comment}{//\ OBE:\ deprecated}}
+\DoxyCodeLine{00632\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'i'}:\ \textcolor{comment}{//\ index\ of\ vertex}}
+\DoxyCodeLine{00633\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00634\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ nl=\textcolor{keyword}{new}\ NodeLink(extenderPD,items);}
+\DoxyCodeLine{00635\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getV=nl.get(0);}
+\DoxyCodeLine{00636\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00637\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00638\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00639\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'X'}:\ \ \textcolor{comment}{//\ wipe\ out\ all\ former\ branch\ points}}
+\DoxyCodeLine{00640\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00641\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ revert();}
+\DoxyCodeLine{00642\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00643\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00644\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00645\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ may\ want\ to\ accommodate\ more\ jumps/overlaps\ in\ future,}}
+\DoxyCodeLine{00646\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ depending,\ e.g.,\ on\ 'myAim'.}}
+\DoxyCodeLine{00647\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00648\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00649\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(}
+\DoxyCodeLine{00650\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}usage:\ -\/a\ \{a\}\ -\/i\ \{v\}\ -\/j\ \{j1\ j2\}\ -\/o\ \{o1\ o2\}.\ "{}}+}
+\DoxyCodeLine{00651\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ex.getMessage());}
+\DoxyCodeLine{00652\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00653\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00654\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (getV<1\ ||\ getV>extenderPD.nodeCount)\ \textcolor{comment}{//\ packData.vert\_isPoison(1);}}
+\DoxyCodeLine{00655\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}chaperone\ vertex\ missing\ or\ inappropriate"{}});}
+\DoxyCodeLine{00656\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (getW1<0\ ||\ getW2<0)\ \{\ \textcolor{comment}{//\ default\ settings}}
+\DoxyCodeLine{00657\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=extenderPD.getFlower(getV);}
+\DoxyCodeLine{00658\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getW1=flower[1];}
+\DoxyCodeLine{00659\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getW2=flower[3];}
+\DoxyCodeLine{00660\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00661\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00662\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ match\ against\ 'exclusions'.}}
+\DoxyCodeLine{00663\ \ \ \ \ \ \ \ \ \ \ \ \ HalfLink\ hlink=extenderPD.packDCEL.vertices[getV].getOuterEdges();}
+\DoxyCodeLine{00664\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<HalfEdge>\ his=hlink.iterator();}
+\DoxyCodeLine{00665\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ hitx=\textcolor{keyword}{false};}
+\DoxyCodeLine{00666\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (exclusions!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00667\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (his.hasNext()\ \&\&\ !hitx)\ \{}
+\DoxyCodeLine{00668\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (exclusions.contains(his.next().origin))}
+\DoxyCodeLine{00669\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hitx=\textcolor{keyword}{true};}
+\DoxyCodeLine{00670\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (exclusions.contains(extenderPD.packDCEL.vertices[getV]))}
+\DoxyCodeLine{00671\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hitx=\textcolor{keyword}{true};}
+\DoxyCodeLine{00672\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00673\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00674\ }
+\DoxyCodeLine{00675\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hitx)}
+\DoxyCodeLine{00676\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}chaperone\ branch\ at\ "{}}+getV+}
+\DoxyCodeLine{00677\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ would\ interfere\ with\ another\ branch\ point"{}});}
+\DoxyCodeLine{00678\ }
+\DoxyCodeLine{00679\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ the\ branch\ point}}
+\DoxyCodeLine{00680\ \ \ \ \ \ \ \ \ \ \ \ \ ChapBrModPt\ cbp=\textcolor{keyword}{new}\ ChapBrModPt(\textcolor{keyword}{this},branchPts.size(),getAim*Math.PI,}
+\DoxyCodeLine{00681\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getV,getW1,getW2,getO1,getO2);}
+\DoxyCodeLine{00682\ }
+\DoxyCodeLine{00683\ \ \ \ \ \ \ \ \ \ \ \ \ count=installBrPt(cbp);}
+\DoxyCodeLine{00684\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00685\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00686\ \ \ \ \ \}\ \textcolor{comment}{//\ done\ with\ cmdParser}}
+\DoxyCodeLine{00687\ }
+\DoxyCodeLine{00688\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ updateExclusions()\ \{}
+\DoxyCodeLine{00689\ \ \ \ \ \ \ \ \ poisonHEdges=\textcolor{keyword}{new}\ HalfLink();}
+\DoxyCodeLine{00690\ \ \ \ \ \ \ \ \ exclusions=\textcolor{keyword}{new}\ ArrayList<Vertex>();}
+\DoxyCodeLine{00691\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ b=1;b<branchPts.size();b++)\ \{}
+\DoxyCodeLine{00692\ \ \ \ \ \ \ \ \ \ \ \ \ GenBrModPt\ gbp=branchPts.get(b);}
+\DoxyCodeLine{00693\ \ \ \ \ \ \ \ \ \ \ \ \ poisonHEdges.abutMore(gbp.eventHorizon);}
+\DoxyCodeLine{00694\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Vertex>\ eis=gbp.myExclusions.iterator();}
+\DoxyCodeLine{00695\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (eis.hasNext())}
+\DoxyCodeLine{00696\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ exclusions.add(eis.next());}
+\DoxyCodeLine{00697\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00698\ \ \ \ \ \}}
+\DoxyCodeLine{00699\ \ \ \ \ }
+\DoxyCodeLine{00706\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setLayoutOrder()\ \{}
+\DoxyCodeLine{00707\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00708\ \ \ \ \ \ \ \ \ updateExclusions();\ \textcolor{comment}{//\ update\ poisons\ and\ vertex\ exclusions}}
+\DoxyCodeLine{00709\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00710\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reset\ parent's\ 'alpha'\ if\ necessary}}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \ \ Vertex\ alph=extenderPD.packDCEL.alpha.origin;}
+\DoxyCodeLine{00712\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (exclusions!=\textcolor{keyword}{null}\ \&\&\ alph!=\textcolor{keyword}{null}\ \&\&\ exclusions.contains(alph))\ \{}
+\DoxyCodeLine{00713\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ vlist=\textcolor{keyword}{new}\ NodeLink();}
+\DoxyCodeLine{00714\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Vertex>\ vis=exclusions.iterator();}
+\DoxyCodeLine{00715\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (vis.hasNext())\ }
+\DoxyCodeLine{00716\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vlist.add(vis.next().vertIndx);}
+\DoxyCodeLine{00717\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.packDCEL.setAlpha(0,\ vlist,\textcolor{keyword}{false});}
+\DoxyCodeLine{00718\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00719\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00720\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ the\ packing/dcel\ first}}
+\DoxyCodeLine{00721\ \ \ \ \ \ \ \ \ extenderPD.packDCEL.fixDCEL(extenderPD);}
+\DoxyCodeLine{00722\ }
+\DoxyCodeLine{00723\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ get\ the\ layout\ circumventing\ the\ branch\ points}}
+\DoxyCodeLine{00724\ \ \ \ \ \ \ \ \ HalfLink\ outerOrder=CombDCEL.partialTree(extenderPD.packDCEL,}
+\DoxyCodeLine{00725\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ poisonHEdges);\ \textcolor{comment}{//\ allMains.CPBase.Hlink=partOrder;}}
+\DoxyCodeLine{00726\ }
+\DoxyCodeLine{00727\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ throw\ in\ 'layoutAddons'\ from\ branch\ points}}
+\DoxyCodeLine{00728\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ b=1;b<branchPts.size();b++)\ \{}
+\DoxyCodeLine{00729\ \ \ \ \ \ \ \ \ \ \ \ \ GenBrModPt\ gbp=branchPts.get(b);}
+\DoxyCodeLine{00730\ \ \ \ \ \ \ \ \ \ \ \ \ outerOrder.abutMore(gbp.layoutAddons);}
+\DoxyCodeLine{00731\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00732\ }
+\DoxyCodeLine{00733\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ record}}
+\DoxyCodeLine{00734\ \ \ \ \ \ \ \ \ extenderPD.packDCEL.layoutOrder=outerOrder;}
+\DoxyCodeLine{00735\ \ \ \ \ \}}
+\DoxyCodeLine{00736\ }
+\DoxyCodeLine{00750\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ combinedLayout()\ \{}
+\DoxyCodeLine{00751\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00752\ \ \ \ \ \}}
+\DoxyCodeLine{00753\ \ \ \ \ }
+\DoxyCodeLine{00761\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ brptExists(\textcolor{keywordtype}{int}\ j,\textcolor{keywordtype}{int}\ type)\ \{}
+\DoxyCodeLine{00762\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(branchPts==\textcolor{keyword}{null}\ ||\ branchPts.size()<=1)}
+\DoxyCodeLine{00763\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00764\ \ \ \ \ \ \ \ \ Iterator<GenBrModPt>\ bps=branchPts.iterator();}
+\DoxyCodeLine{00765\ \ \ \ \ \ \ \ \ bps.next();\ \textcolor{comment}{//\ flush\ first\ null\ entry}}
+\DoxyCodeLine{00766\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (bps.hasNext())\ \{}
+\DoxyCodeLine{00767\ \ \ \ \ \ \ \ \ \ \ \ \ GenBrModPt\ gbp=bps.next();}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (gbp!=\textcolor{keyword}{null}\ \&\&\ gbp.myType==type)\ \{}
+\DoxyCodeLine{00769\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (type==GenBrModPt.SINGULAR)\ \{}
+\DoxyCodeLine{00770\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ combinatorics.komplex.DcelFace\ face=extenderPD.packDCEL.faces[j];}
+\DoxyCodeLine{00771\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=face.edge;}
+\DoxyCodeLine{00772\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00773\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (he==gbp.myEdge)\ \{}
+\DoxyCodeLine{00774\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ gbp.branchID;}
+\DoxyCodeLine{00775\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00776\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.next;}
+\DoxyCodeLine{00777\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}(he!=face.edge);}
+\DoxyCodeLine{00778\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00779\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00780\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (type==GenBrModPt.CHAPERONE)\ \{}
+\DoxyCodeLine{00781\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (gbp.myEdge.origin.vertIndx==j)}
+\DoxyCodeLine{00782\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ gbp.branchID;}
+\DoxyCodeLine{00783\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00784\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00785\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (type==GenBrModPt.QUADFACE)\ \{}
+\DoxyCodeLine{00786\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;\ \textcolor{comment}{//\ not\ yet\ implemented}}
+\DoxyCodeLine{00787\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00788\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00789\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00790\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00791\ \ \ \ \ \}}
+\DoxyCodeLine{00792\ \ \ \ \ }
+\DoxyCodeLine{00799\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ isExcluded(\textcolor{keywordtype}{int}\ j)\ \{}
+\DoxyCodeLine{00800\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (exclusions==\textcolor{keyword}{null})}
+\DoxyCodeLine{00801\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00802\ \ \ \ \ \ \ \ \ Iterator<Vertex>\ vis=exclusions.iterator();}
+\DoxyCodeLine{00803\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (vis.hasNext())}
+\DoxyCodeLine{00804\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vis.next().vertIndx==j)}
+\DoxyCodeLine{00805\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00806\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00807\ \ \ \ \ \}}
+\DoxyCodeLine{00808\ \ \ \ \ }
+\DoxyCodeLine{00816\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ findBPindex(\textcolor{keywordtype}{int}\ bpID)\ \{}
+\DoxyCodeLine{00817\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (branchPts==\textcolor{keyword}{null}\ ||\ branchPts.size()<=1)\ \textcolor{comment}{//\ 0th\ spot\ should\ be\ empty}}
+\DoxyCodeLine{00818\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00819\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ indx=-\/1;}
+\DoxyCodeLine{00820\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<branchPts.size();j++)\ \{}
+\DoxyCodeLine{00821\ \ \ \ \ \ \ \ \ \ \ \ \ GenBrModPt\ gbp=branchPts.get(j);}
+\DoxyCodeLine{00822\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (gbp.branchID==bpID)\ \{}
+\DoxyCodeLine{00823\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx>0)}
+\DoxyCodeLine{00824\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(}
+\DoxyCodeLine{00825\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}more\ than\ one\ branch\ point\ with\ ID\ =\ "{}}+bpID);}
+\DoxyCodeLine{00826\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ indx=j;}
+\DoxyCodeLine{00827\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00828\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00829\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ indx;}
+\DoxyCodeLine{00830\ \ \ \ \ \}}
+\DoxyCodeLine{00831\ \ \ \ \ }
+\DoxyCodeLine{00838\ \ \ \ \ \textcolor{keyword}{public}\ Vector<Integer>\ bps4verts(NodeLink\ nlink)\ \{}
+\DoxyCodeLine{00839\ \ \ \ \ \ \ \ \ Vector<Integer>\ ans=\textcolor{keyword}{new}\ Vector<Integer>(1);}
+\DoxyCodeLine{00840\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (branchPts==\textcolor{keyword}{null}\ ||\ branchPts.size()==1)}
+\DoxyCodeLine{00841\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00842\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<branchPts.size();j++)\ \{}
+\DoxyCodeLine{00843\ \ \ \ \ \ \ \ \ \ \ \ \ GenBrModPt\ gbp=branchPts.get(j);}
+\DoxyCodeLine{00844\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((gbp.myType==GenBrModPt.CHAPERONE\ \&\&\ }
+\DoxyCodeLine{00845\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nlink.containsV(gbp.myEdge.origin.vertIndx)!=-\/1)\ ||}
+\DoxyCodeLine{00846\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (gbp.myType==GenBrModPt.TRADITIONAL\ \&\&\ }
+\DoxyCodeLine{00847\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nlink.containsV(gbp.myEdge.origin.vertIndx)!=-\/1))}
+\DoxyCodeLine{00848\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans.add(gbp.branchID);}
+\DoxyCodeLine{00849\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00850\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00851\ \ \ \ \ \}}
+\DoxyCodeLine{00852\ \ \ \ \ }
+\DoxyCodeLine{00859\ \ \ \ \ \textcolor{keyword}{public}\ Vector<Integer>\ bps4faces(FaceLink\ flink)\ \{}
+\DoxyCodeLine{00860\ \ \ \ \ \ \ \ \ Vector<Integer>\ ans=\textcolor{keyword}{new}\ Vector<Integer>(1);}
+\DoxyCodeLine{00861\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (branchPts==\textcolor{keyword}{null}\ ||\ branchPts.size()==1)}
+\DoxyCodeLine{00862\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00863\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<branchPts.size();j++)\ \{}
+\DoxyCodeLine{00864\ \ \ \ \ \ \ \ \ \ \ \ \ GenBrModPt\ gbp=branchPts.get(j);}
+\DoxyCodeLine{00865\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((gbp.myType==GenBrModPt.QUADFACE\ \&\&\ }
+\DoxyCodeLine{00866\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flink.containsV(gbp.myEdge.face.getVertIndx(j))>=0)\ ||}
+\DoxyCodeLine{00867\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (gbp.myType==GenBrModPt.SINGULAR\ \&\&\ }
+\DoxyCodeLine{00868\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flink.containsV(gbp.myEdge.face.faceIndx)>=0))}
+\DoxyCodeLine{00869\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans.add(gbp.branchID);}
+\DoxyCodeLine{00870\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00871\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00872\ \ \ \ \ \}}
+\DoxyCodeLine{00873\ \ \ \ \ }
+\DoxyCodeLine{00878\ \ \ \ \ \textcolor{keyword}{public}\ NodeLink\ getBPverts()\ \{}
+\DoxyCodeLine{00879\ \ \ \ \ \ \ \ \ NodeLink\ nlink=\textcolor{keyword}{new}\ NodeLink(extenderPD);}
+\DoxyCodeLine{00880\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (branchPts==\textcolor{keyword}{null}\ ||\ branchPts.size()<=1)}
+\DoxyCodeLine{00881\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ nlink;}
+\DoxyCodeLine{00882\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<branchPts.size();j++)\ \{}
+\DoxyCodeLine{00883\ \ \ \ \ \ \ \ \ \ \ \ \ GenBrModPt\ gbp=branchPts.get(j);}
+\DoxyCodeLine{00884\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (gbp.myType==GenBrModPt.CHAPERONE\ ||\ }
+\DoxyCodeLine{00885\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gbp.myType==GenBrModPt.TRADITIONAL)}
+\DoxyCodeLine{00886\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nlink.add(gbp.myEdge.origin.vertIndx);}
+\DoxyCodeLine{00887\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00888\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ nlink;}
+\DoxyCodeLine{00889\ \ \ \ \ \}}
+\DoxyCodeLine{00890\ \ \ \ \ }
+\DoxyCodeLine{00895\ \ \ \ \ \textcolor{keyword}{public}\ FaceLink\ getBPfaces()\ \{}
+\DoxyCodeLine{00896\ \ \ \ \ \ \ \ \ FaceLink\ flink=\textcolor{keyword}{new}\ FaceLink(extenderPD);}
+\DoxyCodeLine{00897\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (branchPts==\textcolor{keyword}{null}\ ||\ branchPts.size()<=1)}
+\DoxyCodeLine{00898\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ flink;}
+\DoxyCodeLine{00899\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<branchPts.size();j++)\ \{}
+\DoxyCodeLine{00900\ \ \ \ \ \ \ \ \ \ \ \ \ GenBrModPt\ gbp=branchPts.get(j);}
+\DoxyCodeLine{00901\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (gbp.myType==GenBrModPt.SINGULAR\ ||\ }
+\DoxyCodeLine{00902\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gbp.myType==GenBrModPt.QUADFACE)}
+\DoxyCodeLine{00903\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ flink.add(gbp.myEdge.face.faceIndx);}
+\DoxyCodeLine{00904\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00905\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ flink;}
+\DoxyCodeLine{00906\ \ \ \ \ \}}
+\DoxyCodeLine{00907\ \ \ \ \ }
+\DoxyCodeLine{00944\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ []getClickData(PackData\ refPack,\ Complex\ pt)\ \{}
+\DoxyCodeLine{00945\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pt==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00946\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00947\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []ans=\textcolor{keyword}{null};}
+\DoxyCodeLine{00948\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00949\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ check\ if\ pt\ is\ inside\ a\ circle}}
+\DoxyCodeLine{00950\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=NodeLink.grab\_one\_vert(refPack,\textcolor{stringliteral}{"{}z\ "{}}+pt.x+\textcolor{stringliteral}{"{}\ "{}}+pt.y);}
+\DoxyCodeLine{00951\ }
+\DoxyCodeLine{00952\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ not\ in\ circle,\ try\ interstice}}
+\DoxyCodeLine{00953\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v<=0)\ \{\ }
+\DoxyCodeLine{00954\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ barycentric\ coords\ relative\ to\ angles,\ }}
+\DoxyCodeLine{00955\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ see\ 'HyperbolicMath.ideal\_bary'}}
+\DoxyCodeLine{00956\ \ \ \ \ \ \ \ \ \ \ \ \ BaryPoint\ bpt=BaryLink.grab\_one\_barypoint(refPack,}
+\DoxyCodeLine{00957\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}-\/i\ "{}}+pt.x+\textcolor{stringliteral}{"{}\ "{}}+pt.y));}
+\DoxyCodeLine{00958\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bpt!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00959\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[4];}
+\DoxyCodeLine{00960\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans[0]=1.0;}
+\DoxyCodeLine{00961\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans[1]=(double)bpt.face;}
+\DoxyCodeLine{00962\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans[2]=bpt.b0;}
+\DoxyCodeLine{00963\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans[3]=bpt.b1;}
+\DoxyCodeLine{00964\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00965\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00966\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ \textcolor{comment}{//\ nope}}
+\DoxyCodeLine{00967\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00968\ }
+\DoxyCodeLine{00969\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ OK,\ now\ we\ are\ in\ a\ circle.\ }}
+\DoxyCodeLine{00970\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (refPack.isBdry(v))\ \{\ \textcolor{comment}{//\ can't\ yet\ branch\ at\ boundary\ circle}}
+\DoxyCodeLine{00971\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}Can't\ yet\ branch\ at\ boundary\ vertex\ v="{}}+v);}
+\DoxyCodeLine{00972\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(v+\textcolor{stringliteral}{"{}\ is\ a\ bdry\ vertex"{}});}
+\DoxyCodeLine{00973\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00974\ }
+\DoxyCodeLine{00975\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Key\ variables\ are\ R,\ r,\ and\ shadow.}}
+\DoxyCodeLine{00976\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=refPack.countFaces(v);}
+\DoxyCodeLine{00977\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=refPack.getFlower(v);}
+\DoxyCodeLine{00978\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ R=refPack.getRadius(v);}
+\DoxyCodeLine{00979\ \ \ \ \ \ \ \ \ Complex\ cent=refPack.getCenter(v);}
+\DoxyCodeLine{00980\ \ \ \ \ \ \ \ \ Complex\ cent2pt=pt.minus(cent);}
+\DoxyCodeLine{00981\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r=R-\/cent2pt.abs();\ \textcolor{comment}{//\ ideally,\ radius\ of\ smaller\ sister\ when\ packed}}
+\DoxyCodeLine{00982\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ c2pt\_arg=cent2pt.arg();}
+\DoxyCodeLine{00983\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (r<0)\ \textcolor{comment}{//\ error:\ not\ in\ the\ right\ circle}}
+\DoxyCodeLine{00984\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}hum...?,\ selected\ point\ is\ not\ in\ circle\ "{}}+v);}
+\DoxyCodeLine{00985\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00986\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ close\ to\ center\ of\ v?\ use\ traditional\ branch\ point}}
+\DoxyCodeLine{00987\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ need\ to\ experiment\ to\ find\ best\ 'dcutoff'}}
+\DoxyCodeLine{00988\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dcutoff=.025;}
+\DoxyCodeLine{00989\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((R-\/r)<dcutoff*R)\ \{}
+\DoxyCodeLine{00990\ \ \ \ \ \ \ \ \ \ \ \ \ ans=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[2];\ }
+\DoxyCodeLine{00991\ \ \ \ \ \ \ \ \ \ \ \ \ ans[0]=3.0;\ \textcolor{comment}{//\ traditional}}
+\DoxyCodeLine{00992\ \ \ \ \ \ \ \ \ \ \ \ \ ans[1]=(double)v;}
+\DoxyCodeLine{00993\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00994\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00995\ }
+\DoxyCodeLine{00996\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ prepare\ return\ data\ for\ circle\ case}}
+\DoxyCodeLine{00997\ \ \ \ \ \ \ \ \ ans=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[6];}
+\DoxyCodeLine{00998\ \ \ \ \ \ \ \ \ ans[0]=2.0;\ \textcolor{comment}{//\ circle}}
+\DoxyCodeLine{00999\ \ \ \ \ \ \ \ \ ans[1]=(double)v;\ \textcolor{comment}{//\ circle\ index}}
+\DoxyCodeLine{01000\ }
+\DoxyCodeLine{01001\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ closed\ list\ the\ arguments\ of\ edges\ from\ v\ to\ petals\ v\_j}}
+\DoxyCodeLine{01002\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01003\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ TODO:\ If\ nearOne>=0,\ pt\ is\ very\ close\ to\ a\ tangency\ point,\ }}
+\DoxyCodeLine{01004\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ may\ want\ to\ use\ singular\ branching\ or\ some\ special\ routine.}}
+\DoxyCodeLine{01005\ \textcolor{comment}{//\ \ \ \ \ \ int\ nearOne=-\/1;}}
+\DoxyCodeLine{01006\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []petalAngs=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[num+1];\ \textcolor{comment}{//\ closed\ cycle\ of\ angles\ to\ petals}}
+\DoxyCodeLine{01007\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{01008\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ c2pet=refPack.getCenter(flower[j]).minus(cent);}
+\DoxyCodeLine{01009\ \ \ \ \ \ \ \ \ \ \ \ \ petalAngs[j]=(c2pet.arg()+m2pi)\%m2pi;}
+\DoxyCodeLine{01010\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ c2pet=c2pet.times(R/c2pet.abs());}}
+\DoxyCodeLine{01011\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ if\ (c2pet.minus(cent2pt).abs()<.025*R)\ \{}}
+\DoxyCodeLine{01012\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ nearOne=flower[j];}}
+\DoxyCodeLine{01013\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{01014\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01015\ \ \ \ \ \ \ \ \ petalAngs[num]=petalAngs[0];\ \textcolor{comment}{//\ close\ up}}
+\DoxyCodeLine{01016\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01017\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ "{}click"{}\ data\ for\ a\ point\ on\ the\ circle\ is\ a\ double\ c\ =\ J\ +\ F,}}
+\DoxyCodeLine{01018\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ where\ the\ integer\ part\ J\ is\ the\ index\ of\ the\ petal}}
+\DoxyCodeLine{01019\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ containing\ the\ point,\ and\ the\ F\ is\ the\ cclw\ fraction\ of}}
+\DoxyCodeLine{01020\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ angle\ the\ point\ occupies\ in\ that\ petal.}}
+\DoxyCodeLine{01021\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ We\ get\ the\ upstream\ and\ downstream\ max\ and\ min\ data\ we\ can\ use}}
+\DoxyCodeLine{01022\ \ \ \ \ \ \ \ \ ClickModValue\ centClick=}
+\DoxyCodeLine{01023\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ petalClicks(c2pt\_arg,petalAngs);\ \textcolor{comment}{//\ click\ data\ for\ pt\ itself}}
+\DoxyCodeLine{01024\ \ \ \ \ \ \ \ \ ClickModValue\ maxUpClick=}
+\DoxyCodeLine{01025\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ petalClicks(c2pt\_arg-\/CPBase.piby2,petalAngs);\ \textcolor{comment}{//\ pi/2\ clw}}
+\DoxyCodeLine{01026\ \ \ \ \ \ \ \ \ ClickModValue\ maxDownClick=}
+\DoxyCodeLine{01027\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ petalClicks(c2pt\_arg+CPBase.piby2,petalAngs);\ \textcolor{comment}{//\ pi/2\ cclw}}
+\DoxyCodeLine{01028\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01029\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ move\ one\ petal\ upstream,\ one\ petal\ downstream}}
+\DoxyCodeLine{01030\ \ \ \ \ \ \ \ \ ClickModValue\ minUpClick=}
+\DoxyCodeLine{01031\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ ClickModValue((centClick.petal-\/1.0+num)\%num+}
+\DoxyCodeLine{01032\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ centClick.fraction);}
+\DoxyCodeLine{01033\ \ \ \ \ \ \ \ \ ClickModValue\ minDownClick=}
+\DoxyCodeLine{01034\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ ClickModValue((centClick.petal+1.0)\%num+}
+\DoxyCodeLine{01035\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ centClick.fraction);\ }
+\DoxyCodeLine{01036\ }
+\DoxyCodeLine{01037\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ the\ 'shadow'\ cast\ by\ pt;\ this\ is\ half\ the\ angular\ }}
+\DoxyCodeLine{01038\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ arc\ subtended\ by\ a\ circle\ through\ pt,\ perpendicular\ to\ }}
+\DoxyCodeLine{01039\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ 'cent2pt'\ and\ hitting\ the\ circle\ of\ radius\ R\ at\ right\ }}
+\DoxyCodeLine{01040\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ angles\ (i.e.,\ hyp\ geodesic,\ vis-\/a-\/vis\ this\ disc).}}
+\DoxyCodeLine{01041\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'shadow'\ is\ in\ [0,pi/2].}}
+\DoxyCodeLine{01042\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ shadow=HyperbolicMath.shadow\_angle((R-\/r)/R);\ \textcolor{comment}{//\ geodesic\ half-\/length\ }}
+\DoxyCodeLine{01043\ }
+\DoxyCodeLine{01044\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ CAUTION,\ not\ at\ all\ sure\ about\ this\ (4/2016)}}
+\DoxyCodeLine{01045\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Use\ transform\ T\ to\ map\ real\ click\ data\ for\ 'pt'\ and\ 'shadow'}}
+\DoxyCodeLine{01046\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ monotonically\ to\ virtual\ click\ data\ used\ to\ find\ jumps\ and\ overlaps.\ }}
+\DoxyCodeLine{01047\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ On\ the\ upstream\ side:\ T:\ [0,pi/2]\ -\/-\/>\ [minright,\ maxright].}}
+\DoxyCodeLine{01048\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ On\ the\ downstream\ side:\ T:\ [0,pi/2]\ -\/-\/>\ [minleft,\ maxleft].}}
+\DoxyCodeLine{01049\ \ \ \ \ \ \ \ \ ClickModValue\ vertualUp=}
+\DoxyCodeLine{01050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ clickTransform(shadow,minUpClick,maxUpClick,num);}
+\DoxyCodeLine{01051\ \ \ \ \ \ \ \ \ ClickModValue\ vertualDown=}
+\DoxyCodeLine{01052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ clickTransform(shadow,minDownClick,maxDownClick,num);}
+\DoxyCodeLine{01053\ }
+\DoxyCodeLine{01054\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ jump\ and\ overlap\ depend\ on\ upstream\ or\ downstream}}
+\DoxyCodeLine{01055\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ upj=(int)((vertualUp.petal+1)\%num);}
+\DoxyCodeLine{01056\ \ \ \ \ \ \ \ \ ans[2]=flower[upj];}
+\DoxyCodeLine{01057\ \ \ \ \ \ \ \ \ ans[4]=1.0-\/vertualUp.fraction;}
+\DoxyCodeLine{01058\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01059\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ downj=(int)(vertualDown.petal+1)\%num;}
+\DoxyCodeLine{01060\ \ \ \ \ \ \ \ \ ans[3]=flower[downj];}
+\DoxyCodeLine{01061\ \ \ \ \ \ \ \ \ ans[5]=vertualDown.fraction;}
+\DoxyCodeLine{01062\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01063\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{01064\ \ \ \ \ \}}
+\DoxyCodeLine{01065\ \ \ \ \ }
+\DoxyCodeLine{01081\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ ClickModValue\ clickTransform(\textcolor{keywordtype}{double}\ value,}
+\DoxyCodeLine{01082\ \ \ \ \ \ \ \ \ \ \ \ \ ClickModValue\ mn,ClickModValue\ mx,\textcolor{keywordtype}{int}\ num)\ \{}
+\DoxyCodeLine{01083\ }
+\DoxyCodeLine{01084\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ fcount=(mx.petal-\/mn.petal+num)\%num;}
+\DoxyCodeLine{01085\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ fracdiff=mx.fraction-\/mn.fraction;}
+\DoxyCodeLine{01086\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ comp=value*2.0/Math.PI;}
+\DoxyCodeLine{01087\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ result=((double)fcount+fracdiff)*comp;}
+\DoxyCodeLine{01088\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ newpetal=((int)Math.floor(result)+num)\%num;}
+\DoxyCodeLine{01089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ ClickModValue(newpetal+result-\/Math.floor(result));}
+\DoxyCodeLine{01090\ \ \ \ \ \}}
+\DoxyCodeLine{01091\ \ \ \ \ }
+\DoxyCodeLine{01092\ \ \ \ \ \textcolor{comment}{//\ OBE:\ I've\ remove\ 'old\_getClickData'}}
+\DoxyCodeLine{01093\ \ \ \ \ }
+\DoxyCodeLine{01104\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ ClickModValue\ petalClicks(\textcolor{keywordtype}{double}\ spot,\textcolor{keywordtype}{double}\ []args)\ \{}
+\DoxyCodeLine{01105\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=args.length-\/1;}
+\DoxyCodeLine{01106\ \ \ \ \ \ \ \ \ spot=(spot+m2pi)\%m2pi;}
+\DoxyCodeLine{01107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{01108\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a=(spot-\/args[j]+m2pi)\%m2pi;}
+\DoxyCodeLine{01109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ac=(spot-\/args[j+1]+m2pi)\%m2pi;}
+\DoxyCodeLine{01110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (a>=0\ \&\&\ ac>Math.PI)\ \{}
+\DoxyCodeLine{01111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ diff=(args[j+1]-\/args[j]+m2pi)\%m2pi;}
+\DoxyCodeLine{01112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ ClickModValue(j+a/diff);}
+\DoxyCodeLine{01113\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01114\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{01116\ \ \ \ \ \}}
+\DoxyCodeLine{01117\ \ \ \ \ }
+\DoxyCodeLine{01129\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ pseudoAngle(\textcolor{keywordtype}{double}\ myang,\textcolor{keywordtype}{double}\ []angs)\ \{}
+\DoxyCodeLine{01130\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ pi2=2.0*Math.PI;}
+\DoxyCodeLine{01131\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01132\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ make\ sure\ myang\ is\ in\ [0,2pi].}}
+\DoxyCodeLine{01133\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (myang<0)}
+\DoxyCodeLine{01134\ \ \ \ \ \ \ \ \ \ \ \ \ myang\ +=pi2;}
+\DoxyCodeLine{01135\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (myang>pi2)}
+\DoxyCodeLine{01136\ \ \ \ \ \ \ \ \ \ \ \ \ myang\ -\/=pi2;}
+\DoxyCodeLine{01137\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01138\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=angs.length;}
+\DoxyCodeLine{01139\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ accumAng=0.0;}
+\DoxyCodeLine{01140\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{01141\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ incr=0.0;}
+\DoxyCodeLine{01142\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (tick<k\ \&\&\ myang>accumAng)\ \{}
+\DoxyCodeLine{01143\ \ \ \ \ \ \ \ \ \ \ \ \ incr=angs[tick];}
+\DoxyCodeLine{01144\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myang<=(accumAng+incr))\ }
+\DoxyCodeLine{01145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ((\textcolor{keywordtype}{double})tick+(myang-\/accumAng)/incr)*Math.PI;\ }
+\DoxyCodeLine{01146\ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{01147\ \ \ \ \ \ \ \ \ \ \ \ \ accumAng\ +=incr;}
+\DoxyCodeLine{01148\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01149\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ((\textcolor{keywordtype}{double})k)*Math.PI;\ \textcolor{comment}{//\ myang\ should\ \string~\ full\ anglesum}}
+\DoxyCodeLine{01151\ \ \ \ \ \}}
+\DoxyCodeLine{01152\ \ \ \ \ }
+\DoxyCodeLine{01159\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ installBrPt(GenBrModPt\ bpt)\ \{}
+\DoxyCodeLine{01160\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bpt!=\textcolor{keyword}{null}\ \&\&\ bpt.success)\ \{}
+\DoxyCodeLine{01161\ \ \ \ \ \ \ \ \ \ \ \ \ msg(bpt.reportExistence());}
+\DoxyCodeLine{01162\ \ \ \ \ \ \ \ \ \ \ \ \ branchPts.add(bpt);}
+\DoxyCodeLine{01163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01164\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ recompute\ layout\ of\ 'packData'}}
+\DoxyCodeLine{01165\ \ \ \ \ \ \ \ \ \ \ \ \ setLayoutOrder();\ }
+\DoxyCodeLine{01166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01167\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ renew\ colors\ and\ parameters}}
+\DoxyCodeLine{01168\ \ \ \ \ \ \ \ \ \ \ \ \ bpt.renew();}
+\DoxyCodeLine{01169\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ bpt.myType;}
+\DoxyCodeLine{01170\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{01171\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{01172\ \ \ \ \ \}}
+\DoxyCodeLine{01173\ \ \ \ \ }
+\DoxyCodeLine{01179\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ deleteBP(\textcolor{keywordtype}{int}\ bpID)\ \{}
+\DoxyCodeLine{01180\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ indx=findBPindex(bpID);}
+\DoxyCodeLine{01181\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx<=0)}
+\DoxyCodeLine{01182\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{01183\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01184\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reset\ 'packData'}}
+\DoxyCodeLine{01185\ \ \ \ \ \ \ \ \ GenBrModPt\ gbp=branchPts.remove(indx);}
+\DoxyCodeLine{01186\ \ \ \ \ \ \ \ \ gbp.dismantle();}
+\DoxyCodeLine{01187\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01188\ \ \ \ \ \ \ \ \ this.setLayoutOrder();}
+\DoxyCodeLine{01189\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ indx;\ \textcolor{comment}{//\ should\ be\ >=\ 1}}
+\DoxyCodeLine{01191\ \ \ \ \ \}}
+\DoxyCodeLine{01192\ \ \ \ \ }
+\DoxyCodeLine{01197\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ revert()\ \{}
+\DoxyCodeLine{01198\ \ \ \ \ \ \ \ \ branchPts=\textcolor{keyword}{new}\ Vector<GenBrModPt>();}
+\DoxyCodeLine{01199\ \ \ \ \ \ \ \ \ branchPts.add(\textcolor{keyword}{null});\ \textcolor{comment}{//\ first\ spot\ empty}}
+\DoxyCodeLine{01200\ \ \ \ \ \ \ \ \ exclusions=\textcolor{keyword}{new}\ ArrayList<Vertex>();}
+\DoxyCodeLine{01201\ \ \ \ \ \ \ \ \ PackData\ newCopy=refPack.copyPackTo();}
+\DoxyCodeLine{01202\ \ \ \ \ \ \ \ \ extenderPD=CirclePack.cpb.swapPackData(newCopy,extenderPD.packNum,\textcolor{keyword}{true});}
+\DoxyCodeLine{01203\ \ \ \ \ \ \ \ \ extenderPD.set\_aim\_default();}
+\DoxyCodeLine{01204\ \ \ \ \ \ \ \ \ extenderPD.set\_invD\_default();}
+\DoxyCodeLine{01205\ \ \ \ \ \}}
+\DoxyCodeLine{01206\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01210\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initCmdStruct()\ \{}
+\DoxyCodeLine{01211\ \ \ \ \ \ \ \ \ super.initCmdStruct();}
+\DoxyCodeLine{01212\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}event"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},}
+\DoxyCodeLine{01213\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}append\ event\ horizon\ vertices\ to\ packing's\ 'vlist'"{}}));}
+\DoxyCodeLine{01214\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}'Comment'"{}},\textcolor{stringliteral}{"{}-\/b\{b\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{01215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}first\ flag\ '-\/b'\ designates\ a\ branch\ point\ ID\ number"{}}));}
+\DoxyCodeLine{01216\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}disp"{}},\textcolor{stringliteral}{"{}-\/[shyj]\ \{usual\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{01217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}display\ on\ parents\ packing.\ For\ chaperone:\ s=sisters,\ "{}}+}
+\DoxyCodeLine{01218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}h=chaperones,\ y=putative\ branch\ point,\ "{}}+}
+\DoxyCodeLine{01219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}j=jumps.\ Also,\ \{usual\}\ display\ options"{}}));}
+\DoxyCodeLine{01220\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}status"{}},\textcolor{stringliteral}{"{}-\/b\{b\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{01221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}report\ the\ status\ of\ branch\ point\ 'b'"{}}));}
+\DoxyCodeLine{01222\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}angsum\_err"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},}
+\DoxyCodeLine{01223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}report\ the\ l\string^2\ anglesum\ error\ of\ parent\ and\ "{}}+}
+\DoxyCodeLine{01224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}all\ branch\ points"{}}));}
+\DoxyCodeLine{01225\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}get\_param"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},}
+\DoxyCodeLine{01226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}report\ branch\ point\ parameters"{}}));}
+\DoxyCodeLine{01227\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}click"{}},\textcolor{stringliteral}{"{}-\/[xX]\ z\ [-\/a\ \{x\}]\ "{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{01228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}create\ a\ chaparone\ or\ a\ singular\ branch\ point\ "{}}+}
+\DoxyCodeLine{01229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}(as\ appropriate)\ at\ the\ "{}}+}
+\DoxyCodeLine{01230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}point\ z\ (relative\ to\ 'refPack');\ '-\/x'\ flag\ means\ "{}}+}
+\DoxyCodeLine{01231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}to\ remove\ other\ nearby\ "{}}+}
+\DoxyCodeLine{01232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}branch\ points;\ '-\/X'\ remove\ all\ others;\ -\/a\ set\ aim\ to\ x*Pi"{}}));}
+\DoxyCodeLine{01233\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}reset\_over"{}},\textcolor{stringliteral}{"{}o1\ o2"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{01234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}For\ resetting\ overlaps\ for\ 'singular'\ and\ 'chaperone'\ "{}}+}
+\DoxyCodeLine{01235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}branch\ points"{}}));}
+\DoxyCodeLine{01236\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}delete"{}},\textcolor{stringliteral}{"{}-\/b\{b\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{01237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}delete\ branch\ point\ 'b'"{}}));}
+\DoxyCodeLine{01238\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_param"{}},\textcolor{stringliteral}{"{}\{param\ list\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{01239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Set\ parameters\ for\ branch\ point,\ format\ depends\ on\ type:\ "{}}+}
+\DoxyCodeLine{01240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}sing\ '-\/a\ \{a\}\ -\/o\ \{o1\ o2\}';\ "{}}+}
+\DoxyCodeLine{01241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}chap\ '-\/a\ \{a\}\ -\/j\ \{w1\ w2\}\ -\/o\ \{o1\ o2\}'"{}}));}
+\DoxyCodeLine{01242\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}copy"{}},\textcolor{stringliteral}{"{}\{pnum\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{01243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}write\ 'refPack'\ into\ designated\ packing"{}}));}
+\DoxyCodeLine{01244\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}revert"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},}
+\DoxyCodeLine{01245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}revert\ to\ the\ original\ unbranched\ packing\ 'refPack'"{}}));}
+\DoxyCodeLine{01246\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{01247\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ creating\ branch\ point\ types:}}
+\DoxyCodeLine{01248\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}bp\_trad"{}},\textcolor{stringliteral}{"{}-\/a\ \{a\}\ -\/i\ \{v\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{01249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Create\ 'traditional'\ branch\ point,\ aim\ 'a',\ vert\ 'v'."{}}));}
+\DoxyCodeLine{01250\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}bp\_sing"{}},}
+\DoxyCodeLine{01251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}-\/a\ \{a\}\ -\/i\ \{f\}\ -\/o\ \{o1\ o2\}\ [-\/b\ \{blist\}]"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{01252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Create\ 'singular'\ branch\ point,\ aim\ 'a';\ face\ 'f';\ "{}}+}
+\DoxyCodeLine{01253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}overlaps\ 'o1',\ 'o2'\ in\ [0,1],\ o1+o2\ in\ [0,1].\ "{}}+}
+\DoxyCodeLine{01254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}'blist'\ is\ 'BaryLink'\ option\ for\ face\ and\ overlaps."{}}));}
+\DoxyCodeLine{01255\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}bp\_chap"{}},}
+\DoxyCodeLine{01256\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}-\/a\ \{a\}\ -\/i\ \{v\}\ -\/j\ \{w1\ w2\}\ -\/o\ \{o1\ o2\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{01257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Create\ 'chaperone'\ branch\ point,\ aim\ 'a',\ vert\ 'v';\ "{}}+}
+\DoxyCodeLine{01258\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}optional\ jump\ vertices,\ petals\ 'w1'\ 'w2',\ "{}}+}
+\DoxyCodeLine{01259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}overlap\ parameters\ 'o1',\ 'o2'\ in\ [0,1]."{}}));}
+\DoxyCodeLine{01260\ }
+\DoxyCodeLine{01261\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ experimental\ commands\ (see\ GBExperiments.java):}}
+\DoxyCodeLine{01262\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}sweep"{}},}
+\DoxyCodeLine{01263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}-\/v\ \{vert\}\ -\/a\ \{aim1\}\ -\/A\ \{aim2\}\ "{}}+}
+\DoxyCodeLine{01264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}-\/b\ \{xmin\ xmax\ ymin\ ymax\}\ -\/n\ \{gridsize\}\ -\/o\ \{file\}"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{01265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Sweep\ grid\ of\ (x,y)\ positions\ for\ second\ branch\ point.\ "{}}+}
+\DoxyCodeLine{01266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Fixed\ traditional\ BP\ at\ vertex\ 'vert'\ with\ aim\ 'aim1'*Pi.\ "{}}+}
+\DoxyCodeLine{01267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Sweep\ BP\ aim\ is\ 'aim2'*Pi.\ "{}}+}
+\DoxyCodeLine{01268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Outputs\ CSV\ of\ (x,y,holonomy\_error).\ "{}}+}
+\DoxyCodeLine{01269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Defaults:\ aim1=aim2=4.0,\ grid=20,\ file=sweep\_output.csv"{}}));}
+\DoxyCodeLine{01270\ }
+\DoxyCodeLine{01271\ \ \ \ \ \}}
+\DoxyCodeLine{01272\ }
+\DoxyCodeLine{01273\ \}}
+\DoxyCodeLine{01274\ }
+\DoxyCodeLine{01281\ \textcolor{keyword}{class\ }ClickModValue\ \{}
+\DoxyCodeLine{01282\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ petal;}
+\DoxyCodeLine{01283\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ fraction;}
+\DoxyCodeLine{01284\ \ \ \ \ }
+\DoxyCodeLine{01285\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{01286\ \ \ \ \ \textcolor{keyword}{public}\ ClickModValue(\textcolor{keywordtype}{double}\ spot)\ \{}
+\DoxyCodeLine{01287\ \ \ \ \ \ \ \ \ petal=(int)Math.floor(spot);}
+\DoxyCodeLine{01288\ \ \ \ \ \ \ \ \ fraction=spot-\/petal;}
+\DoxyCodeLine{01289\ \ \ \ \ \}}
+\DoxyCodeLine{01290\ \}}
+
+\end{DoxyCode}

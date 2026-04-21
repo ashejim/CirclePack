@@ -1,0 +1,322 @@
+\doxysection{Main\+Frame.\+java}
+\label{_main_frame_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/canvasses/MainFrame.java@{C:/Users/ashej/myGitRepos/CirclePack/src/canvasses/MainFrame.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }canvasses;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.BorderLayout;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.Component;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.Font;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.dnd.DropTarget;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.event.ActionEvent;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.event.ActionListener;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.awt.event.ComponentAdapter;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.awt.event.ComponentEvent;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.awt.event.WindowAdapter;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.awt.event.WindowEvent;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ javax.swing.ImageIcon;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ javax.swing.JButton;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ javax.swing.JFrame;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ javax.swing.JMenuBar;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ javax.swing.JPopupMenu;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ javax.swing.WindowConstants;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ javax.swing.border.EmptyBorder;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ javax.swing.border.LineBorder;}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00031\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00032\ \textcolor{keyword}{import}\ dragdrop.ToolDropListener;}
+\DoxyCodeLine{00033\ \textcolor{keyword}{import}\ exceptions.LayoutException;}
+\DoxyCodeLine{00034\ \textcolor{keyword}{import}\ frames.CPMenuBar;}
+\DoxyCodeLine{00035\ \textcolor{keyword}{import}\ handlers.ACTIVEHandler;}
+\DoxyCodeLine{00036\ \textcolor{keyword}{import}\ handlers.MYTOOLHandler;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{import}\ images.OwlSpinner;}
+\DoxyCodeLine{00038\ \textcolor{keyword}{import}\ input.TrafficCenter;}
+\DoxyCodeLine{00039\ \textcolor{keyword}{import}\ listeners.ACTIVEListener;}
+\DoxyCodeLine{00040\ \textcolor{keyword}{import}\ packing.CPdrawing;}
+\DoxyCodeLine{00041\ \textcolor{keyword}{import}\ panels.LocatorPanel;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00081\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }MainFrame\ \textcolor{keyword}{extends}\ JFrame\ \{}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00084\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00085\ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{comment}{//\ layout\ sizes}}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ Dimension\ canvasDim=\textcolor{keyword}{new}\ Dimension(PackControl.getActiveCanvasSize(),}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.getActiveCanvasSize());}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ scriptWidth=80;}
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ topHeight=36;\ \textcolor{comment}{//\ height\ of\ tap\ panel\ with\ tool\ area}}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ bottomHeight=60;\ \textcolor{comment}{//\ height\ of\ bottom\ with\ command\ line}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ \textcolor{comment}{//\ JMenuBar,\ }}
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keyword}{public}\ JMenuBar\ mBar;\ }
+\DoxyCodeLine{00095\ \ \ \ \ }
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{comment}{//\ keeping\ track\ of\ current\ associated\ 'CPDrawing'\ (and\ its\ 'PackData')}}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keyword}{public}\ CPdrawing\ cpDrawing;}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keyword}{public}\ ACTIVEHandler\ mainToolHandler;}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keyword}{public}\ ActiveWrapper\ activeScreen;}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keyword}{public}\ JPanel\ scriptTools;\ \textcolor{comment}{//\ script\ 'MyTools'\ here\ if\ 'mainFrame'\ visible}}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keyword}{public}\ JPanel\ userTools;\ \textcolor{comment}{//\ TODO:\ add\ a\ user\ tool\ bar}}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keyword}{public}\ JPanel\ topPanel;}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keyword}{public}\ LocatorPanel\ locatorPanel;}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keyword}{public}\ JButton\ progressBar;}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keyword}{public}\ File\ mainMytFile;}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keyword}{public}\ File\ mainCursorFile;}
+\DoxyCodeLine{00108\ \ \ \ \ JTextField\ xyLabel;}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keyword}{static}\ JPopupMenu\ cursorMenu;\ \textcolor{comment}{//\ cursor\ selection\ menu}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keyword}{public}\ MainFrame(CPdrawing\ cpd,File\ mytFile,File\ cursorFile)\ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ setJMenuBar((mBar=\textcolor{keyword}{new}\ CPMenuBar()));}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ cpDrawing=cpd;}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ mainMytFile=mytFile;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ mainCursorFile=cursorFile;}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ setLayout(\textcolor{keyword}{null});\ \textcolor{comment}{//\ GUI\ layout\ is\ hard\ coded}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ 'activeScreen',\ the\ actual\ canvas}}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ createActiveScreen();\ }
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ mainToolHandler=activeScreen.getToolHandler();}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ PackControl.movableToolHandler=\textcolor{keyword}{new}\ MYTOOLHandler(\textcolor{keyword}{null});}
+\DoxyCodeLine{00130\ }
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ createMainToolBar();\ \textcolor{comment}{//\ top\ toolbar,\ canvas\ modes,\ etc.}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ locatorPanel=\textcolor{keyword}{new}\ LocatorPanel();}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ cursorMenu=\textcolor{keyword}{null};}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ x1=PackControl.ControlLocation.x+2+}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.ControlDim1.width;}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ y1=PackControl.ControlLocation.y;}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ setLocation(x1,y1);}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ addWindowListener(\textcolor{keyword}{new}\ AFdapter());}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ setDefaultCloseOperation(WindowConstants.HIDE\_ON\_CLOSE);}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ in\ future,\ want\ to\ resize}}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ setResizable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ updateTitle();}
+\DoxyCodeLine{00146\ \ \ \ \ }
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ owl/progress\ bar}}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ progressBar=((OwlSpinner)CPBase.runSpinner).getActiveProgButton();}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ progressBar.setToolTipText(\textcolor{stringliteral}{"{}Progress\ bar\ to\ show\ when\ busy"{}});}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ this.setSize(\textcolor{keyword}{new}\ Dimension(canvasDim.width+scriptWidth,}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ canvasDim.height+bottomHeight));}
+\DoxyCodeLine{00153\ \ \ \ \ \}}
+\DoxyCodeLine{00154\ }
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ layMeOut(Dimension\ dim)\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ canvasDim=dim;}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ layMeOut();}
+\DoxyCodeLine{00158\ \ \ \ \ \}}
+\DoxyCodeLine{00159\ \ \ \ \ }
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ layMeOut()\ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ this.getContentPane().removeAll();}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cwide=canvasDim.width;}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ chigh=canvasDim.height;}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ canvas\ itself}}
+\DoxyCodeLine{00171\ \textcolor{comment}{//\ \ \ \ \ \ activeScreen.setMinimumSize(new\ Dimension(mainKeyDim,mainKeyDim));}}
+\DoxyCodeLine{00172\ \textcolor{comment}{//\ \ \ \ \ \ activeScreen.setMaximumSize(new\ Dimension(mainKeyDim,mainKeyDim));}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ activeScreen.setBounds(scriptWidth,topHeight,cwide,chigh);}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ add(activeScreen);}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ need\ to\ adjust\ stored\ image\ areas?}}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ curwide=CPBase.cpDrawing[0].packImage.getWidth();}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ curhigh=CPBase.cpDrawing[0].packImage.getHeight();}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cwide!=curwide\ ||\ chigh!=curhigh)\ \{}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<CPBase.NUM\_PACKS;i++)\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.cpDrawing[i].packImage=}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.cpDrawing[i].resetCanvasSize(cwide,chigh);}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ *****\ across\ top:\ progress\ bar,\ top\ panel\ }}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ progress\ bar}}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ progressBar.setBounds(28,6,24,24);}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ add(progressBar);}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ top\ bar}}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ topPanel.setBounds(scriptWidth,0,cwide,topHeight-\/1);}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ add(topPanel);}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ *****\ down\ left\ side:\ 'vertScriptBar',\ toolbar,\ locator}}
+\DoxyCodeLine{00197\ }
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ script}}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ PackControl.vertScriptBar.setBounds(1,topHeight,scriptWidth-\/2,(chigh-\/LocatorPanel.locatorHeight)/2-\/2);}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ add(PackControl.vertScriptBar);}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ tool\ bar\ (shares\ left\ side\ with\ script\ bar)}}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ PackControl.movableToolHandler.toolBar.setToolTipText(\textcolor{stringliteral}{"{}Load/create\ user-\/defined\ mytools"{}});}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ PackControl.movableToolHandler.toolBar.setBounds(1,canvasDim.height/2+4,scriptWidth-\/2,(canvasDim.height-\/LocatorPanel.locatorHeight)/2-\/4);}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ add(PackControl.movableToolHandler.toolBar);}
+\DoxyCodeLine{00206\ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ locator}}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ locatorPanel.setBounds(3,topHeight+chigh-\/LocatorPanel.locatorHeight,scriptWidth-\/4,LocatorPanel.locatorHeight);}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ add(locatorPanel);}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ *****\ across\ bottom,\ 'activeConsole'\ \ }}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ PackControl.consoleActive.box.setBounds(2,chigh+topHeight,cwide+scriptWidth-\/4,bottomHeight);}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ add(PackControl.consoleActive.box);}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ Dimension\ dim=\textcolor{keyword}{new}\ Dimension(cwide+scriptWidth+8,chigh+topHeight+topHeight+72);\ \textcolor{comment}{//\ pad\ due\ to\ fram,\ menubar,\ etc.}}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ setPreferredSize(dim);}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO-\/layouts:\ should\ be\ here?}}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ pack();}
+\DoxyCodeLine{00220\ \ \ \ \ \}}
+\DoxyCodeLine{00221\ \ \ \ \ }
+\DoxyCodeLine{00225\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ updateTitle()\ \{}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ pnum=CirclePack.cpb.getActivePackNum();}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ setTitle(\textcolor{stringliteral}{"{}Active\ Packing\ p"{}}+pnum+\textcolor{stringliteral}{"{}:\ "{}}+}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.packings[pnum].fileName);}
+\DoxyCodeLine{00229\ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ }
+\DoxyCodeLine{00236\ \ \ \ \ \textcolor{keyword}{public}\ Dimension\ getMaxDim(Dimension\ displayDim)\ \{}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ maxWidth=displayDim.width-\/100-\/scriptWidth-\/6;}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ maxHeight=displayDim.height-\/121-\/2-\/PackControl.HeightBuffer;}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ size=(maxWidth<maxHeight)\ ?\ maxWidth\ :\ maxHeight;}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (size<100)}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ LayoutException(\textcolor{stringliteral}{"{}display\ area\ too\ small\ for\ 'MainFrame'"{}});}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keyword}{new}\ Dimension(size+scriptWidth+6,size+121));}
+\DoxyCodeLine{00243\ \ \ \ \ \}}
+\DoxyCodeLine{00244\ \ \ \ \ }
+\DoxyCodeLine{00250\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getWouldBeSize(\textcolor{keywordtype}{int}\ height)\ \{}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ height-\/121;}
+\DoxyCodeLine{00252\ \ \ \ \ \}}
+\DoxyCodeLine{00253\ \ \ \ \ }
+\DoxyCodeLine{00259\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ setCanvasDim(\textcolor{keywordtype}{int}\ wide,\textcolor{keywordtype}{int}\ high)\ \{}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wide<PackControl.MinActiveSize)\ wide=PackControl.MinActiveSize;}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (high<PackControl.MinActiveSize)\ high=PackControl.MinActiveSize;}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wide>PackControl.MaxActiveSize)\ wide=PackControl.MaxActiveSize;}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (high>PackControl.MaxActiveSize)\ high=PackControl.MaxActiveSize;}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ currently,\ only\ allow\ square}}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wide>high)\ wide=high;}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ high=wide;}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ canvasDim=\textcolor{keyword}{new}\ Dimension(wide,high);}
+\DoxyCodeLine{00270\ \ \ \ \ \}}
+\DoxyCodeLine{00271\ \ \ \ \ }
+\DoxyCodeLine{00276\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Dimension\ getCanvasDim()\ \{}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ canvasDim;}
+\DoxyCodeLine{00278\ \ \ \ \ \}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00285\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ createMainToolBar()\ \{}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ topPanel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ topPanel.setToolTipText(\textcolor{stringliteral}{"{}Tools\ obtained\ from\ 'canvas.myt'"{}});}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ topPanel.setLayout(\textcolor{keyword}{new}\ BorderLayout());}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ topPanel.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.black));\ \textcolor{comment}{//blue,2,false));}}
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ main\ mytools\ (see\ 'main.myt')}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mainToolHandler.toolBar!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ mainToolHandler.toolBar.setBorder(\textcolor{keyword}{new}\ EmptyBorder(0,0,0,0));}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ topPanel.add(mainToolHandler.toolBar,BorderLayout.WEST);}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Button\ to\ bring\ up\ cursor\ options}}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ JButton\ cursorButton=\textcolor{keyword}{new}\ JButton(\textcolor{stringliteral}{"{}Active\ cursors"{}},\textcolor{keyword}{new}\ ImageIcon(CPBase}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .getResourceURL(\textcolor{stringliteral}{"{}/Icons/main/menuPop.png"{}})));}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ cursorButton.setFont(\textcolor{keyword}{new}\ Font(cursorButton.getFont().toString(),Font.ROMAN\_BASELINE+Font.BOLD,10));}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ cursorButton.setToolTipText(\textcolor{stringliteral}{"{}Optional\ active\ cursors\ and\ modes"{}});}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ cursorButton.addActionListener(\textcolor{keyword}{new}\ ActionListener()\ \{}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ actionPerformed(ActionEvent\ e)\ \{}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Component\ cpt=(Component)e.getSource();}
+\DoxyCodeLine{00305\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (cursorMenu==null)\ \{\ //\ create\ and\ show}}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cursorMenu=CursorCtrl.cursorMenu(}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (ACTIVEListener)(mainToolHandler.toolListener));}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cursorMenu.show(cpt,40,30);}
+\DoxyCodeLine{00309\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00310\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ else\ if\ (cursorMenu.isVisible())\ //\ if\ showing,\ remove}}
+\DoxyCodeLine{00311\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cursorMenu.setVisible(false);}}
+\DoxyCodeLine{00312\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ else\ cursorMenu.show(cpt,40,30);\ //\ x,y\ relative\ to\ cpt}}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ topPanel.add(cursorButton,BorderLayout.EAST);}
+\DoxyCodeLine{00316\ \ \ \ \ \}}
+\DoxyCodeLine{00317\ }
+\DoxyCodeLine{00321\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ createActiveScreen()\ \{}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ activeScreen\ =\ \textcolor{keyword}{new}\ ActiveWrapper(mainMytFile,CPBase.cpDrawing[0]);\ \ }
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ activeScreen.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.blue,2,\textcolor{keyword}{false}));}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Note:\ the\ canvas\ itself\ if\ drop\ target\ to\ get\ correct\ coords.}}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ DropTarget(activeScreen,}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ ToolDropListener(activeScreen,cpDrawing.getPackNum(),\textcolor{keyword}{true}));}
+\DoxyCodeLine{00327\ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{00328\ \ \ \ \ }
+\DoxyCodeLine{00329\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ removeScriptTools()\ \{}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ PackControl.vertScriptBar.scriptTools.removeAll();}
+\DoxyCodeLine{00331\ \ \ \ \ \}}
+\DoxyCodeLine{00332\ \ \ \ \ }
+\DoxyCodeLine{00337\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ updateLocPanel(\textcolor{keywordtype}{int}\ hes,Complex\ z)\ \{}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ locatorPanel.upDate(hes,z);}
+\DoxyCodeLine{00339\ \ \ \ \ \}}
+\DoxyCodeLine{00340\ \ \ \ \ }
+\DoxyCodeLine{00345\ \ \ \ \ \textcolor{keyword}{public}\ CPdrawing\ getCPDrawing()\ \{}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ activeScreen.getCPDrawing();}
+\DoxyCodeLine{00347\ \ \ \ \ \}}
+\DoxyCodeLine{00348\ \ \ \ \ }
+\DoxyCodeLine{00352\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setCPDrawing(CPdrawing\ cpd)\ \{}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ activeScreen.setCPDrawing(cpd);}
+\DoxyCodeLine{00354\ \ \ \ \ \}}
+\DoxyCodeLine{00355\ \ \ \ \ }
+\DoxyCodeLine{00360\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ reDisplay()\ \{}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ activeScreen.repaint();}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ activeScreen.getCPDrawing().repaint();\ \textcolor{comment}{//\ draw\ any\ other\ canvasses,\ as\ well.}}
+\DoxyCodeLine{00363\ \ \ \ \ \}}
+\DoxyCodeLine{00364\ \ \ \ \ }
+\DoxyCodeLine{00368\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ swapProgBar()\ \{}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ progressBar=((OwlSpinner)CPBase.runSpinner).getActiveProgButton();}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ width=progressBar.getIcon().getIconWidth();}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (width>78)\ width=78;}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ height=progressBar.getIcon().getIconHeight();}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ progressBar.setBounds(40-\/width/2,6,width,height);}
+\DoxyCodeLine{00374\ \ \ \ \ \}}
+\DoxyCodeLine{00375\ \ \ \ \ }
+\DoxyCodeLine{00379\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initComponentListener()\ \{}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ this.addComponentListener(\textcolor{keyword}{new}\ ResizeAdapter());}
+\DoxyCodeLine{00381\ \ \ \ \ \}}
+\DoxyCodeLine{00382\ \ \ \ \ }
+\DoxyCodeLine{00390\ \ \ \ \ \textcolor{keyword}{class\ }AFdapter\ \textcolor{keyword}{extends}\ WindowAdapter\ \{}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ windowClosing(WindowEvent\ wevt)\ \{}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wevt.getID()==WindowEvent.WINDOW\_CLOSING)\ \{}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (PackControl.frame.isVisible())}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.activeFrame.setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TrafficCenter.cmdGUI(\textcolor{stringliteral}{"{}exit"{}});}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\{}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}Problem\ closing\ MainFrame"{}});}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ reaching\ here,\ must\ not\ have\ exited}}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.frame.setVisible(\textcolor{keyword}{true});\ \textcolor{comment}{//\ open\ PackControl}}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00407\ \ \ \ \ \}}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00409\ \ \ \ \ \textcolor{keyword}{class\ }ResizeAdapter\ \textcolor{keyword}{extends}\ ComponentAdapter\ \{}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ componentResized(ComponentEvent\ e)\ \{}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{\ \textcolor{comment}{//\ in\ case\ this\ is\ first\ pass}}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ DEBUG\ RESIZE}}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.activeFrame.layMeOut();}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.activeFrame.pack();}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}in\ main\ resize"{}});}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (NullPointerException\ ex)\ \{}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}'MainFrame'\ resize\ failed:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00421\ \ \ \ \ \}}
+\DoxyCodeLine{00422\ \ }
+\DoxyCodeLine{00423\ \}}
+
+\end{DoxyCode}

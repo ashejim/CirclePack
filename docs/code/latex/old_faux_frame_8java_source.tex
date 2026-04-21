@@ -1,0 +1,469 @@
+\doxysection{old\+Faux\+Frame.\+java}
+\label{old_faux_frame_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/fauxScript/oldFauxFrame.java@{C:/Users/ashej/myGitRepos/CirclePack/src/fauxScript/oldFauxFrame.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }fauxScript;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.Component;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.FlowLayout;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.GridBagConstraints;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.GridBagLayout;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.Point;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.event.KeyEvent;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.awt.event.KeyListener;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.awt.event.MouseEvent;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.awt.event.MouseListener;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ javax.swing.Box;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ javax.swing.BoxLayout;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ javax.swing.JButton;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ javax.swing.JComponent;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ javax.swing.JEditorPane;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ javax.swing.JFrame;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ javax.swing.JLabel;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ javax.swing.JScrollPane;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ javax.swing.JTextArea;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ javax.swing.border.LineBorder;}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00036\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }oldFauxFrame\ \textcolor{keyword}{extends}\ JFrame\ implements\ KeyListener,\ MouseListener\ \{}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00039\ \ \ \ \ }
+\DoxyCodeLine{00040\ \ \ \ \ JFrame\ cmdFrame;}
+\DoxyCodeLine{00041\ \ \ \ \ JTextArea\ cmdHistory;}
+\DoxyCodeLine{00042\ \ \ \ \ JTextField\ cmdLine;}
+\DoxyCodeLine{00043\ \ \ \ \ JPanel\ fHoverPanel;\ \textcolor{comment}{//\ everything\ goes\ in\ here}}
+\DoxyCodeLine{00044\ \ \ \ \ JPanel\ fScriptPanel;\ \textcolor{comment}{//\ panel\ where\ scriptBar\ would\ be}}
+\DoxyCodeLine{00045\ \ \ \ \ JTextArea\ fhelpBar;}
+\DoxyCodeLine{00046\ \ \ \ \ JPanel\ fStackArea;}
+\DoxyCodeLine{00047\ \ \ \ \ JScrollPane\ fStackScroll;}
+\DoxyCodeLine{00048\ \ \ \ \ JPanel\ fCPScriptBox;}
+\DoxyCodeLine{00049\ \ \ \ \ JPanel\ fCPDataBox;}
+\DoxyCodeLine{00050\ \ \ \ \ Component\ fGlueBox;}
+\DoxyCodeLine{00051\ \ \ \ \ StringBuffer\ history;}
+\DoxyCodeLine{00052\ \ \ \ \ }
+\DoxyCodeLine{00053\ \ \ \ \ Vector<Component>\ compVector;\ \ \textcolor{comment}{//\ contains\ the\ components,\ how\ we\ index\ them}}
+\DoxyCodeLine{00054\ \ \ \ \ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keywordtype}{int}\ depth;}
+\DoxyCodeLine{00056\ \ \ \ \ }
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{public}\ oldFauxFrame()\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ setDefaultCloseOperation(JFrame.EXIT\_ON\_CLOSE);}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ setTitle(\textcolor{stringliteral}{"{}Frame\ for\ testing\ Script\ layouts"{}});}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ compVector=\textcolor{keyword}{new}\ Vector<Component>(30);}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ createCmdStuff();\ \ \textcolor{comment}{//\ the\ command\ frame}}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ createPersistent();\ \textcolor{comment}{//\ create\ top\ level\ stuff}}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ loadPersistent();\ \ \textcolor{comment}{//\ load\ up\ the\ basics}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ createContent();\ \textcolor{comment}{//\ create\ cmd,\ text,\ file\ panels}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ loadContent();\ \textcolor{comment}{//\ put\ in\ all\ the\ boxes\ and\ panels}}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ finish\ up\ the\ faux\ script\ frame\ itself}}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ this.setLayout(\textcolor{keyword}{new}\ FlowLayout());}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ this.add(fHoverPanel);}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ this.setLocation(\textcolor{keyword}{new}\ Point(80,350));}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ this.setMinimumSize(\textcolor{keyword}{new}\ Dimension(150,30));}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ this.setMaximumSize(\textcolor{keyword}{new}\ Dimension(600,600));\ \textcolor{comment}{//Integer.MAX\_VALUE));}}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ this.pack();}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ this.setVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00077\ \ \ \ \ \}}
+\DoxyCodeLine{00078\ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ createCmdStuff()\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ cmdFrame=\textcolor{keyword}{new}\ JFrame();}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ cmdFrame.setDefaultCloseOperation(JFrame.EXIT\_ON\_CLOSE);}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ cmdFrame.setTitle(\textcolor{stringliteral}{"{}faux\ commands"{}});}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ containing\ panel}}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ JPanel\ cmdPanel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ cmdPanel.setLayout(\textcolor{keyword}{new}\ BoxLayout(cmdPanel,BoxLayout.PAGE\_AXIS));}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ cmdPanel.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.magenta,3,\textcolor{keyword}{false}));}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lesson:\ as\ with\ cmdFrame,\ this\ max\ doesn't\ limit\ size.}}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ cmdPanel.setMaximumSize(\textcolor{keyword}{new}\ Dimension(500,600));}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ history=\textcolor{keyword}{new}\ StringBuffer(\textcolor{stringliteral}{"{}Commands\ and\ output\ go\ here\(\backslash\)n"{}});}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ cmdHistory=\textcolor{keyword}{new}\ JTextArea();}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ cmdHistory.setText(history.toString());}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ cmdHistory.setEditable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ cmdHistory.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.orange,3,\textcolor{keyword}{false}));}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ cmdHistory.setLineWrap(\textcolor{keyword}{true});}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ JScrollPane\ jsp=\textcolor{keyword}{new}\ JScrollPane(cmdHistory);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ jsp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL\_SCROLLBAR\_NEVER);}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL\_SCROLLBAR\_AS\_NEEDED);}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lesson:\ \ (??)\ min\ size\ on\ scrollpane\ doesn't\ have\ an\ effect,\ it\ fills\ }}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ grows\ with\ the\ frame}}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lesson:\ the\ max\ needs\ to\ be\ on\ the\ scrollpane;\ not\ its\ contents.}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lesson:\ long\ line\ will\ increase\ cmdHistory\ width,\ pushing\ beyond\ the}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ window\ limits\ of\ both\ jsp\ and\ cmdHistory;\ Lesson:\ use\ lineWrap}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ when\ available.}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ jsp.setMinimumSize(\textcolor{keyword}{new}\ Dimension(305,100));}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ jsp.setMaximumSize(\textcolor{keyword}{new}\ Dimension(405,400));}
+\DoxyCodeLine{00115\ \textcolor{comment}{//\ \ \ \ \ \ cmdHistory.setMinimumSize(new\ Dimension(300,100));}}
+\DoxyCodeLine{00116\ \textcolor{comment}{//\ \ \ \ \ \ cmdHistory.setMaximumSize(new\ Dimension(300,400));}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ cmdPanel.add(jsp);}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ cmdLine=\textcolor{keyword}{new}\ JTextField();}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ cmdLine.setMinimumSize(\textcolor{keyword}{new}\ Dimension(-\/1,20));}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ cmdLine.setMaximumSize(\textcolor{keyword}{new}\ Dimension(500,20));}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ cmdLine.addKeyListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ cmdPanel.add(cmdLine);}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ all\ 0\ to\ keep\ to\ left\ }}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ jsp.setAlignmentX(0);}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ cmdLine.setAlignmentX(0);}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cmdFrame\ itself}}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lesson:\ max\ has\ no\ effect;\ but\ min\ does}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ cmdFrame.setMinimumSize(\textcolor{keyword}{new}\ Dimension(400,200));}
+\DoxyCodeLine{00134\ \textcolor{comment}{//\ \ \ \ \ \ cmdFrame.setMaximumSize(new\ Dimension(300,600));}}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ cmdFrame.add(cmdPanel);}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ cmdFrame.pack();}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ cmdFrame.setLocation(\textcolor{keyword}{new}\ Point(20,10));}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ cmdFrame.setVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00139\ \ \ \ \ \}}
+\DoxyCodeLine{00140\ \ \ \ \ }
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ createPersistent()\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ indices}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ fhelpBar=\textcolor{keyword}{new}\ JTextArea(\textcolor{stringliteral}{"{}0=hoverPanel;\ 1=scriptPanel;\ 2=stackArea;\ 3=stackScroll;\ "{}}+}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}4=CPScriptBox;\ 5=CPDataBox;\ 6=glueBox;\ 7-\/9\ empty\ are\ 'cmdBox's;\ 10-\/12\ are\ "{}}+}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}'textBox's;\ 13-\/15\ are\ 'fileBox's;\ "{}});}
+\DoxyCodeLine{00149\ \ \ \ \ }
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ overarching\ panel,\ holds\ all\ the\ rest}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ fHoverPanel=\textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{new}\ GridBagLayout());\ \textcolor{comment}{//\ 0}}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ fHoverPanel.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ compVector.add(0,fHoverPanel);}
+\DoxyCodeLine{00154\ \ \ \ \ }
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ fScriptPanel\ show\ panel\ numbers}}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ fScriptPanel=\textcolor{keyword}{new}\ JPanel();\ \textcolor{comment}{//\ 1\ }}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ fScriptPanel.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.magenta));}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ fScriptPanel.add(fhelpBar);\ \textcolor{comment}{//\ put\ the\ bar\ in\ here}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ fScriptPanel.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ compVector.add(1,fScriptPanel);}
+\DoxyCodeLine{00161\ \ \ \ \ }
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ fStackArea}}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ fStackArea=\textcolor{keyword}{new}\ JPanel();\ \textcolor{comment}{//\ 2}}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ fStackArea.setLayout(\textcolor{keyword}{new}\ BoxLayout(fStackArea,BoxLayout.PAGE\_AXIS));}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ fStackArea.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.red));}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ fStackArea.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ compVector.add(2,fStackArea);}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ fStackScroll=\textcolor{keyword}{new}\ JScrollPane(fStackArea);\ \textcolor{comment}{//\ 3}}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ fStackScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL\_SCROLLBAR\_NEVER);}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ compVector.add(3,fStackScroll);}
+\DoxyCodeLine{00172\ \ \ \ \ }
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ fCPScriptBox=\textcolor{keyword}{new}\ JPanel();\ \textcolor{comment}{//\ 4}}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ fCPScriptBox.setLayout(\textcolor{keyword}{new}\ BoxLayout(fCPScriptBox,BoxLayout.PAGE\_AXIS));}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ fCPScriptBox.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.green));}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ JEditorPane\ jep=\textcolor{keyword}{new}\ JEditorPane();}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ jep.setText(\textcolor{stringliteral}{"{}Colors:\ 1=red;2=blue;3=green;4=yellow;5=magenta;6=gray;7=orange;8=cyan"{}});}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ jep.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.black,3,\textcolor{keyword}{false}));}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ jep.setMaximumSize(\textcolor{keyword}{new}\ Dimension(500,20));}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ jep.setAlignmentX(0);}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ fCPScriptBox.add(jep);}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ fCPScriptBox.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ compVector.add(4,fCPScriptBox);}
+\DoxyCodeLine{00184\ \ \ \ \ }
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ fCPDataBox=\textcolor{keyword}{new}\ JPanel();\ \textcolor{comment}{//\ 5}}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ fCPDataBox.setLayout(\textcolor{keyword}{new}\ BoxLayout(fCPDataBox,BoxLayout.PAGE\_AXIS));}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ fCPDataBox.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.blue));}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ fCPDataBox.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ compVector.add(5,fCPDataBox);}
+\DoxyCodeLine{00190\ \ \ \ \ }
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ fGlueBox=Box.createVerticalGlue();\ \textcolor{comment}{//\ 6}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ compVector.add(6,fGlueBox);}
+\DoxyCodeLine{00193\ \ \ \ \ \}}
+\DoxyCodeLine{00194\ \ \ \ \ }
+\DoxyCodeLine{00198\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ loadPersistent()\ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ fHoverPanel.removeAll();}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ GridBagConstraints\ c=\textcolor{keyword}{new}\ GridBagConstraints();}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ c.fill\ =\ GridBagConstraints.HORIZONTAL;}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ c.weightx\ =\ 0.0;}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ c.weighty=0.0;}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ c.gridwidth\ =\ 1;}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ c.gridheight=1;}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ c.gridx\ =\ 0;}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ c.gridy\ =\ 0;}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ fHoverPanel.add(fScriptPanel,c);}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ c=\textcolor{keyword}{new}\ GridBagConstraints();}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ c.fill\ =\ GridBagConstraints.BOTH;}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ c.anchor=GridBagConstraints.NORTHWEST;}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ c.weightx\ =\ 1.0;}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ c.weighty\ =\ 1.0;}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ c.gridwidth\ =\ 1;}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ c.gridheight=1;}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ c.gridx\ =\ 0;}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ c.gridy\ =\ 2;}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ fHoverPanel.add(fStackScroll,c);}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ fCPScriptBox.setAlignmentX(0);}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ fStackArea.add(fCPScriptBox);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ fCPDataBox.setAlignmentX(0);}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ fStackArea.add(fCPDataBox);}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ fStackArea.add(fGlueBox);}
+\DoxyCodeLine{00226\ \ \ \ \ \}}
+\DoxyCodeLine{00227\ \ \ \ \ }
+\DoxyCodeLine{00231\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ createContent()\ \{}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cmd\ boxes}}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=7;j<10;j++)\ \{}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lesson:\ label\ versus\ button:\ button\ catches\ mouse\ click\ and\ has}}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ size\ limits;\ label\ seems\ to\ pass\ click\ on\ to\ panel}}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ JLabel\ label=\textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}label\ "{}}+j);}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ JEditorPane\ jep=\textcolor{keyword}{new}\ JEditorPane();}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ jep.setText(\textcolor{stringliteral}{"{}cmd\ box\ "{}}+j);}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ Box\ box=Box.createVerticalBox();}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ label.setAlignmentX(0);}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lesson:\ label\ is\ transparent,\ background\ of\ CPScriptBox\ shows\ through}}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ also\ }}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lesson:\ label\ seemed\ to\ be\ just\ right\ size\ without\ being\ set}}
+\DoxyCodeLine{00249\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ label.setMaximumSize(new\ Dimension(30,-\/1));}}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ label.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.green,4,\textcolor{keyword}{false}));}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ box.add(label);}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ jep.setAlignmentX(0);}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ box.add(jep);}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ box.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ compVector.add(j,box);}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ box.setAlignmentX(0);}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ text\ boxes}}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=10;j<13;j++)\ \{}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ JEditorPane\ jep=\textcolor{keyword}{new}\ JEditorPane();}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ jep.setText(\textcolor{stringliteral}{"{}text\ box\ "{}}+j);}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ JScrollPane\ jsp=\textcolor{keyword}{new}\ JScrollPane(jep);}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ jsp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL\_SCROLLBAR\_NEVER);}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL\_SCROLLBAR\_AS\_NEEDED);}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ JPanel\ panel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ panel.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ compVector.add(j,panel);}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ panel.setAlignmentX(0);}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ files\ boxes}}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=13;j<16;j++)\ \{}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ JPanel\ panel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ JButton\ button=\textcolor{keyword}{new}\ JButton(\textcolor{stringliteral}{"{}File\ "{}}+j);}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ panel.add(button);}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ panel.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ compVector.add(j,panel);}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ panel.setAlignmentX(0);}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00282\ \ \ \ \ \}}
+\DoxyCodeLine{00283\ \ \ \ \ }
+\DoxyCodeLine{00284\ \ \ \ \ \textcolor{comment}{//\ put\ the\ cmd/text/file\ boxes\ in\ place}}
+\DoxyCodeLine{00285\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ loadContent()\ \{}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ cmd/text\ in\ stackArea}}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=7;j<13;j++)\ \{}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ fCPScriptBox.add(compVector.get(j));}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=13;j<16;j++)\ \{}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ fCPDataBox.add(compVector.get(j));}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00295\ \ \ \ \ \}}
+\DoxyCodeLine{00296\ \ \ \ \ }
+\DoxyCodeLine{00302\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ execute(String\ cmdstr)\ \{}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ String\ cmds[]=cmdstr.split(\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ Vector<Integer>\ numbers=getNumbers(cmds);}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ String\ cmd=\textcolor{keyword}{new}\ String(cmds[0]);}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ JComponent\ component=\textcolor{keyword}{null};}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (numbers!=\textcolor{keyword}{null}\ \&\&\ numbers.size()>0)}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ component=(JComponent)compVector.get(numbers.get(0));}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ each\ command\ expects\ a\ certain\ number\ of\ numbers}}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}back"{}}))\ \{\ \textcolor{comment}{//\ set\ background\ color}}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ component.setBackground(myColor(numbers.get(1)));}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}col"{}}))\ \{\ \textcolor{comment}{//\ set\ border\ color}}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ component.setBorder(\textcolor{keyword}{new}\ LineBorder(myColor(numbers.get(1))));}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}+"{}}))\ \{\ \textcolor{comment}{//\ add\ component}}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count=-\/10;}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}-\/"{}}))\ \{\ \textcolor{comment}{//\ remove\ component}}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count=-\/10;}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}pack"{}}))\ \{\ \textcolor{comment}{//\ pack\ FauxFrame}}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this.pack();}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}val"{}}))\ \{\ \textcolor{comment}{//\ validate\ component}}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ component.validate();}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}reval"{}}))\ \{\ \textcolor{comment}{//\ revalidate\ component}}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ component.validate();}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}pack"{}}))\ \{\ \textcolor{comment}{//\ pack\ FauxFrame}}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this.pack();}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}ReVal"{}}))\ \{\ \textcolor{comment}{//\ revalidate\ fHoverPanel\ }}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fHoverPanel.revalidate();}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ look\ for\ dimension\ changes}}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (count==0)\ \{}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ wide=numbers.get(1);}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ high=numbers.get(2);}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wide<=0)\ wide=-\/1;}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (high<=0)\ high=-\/1;}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Dimension\ dim=\textcolor{keyword}{new}\ Dimension(wide,high);}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}md"{}}))\ \{\ \textcolor{comment}{//\ min\ dimension}}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ component.setMinimumSize(dim);}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}Md"{}}))\ \{\ \textcolor{comment}{//\ max\ dimension}}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ component.setMaximumSize(dim);}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}pd"{}}))\ \{\ \textcolor{comment}{//\ preferred\ dimension}}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ component.setPreferredSize(dim);}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}ad"{}}))\ \{\ \textcolor{comment}{//\ max/min/pref\ set\ to\ same}}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ component.setMinimumSize(dim);}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ component.setMaximumSize(dim);}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ component.setPreferredSize(dim);}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ report\ back}}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ history.append(\textcolor{stringliteral}{"{}("{}}+count+\textcolor{stringliteral}{"{})\ "{}}+cmdstr+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ history.append(\textcolor{stringliteral}{"{}error\ in\ 'execute'\ for\ "{}}+cmdstr+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ showText();}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ cmdLine.setText(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00387\ \ \ \ \ \}}
+\DoxyCodeLine{00388\ \ \ \ \ }
+\DoxyCodeLine{00394\ \ \ \ \ \textcolor{keyword}{public}\ Color\ myColor(\textcolor{keywordtype}{int}\ col)\ \{}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col==1)\ \{\textcolor{keywordflow}{return}\ Color.red;\}}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col==2)\ \{\textcolor{keywordflow}{return}\ Color.blue;\}}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col==3)\ \{\textcolor{keywordflow}{return}\ Color.green;\}}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col==4)\ \{\textcolor{keywordflow}{return}\ Color.yellow;\}}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col==5)\ \{\textcolor{keywordflow}{return}\ Color.magenta;\}}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col==6)\ \{\textcolor{keywordflow}{return}\ Color.gray;\}}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col==7)\ \{\textcolor{keywordflow}{return}\ Color.orange;\}}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (col==8)\ \{\textcolor{keywordflow}{return}\ Color.cyan;\}}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Color.gray;}
+\DoxyCodeLine{00404\ \ \ \ \ \}}
+\DoxyCodeLine{00405\ \ \ \ \ }
+\DoxyCodeLine{00406\ \ \ \ \ \textcolor{comment}{//\ get\ numbers\ given\ in\ the\ command}}
+\DoxyCodeLine{00407\ \ \ \ \ \textcolor{keyword}{public}\ Vector<Integer>\ getNumbers(String\ []str)\ \{}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ Vector<Integer>\ vec=\textcolor{keyword}{new}\ Vector<Integer>(1);}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ first\ entry\ is\ the\ command\ itself,\ rest\ should\ be\ numbers}}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<str.length;j++)\ \{}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vec.add(Integer.parseInt(str[j]));}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vec;}
+\DoxyCodeLine{00418\ \ \ \ \ \}}
+\DoxyCodeLine{00419\ \ \ \ \ }
+\DoxyCodeLine{00423\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ showText()\ \{}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ cmdHistory.setText(history.toString());}
+\DoxyCodeLine{00425\ \ \ \ \ \}}
+\DoxyCodeLine{00426\ \ \ \ \ }
+\DoxyCodeLine{00427\ \ \ \ \ @Override}
+\DoxyCodeLine{00428\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ keyPressed(KeyEvent\ e)\ \{}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ Auto-\/generated\ method\ stub}}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00431\ \ \ \ \ \}}
+\DoxyCodeLine{00432\ }
+\DoxyCodeLine{00433\ \ \ \ \ @Override}
+\DoxyCodeLine{00434\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ keyReleased(KeyEvent\ e)\ \{}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ Auto-\/generated\ method\ stub}}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00437\ \ \ \ \ \}}
+\DoxyCodeLine{00438\ }
+\DoxyCodeLine{00439\ \ \ \ \ @Override}
+\DoxyCodeLine{00440\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ keyTyped(KeyEvent\ e)\ \{}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ Auto-\/generated\ method\ stub}}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (e.getKeyChar()==KeyEvent.VK\_ENTER)\ \{}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \ \ \ \ execute(cmdLine.getText());}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00445\ \ \ \ \ \}}
+\DoxyCodeLine{00446\ }
+\DoxyCodeLine{00447\ \ \ \ \ @Override}
+\DoxyCodeLine{00448\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseClicked(MouseEvent\ e)\ \{}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ Auto-\/generated\ method\ stub}}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lesson:\ caught\ in\ mousePressed}}
+\DoxyCodeLine{00452\ \textcolor{comment}{//\ \ \ \ \ \ Component\ comp=e.getComponent();}}
+\DoxyCodeLine{00453\ \textcolor{comment}{//\ \ \ \ \ \ int\ cn=compVector.indexOf((Object)comp);}}
+\DoxyCodeLine{00454\ \textcolor{comment}{//\ \ \ \ \ \ history.append("{}Component\ "{}+cn+"{}:\ (w,h)=("{}+comp.getWidth()+"{}\ "{}+comp.getHeight()+"{})\(\backslash\)n"{});}}
+\DoxyCodeLine{00455\ \textcolor{comment}{//\ \ \ \ \ \ cmdHistory.setText(history.toString());}}
+\DoxyCodeLine{00456\ \ \ \ \ \}}
+\DoxyCodeLine{00457\ }
+\DoxyCodeLine{00458\ \ \ \ \ @Override}
+\DoxyCodeLine{00459\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseEntered(MouseEvent\ e)\ \{}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ Auto-\/generated\ method\ stub}}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00462\ \ \ \ \ \}}
+\DoxyCodeLine{00463\ }
+\DoxyCodeLine{00464\ \ \ \ \ @Override}
+\DoxyCodeLine{00465\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseExited(MouseEvent\ e)\ \{}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ Auto-\/generated\ method\ stub}}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00468\ \ \ \ \ \}}
+\DoxyCodeLine{00469\ }
+\DoxyCodeLine{00470\ \ \ \ \ @Override}
+\DoxyCodeLine{00471\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mousePressed(MouseEvent\ e)\ \{}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ Auto-\/generated\ method\ stub}}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ Component\ comp=e.getComponent();}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cn=compVector.indexOf((Object)comp);}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ history.append(\textcolor{stringliteral}{"{}Component\ "{}}+cn+\textcolor{stringliteral}{"{}:\ (w,h)=("{}}+comp.getWidth()+\textcolor{stringliteral}{"{}\ "{}}+comp.getHeight()+\textcolor{stringliteral}{"{})\(\backslash\)n"{}});}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ cmdHistory.setText(history.toString());}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lesson:\ doesn't\ prevent\ 'e'\ being\ caught\ by\ mouseClicked\ as\ well}}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ e.consume();}
+\DoxyCodeLine{00480\ \ \ \ \ \}}
+\DoxyCodeLine{00481\ }
+\DoxyCodeLine{00482\ \ \ \ \ @Override}
+\DoxyCodeLine{00483\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseReleased(MouseEvent\ e)\ \{}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ Auto-\/generated\ method\ stub}}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00486\ \ \ \ \ \}}
+\DoxyCodeLine{00487\ }
+\DoxyCodeLine{00491\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ main(String[]\ args)\ \{}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ Auto-\/generated\ method\ stub}}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ JFrame\ frame=\textcolor{keyword}{new}\ oldFauxFrame();}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ frame.pack();}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ frame.setVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00496\ \ \ \ \ \}}
+\DoxyCodeLine{00497\ }
+\DoxyCodeLine{00498\ \}}
+
+\end{DoxyCode}

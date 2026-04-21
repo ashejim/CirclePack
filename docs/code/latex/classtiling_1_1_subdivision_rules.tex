@@ -1,0 +1,249 @@
+\doxysection{tiling.\+Subdivision\+Rules Class Reference}
+\label{classtiling_1_1_subdivision_rules}\index{tiling.SubdivisionRules@{tiling.SubdivisionRules}}
+
+
+This class holds the structures for finite subdivision rules,.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\textbf{ Subdivision\+Rules} ()
+\item 
+int \textbf{ get\+Possible\+Type} (int n)
+\begin{DoxyCompactList}\small\item\em Return the first tile type having n sides. \end{DoxyCompactList}\item 
+\textbf{ Subdivision\+Rules} \textbf{ manipulate\+Rules} (Buffered\+Reader fp, String cmd, String newname)
+\begin{DoxyCompactList}\small\item\em This manipulates a rules file and saves it into given directory/\+name. It then reads the new file in the usual way to continue. Note that optional data (like euclidean corners, etc.) is not copied into the new rules file. The manipulations are very limited for now and can be done only one at a time. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \textbf{ Subdivision\+Rules} \textbf{ read\+Rules\+File} (Buffered\+Reader fp, String filename)
+\begin{DoxyCompactList}\small\item\em This routine is for reading Cannon/\+\+Floyd/\+\+Parry subdivision rules $\ast$.r files. The \textquotesingle{}get\+Rules\+TD\textquotesingle{} routine is then needed to create the minimal \textquotesingle{}\doxyref{Tile\+Data}{p.}{classtiling_1_1_tile_data}\textquotesingle{} associated with the subdivision for each tile type. Note that the \textquotesingle{}mode\textquotesingle{} 1, 2, 3, determines the construction, with 3 (default) being the most complicated. \end{DoxyCompactList}\item 
+static \textbf{ Tile\+Data} \textbf{ get\+Rules\+TD} (\textbf{ Tile\+Rule} t\+Rule, \textbf{ Edge\+Link} \textbf{ type2\+Size}, int md)
+\begin{DoxyCompactList}\small\item\em Build the minimal \textquotesingle{}\doxyref{Tile\+Data}{p.}{classtiling_1_1_tile_data}\textquotesingle{} structure for a given tile type its associated "{}subdivision rule"{}, a la Cannon/\+\+Floyd/\+\+Parry \textquotesingle{}rules\textquotesingle{} files, and the current \textquotesingle{}mode\textquotesingle{}. The rule specifies the subtile types, their neighbor relations, edge breakup patterns, and builds lists of vertices (local indices). \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+String \textbf{ FSDRname}
+\item 
+Vector$<$ \textbf{ Tile\+Rule} $>$ \textbf{ tile\+Rules}
+\item 
+\textbf{ Edge\+Link} \textbf{ type2\+Rule}
+\item 
+\textbf{ Edge\+Link} \textbf{ type2\+Size}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+This class holds the structures for finite subdivision rules,. 
+
+This class holds the structures for finite subdivision rules, which describe how a finite collection of polygonal tile types are to be subdivided so each is a finite union of tiles from this same collection.
+
+This code is used with \textquotesingle{}\doxyref{Conformal\+Tiling}{p.}{classftn_theory_1_1_conformal_tiling}\textquotesingle{} extender, \textquotesingle{}\doxyref{Tile\+Data}{p.}{classtiling_1_1_tile_data}\textquotesingle{}, and \textquotesingle{}\doxyref{Tile}{p.}{classtiling_1_1_tile}\textquotesingle{} classes. The initial structure was adopted from Bill Floyd\textquotesingle{}s software, built in conjunction with Jim Cannon and Walter Parry. In particular, we can read their $\ast$.r "{}rules"{} files (we also augment them with some optional data or data to resolve ambiguities in general situations --- as with self-\/pasting; see below).
+
+The \textquotesingle{}tile\+Type\textquotesingle{}s are numbers. In "{}rules"{} files they are contiguous integers starting at 4 (since 0,1,2,3 were used for rectangle edges) for labeling the rules. Currently the tile types are in one-\/to-\/one correspondence with the rules. Traditionally, each rule applies to n-\/gons for some n, though more than one rule can apply for the same n.
+
+FUTURE:\+ We will also (eventually) allow generic subdivision rules, rules which apply to n-\/gons for any n (e.\+g., the tiling version of \textquotesingle{}pentagonal\textquotesingle{} subdivision). We also wish to include some more general tiles:\+ e.\+g. uni-\/gons, bi-\/gons, multiply connected (so edges or vertices may be identified), or with penetrating edges, etc.
+
+For each \textquotesingle{}\doxyref{Tile}{p.}{classtiling_1_1_tile}\textquotesingle{}, the first entry \textquotesingle{}vert[0]\textquotesingle{} in its vertex list is treated as its "{}principal vertex"{} (the beginning of the 0th edge the way CFP conceived of things).
+
+OPTIONAL INFO:\+ I\textquotesingle{}ve added four optional data sections which must come at the end of the rules file:\+
+\begin{DoxyItemize}
+\item Edge\+\_\+marks:\+ \{t\} \{i\} \{m\} (tile type, edge index, and \textquotesingle{}mark\textquotesingle{})
+\item Tile\+\_\+marks:\+ \{t\} \{n\} \{m\} (tile type, index, and \textquotesingle{}mark\textquotesingle{}) ... (done)
+\item Tile\+\_\+flowers:\+ (not yet fully developed, look in \textquotesingle{}read\+Rules\+File\textquotesingle{})
+\item Euclidean\+\_\+location\+\_\+data Type\+\_\+number\+\_\+(the\+\_\+first\+\_\+one\+\_\+should\+\_\+be\+\_\+4\+\_\+since\+\_\+the\+\_\+ends\+\_\+are\+\_\+typed\+\_\+0\+\_\+1\+\_\+2\+\_\+3):\+ t Eucl\+\_\+corner (standard position, first corner at 0, next at 1 0.\+0 0.\+0 1.\+0 0.\+0 x3 y3 .... Subtile\+\_\+base\+\_\+endpoints\+\_\+(z.\+x\+\_\+z.\+y\+\_\+w.\+x\+\_\+w.\+y):\+ x0 y0 x1 y1 ...
+
+Type\+\_\+number ... etc.
+\end{DoxyItemize}
+
+\begin{DoxyAuthor}{Author}
+kens, November 2013 
+\end{DoxyAuthor}
+
+
+Definition at line \textbf{ 77} of file \textbf{ Subdivision\+Rules.\+java}.
+
+
+
+\label{doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\index{tiling.SubdivisionRules@{tiling.SubdivisionRules}!SubdivisionRules@{SubdivisionRules}}
+\index{SubdivisionRules@{SubdivisionRules}!tiling.SubdivisionRules@{tiling.SubdivisionRules}}
+\doxysubsubsection{SubdivisionRules()}
+{\footnotesize\ttfamily \label{classtiling_1_1_subdivision_rules_a865ed28e9f57d973f47a5f7b05aabd63} 
+tiling.\+Subdivision\+Rules.\+Subdivision\+Rules (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+
+
+Definition at line \textbf{ 95} of file \textbf{ Subdivision\+Rules.\+java}.
+
+
+
+\label{doc-func-members}
+\doxysubsection{Member Function Documentation}
+\index{tiling.SubdivisionRules@{tiling.SubdivisionRules}!getPossibleType@{getPossibleType}}
+\index{getPossibleType@{getPossibleType}!tiling.SubdivisionRules@{tiling.SubdivisionRules}}
+\doxysubsubsection{getPossibleType()}
+{\footnotesize\ttfamily \label{classtiling_1_1_subdivision_rules_a47898a0fa0ddd213fbd10f5ff6a0f6d1} 
+int tiling.\+Subdivision\+Rules.\+get\+Possible\+Type (\begin{DoxyParamCaption}\item[{int}]{n}{}\end{DoxyParamCaption})}
+
+
+
+Return the first tile type having n sides. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em n} & int, number of sides \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+int, tile type, -\/1 on error or failure 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 866} of file \textbf{ Subdivision\+Rules.\+java}.
+
+\index{tiling.SubdivisionRules@{tiling.SubdivisionRules}!getRulesTD@{getRulesTD}}
+\index{getRulesTD@{getRulesTD}!tiling.SubdivisionRules@{tiling.SubdivisionRules}}
+\doxysubsubsection{getRulesTD()}
+{\footnotesize\ttfamily \label{classtiling_1_1_subdivision_rules_af8c13a42610555096491cef3f163ef05} 
+\textbf{ Tile\+Data} tiling.\+Subdivision\+Rules.\+get\+Rules\+TD (\begin{DoxyParamCaption}\item[{\textbf{ Tile\+Rule}}]{t\+Rule}{, }\item[{\textbf{ Edge\+Link}}]{type2\+Size}{, }\item[{int}]{md}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+Build the minimal \textquotesingle{}\doxyref{Tile\+Data}{p.}{classtiling_1_1_tile_data}\textquotesingle{} structure for a given tile type its associated "{}subdivision rule"{}, a la Cannon/\+\+Floyd/\+\+Parry \textquotesingle{}rules\textquotesingle{} files, and the current \textquotesingle{}mode\textquotesingle{}. The rule specifies the subtile types, their neighbor relations, edge breakup patterns, and builds lists of vertices (local indices). 
+
+CAUTION:\+ we assume edge matching is set via \textquotesingle{}child\+Flowers\textquotesingle{} in \textquotesingle{}\doxyref{Tile.\+tile2tile\+Match}{p.}{classtiling_1_1_tile_ae08ed2121507a84ca029ce699455180b}\textquotesingle{}, but this is not robust for non-\/standard situations --- self-\/pasting, multiple edges, non-\/simply connected, etc. For complex situations, however, the rules file lines "{}\+Original\+\_\+edgeid ..."{} can provide the additional information on matching.
+
+We must create the actual tiles and set consistent vertices. The vertices of the original parent tile are set to 1, 2, ..., n. Other vertices depend on current \textquotesingle{}mode\textquotesingle{}
+
+TODO:\+ However, if the parent tile has some self-\/pasting specified in its \textquotesingle{}tile\+Flower\textquotesingle{}, then these will be modified before returning, if the \textquotesingle{}mode\textquotesingle{} permits.
+
+We build vertices via their full face flowers. So after encountering an unprocessed vertex (index $<$ 0) we process it fully before proceeding.
+
+
+\begin{DoxyParams}{Parameters}
+{\em t\+Rule} & \doxyref{Tile\+Rule}{p.}{classtiling_1_1_tile_rule} \\
+\hline
+{\em type\+Size} & int[], contains the number of sides for each tile type. \\
+\hline
+{\em md} & int, mode 1, 2, or 3 (simplest to most complicated) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Tile\+Data}{p.}{classtiling_1_1_tile_data} or null on error 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 627} of file \textbf{ Subdivision\+Rules.\+java}.
+
+\index{tiling.SubdivisionRules@{tiling.SubdivisionRules}!manipulateRules@{manipulateRules}}
+\index{manipulateRules@{manipulateRules}!tiling.SubdivisionRules@{tiling.SubdivisionRules}}
+\doxysubsubsection{manipulateRules()}
+{\footnotesize\ttfamily \label{classtiling_1_1_subdivision_rules_a6715c50a25fcd0fb72f22d9131ff1f27} 
+\textbf{ Subdivision\+Rules} tiling.\+Subdivision\+Rules.\+manipulate\+Rules (\begin{DoxyParamCaption}\item[{Buffered\+Reader}]{fp}{, }\item[{String}]{cmd}{, }\item[{String}]{newname}{}\end{DoxyParamCaption})}
+
+
+
+This manipulates a rules file and saves it into given directory/\+name. It then reads the new file in the usual way to continue. Note that optional data (like euclidean corners, etc.) is not copied into the new rules file. The manipulations are very limited for now and can be done only one at a time. 
+
+
+\begin{DoxyItemize}
+\item given "{}-\/r s t"{}, rotate subtile s (indexed from 0, as in Floyd\textquotesingle{}s rules file) within the tile of type t by one edge counterclockwise.
+\item given "{}-\/d t j i"{}, we divide tile type t into two tiles, one replaces type t and has the same number of edges and vertex j replaced by j\textquotesingle{} (order of vertices preserved), while the other is a quad with corners (j,j+1,j\textquotesingle{},j-\/1) with the i\+\_\+th one being the designated corner.
+\end{DoxyItemize}
+
+Unfortunately, we can do minimal consistency at this time. The result is saved with the given name in the given directory (defaulting to CPFile\+Manager.\+Script\+Directory.
+
+If we successfully write the new file, we the call \textquotesingle{}read\+Rules\+File\textquotesingle{} on it and continue. 
+\begin{DoxyParams}{Parameters}
+{\em fp} & Buffered\+Reader, opened in calling routine, closed here \\
+\hline
+{\em dir} & File, directory for saving \\
+\hline
+{\em filename} & String, simply for naming these rules \\
+\hline
+{\em cmd} & String, specify one pair (t s) \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Subdivision\+Rules}{p.}{classtiling_1_1_subdivision_rules} or throw an exception 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 900} of file \textbf{ Subdivision\+Rules.\+java}.
+
+\index{tiling.SubdivisionRules@{tiling.SubdivisionRules}!readRulesFile@{readRulesFile}}
+\index{readRulesFile@{readRulesFile}!tiling.SubdivisionRules@{tiling.SubdivisionRules}}
+\doxysubsubsection{readRulesFile()}
+{\footnotesize\ttfamily \label{classtiling_1_1_subdivision_rules_a9117f7dbe1d4ce592e470a8c286a1cfa} 
+\textbf{ Subdivision\+Rules} tiling.\+Subdivision\+Rules.\+read\+Rules\+File (\begin{DoxyParamCaption}\item[{Buffered\+Reader}]{fp}{, }\item[{String}]{filename}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+This routine is for reading Cannon/\+\+Floyd/\+\+Parry subdivision rules $\ast$.r files. The \textquotesingle{}get\+Rules\+TD\textquotesingle{} routine is then needed to create the minimal \textquotesingle{}\doxyref{Tile\+Data}{p.}{classtiling_1_1_tile_data}\textquotesingle{} associated with the subdivision for each tile type. Note that the \textquotesingle{}mode\textquotesingle{} 1, 2, 3, determines the construction, with 3 (default) being the most complicated. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em fp} & Buffered\+Reader, opened by calling routine, closed here \\
+\hline
+{\em filename} & String, just to use as name of these rules \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+\doxyref{Subdivision\+Rules}{p.}{classtiling_1_1_subdivision_rules} or throw an exception 
+\end{DoxyReturn}
+
+
+Definition at line \textbf{ 112} of file \textbf{ Subdivision\+Rules.\+java}.
+
+
+
+\label{doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\index{tiling.SubdivisionRules@{tiling.SubdivisionRules}!FSDRname@{FSDRname}}
+\index{FSDRname@{FSDRname}!tiling.SubdivisionRules@{tiling.SubdivisionRules}}
+\doxysubsubsection{FSDRname}
+{\footnotesize\ttfamily \label{classtiling_1_1_subdivision_rules_a004d1357bf007cbfeffc7d074e4624bf} 
+String tiling.\+Subdivision\+Rules.\+FSDRname}
+
+
+
+Definition at line \textbf{ 80} of file \textbf{ Subdivision\+Rules.\+java}.
+
+\index{tiling.SubdivisionRules@{tiling.SubdivisionRules}!tileRules@{tileRules}}
+\index{tileRules@{tileRules}!tiling.SubdivisionRules@{tiling.SubdivisionRules}}
+\doxysubsubsection{tileRules}
+{\footnotesize\ttfamily \label{classtiling_1_1_subdivision_rules_a60c25895f0128091c3f92cbffd99b3c9} 
+Vector$<$\textbf{ Tile\+Rule}$>$ tiling.\+Subdivision\+Rules.\+tile\+Rules}
+
+
+
+Definition at line \textbf{ 83} of file \textbf{ Subdivision\+Rules.\+java}.
+
+\index{tiling.SubdivisionRules@{tiling.SubdivisionRules}!type2Rule@{type2Rule}}
+\index{type2Rule@{type2Rule}!tiling.SubdivisionRules@{tiling.SubdivisionRules}}
+\doxysubsubsection{type2Rule}
+{\footnotesize\ttfamily \label{classtiling_1_1_subdivision_rules_aa03a09aeeb89bf531187bb2e624126d9} 
+\textbf{ Edge\+Link} tiling.\+Subdivision\+Rules.\+type2\+Rule}
+
+
+
+Definition at line \textbf{ 87} of file \textbf{ Subdivision\+Rules.\+java}.
+
+\index{tiling.SubdivisionRules@{tiling.SubdivisionRules}!type2Size@{type2Size}}
+\index{type2Size@{type2Size}!tiling.SubdivisionRules@{tiling.SubdivisionRules}}
+\doxysubsubsection{type2Size}
+{\footnotesize\ttfamily \label{classtiling_1_1_subdivision_rules_a96887be8be59c657e74b330abfe291ab} 
+\textbf{ Edge\+Link} tiling.\+Subdivision\+Rules.\+type2\+Size}
+
+
+
+Definition at line \textbf{ 92} of file \textbf{ Subdivision\+Rules.\+java}.
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+C:\+/\+\+Users/\+ashej/\+my\+Git\+Repos/\+\+Circle\+Pack/\+src/\+tiling/\+\textbf{ Subdivision\+Rules.\+java}\end{DoxyCompactItemize}

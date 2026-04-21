@@ -1,0 +1,464 @@
+\doxysection{My\+Tool\+Handler.\+java}
+\label{mytools_2_m_y_t_o_o_l_handler_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/mytools/MyToolHandler.java@{C:/Users/ashej/myGitRepos/CirclePack/src/mytools/MyToolHandler.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }mytools;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Point;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.datatransfer.Transferable;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.dnd.DnDConstants;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.dnd.DragGestureEvent;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.dnd.DragGestureListener;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.dnd.DragSource;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.event.MouseEvent;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.event.MouseListener;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.io.FileWriter;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ java.util.Date;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ org.apache.xerces.parsers.DOMParser;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ org.w3c.dom.Element;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ org.w3c.dom.Node;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ org.w3c.dom.NodeList;}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ canvasses.MyCanvasMode;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ deBugging.PrintIcon;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{import}\ dragdrop.ToolDragSourceListener;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{import}\ dragdrop.ToolTransferable;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{import}\ frames.CmdToolEditor;}
+\DoxyCodeLine{00031\ \textcolor{keyword}{import}\ frames.MobiusToolEditor;}
+\DoxyCodeLine{00032\ \textcolor{keyword}{import}\ frames.ScriptToolEditor;}
+\DoxyCodeLine{00033\ \textcolor{keyword}{import}\ handlers.ACTIVEHandler;}
+\DoxyCodeLine{00034\ \textcolor{keyword}{import}\ images.CPIcon;}
+\DoxyCodeLine{00035\ \textcolor{keyword}{import}\ input.FileDialogs;}
+\DoxyCodeLine{00036\ \textcolor{keyword}{import}\ listeners.MyToolListener;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{import}\ panels.MyToolBar;}
+\DoxyCodeLine{00038\ \textcolor{keyword}{import}\ util.PopupBuilder;}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keyword}{class\ }MyToolHandler\ \textcolor{keyword}{implements}\ MouseListener\ \{}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ hasChanged=\textcolor{keyword}{false};}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{public}\ String\ toolType;\ }
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{public}\ String\ toolPrefix;\ \textcolor{comment}{//\ category\ of\ tool:\ MAIN:,\ SCRIPT:,\ etc.}}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{public}\ Vector<MyTool>\ toolVector;\ \ \textcolor{comment}{//\ pointer\ to\ current\ tool\ vector}}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ toolIndx;\ \textcolor{comment}{//\ what's\ the\ index\ for\ next\ tool?}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{public}\ MyToolBar\ toolBar;\ \textcolor{comment}{//\ JPanel\ for\ display}}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{public}\ MyToolEditor\ toolEditor;}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{public}\ MyPopupMenu\ toolMenu;\ \textcolor{comment}{//\ menu\ that\ pops\ up\ on\ tools}}
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{keyword}{public}\ MyToolListener\ toolListener;}
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{public}\ File\ toolFile;\ \textcolor{comment}{//\ file\ for\ tools}}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{public}\ String\ frameTitle;}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{//\ Constructors}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{public}\ MyToolHandler(File\ mytoolsFile,String\ tool\_type)\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ toolFile\ =\ mytoolsFile;\ \textcolor{comment}{//\ store\ for\ possible\ subclass\ use}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ toolBar=\textcolor{keyword}{new}\ MyToolBar();}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ toolVector\ =\ \textcolor{keyword}{new}\ Vector<MyTool>();}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ toolMenu=\textcolor{keyword}{null};}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ toolListener=\textcolor{keyword}{null};}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ toolIndx=0;}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ toolType=\textcolor{keyword}{new}\ String(tool\_type);}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (toolType==\textcolor{keyword}{null}\ ||\ toolType.length()==0)\ toolType=\textcolor{stringliteral}{"{}MISC:"{}};}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=tool\_type.indexOf(\textcolor{charliteral}{':'});\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k>0)}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ toolPrefix=tool\_type.substring(0,k+1);}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ setEditor(toolType);\ \textcolor{comment}{//\ could\ be\ reset}}
+\DoxyCodeLine{00078\ \ \ \ \ \}}
+\DoxyCodeLine{00079\ \ \ \ \ }
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setButtonMenu(MyPopupMenu\ mpm)\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ toolMenu=mpm;}
+\DoxyCodeLine{00086\ \ \ \ \ \}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00092\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setEditor(String\ t\_type)\ \{\ \textcolor{comment}{//\ default\ is\ MYTOOL\ CmdToolEditor}}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (t\_type.startsWith(\textcolor{stringliteral}{"{}MAIN:"{}}))\ toolEditor=\textcolor{keyword}{new}\ CmdToolEditor(toolType,\textcolor{keyword}{this});\ }
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (t\_type.startsWith(\textcolor{stringliteral}{"{}BASIC:"{}}))\ toolEditor=\textcolor{keyword}{new}\ CmdToolEditor(toolType,\textcolor{keyword}{this});}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (t\_type.startsWith(\textcolor{stringliteral}{"{}MYTOOL:"{}}))\ toolEditor=\textcolor{keyword}{new}\ CmdToolEditor(toolType,\textcolor{keyword}{this});}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (t\_type.startsWith(\textcolor{stringliteral}{"{}SCRIPT:"{}}))\ toolEditor=\textcolor{keyword}{new}\ ScriptToolEditor(toolType,\textcolor{keyword}{this});\ }
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (t\_type.startsWith(\textcolor{stringliteral}{"{}MOBIUS:"{}}))\ toolEditor=\textcolor{keyword}{new}\ MobiusToolEditor(toolType,\textcolor{keyword}{this});}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (t\_type.startsWith(\textcolor{stringliteral}{"{}SIDEPAIR:"{}}))\ toolEditor=\textcolor{keyword}{new}\ MobiusToolEditor(toolType,\textcolor{keyword}{this});}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ toolEditor=\textcolor{keyword}{new}\ CmdToolEditor(toolType,\textcolor{keyword}{this});}
+\DoxyCodeLine{00100\ \ \ \ \ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ openToolEditor()\ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ toolEditor.clearfields();}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ toolEditor.setVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00110\ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \ \ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ editTool()\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\{}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ toolEditor.setEntries((MyTool)toolVector.get(toolIndx));}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(ArrayIndexOutOfBoundsException\ ex)\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ toolIndx=toolVector.size();}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ toolEditor.setVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00124\ \ \ \ \ \}}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ editTool(MyTool\ mytool)\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ should\ inform\ that\ one\ already\ open;\ or\ bring\ it\ to\ the\ top}}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((toolIndx=toolVector.indexOf(mytool))<0)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ editTool();}
+\DoxyCodeLine{00130\ \ \ \ \ \}}
+\DoxyCodeLine{00131\ \ \ \ \ }
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ moveBackward()\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (toolIndx<=0\ ||\ toolIndx>=toolVector.size())\ \{\ \textcolor{comment}{//\ nowhere\ to\ move}}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ toolIndx=toolVector.size();}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ MyTool\ holdbutton;}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\{\ }
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ holdbutton=(MyTool)toolVector.get(toolIndx-\/1);}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(ArrayIndexOutOfBoundsException\ ex)\ \{}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ toolIndx=toolVector.size();}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ toolVector.remove(toolIndx-\/1);}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ toolVector.add(toolIndx,holdbutton);}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ toolIndx=toolVector.size();}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ repopulateTools();}
+\DoxyCodeLine{00148\ \ \ \ \ \}}
+\DoxyCodeLine{00149\ \ \ \ \ }
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ moveForward()\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (toolIndx<0\ ||\ toolIndx>=(toolVector.size()-\/1))\ \{\ \textcolor{comment}{//\ nowhere\ to\ move}}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ toolIndx=toolVector.size();}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ MyTool\ holdbutton;}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\{\ }
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ holdbutton=(MyTool)toolVector.get(toolIndx);}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(ArrayIndexOutOfBoundsException\ ex)\ \{\textcolor{keywordflow}{return};\}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ toolVector.remove(toolIndx);}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ toolVector.add(toolIndx+1,holdbutton);}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ toolIndx=toolVector.size();}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ repopulateTools();}
+\DoxyCodeLine{00163\ \ \ \ \ \}}
+\DoxyCodeLine{00164\ \ \ \ \ }
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ writeTools()\ \{\ \textcolor{comment}{//\ default\ name\ (can\ change\ with\ popup\ dialog)}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ writeTools(toolFile);}
+\DoxyCodeLine{00167\ \ \ \ \ \}}
+\DoxyCodeLine{00168\ \ \ \ \ }
+\DoxyCodeLine{00169\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ writeTools(File\ file)\ \{}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ String\ filename=file.toString();}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ writer\ =\ \textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(file));}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Stuff\ at\ top\ of\ file}}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<?xml\ version=\(\backslash\)"{}1.0\(\backslash\)"{}?>\(\backslash\)n<CP\_ToolBox>\(\backslash\)n"{}});}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<version>"{}}+PackControl.CPVersion+\textcolor{stringliteral}{"{}</version>\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<name>"{}}+filename+\textcolor{stringliteral}{"{}</name>\(\backslash\)n"{}});}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<creator>\ </creator>\(\backslash\)n"{}});\ \textcolor{comment}{//\ intend\ to\ put\ user\ name\ here}}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<date>"{}}+\textcolor{keyword}{new}\ Date().toString()+\textcolor{stringliteral}{"{}</date>"{}});}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ String\ indent=\textcolor{stringliteral}{"{}\ \ "{}};}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<toolVector.size();i++)\ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ MyTool\ mt=(MyTool)toolVector.get(i);}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ open\ with\ attributes}}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}<MyTool\ "{}});}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}name=\(\backslash\)"{}"{}}+mt.getName()+\textcolor{stringliteral}{"{}\(\backslash\)"{}\ "{}});}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}type=\(\backslash\)"{}"{}}+mt.getToolType()+\textcolor{stringliteral}{"{}\(\backslash\)"{}\ "{}});}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ mn=(String)mt.getMnem();}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mn!=\textcolor{keyword}{null}\ \&\&\ \ mn.length()==1)\ }
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}\ mnemonic=\(\backslash\)"{}"{}}+mn+\textcolor{stringliteral}{"{}\(\backslash\)"{}\ "{}});}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mt.isDropable())\ writer.write(\textcolor{stringliteral}{"{}dropable=\(\backslash\)"{}yes\(\backslash\)"{}\ "{}});}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}>\(\backslash\)n"{}});}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ icon\ name\ and\ commands}}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ cmd\_str=(String)mt.getCommand();}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd\_str!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(indent+\textcolor{stringliteral}{"{}<cmd>"{}}+cmd\_str+\textcolor{stringliteral}{"{}</cmd>\(\backslash\)n"{}});}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ data=(String)mt.getCPIcon().getIconName();}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (data!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(indent+\textcolor{stringliteral}{"{}<iconname>"{}}+data+\textcolor{stringliteral}{"{}</iconname>\(\backslash\)n"{}});}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ data=mt.getToolTip();}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (data!=\textcolor{keyword}{null}\ \&\&\ data.length()>0)}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(indent+\textcolor{stringliteral}{"{}<tooltip>"{}}+data+\textcolor{stringliteral}{"{}</tooltip>\(\backslash\)n"{}});}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ close}}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}</MyTool>\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Stuff\ at\ bottom}}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}</CP\_ToolBox>\(\backslash\)n"{}});}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ writer.flush();}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ writer.close();}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}Saved\ MyTools\ to\ "{}}+file.toString());}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(IOException\ ioe)\ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ String\ errmsg=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}Couldn't\ open\ '"{}}+toolFile.toString()+\textcolor{stringliteral}{"{}'"{}});}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.consoleCmd.dispConsoleMsg(errmsg);}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.shellManager.recordError(errmsg);}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00221\ \ \ \ \ \}}
+\DoxyCodeLine{00222\ \ \ \ \ }
+\DoxyCodeLine{00228\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ displaySaveDialog()\{}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ File\ theFile;}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((theFile=FileDialogs.saveDialog(FileDialogs.TOOLS,\textcolor{keyword}{true}))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ writeTools(theFile);}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00235\ \ \ \ \ \}}
+\DoxyCodeLine{00236\ \ \ \ \ }
+\DoxyCodeLine{00240\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ displayLoadDialog()\ \{}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ File\ theFile;}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((theFile=FileDialogs.loadDialog(FileDialogs.TOOLS,\textcolor{keyword}{true}))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ this.appendFromFile(theFile);}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00247\ \ \ \ \ \}}
+\DoxyCodeLine{00248\ \ \ \ \ }
+\DoxyCodeLine{00253\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ copyTool()\ \{}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ not\ yet\ ready}}
+\DoxyCodeLine{00255\ \ \ \ \ \}}
+\DoxyCodeLine{00256\ \ \ \ \ }
+\DoxyCodeLine{00261\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ pasteTool()\ \{}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ not\ yet\ ready}}
+\DoxyCodeLine{00263\ \ \ \ \ \}}
+\DoxyCodeLine{00264\ \ \ \ \ }
+\DoxyCodeLine{00270\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ deleteTool(MyTool\ mytool)\ \{}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((toolIndx=toolVector.indexOf(mytool))<0)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ deleteTool();}
+\DoxyCodeLine{00273\ \ \ \ \ \}}
+\DoxyCodeLine{00274\ \ \ \ \ }
+\DoxyCodeLine{00279\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ deleteTool()\ \{}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (toolIndx<0\ ||\ toolIndx>=toolVector.size())\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ MyTool\ mytool=(MyTool)toolVector.get(toolIndx);}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mytool==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ CPBase.hashedTools.remove(mytool.getKey());}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ toolVector.remove(toolIndx);}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ toolIndx=toolVector.size();}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ repopulateTools();}
+\DoxyCodeLine{00287\ \ \ \ \ \}}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00295\ \ \ \ \ \textcolor{keyword}{public}\ MyTool\ createTool(CPIcon\ cpIcon,String\ cmdtext,String\ nametext,}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ String\ mnem,String\ tiptext,\textcolor{keywordtype}{boolean}\ dropit,}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ PopupBuilder\ popUpMenu)\ \{}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ MyTool\ mytool=\textcolor{keyword}{new}\ MyTool(cpIcon,cmdtext,nametext,mnem,tiptext,toolType,}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dropit,toolListener,popUpMenu);}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ mytool.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mytool.isDropable())\ \{}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ DragSource\ dragSource=DragSource.getDefaultDragSource();}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ dragSource.createDefaultDragGestureRecognizer(mytool,DnDConstants.ACTION\_LINK,}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ DragGestureListener()\ \{}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ dragGestureRecognized(DragGestureEvent\ event)\ \{}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Transferable\ transferable=\textcolor{keyword}{new}\ ToolTransferable((MyTool)event.getComponent());}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{event}.startDrag(\textcolor{keyword}{null},transferable,\textcolor{keyword}{new}\ ToolDragSourceListener());}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (toolIndx>=toolVector.size())\ toolIndx=toolVector.size();\ \textcolor{comment}{//\ default\ to\ last}}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (toolIndx>=0)\ \{\ \textcolor{comment}{//\ replacing\ existing}}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ toolVector.remove(toolIndx);}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ toolVector.add(toolIndx,mytool);}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ toolEditor.addTool(cpIcon);\ \textcolor{comment}{//\ add\ to\ iconBox\ list}}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ repopulateTools();}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ toolIndx=toolVector.size();}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ hasChanged=\textcolor{keyword}{true};}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ mytool;}
+\DoxyCodeLine{00323\ \ \ \ \ \}}
+\DoxyCodeLine{00324\ }
+\DoxyCodeLine{00329\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ addTool(MyTool\ newtool)\ \{}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newtool==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ createTool(newtool.getCPIcon(),newtool.getCommand(),newtool.getName(),}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newtool.getMnem(),newtool.getToolTip(),newtool.dropable,}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ newtool.getPopUpMenu());}
+\DoxyCodeLine{00334\ \ \ \ \ \}}
+\DoxyCodeLine{00335\ \ \ \ \ }
+\DoxyCodeLine{00340\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ clearToolBar()\ \{}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ remove\ from\ bar}}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<toolVector.size();i++)\ \{}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ toolBar.remove((MyTool)toolVector.get(i));}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00345\ \ \ \ \ \}}
+\DoxyCodeLine{00346\ \ \ \ \ }
+\DoxyCodeLine{00353\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ wipeoutTools()\ \{}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ remove\ from\ bar}}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ clearToolBar();}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ toolVector.removeAllElements();\ \textcolor{comment}{//\ empty\ vector}}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ toolIndx=0;}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ toolBar.repaint();}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ hasChanged=\textcolor{keyword}{true};}
+\DoxyCodeLine{00360\ \ \ \ \ \}}
+\DoxyCodeLine{00361\ }
+\DoxyCodeLine{00365\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ repopulateTools()\ \{}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ debug=\textcolor{keyword}{false};}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ toolBar.removeAll();}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<toolVector.size();i++)\ \{}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ MyTool\ mtool=(MyTool)toolVector.get(i);}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ toolBar.add(mtool);}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (debug)\ \{}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PrintIcon.printImageIcon(mtool.cpIcon.imageIcon,\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}repopulate"{}}+i));}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ toolBar.revalidate();}
+\DoxyCodeLine{00376\ \ \ \ \ \}}
+\DoxyCodeLine{00377\ \ \ \ \ }
+\DoxyCodeLine{00378\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseReleased(MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00379\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mousePressed(MouseEvent\ e)\ \{}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((e.getButton()\ ==\ MouseEvent.BUTTON3)\ \&\&\ toolMenu!=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ have\ to\ know\ which\ element\ the\ button\ was\ pressed\ on}}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ toolIndx=toolVector.indexOf((MyTool)e.getSource());}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (toolIndx<0)\ \{}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ toolIndx=toolVector.size();}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ toolMenu.show(e.getComponent(),\ e.getX(),\ e.getY());}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00389\ \ \ \ \ \}}
+\DoxyCodeLine{00390\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseClicked(MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00391\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseEntered(MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00392\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouseExited(MouseEvent\ e)\ \{\}}
+\DoxyCodeLine{00393\ \ \ \ \ }
+\DoxyCodeLine{00402\ \ \ \ \ \textcolor{keyword}{public}\ String\ ToolLoadDialog()\ \{}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ File\ theFile=\textcolor{keyword}{null};}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((theFile=FileDialogs.loadDialog(FileDialogs.TOOLS,\textcolor{keyword}{true}))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (appendFromFile(theFile))\ \{\ \textcolor{comment}{//\ yes,\ got\ it}}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ theFile.getName();}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00410\ \ \ \ \ \}}
+\DoxyCodeLine{00411\ }
+\DoxyCodeLine{00418\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ appendFromFile(File\ filename)\ \{}
+\DoxyCodeLine{00419\ \ \ \ \ }
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (filename==\textcolor{keyword}{null})\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ i=0;}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ Element\ toolElement;}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ NodeList\ nl=\textcolor{keyword}{null};}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ DOMParser\ parser\ =\ \textcolor{keyword}{new}\ DOMParser();}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ parser.parse(filename.toString());}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ org.w3c.dom.Document\ doc\ =\ parser.getDocument();}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ Element\ docEle\ =\ doc.getDocumentElement();}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//get\ a\ nodelist\ of\ <MyTool>\ elements}}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ nl\ =\ docEle.getElementsByTagName(\textcolor{stringliteral}{"{}MyTool"{}});}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(nl\ !=\ \textcolor{keyword}{null}\ \&\&\ nl.getLength()\ >\ 0)\ \{}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(i\ =\ 0\ ;\ i\ <\ nl.getLength();i++)\ \{}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ toolElement=(Element)nl.item(i);}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ parseMyTool(toolElement);}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \}\ \ \ \textcolor{keywordflow}{catch}(Exception\ exc)\ \{}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}An\ exception\ occurred\ in\ loading\ the\ toolbox\ "{}}+filename.toString());}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(exc.getMessage());}
+\DoxyCodeLine{00442\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ exc.printStackTrace(System.err);}}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ hasChanged=\textcolor{keyword}{false};\ \textcolor{comment}{//\ reset}}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00447\ \ \ \ \ \}}
+\DoxyCodeLine{00448\ \ \ \ \ }
+\DoxyCodeLine{00455\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ parseMyTool(Element\ tE)\ \{}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ careful:\ these\ find\ first\ instances,\ even\ in\ subelements.}}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ String\ name=\ tE.getAttribute(\textcolor{stringliteral}{"{}name"{}});}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ String\ yesno=tE.getAttribute(\textcolor{stringliteral}{"{}dropable"{}});}
+\DoxyCodeLine{00459\ \textcolor{comment}{//\ \ \ \ \ \ String\ needsC=tE.getAttribute("{}needsC"{});}}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ String\ mnemonic=tE.getAttribute(\textcolor{stringliteral}{"{}mnemonic"{}});}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ String\ tooltype=tE.getAttribute(\textcolor{stringliteral}{"{}type"{}});}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ String\ handy=tE.getAttribute(\textcolor{stringliteral}{"{}handy"{}});}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ String\ tip=getTextValue(tE,\textcolor{stringliteral}{"{}tooltip"{}});}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ String\ cmd\_text=getTextValue(tE,\textcolor{stringliteral}{"{}cmd"{}});\ }
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ String\ cmd2\_text=getTextValue(tE,\textcolor{stringliteral}{"{}cmd\_m2"{}});}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ String\ cmd3\_text=getTextValue(tE,\textcolor{stringliteral}{"{}cmd\_m3"{}});}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ String\ iconname=getTextValue(tE,\textcolor{stringliteral}{"{}iconname"{}});}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ elements\ initiating\ canvass\ 'modes'}}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ String\ modename=getTextValue(tE,\textcolor{stringliteral}{"{}modename"{}});}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ String\ canvasmode=getTextValue(tE,\textcolor{stringliteral}{"{}canvasmode"{}});\ \textcolor{comment}{//\ short\ description}}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ String\ cursorpoint=getTextValue(tE,\textcolor{stringliteral}{"{}cursorpoint"{}});}
+\DoxyCodeLine{00474\ }
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ this\ the\ right\ 'type'\ for\ this\ toolbar?\ (MISC:\ is\ okay\ for\ any\ toolbar)}}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tooltype!=\textcolor{keyword}{null}\ \&\&\ !tooltype.startsWith(\textcolor{keyword}{this}.toolPrefix)\ }
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ !tooltype.startsWith(\textcolor{stringliteral}{"{}MISC:"{}})\ \&\&\ tooltype.length()>0)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ First\ see\ if\ this\ is\ an\ 'active\ mode';\ i.e.,\ gives\ a\ cursor,\ }}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ cursor\ sweet\ spot,\ activemode\ string,\ and\ invokes\ a\ mode\ }}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ in\ the\ active\ canvas.}}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (canvasmode!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ Point\ point=\textcolor{keyword}{null};}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cursorpoint!=\textcolor{keyword}{null})\ \{\ \textcolor{comment}{//\ cursor\ sweet\ spot\ may\ be\ given}}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ coords[]=cursorpoint.split(\textcolor{stringliteral}{"{}\(\backslash\)\(\backslash\)s+"{}});}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (coords.length==2)\ \{}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ x=Integer.valueOf(coords[0]).intValue();}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ y=Integer.valueOf(coords[1]).intValue();}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ point=\textcolor{keyword}{new}\ Point(x,y);}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ hndy=\textcolor{keyword}{false};}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (handy!=\textcolor{keyword}{null}\ \&\&\ handy.equals(\textcolor{stringliteral}{"{}yes"{}}))}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hndy=\textcolor{keyword}{true};}
+\DoxyCodeLine{00496\ }
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \ \ \ \ CPIcon\ cpIcon=\ \textcolor{keyword}{new}\ CPIcon(iconname);}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \ \ \ \ MyCanvasMode\ tm=\textcolor{keyword}{new}\ MyCanvasMode(modename,cpIcon,point,}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd\_text,cmd2\_text,cmd3\_text,canvasmode,tip,}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ toolPrefix,hndy);}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ 'menuItem'\ in\ mode\ vector;\ script\ handled\ separately}}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!toolPrefix.equals(\textcolor{stringliteral}{"{}SCRIPT:"{}}))}
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tm.updateMenuItem();}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00508\ }
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ for\ 'menu'\ entries:\ can\ only\ accept\ one\ top\ level\ menu}}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ PopupBuilder\ popUp=\textcolor{keyword}{null};}
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ NodeList\ nl=tE.getElementsByTagName(\textcolor{stringliteral}{"{}menu"{}});}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nl!=\textcolor{keyword}{null}\ \&\&\ nl.getLength()>0)\ \{}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\textcolor{keyword}{this}\ instanceof\ ACTIVEHandler)\ \{}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ popUp=\textcolor{keyword}{new}\ PopupBuilder(nl.item(0),((ACTIVEHandler)\textcolor{keyword}{this}).activeWrapper);}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cmd\_text=\textcolor{keyword}{new}\ String(name);\ \textcolor{comment}{//\ have\ to\ have\ identifier}}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ attachTo=nl.item(0).getAttributes().}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ getNamedItem(\textcolor{stringliteral}{"{}attachTo"{}}).getFirstChild().getNodeValue().trim();}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (attachTo.contains(\textcolor{stringliteral}{"{}canv"{}}))\ \{}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ACTIVEHandler\ aH=(ACTIVEHandler)\textcolor{keyword}{this};}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ aH.activeWrapper.button3Popup=popUp;}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}Failed\ building\ menu\ "{}}+name+\textcolor{stringliteral}{"{}:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};\ \textcolor{comment}{//\ don't\ build\ the\ tool.\ (This\ could\ be\ left\ for\ redundancy)}}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00532\ }
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ otherwise\ is\ a\ typical\ tool}}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ dropable=\textcolor{keyword}{true};}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (yesno!=\textcolor{keyword}{null}\ \&\&\ yesno.equals(\textcolor{stringliteral}{"{}no"{}}))\ dropable=\textcolor{keyword}{false};}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ the\ tool}}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ CPIcon\ cpIcon=\ \textcolor{keyword}{new}\ CPIcon(iconname);}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ createTool(cpIcon,cmd\_text,name,mnemonic,tip,dropable,popUp);}
+\DoxyCodeLine{00540\ \ \ \ \ \}}
+\DoxyCodeLine{00541\ \ \ \ \ }
+\DoxyCodeLine{00542\ \ \ \ \ \textcolor{keyword}{private}\ String\ getTextValue(Element\ ele,\ String\ tagName)\ \{}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ String\ textVal\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ NodeList\ nl\ =\ ele.getElementsByTagName(tagName);}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(nl\ !=\ \textcolor{keyword}{null}\ \&\&\ nl.getLength()\ >\ 0)\ \{}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \ \ \ \ Element\ el\ =\ (Element)nl.item(0);}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \ \ \ \ Node\ eln=el.getFirstChild();}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (eln!=\textcolor{keyword}{null})\ textVal\ =\ eln.getNodeValue();}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00550\ }
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ textVal;}
+\DoxyCodeLine{00552\ \ \ \ \ \}}
+\DoxyCodeLine{00553\ \}}
+
+\end{DoxyCode}

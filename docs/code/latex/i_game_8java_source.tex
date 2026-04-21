@@ -1,0 +1,408 @@
+\doxysection{i\+Game.\+java}
+\label{i_game_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/iGame.java@{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/iGame.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }ftnTheory;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ dcel.RawManip;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ komplex.EdgeSimple;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ listManip.EdgeLink;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ listManip.FaceLink;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ util.CmdStruct;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ util.ColorUtil;}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }iGame\ \textcolor{keyword}{extends}\ PackExtender\ \{}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ []corner;}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ GameAspect;\ \textcolor{comment}{//\ width/height\ of\ display\ screen\ }}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ []targets;\ \ \ \ \ \textcolor{comment}{//\ target\ vertices}}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ playerCount;\ \ \ \textcolor{comment}{//\ }}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ []player;\ \ \ \ \ \ \textcolor{comment}{//\ }}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keyword}{public}\ Color\ []playerCOlor;}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ gameMode;}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keyword}{public}\ String\ []gameStr=\{\textcolor{stringliteral}{"{}EAT"{}}\};}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ currentPlayer;\ \textcolor{comment}{//\ index\ into\ 'player'}}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{public}\ iGame(PackData\ p)\ \{}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ extenderPD=p;}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ extensionType=\textcolor{stringliteral}{"{}IGAME"{}};}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ extensionAbbrev=\textcolor{stringliteral}{"{}IG"{}};}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ toolTip=\textcolor{stringliteral}{"{}'iGame'\ for\ developing\ iPhone\ games\ "{}};}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ registerXType();}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ rslt;}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ rslt=cpCommand(extenderPD,\textcolor{stringliteral}{"{}geom\_to\_e"{}});}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ rslt=0;}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rslt==0)\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}CA:\ failed\ to\ convert\ to\ euclidean"{}});}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ running=\textcolor{keyword}{false};}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (running)\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ GameAspect=.75;\ \ \textcolor{comment}{//\ \ 9.0/16.0;\ }}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ player=\textcolor{keyword}{null};}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ playerCOlor=\textcolor{keyword}{null};}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ targets=\textcolor{keyword}{null};}
+\DoxyCodeLine{00060\ \ \ \ \ \}}
+\DoxyCodeLine{00061\ \ \ \ \ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initMode()\ \{}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ playerCount=1;}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ player=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[1];}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ player[0]=randNonPlayer(-\/1);\ \textcolor{comment}{//\ random\ interior}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ currentPlayer=0;}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ playerCOlor=\textcolor{keyword}{new}\ Color[1];}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ playerCOlor[0]=ColorUtil.spreadColor(0);}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ targets=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[1];}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ targets[0]=randNonPlayer(0);}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ gameMode=0;\ \textcolor{comment}{//\ default\ is\ eat}}
+\DoxyCodeLine{00075\ \ \ \ \ \}}
+\DoxyCodeLine{00076\ \ \ \ \ }
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ set4Aspect()\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ 'factor'\ for\ multiplying\ imaginary\ part}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ wide=(extenderPD.getCenter(corner[1])).minus(extenderPD.getCenter(corner[0])).abs();}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ high=(extenderPD.getCenter(corner[2])).minus(extenderPD.getCenter(corner[1])).abs();}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ factor=wide/(high*GameAspect);}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ average\ of\ 4\ corner\ locations}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ Complex\ c0=extenderPD.getCenter(corner[0]);}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ Complex\ c1=extenderPD.getCenter(corner[1]);}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ Complex\ c2=extenderPD.getCenter(corner[2]);}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ Complex\ c3=extenderPD.getCenter(corner[3]);}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ Complex\ mid=c0.add(c1).add(c2).add(c3);}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ mid=mid.times(.25);}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ adjust\ all\ centers}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z=extenderPD.getCenter(v).minus(mid);}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ z.y*=factor;}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCenter(v,z);}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \}}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ fixUp()\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}set\_aim\ 1.0\ b"{}});}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}set\_aim\ .5\ "{}}+corner[0]+\textcolor{stringliteral}{"{}\ "{}}+corner[1]+\textcolor{stringliteral}{"{}\ "{}}+corner[2]+\textcolor{stringliteral}{"{}\ "{}}+corner[3]);}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}repack"{}});}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}layout"{}});}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ cpCommand(\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}norm\_scale\ -\/h\ "{}}+corner[0]+\textcolor{stringliteral}{"{}\ "{}}+corner[1]));}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ set4Aspect();\ \textcolor{comment}{//\ normalize}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ cpCommand(\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}norm\_scale\ -\/u\ "{}}+corner[0]));}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00119\ \ \ \ \ \}}
+\DoxyCodeLine{00120\ \ \ \ \ }
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ randNonPlayer(\textcolor{keywordtype}{int}\ playerNum)\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety=5000;}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (safety>0)\ \{}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=(int)(1+Math.random()*extenderPD.nodeCount+.4);}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v>extenderPD.nodeCount)\ v=extenderPD.nodeCount;}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!extenderPD.isBdry(v)\ \&\&\ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (playerNum<0\ ||\ v!=player[playerNum]))\ }
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ v;}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ safety-\/-\/;}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00137\ \ \ \ \ \}}
+\DoxyCodeLine{00138\ \ \ \ \ }
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ eatTarget(\textcolor{keywordtype}{int}\ playerNum,\textcolor{keywordtype}{int}\ targetNum)\ \{}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ p=player[playerNum];}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ t=targets[targetNum];}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ oldV=t;}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p>t)\ }
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ oldV=p;}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.nghb(p,t)>=0)\ \{}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ edge=extenderPD.packDCEL.findHalfEdge(p,t);}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ rslt=RawManip.meldEdge\_raw(extenderPD.packDCEL,edge);}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rslt<=0)\ }
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.packDCEL.fixDCEL(extenderPD);}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.fillcurves();}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ which\ vertex\ survives?}}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ fused=t;\ }
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rslt==t)}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fused=p;}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ player[playerNum]=fused;}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<playerCount;i++)\ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (i!=playerNum\ \&\&\ player[i]>oldV)\ player[i]-\/-\/;}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (targets[i]>oldV)\ targets[i]-\/-\/;}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<4;i++)}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (corner[i]>oldV)\ corner[i]-\/-\/;}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ Color\ col=playerCOlor[playerNum];}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(player[playerNum],\textcolor{keyword}{new}\ Color(col.getRed(),col.getGreen(),col.getBlue()));}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fused;}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00178\ \ \ \ \ \}}
+\DoxyCodeLine{00179\ \ \ \ \ }
+\DoxyCodeLine{00186\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ crunchEdge(\textcolor{keywordtype}{int}\ v,\textcolor{keywordtype}{int}\ u)\ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ HalfEdge\ edge=extenderPD.packDCEL.findHalfEdge(v,u);}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (edge==\textcolor{keyword}{null}\ ||\ }
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ (extenderPD.isBdry(v)\ \&\&\ extenderPD.isBdry(u)))}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ rslt=RawManip.meldEdge\_raw(extenderPD.packDCEL,edge);}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rslt!=0)}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.packDCEL.fixDCEL(extenderPD);}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rslt;}
+\DoxyCodeLine{00195\ \ \ \ \ \}}
+\DoxyCodeLine{00196\ \ \ \ \ }
+\DoxyCodeLine{00202\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ display(\textcolor{keywordtype}{int}\ guy)\ \{}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ thePlayer=currentPlayer;}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (guy>=0\ \&\&\ guy<playerCount)\ thePlayer=guy;}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ show\ the\ graph}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}disp\ -\/w\ -\/f"{}});}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(gameMode)\ \{}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{default}:\ \{\ \textcolor{comment}{//\ eat\ mode}}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ show\ player\ (small\ circle)}}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=player[thePlayer];}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}disp\ -\/cf\ "{}}+v);}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ show\ the\ target}}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ t=targets[thePlayer];}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}disp\ -\/cffg\ "{}}+t);}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ v;}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00224\ \ \ \ \ \}}
+\DoxyCodeLine{00225\ \ \ \ \ }
+\DoxyCodeLine{00226\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cmdParser(String\ cmd,Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ Vector<String>\ items=\textcolor{keyword}{null};}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}help"{}}))\ \{}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ helpInfo();}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =========\ init\ =========}}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}init"{}}))\ \{}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ initMode();}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =========\ corners\ =========}}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}corn"{}}))\ \{}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ corner=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[4];}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<4;j++)\ }
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ corner[j]=Integer.parseInt((String)items.get(j));}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}didn't\ get\ corners:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ msg(\textcolor{stringliteral}{"{}corners\ =\ "{}}+corner[0]+\textcolor{stringliteral}{"{},"{}}+corner[1]+\textcolor{stringliteral}{"{},"{}}+corner[2]+\textcolor{stringliteral}{"{},"{}}+corner[3]);}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =========\ fixUp\ ===========}}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}fix"{}}))\ \{}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fixUp();}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ========\ randomize\ =========}}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}rand"{}}))\ \{}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=20;}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ n=Integer.parseInt((String)items.get(0));}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\ \}}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<n;j++)}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}flip\ -\/r\ "{}}+j));}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ n;}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ========\ rmTri\ ========}}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}rmT"{}}))\ \{}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=0;}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=NodeLink.grab\_one\_vert(extenderPD,flagSegs);}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v==0\ ||\ extenderPD.isBdry(v)\ ||\ extenderPD.getVertMark(v)>=0)}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}vertex\ is\ one\ of\ designated"{}});}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}not\ valid\ for\ removal:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v<=0\ ||\ v>extenderPD.nodeCount\ ||\ !extenderPD.isBdry(v)\ ||}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.countFaces(v)!=3)}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}invalid\ choice"{}});}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}rm\_cir\ "{}}+v);}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ========\ addTri\ ========}}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}addT"{}}))\ \{}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ f=0;}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ f=FaceLink.grab\_one\_face(extenderPD,flagSegs);}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (f>0)}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}add\_bary\ "{}}+f);}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ =========\ move\ corner\ ======}}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}move"{}}))\ \{}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=0;}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=NodeLink.grab\_one\_vert(extenderPD,flagSegs);}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}need\ index\ of\ bdry\ vert\ next\ to\ a\ corner"{}});}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v<=0\ ||\ v>extenderPD.nodeCount\ ||\ !extenderPD.isBdry(v))}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}invalid\ choice"{}});}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ gotit=\textcolor{keyword}{false};}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;(!gotit\ \&\&\ j<4);j++)\ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extenderPD.nghb(v,corner[j])>=0)\ \{}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ corner[j]=v;}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gotit=\textcolor{keyword}{true};}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ fixUp();}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ========\ set\_game\ ==========}}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_game"{}}))\ \{}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gameMode=Integer.parseInt((String)items.get(0));}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gameMode=0;}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}didn't\ get\ valid\ game\ mode:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ gameMode;}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ========\ eat\ ===========}}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}eat"{}}))\ \{}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ EdgeSimple\ edge=EdgeLink.grab\_one\_edge(extenderPD,flagSegs);}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (edge==\textcolor{keyword}{null})}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}didn't\ get\ valid\ edge:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ eatTarget(0,0);}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ========\ jump\ ==========}}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}jump"{}}))\ \{}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ EdgeSimple\ edge=\textcolor{keyword}{null};}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ edge=EdgeLink.grab\_one\_edge(extenderPD,flagSegs);}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (edge==\textcolor{keyword}{null})}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}didn't\ get\ valid\ edge:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (edge.v==player[currentPlayer])}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ player[currentPlayer]=edge.w;}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (edge.w==player[currentPlayer])}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ player[currentPlayer]=edge.v;}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ Color\ col=playerCOlor[currentPlayer];}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(player[currentPlayer],\textcolor{keyword}{new}\ Color(col.getRed(),col.getGreen(),col.getBlue()));}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ========\ set\_player\ =======}}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_play"{}}))\ \{}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\{}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ cp=Integer.parseInt((String)items.get(0));}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cp<0\ \&\&\ cp>=playerCount)\ \{}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ currentPlayer=cp;}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cp;}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}illegal\ player\ number:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ========\ players\ ========}}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}play"{}}))\ \{}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ vv=1;vv<=extenderPD.nodeCount;vv++)}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setVertMark(vv,-\/1);}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.get(0);}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ playerCount=items.size();}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (playerCount>5)\ playerCount=5;}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ player=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[playerCount];}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ playerCOlor=\textcolor{keyword}{new}\ Color[playerCount];}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ targets=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[playerCount];}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<playerCount;j++)\ \{}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ player[j]=Integer.parseInt((String)items.get(j));}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ playerCOlor[j]=ColorUtil.spreadColor(j\%16);}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ targets[j]=randNonPlayer(player[j]);}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (player[j]<=0\ ||\ player[j]>=extenderPD.nodeCount\ ||\ }
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.isBdry(player[j]))\ \{}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ player=\textcolor{keyword}{null};}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ playerCOlor=\textcolor{keyword}{null};}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ targets=\textcolor{keyword}{null};}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}improper\ player\ specified"{}});}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setVertMark(player[j],j);}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ player=\textcolor{keyword}{null};}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ playerCOlor=\textcolor{keyword}{null};}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ targets=\textcolor{keyword}{null};}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}problem\ in\ specifying\ 'player'"{}});}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ playerCount;}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ========\ display\ =========}}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}disp"{}}))\ \{}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ display(-\/1);}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00418\ \ \ \ \ \}}
+\DoxyCodeLine{00419\ \ \ \ \ }
+\DoxyCodeLine{00423\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initCmdStruct()\ \{}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ super.initCmdStruct();}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}init"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}initialize\ to\ default\ 'eat'\ mode"{}}));}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}corners"{}},\textcolor{stringliteral}{"{}v1\ v2\ v3\ v4"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}vertices\ at\ corners,\ v1,v2=bottom,\ v2,v3=right"{}}));}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_game"{}},\textcolor{stringliteral}{"{}<m>"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}game\ mode:\ 0\ =\ eat\ "{}}));}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}fix"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}repack,\ layout,\ normalize"{}}));}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}rand"{}},\textcolor{stringliteral}{"{}<n>"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}do\ n\ random\ flips"{}}));}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}move"{}},\textcolor{stringliteral}{"{}<v>"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}make\ v\ (next\ to\ a\ corner)\ a\ corner"{}}));}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}disp"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}display\ the\ graph,\ color\ vertices\ and\ marked\ spots"{}}));}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}players"{}},\textcolor{stringliteral}{"{}<v..>"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}designate\ up\ to\ 5\ interior\ vertices\ as\ players"{}}));}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}addTri"{}},\textcolor{stringliteral}{"{}<f>"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}add\ a\ trivalent\ vertex\ in\ face\ f"{}}));}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_player"{}},\textcolor{stringliteral}{"{}<n>"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}activate\ player\ n"{}}));}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}eat"{}},\textcolor{stringliteral}{"{}<u,w>"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}flip\ edge,\ eat\ target\ (if\ neighbors),\ choose\ new\ target"{}}));}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}jump"{}},\textcolor{stringliteral}{"{}<u,w>"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}if\ player\ is\ one\ end\ of\ edge,\ then\ switch\ ends"{}}));}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}rmTri"{}},\textcolor{stringliteral}{"{}<v>"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}remove\ v\ if\ it\ is\ interior,\ trivalent,\ not\ designated"{}}));}
+\DoxyCodeLine{00438\ \ \ \ \ \}}
+\DoxyCodeLine{00439\ \ \ \ \ }
+\DoxyCodeLine{00440\ \ \ \ \ }
+\DoxyCodeLine{00441\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ helpInfo()\ \{}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ super.helpInfo();}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ helpMsg(\textcolor{stringliteral}{"{}Current\ mode\ is:\ "{}}+gameStr[gameMode]);}
+\DoxyCodeLine{00444\ \ \ \ \ \}}
+\DoxyCodeLine{00445\ }
+\DoxyCodeLine{00446\ \}}
+
+\end{DoxyCode}

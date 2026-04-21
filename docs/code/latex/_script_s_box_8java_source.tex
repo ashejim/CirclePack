@@ -1,0 +1,462 @@
+\doxysection{Script\+SBox.\+java}
+\label{_script_s_box_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/script/ScriptSBox.java@{C:/Users/ashej/myGitRepos/CirclePack/src/script/ScriptSBox.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }script;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.EventQueue;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.Font;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.Point;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.dnd.DropTarget;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.event.ItemEvent;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.event.ItemListener;}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ javax.swing.BorderFactory;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ javax.swing.BoxLayout;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ javax.swing.ImageIcon;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ javax.swing.JButton;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ javax.swing.JCheckBox;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ javax.swing.JComponent;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ javax.swing.JEditorPane;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ javax.swing.JLabel;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ javax.swing.JMenuItem;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ javax.swing.JPopupMenu;}
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ javax.swing.border.Border;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ javax.swing.border.EmptyBorder;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ javax.swing.border.LineBorder;}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{import}\ dragdrop.EditDropListener;}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }ScriptSBox\ \textcolor{keyword}{extends}\ StackBox\ implements\ ItemListener\ \{}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00044\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{keywordtype}{int}\ lwidth=0;\ \ \textcolor{comment}{//\ leftPanel\ width}}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{int}\ lheight=36;\ \textcolor{comment}{//\ height}}
+\DoxyCodeLine{00048\ \ \ \ \ JButton\ ocButton;\ \textcolor{comment}{//\ open/closed\ indicator}}
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{keywordtype}{int}\ ocwidth=20;\ \textcolor{comment}{//\ open/closed\ button\ width}}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keywordtype}{int}\ ocheight=20;\ \textcolor{comment}{//\ height}}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{public}\ JEditorPane\ descriptField;}
+\DoxyCodeLine{00052\ \ \ \ \ JEditorPane\ titleField;}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{public}\ JTextField\ tagField;\ \textcolor{comment}{//\ tag\ image\ filename\ (optional)}}
+\DoxyCodeLine{00054\ \ \ \ \ }
+\DoxyCodeLine{00055\ \ \ \ \ JCheckBox\ levelBox;}
+\DoxyCodeLine{00056\ \ \ \ \ JCheckBox\ mapModeBox;}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keywordtype}{boolean}\ myLevel;}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{boolean}\ myMapMode;}
+\DoxyCodeLine{00059\ \ \ \ \ JPanel\ accCanPanel;}
+\DoxyCodeLine{00060\ \ \ \ \ }
+\DoxyCodeLine{00061\ \ \ \ \ JPanel\ mainPanel;\ \textcolor{comment}{//\ always\ appears\ at\ top\ of\ the\ scriptBox\ }}
+\DoxyCodeLine{00062\ \ \ \ \ JPanel\ upperPanel;\ \textcolor{comment}{//\ ocbutton,\ accCanPanel,\ title\ }}
+\DoxyCodeLine{00063\ \ \ \ \ JPanel\ lowerPanel;\ \textcolor{comment}{//\ edit\ mode,\ description,\ tag,\ etc.}}
+\DoxyCodeLine{00064\ \ \ \ \ Border\ titleBorder;}
+\DoxyCodeLine{00065\ \ \ \ \ Border\ greenBorder;}
+\DoxyCodeLine{00066\ \ \ \ \ Border\ emptyB;}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{public}\ ScriptSBox(CPTreeNode\ tnode,\textcolor{keywordtype}{int}\ mode)\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ super(tnode,mode);}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ setBackground(Color.white);}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ editModeMenu=cmdActionPopup(\textcolor{keyword}{true});}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ dispModeMenu=cmdActionPopup(\textcolor{keyword}{false});}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ buildComponents();}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ buildSB();}
+\DoxyCodeLine{00076\ \ \ \ \ \}}
+\DoxyCodeLine{00077\ \ \ \ \ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ buildComponents()\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ borders}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ Border\ outer=\textcolor{keyword}{new}\ EmptyBorder(2,2,2,2);}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ Border\ inner=\textcolor{keyword}{new}\ LineBorder(Color.LIGHT\_GRAY);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ dispBorder\ =\ BorderFactory.createCompoundBorder(outer,\ inner);}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ editBorder=dispBorder;}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ titleBorder=\textcolor{keyword}{new}\ EmptyBorder(0,2,4,2);}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ greenBorder=BorderFactory.createCompoundBorder(\textcolor{keyword}{new}\ EmptyBorder(2,2,2,2),\textcolor{keyword}{new}\ LineBorder(Color.green));}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ emptyB=\textcolor{keyword}{new}\ EmptyBorder(0,0,0,0);}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ mainPanel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ mainPanel.setLayout(\textcolor{keyword}{new}\ BoxLayout(mainPanel,BoxLayout.PAGE\_AXIS));}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ upperPanel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ upperPanel.setLayout(\textcolor{keyword}{new}\ BoxLayout(upperPanel,BoxLayout.LINE\_AXIS));}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ upperPanel.setMinimumSize(\textcolor{keyword}{new}\ Dimension(150,30));}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ upperPanel.setAlignmentX(0);}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ accept/cancel/mode\ cluster}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ accCanPanel\ =\ \textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{null});}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ DropTarget(accCanPanel,\textcolor{keyword}{new}\ EditDropListener(\textcolor{keyword}{this}));}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=acceptButton.getWidth();}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ h=acceptButton.getHeight();}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ acceptButton.setBounds(0,2,w,h);}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ cancelButton.setBounds(0,16,w,h);}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ accCanPanel.add(acceptButton);}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ accCanPanel.add(cancelButton);}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ level\ checkbox}}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ levelBox=\textcolor{keyword}{new}\ JCheckBox(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ levelBox.addItemListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ myLevel=manager.scriptLevel;}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ levelBox.setSelected(myLevel);}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ levelBox.setToolTipText(\textcolor{stringliteral}{"{}Open\ GUI\ in\ 'advanced'\ mode"{}});}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ levelBox.setBounds(72,2,20,14);}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ accCanPanel.add(levelBox);}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ map\ mode\ checkbox\ (want\ paired\ canvasses?)}}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ mapModeBox=\textcolor{keyword}{new}\ JCheckBox(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ mapModeBox.addItemListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ myMapMode=manager.scriptMapMode;}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ mapModeBox.setSelected(myMapMode);}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ mapModeBox.setToolTipText(\textcolor{stringliteral}{"{}Open\ GUI\ in\ 2-\/window\ 'map'\ mode"{}});}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ mapModeBox.setBounds(72,16,20,14);}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ accCanPanel.add(mapModeBox);}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ lwidth=94;}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ setFixedSizes(accCanPanel,lwidth,30);}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ accCanPanel.setAlignmentY(JComponent.CENTER\_ALIGNMENT);}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ titleField\ =\ \textcolor{keyword}{new}\ JEditorPane(\textcolor{stringliteral}{"{}TrueType"{}},tNode.displayString);}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ titleField.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}Serif"{}},Font.BOLD+Font.ITALIC,16+PackControl.fontIncrement));}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ util.EmacsBindings.addEmacsBindings(titleField);}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ DropTarget(titleField,\textcolor{keyword}{new}\ EditDropListener(\textcolor{keyword}{this}));}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ titleField.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ titleField.setMinimumSize(\textcolor{keyword}{new}\ Dimension(150,25));}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ lower\ stuff,\ only\ in\ edit\ mode}}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ lowerPanel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ lowerPanel.setLayout(\textcolor{keyword}{new}\ BoxLayout(lowerPanel,BoxLayout.PAGE\_AXIS));}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ lowerPanel.setAlignmentX(0);}
+\DoxyCodeLine{00145\ }
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'About'\ label\ and\ descriptionField\ }}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ JLabel\ tLabel=\textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}\(\backslash\)"{}About\(\backslash\)"{}\ description:"{}});}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ tLabel.setAlignmentX(0);}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ description\ editor:\ script\ node\ only\ created\ once,\ so\ these}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ does\ not\ get\ 'description'\ when\ script\ is\ loaded}}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ String\ current\_tip=manager.scriptDescription;}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ descriptField=\textcolor{keyword}{new}\ JEditorPane(\textcolor{stringliteral}{"{}TrueType"{}},current\_tip);}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ util.EmacsBindings.addEmacsBindings(descriptField);}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ descriptField.setFocusTraversalKeysEnabled(\textcolor{keyword}{false});\ \textcolor{comment}{//\ catch\ TABs}}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ DropTarget(descriptField,\textcolor{keyword}{new}\ EditDropListener(\textcolor{keyword}{this}));}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ descriptField.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.black));}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ descriptField.setMinimumSize(\textcolor{keyword}{new}\ Dimension(150,50));}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ descriptField.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ descriptField.setAlignmentX(0);}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ tag\ area}}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ JPanel\ tagStuff=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ tagStuff.setLayout(\textcolor{keyword}{new}\ BoxLayout(tagStuff,BoxLayout.LINE\_AXIS));}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ DropTarget(tagStuff,\textcolor{keyword}{new}\ EditDropListener(\textcolor{keyword}{this}));}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ tagStuff.setAlignmentX(0);}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ JLabel\ nLabel=\textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}Tag\ image\ filename:\ "{}});}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ setFixedSizes(nLabel,130,24);}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ script\ node\ created\ only\ once,\ so\ this\ doesn't\ get\ tag\ name\ on\ loading}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ String\ current\_tag=manager.scriptTagname;\ }
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ tagField=\textcolor{keyword}{new}\ JTextField(current\_tag);}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ tagField.setToolTipText(\textcolor{stringliteral}{"{}Optional:\ your\ personal\ 'tag'\ image\ "{}}+}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}file,\ 400x120\ jpg\ in\ 'myCirclePack/'"{}});}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ DropTarget(tagField,\textcolor{keyword}{new}\ EditDropListener(\textcolor{keyword}{this}));}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ tagField.setMinimumSize(\textcolor{keyword}{new}\ Dimension(150,20));}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ tagField.setMaximumSize(\textcolor{keyword}{new}\ Dimension(800,20));}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ tagField.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00180\ }
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ tagStuff.add(nLabel);}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ tagStuff.add(tagField);}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ tagStuff.setMinimumSize(\textcolor{keyword}{new}\ Dimension(200,25));}
+\DoxyCodeLine{00184\ }
+\DoxyCodeLine{00185\ }
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ lowerPanel.add(tLabel);}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ lowerPanel.add(descriptField);}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ lowerPanel.add(tagStuff);}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ lowerPanel.setMinimumSize(\textcolor{keyword}{new}\ Dimension(150,50));}
+\DoxyCodeLine{00190\ \ \ \ \ \}}
+\DoxyCodeLine{00191\ \ \ \ \ }
+\DoxyCodeLine{00195\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ buildSB()\ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ this.setBorder(dispBorder);}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ mainPanel.removeAll();}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ upperPanel.removeAll();}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \textcolor{comment}{//\ \ \ \ \ \ new\ DropTarget(upperPanel,new\ EditDropListener(this));}}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ always\ add\ open/close\ button\ to\ upperPanel}}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (isOpen)\ ocButton=closeButton;}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ ocButton=openButton;}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ ocButton.setAlignmentY(0.5f);}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ upperPanel.add(ocButton);}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ titleField.setText(tNode.displayString);}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currentMode==DISPLAY)\ \{\ \textcolor{comment}{//\ add\ titleField}}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ boxMenu=dispModeMenu;}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ titleField.setEditable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ titleField.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}Serif"{}},Font.BOLD+Font.ITALIC,18+PackControl.fontIncrement));}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ titleField.setForeground(Color.blue);}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ titleField.setBorder(titleBorder);}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ titleField.setAlignmentY(0);}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ upperPanel.add(titleField);}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ upperPanel.setBackground(Color.white);}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ mainPanel.setBorder(emptyB);}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ mainPanel.add(upperPanel);}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ edit\ mode,\ add\ acc/can\ and\ titleField\ }}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ STACK}}
+\DoxyCodeLine{00224\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ upperPanel.setBorder(new\ LineBorder(Color.cyan,2,false));}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ upperPanel.setMaximumSize(\textcolor{keyword}{new}\ Dimension(2000,34));}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ upperPanel.add(accCanPanel);}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ upperPanel.setBackground(defaultBGColor);}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ ocButton.setAlignmentY(1f);}
+\DoxyCodeLine{00229\ }
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ titleField.setEditable(\textcolor{keyword}{true});}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ titleField.setBorder(\textcolor{keyword}{new}\ LineBorder(Color.black));}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ titleField.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}TrueType"{}},Font.ITALIC,14+PackControl.fontIncrement));}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ titleField.setForeground(Color.black);}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ titleField.setAlignmentY(JComponent.CENTER\_ALIGNMENT);}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ STACK:\ try\ these}}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ ocButton.setAlignmentY(.2f);}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ accCanPanel.setAlignmentY(.1f);}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ titleField.setAlignmentY(0);}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ upperPanel.add(titleField);\ \ \ \ \ }
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ mainPanel.add(upperPanel);}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ mainPanel.add(lowerPanel);}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ boxMenu=editModeMenu;}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ mainPanel.setBorder(greenBorder);}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ this.add(mainPanel);}
+\DoxyCodeLine{00249\ \ \ \ \ \}}
+\DoxyCodeLine{00250\ \ \ \ \ }
+\DoxyCodeLine{00251\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ redisplaySB(\textcolor{keywordtype}{int}\ wide)\ \{\ \textcolor{comment}{//\ rebuild\ headerPanel\ each\ time}}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ myWidth=wide;}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ this.removeAll();\ \textcolor{comment}{//\ remove\ all\ stackBox's}}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ buildSB();}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ open,\ add\ children}}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (isOpen)\ \{}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<tNode.getChildCount();i++)\ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ tn=tNode.getChild(i);}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this.add(tn.stackBox);}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ revalidate();}
+\DoxyCodeLine{00264\ \ \ \ \ \}}
+\DoxyCodeLine{00265\ }
+\DoxyCodeLine{00271\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ updateLoad()\ \{}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (manager.scriptDescription!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ descriptField.setText(manager.scriptDescription.trim());}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (manager.scriptTagname!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tagField.setText(manager.scriptTagname.trim());}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{\}}
+\DoxyCodeLine{00278\ \ \ \ \ \}}
+\DoxyCodeLine{00279\ \ \ \ \ }
+\DoxyCodeLine{00280\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ openSB()\ \{\ }
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ isOpen=\textcolor{keyword}{true};}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ redisplaySB(myWidth);}
+\DoxyCodeLine{00283\ \ \ \ \ \}}
+\DoxyCodeLine{00284\ \ \ \ \ }
+\DoxyCodeLine{00285\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ startEdit()\ \{}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currentMode==EDIT)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \textcolor{comment}{//AF>>>//}}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lock\ the\ viewport\ so\ GUI\ changes\ don't\ jitter\ and\ relocate.}}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ ((LockableJViewport)\ PackControl.scriptHover.stackScroll.getViewport()).setLocked(\textcolor{keyword}{true});}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \textcolor{comment}{//<<<AF//}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ currentMode=EDIT;}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ redisplaySB(myWidth);}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \textcolor{comment}{//AF>>>//}}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Unlock\ the\ viewport\ and\ get\ the\ stack\ box\ in\ view.}}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ EventQueue.invokeLater(\textcolor{keyword}{new}\ Runnable()\ \{}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ run()\ \{}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((LockableJViewport)\ PackControl.scriptHover.stackScroll.getViewport()).setLocked(\textcolor{keyword}{false});}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ setViewRect()\ doesn't\ seem\ to\ work\ well\ here\ (misses\ completely).}}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Scroll\ to\ top\ instead.}}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.stackScroll.getViewport().setViewPosition(\textcolor{keyword}{new}\ Point(0,\ 0));}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \textcolor{comment}{//<<<AF//}}
+\DoxyCodeLine{00307\ \ \ \ \ \}}
+\DoxyCodeLine{00308\ \ \ \ \ }
+\DoxyCodeLine{00309\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ cancelEdit()\ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currentMode!=EDIT)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \textcolor{comment}{//AF>>>//}}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lock\ the\ viewport\ so\ GUI\ changes\ don't\ jitter\ and\ relocate.}}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ ((LockableJViewport)\ PackControl.scriptHover.stackScroll.getViewport()).setLocked(\textcolor{keyword}{true});}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \textcolor{comment}{//<<<AF//}}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ currentMode=DISPLAY;}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ redisplaySB(myWidth);}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \textcolor{comment}{//AF>>>//}}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Unlock\ the\ viewport.}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ EventQueue.invokeLater(\textcolor{keyword}{new}\ Runnable()\ \{}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ run()\ \{}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((LockableJViewport)\ PackControl.scriptHover.stackScroll.getViewport()).setLocked(\textcolor{keyword}{false});}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \textcolor{comment}{//<<<AF//}}
+\DoxyCodeLine{00328\ \ \ \ \ \}}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00330\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ acceptEdit()\ \{}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (currentMode!=EDIT)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \textcolor{comment}{//AF>>>//}}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lock\ the\ viewport\ so\ GUI\ changes\ don't\ jitter\ and\ relocate.}}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ ((LockableJViewport)\ PackControl.scriptHover.stackScroll.getViewport()).setLocked(\textcolor{keyword}{true});}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \textcolor{comment}{//<<<AF//}}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ tNode.displayString=titleField.getText().replace(\textcolor{charliteral}{'\(\backslash\)n'},\textcolor{charliteral}{'\ '}).replace(\textcolor{charliteral}{'\(\backslash\)"{}'},\textcolor{charliteral}{'\(\backslash\)''});}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ currentMode=DISPLAY;}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!manager.hasChanged)\ \{}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ manager.hasChanged=\textcolor{keyword}{true};}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ PackControl.scriptHover.scriptTitle(manager.scriptName,\textcolor{keyword}{true});}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ manager.scriptDescription=descriptField.getText().trim();}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ replace('\(\backslash\)n','\ ').replace('\(\backslash\)"{}','\(\backslash\)'');}}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (manager.scriptDescription!=\textcolor{keyword}{null}\ \&\&}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ manager.scriptDescription.trim().length()==0)}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ manager.scriptDescription=\textcolor{keyword}{null};}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ manager.scriptTagname=tagField.getText().trim();}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ ImageIcon\ iI=manager.getTagImage(manager.scriptTagname);}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (iI!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ manager.myScriptTag=iI;}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ redisplaySB(myWidth);}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \textcolor{comment}{//AF>>>//}}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Unlock\ the\ viewport.}}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ EventQueue.invokeLater(\textcolor{keyword}{new}\ Runnable()\ \{}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ run()\ \{}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((LockableJViewport)\ PackControl.scriptHover.stackScroll.getViewport()).setLocked(\textcolor{keyword}{false});}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \textcolor{comment}{//<<<AF//}}
+\DoxyCodeLine{00363\ \ \ \ \ \}}
+\DoxyCodeLine{00364\ \ \ \ \ }
+\DoxyCodeLine{00368\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ deleteNode()\ \{}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \textcolor{comment}{//AF>>>//}}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Lock\ the\ viewport\ so\ GUI\ changes\ don't\ jitter\ and\ relocate.}}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ ((LockableJViewport)\ PackControl.scriptHover.stackScroll.getViewport()).setLocked(\textcolor{keyword}{true});}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \textcolor{comment}{//<<<AF//}}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ deleteChildNodes();}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ redisplaySB(myWidth);}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ manager.repopulateBar();}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \textcolor{comment}{//AF>>>//}}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Unlock\ the\ viewport.}}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ EventQueue.invokeLater(\textcolor{keyword}{new}\ Runnable()\ \{}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ run()\ \{}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ((LockableJViewport)\ PackControl.scriptHover.stackScroll.getViewport()).setLocked(\textcolor{keyword}{false});}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \textcolor{comment}{//<<<AF//}}
+\DoxyCodeLine{00386\ \ \ \ \ \}}
+\DoxyCodeLine{00387\ \ \ \ \ }
+\DoxyCodeLine{00391\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ deleteChildNodes()\ \{}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<tNode.getChildCount();i++)\ \{}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ CPTreeNode\ cpTN=(CPTreeNode)tNode.getChild(i);}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ cpTN.stackBox.deleteNode();}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{00396\ \ \ \ \ \}}
+\DoxyCodeLine{00397\ \ \ \ \ }
+\DoxyCodeLine{00402\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setLevelCk(\textcolor{keywordtype}{boolean}\ \textcolor{keywordtype}{bool})\ \{}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ levelBox.setSelected(\textcolor{keywordtype}{bool});}
+\DoxyCodeLine{00404\ \ \ \ \ \}}
+\DoxyCodeLine{00405\ \ \ \ \ }
+\DoxyCodeLine{00410\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setMapCk(\textcolor{keywordtype}{boolean}\ \textcolor{keywordtype}{bool})\ \{}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ mapModeBox.setSelected(\textcolor{keywordtype}{bool});}
+\DoxyCodeLine{00412\ \ \ \ \ \}}
+\DoxyCodeLine{00413\ \ \ \ \ }
+\DoxyCodeLine{00417\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ itemStateChanged(ItemEvent\ e)\ \{}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ Object\ source\ =\ e.getItemSelectable();}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (source\ ==\ levelBox)\ \{}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=e.getStateChange();}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tick==ItemEvent.DESELECTED\ \&\&\ manager.scriptLevel)\ \{}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ manager.scriptLevel=\textcolor{keyword}{false};}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tNode.setInline(\textcolor{keyword}{false});}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tick==ItemEvent.SELECTED\ \&\&\ !manager.scriptLevel)\ \{}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ manager.scriptLevel=\textcolor{keyword}{true};}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tNode.setInline(\textcolor{keyword}{true});}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (source\ ==\ mapModeBox)\ \{}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=e.getStateChange();}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ note:\ dropable\ has\ effect\ only\ when\ mytool\ is\ created}}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tick==ItemEvent.DESELECTED\ \&\&\ manager.scriptMapMode)\ \{}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ manager.scriptMapMode=\textcolor{keyword}{false};}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tick==ItemEvent.SELECTED\ \&\&\ !manager.scriptMapMode)\ \{}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ manager.scriptMapMode=\textcolor{keyword}{true};}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00443\ \ \ \ \ \}}
+\DoxyCodeLine{00444\ \ \ \ \ }
+\DoxyCodeLine{00450\ \ \ \ \ \textcolor{keyword}{public}\ JPopupMenu\ cmdActionPopup(\textcolor{keywordtype}{boolean}\ editmode)\ \{}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ JPopupMenu\ editpop=\textcolor{keyword}{new}\ JPopupMenu();}
+\DoxyCodeLine{00452\ }
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ ImageIcon\ ii;}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ JMenuItem\ mi;}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (editmode)\ \{}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ ii=\ \textcolor{keyword}{new}\ ImageIcon(CPBase.getResourceURL(\textcolor{stringliteral}{"{}/Icons/script/accept\_label.png"{}}));}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ mi=\textcolor{keyword}{new}\ JMenuItem(\textcolor{stringliteral}{"{}accept\ edit"{}},ii);}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ mi.setActionCommand(\textcolor{stringliteral}{"{}accept\_edit"{}});}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \ \ \ \ mi.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \ \ editpop.add(mi);}
+\DoxyCodeLine{00461\ }
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \ \ ii=\ \textcolor{keyword}{new}\ ImageIcon(CPBase.getResourceURL(\textcolor{stringliteral}{"{}/Icons/script/cancel\_label.png"{}}));}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ mi=\textcolor{keyword}{new}\ JMenuItem(\textcolor{stringliteral}{"{}cancel\ edit"{}},ii);}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ mi.setActionCommand(\textcolor{stringliteral}{"{}cancel\_edit"{}});}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \ \ \ \ mi.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \ \ \ \ editpop.add(mi);}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \ \ ii=\ \textcolor{keyword}{new}\ ImageIcon(CPBase.getResourceURL(\textcolor{stringliteral}{"{}/Icons/script/e\_edit.png"{}}));}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \ \ mi=\textcolor{keyword}{new}\ JMenuItem(\textcolor{stringliteral}{"{}edit"{}},ii);}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \ \ mi.setActionCommand(\textcolor{stringliteral}{"{}edit"{}});}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \ \ mi.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \ \ \ editpop.add(mi);}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00475\ }
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ ii=\ \textcolor{keyword}{new}\ ImageIcon(CPBase.getResourceURL(\textcolor{stringliteral}{"{}/Icons/script/commandBelow.png"{}}));}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ mi=\textcolor{keyword}{new}\ JMenuItem(\textcolor{stringliteral}{"{}add\ command\ below"{}},ii);}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ mi.setActionCommand(\textcolor{stringliteral}{"{}add\_below\_command"{}});}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ mi.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ editpop.add(mi);}
+\DoxyCodeLine{00481\ }
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ ii=\ \textcolor{keyword}{new}\ ImageIcon(CPBase.getResourceURL(\textcolor{stringliteral}{"{}/Icons/script/textBelow.png"{}}));}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ mi=\textcolor{keyword}{new}\ JMenuItem(\textcolor{stringliteral}{"{}add\ text\ below"{}},ii);}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ mi.setActionCommand(\textcolor{stringliteral}{"{}add\_below\_text"{}});}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ mi.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ editpop.add(mi);}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ editpop;}
+\DoxyCodeLine{00489\ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{00490\ \ \ \ \ }
+\DoxyCodeLine{00491\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getHeaderHeight()\ \{}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ upperPanel.getHeight();}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 10;}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00497\ \ \ \ \ \}}
+\DoxyCodeLine{00498\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,170 @@
+\doxysection{Sch\+Edge\+Data.\+java}
+\label{_sch_edge_data_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/schwarzWork/SchEdgeData.java@{C:/Users/ashej/myGitRepos/CirclePack/src/schwarzWork/SchEdgeData.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }schwarzWork;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ util.ColorUtil;}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }SchEdgeData\ \{}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keyword}{final}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ sqrt3=Math.sqrt(3);}
+\DoxyCodeLine{00026\ \ \ \ \ }
+\DoxyCodeLine{00027\ \ \ \ \ HalfEdge\ myHEdge;\ \textcolor{comment}{//\ which\ edge\ is\ this?}}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{int}\ myN;\ \textcolor{comment}{//\ degree\ of\ 'Origin'\ of\ 'myHEdge'}}
+\DoxyCodeLine{00029\ \ \ \ \ HalfEdge\ startCCLW;\ \textcolor{comment}{//\ start\ of\ cclw\ N-\/3\ schwarzians}}
+\DoxyCodeLine{00030\ \ \ \ \ HalfEdge\ startCLW;\ \textcolor{comment}{//\ start\ of\ clw\ N-\/3\ schwarzians}}
+\DoxyCodeLine{00031\ \ \ \ \ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{comment}{//\ compute\ remaining\ three\ schwarzians\ to\ form}}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{comment}{//\ \ \ flower\ in\ both\ cclw\ and\ clw\ direction.}}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{comment}{//\ \ +\ for\ cclw,\ myEdge\ and\ next\ two}}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{comment}{//\ \ +\ for\ clw,\ myEdge\ and\ previous\ two}}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{double}[]\ newSch\_cclw;}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keywordtype}{double}[]\ newSch\_clw;}
+\DoxyCodeLine{00038\ \ \ \ \ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{comment}{//\ NOTE:\ if\ a\ negative\ constraint\ is\ encountered,}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{comment}{//\ \ \ set\ 'allPosFlag'\ to\ false;\ means\ wecan't\ }}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{comment}{//\ \ \ complete\ an\ unbranched\ flower.\ Need\ to\ }}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{comment}{//\ \ \ work\ out\ what\ to\ do\ in\ branched\ cases.}}
+\DoxyCodeLine{00043\ \ \ \ \ Boolean\ allPosFlag;\ \textcolor{comment}{//\ null\ until\ computation\ is\ }}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{//\ carried\ out.}}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \textcolor{comment}{//\ constructor}}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{public}\ SchEdgeData(HalfEdge\ edge)\ \{}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ allPosFlag=\textcolor{keyword}{null};}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ myHEdge=edge;}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ myN=edge.origin.getNum();}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ newSch\_cclw=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ newSch\_clw=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'startEdge'\ is\ N-\/3\ clockwise\ edges\ away,}}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ so\ move\ 3\ cclw.}}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ startCCLW=edge;}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=3;j++)}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ startCCLW=startCCLW.prev.twin;}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ startCLW=edge;}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=3;j++)}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ startCLW=startCLW.twin.next;}
+\DoxyCodeLine{00062\ \ \ \ \ \}}
+\DoxyCodeLine{00063\ \ \ \ \ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{public}\ Boolean\ finishFlower()\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ditch\ old\ results}}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ newSch\_cclw=\textcolor{keyword}{null};}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ newSch\_clw=\textcolor{keyword}{null};}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ uz=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myN+1];}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ cclw\ direction\ first}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ HalfEdge\ he=startCCLW;}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=myN;j++)\ \{\ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ uz[j]=1.0-\/he.getSchwarzian();}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ he=he.prev.twin;}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ newSch\_cclw=comp3sch(uz);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newSch\_cclw==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ newSch\_clw=\textcolor{keyword}{null};}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ clw\ direction}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ he=startCLW;}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=myN;j++)\ \{\ }
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ uz[j]=1.0-\/he.getSchwarzian();}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ he=he.twin.next;}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ newSch\_clw=comp3sch(uz);}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newSch\_clw==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ newSch\_cclw=\textcolor{keyword}{null};}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ }
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00105\ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \ \ }
+\DoxyCodeLine{00113\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}[]\ comp3sch(\textcolor{keywordtype}{double}[]\ uzians)\ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ newsch=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ Boolean\ pflag=Boolean.valueOf(\textcolor{keyword}{true});}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ use\ copy\ of\ 'uzians'}}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ uz=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[myN+1];}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=myN+1;j++)}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ uz[j]=uzians[j];}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ ArrayList<Double>\ uarray=SchFlowerData.constraints(uz,pflag);}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ compU=((1.0+uarray.get(myN-\/3))/}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ (sqrt3*uarray.get(myN-\/2)));}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ this\ in\ the\ list\ of\ uzians}}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ uz[myN-\/2]=compU;}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ newsch[0]=1.0-\/compU;}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ shift\ for\ next\ uzian}}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=myN;j++)}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ uz[j-\/1]=uz[j];}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ uz[0]=0.0;\ \textcolor{comment}{//\ indexed\ from\ 1}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ uarray=SchFlowerData.constraints(uz,pflag);}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ compU=((1.0+uarray.get(myN-\/3))/}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ (sqrt3*uarray.get(myN-\/2)));}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ this\ in\ the\ list\ of\ uzians}}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ uz[myN-\/2]=compU;}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ newsch[1]=1.0-\/compU;}
+\DoxyCodeLine{00139\ }
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ shift\ for\ last\ uzian}}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=myN;j++)}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ uz[j-\/1]=uz[j];}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ uz[0]=0.0;\ \textcolor{comment}{//\ indexed\ from\ 1}}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ uarray=SchFlowerData.constraints(uz,pflag);}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ compU=((1.0+uarray.get(myN-\/3))/}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ (sqrt3*uarray.get(myN-\/2)));}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ this\ in\ the\ list}}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ uz[myN-\/2]=compU;}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ newsch[2]=1.0-\/compU;}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ newsch;}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ \ \ \ \ }
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ colorEdge(\textcolor{keywordtype}{int}\ mode)\ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ Boolean\ allpos=finishFlower();}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!allpos\ ||\ newSch\_cclw==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ myHEdge.setColor(Color.yellow);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ errorCCLW=newSch\_cclw[0]-\/myHEdge.getSchwarzian();}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ errorCLW=newSch\_clw[0]-\/myHEdge.getSchwarzian();}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ scherr=(errorCCLW+errorCLW)/2.0;}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(scherr)<.0000001)\ \{}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ myHEdge.setColor(CPBase.DEFAULT\_CANVAS\_BACKGROUND);}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ color\ green\ if\ opposite\ signs}}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((errorCCLW>0.0\ \&\&\ errorCLW<0.0)\ ||}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ errorCCLW<0.0\ \&\&\ errorCLW>0.0)\ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=scherr/0.05;}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ myHEdge.setColor(ColorUtil.green\_interp(Math.abs(x)));}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ we're\ assuming\ values\ in\ [-\/.5,.5]\ }}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=scherr/0.5;}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ error\ is\ computed-\/current;}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ blue\ means\ schwarzian\ needs\ to\ increase}}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (scherr>0.0)\ \textcolor{comment}{//\ increase\ schwarzian}}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ myHEdge.setColor(ColorUtil.blue\_interp(x));}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{comment}{//\ decrease\ schwarzian}}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ myHEdge.setColor(ColorUtil.red\_interp(-\/1.0*x));}
+\DoxyCodeLine{00197\ \ \ \ \ }
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00199\ \ \ \ \ \}}
+\DoxyCodeLine{00200\ \ \ \ \ }
+\DoxyCodeLine{00201\ \}}
+
+\end{DoxyCode}

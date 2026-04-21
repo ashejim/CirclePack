@@ -1,0 +1,699 @@
+\doxysection{Percolation.\+java}
+\label{_percolation_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/Percolation.java@{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/Percolation.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }ftnTheory;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.util.Random;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ util.CmdStruct;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ util.ColorUtil;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{00019\ }
+\DoxyCodeLine{00068\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }Percolation\ \textcolor{keyword}{extends}\ PackExtender\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ }
+\DoxyCodeLine{00070\ \ \ \ \ Vector<NodeLink>\ bdryArcs;\ \ \textcolor{comment}{//\ 4\ boundary\ arcs:\ trying\ to\ connect\ 0\ and\ 2\ or\ 1\ and\ 4}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keywordtype}{double}\ [][]conductances;\ \ \ \ \textcolor{comment}{//\ from\ eucl\ packing;\ conductance[v][j],\ j=petal\ index}}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keywordtype}{boolean}\ simpleWalk;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ use\ simple\ (versus\ tailored)\ random\ walks.}}
+\DoxyCodeLine{00073\ \ \ \ \ Vector<Integer>\ openVerts;\ \ \textcolor{comment}{//\ keep\ track\ of\ vertices\ not\ yet\ hit}}
+\DoxyCodeLine{00074\ \ \ \ \ PetalTrans\ []petalTrans;\ \ \ \ \textcolor{comment}{//\ petalTrans\ hold\ transition\ prob.\ info}}
+\DoxyCodeLine{00075\ \ \ \ \ Random\ rand;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ random\ number\ generator}}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keywordtype}{int}\ completed;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ +\ or\ -\/,\ depending\ on\ which\ path\ completed}}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordtype}{int}\ successCount;}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keywordtype}{int}\ failureCount;}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keywordtype}{int}\ experimentMode;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ experimental\ mode:\ 1\ =\ percolation,\ 2\ =\ mania}}
+\DoxyCodeLine{00080\ \ \ \ \ }
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{public}\ Percolation(PackData\ p)\ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ extensionType=\textcolor{stringliteral}{"{}PERCOLATION"{}};}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ extensionAbbrev=\textcolor{stringliteral}{"{}PR"{}};}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ toolTip=\textcolor{stringliteral}{"{}'Percolation'\ is\ intended\ for\ experiments\ related\ to\ "{}}+}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}the\ probabilistic\ topic\ of\ percolation."{}};}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ registerXType();}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ convert\ packData\ to\ euclidean,\ record\ its\ maximal\ packing}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(extenderPD,\textcolor{stringliteral}{"{}geom\_to\_e"{}});}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ running=\textcolor{keyword}{true};}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ errorMsg(\textcolor{stringliteral}{"{}Percolation:\ error\ in\ geom\_to\_e"{}});}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ running=\textcolor{keyword}{false};}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ yes,\ seems\ okay}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (running)\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ initialize\ colors}}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(v,ColorUtil.cloneMe(ColorUtil.getFGColor()));}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ bdryArcs=\textcolor{keyword}{null};}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ completed=0;}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ openVerts=\textcolor{keyword}{null};}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00111\ \textcolor{comment}{//\ \ \ \ \ \ rand=new\ Random(1);\ //\ with\ seed\ for\ debugging}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ rand=\textcolor{keyword}{new}\ Random();}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Create\ storage\ area\ for\ petal\ probabilities}}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ petalTrans=\textcolor{keyword}{new}\ PetalTrans[extenderPD.nodeCount+1];}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ successCount=failureCount=0;}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ modes:}}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ 1=percolation\ (random\ vert,\ random\ choice\ of\ color,\ p=1/2)}}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ 0=mania\ (random\ vert,\ random\ walk\ to\ encounter\ color)}}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ experimentMode=1;}
+\DoxyCodeLine{00123\ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ simpleWalk=\textcolor{keyword}{false};}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ prepConductances();}
+\DoxyCodeLine{00126\ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \ \ }
+\DoxyCodeLine{00131\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cmdParser(String\ cmd,Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ Vector<String>\ items=\textcolor{keyword}{null};}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Run\ a\ string\ of\ experiments\ to\ collect\ data}}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}RUN"{}}))\ \{}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ simpleWalk=\textcolor{keyword}{false};}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ filename,\ remove\ from\ flagSegs}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!StringUtil.ckTrailingFileName(flagSegs))}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}missing\ the\ file\ name"{}});}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ strbuf=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ code=CPFileManager.trailingFile(flagSegs,\ strbuf);}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ File\ file=\textcolor{keyword}{new}\ File(strbuf.toString());}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ append=\textcolor{keyword}{false};}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((code\ \&\ 02)\ ==\ 02)\ \textcolor{comment}{//\ append}}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ append=\textcolor{keyword}{true};}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ fp=CPFileManager.openWriteFP((File)CPFileManager.PackingDirectory,append,}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ file.getName(),\textcolor{keyword}{false});}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ other\ info}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ verts3=\textcolor{keyword}{null};}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=100;}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (flagSegs.size()>0)\ \{}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.remove(0);}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ str=items.remove(0);}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (StringUtil.isFlag(str))\ \{}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c=str.charAt(1);}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(c)\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'c'}:\ \textcolor{comment}{//\ give\ 3\ corners}}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ verts3=\textcolor{keyword}{new}\ NodeLink(extenderPD,items);}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'N'}:\ \textcolor{comment}{//\ number\ of\ iterations}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ N=Integer.parseInt(items.get(0));}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'s'}:\ \textcolor{comment}{//\ set\ simple\ walk}}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ simpleWalk=\textcolor{keyword}{true};}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ flags}}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}problem\ with\ 'RUN':\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ up\ the\ transition\ probabilities}}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ prepConductances();}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ right\ number\ of\ vertices?}}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (verts3.size()<3)}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}don't\ have\ enough\ corner\ verts"{}});}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (verts3.size()>3)}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ verts3=\textcolor{keyword}{new}\ NodeLink(extenderPD,\textcolor{keyword}{new}\ String(verts3.get(0)+\textcolor{stringliteral}{"{}\ "{}}+verts3.get(1)+\textcolor{stringliteral}{"{}\ "{}}+verts3.get(2)));}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ run\ the\ trials}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ strBuild=runBigData(extenderPD,N,verts3);}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.append(strBuild.toString());}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fp.close();}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ iox)\ \{}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}Wrote\ percolation\ data\ to\ "{}}+file.getName()+\textcolor{stringliteral}{"{}'\ in\ "{}}+}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPFileManager.PackingDirectory);}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_mode"{}}))\ \{}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=1;}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.remove(0);}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k=Integer.parseInt(items.get(0));}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k==0)}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ experimentMode=0;}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ experimentMode=1;}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ iterative\ experiment}}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}exp"{}}))\ \{}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ simpleWalk=\textcolor{keyword}{false};}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ String\ str=\textcolor{keyword}{null};}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ corners=\textcolor{keyword}{null};}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=100;}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (flagSegs.size()>0)\ \{}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.remove(0);}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str=items.remove(0);}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (StringUtil.isFlag(str))\ \{}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{char}\ c=str.charAt(1);}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}(c)\ \{}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'c'}:\ \textcolor{comment}{//\ give\ corners}}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ corners=getCornerX(StringUtil.reconItem(items));}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setCorners(corners);}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'N'}:\ \textcolor{comment}{//\ number\ of\ iterations}}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ N=Integer.parseInt(items.get(0));}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ \textcolor{charliteral}{'s'}:\ \textcolor{comment}{//\ set\ simple\ walk}}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ simpleWalk=\textcolor{keyword}{true};}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ flags}}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}problem\ with\ 'experiment':\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ successRate=experiment(N);}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ msg(\textcolor{stringliteral}{"{}exp\ "{}}+N+\textcolor{stringliteral}{"{}:\ "{}}+successCount+\textcolor{stringliteral}{"{}\ successes;\ "{}}+failureCount+\textcolor{stringliteral}{"{}\ failures:\ Success\ rate\ =\ "{}}}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +successRate);}
+\DoxyCodeLine{00258\ }
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ N;}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}reset"{}}))\ \{}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ successCount=failureCount=0;}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}report"{}}))\ \{}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ msg(\textcolor{stringliteral}{"{}Successes\ =\ "{}}+successCount+\textcolor{stringliteral}{"{}:\ failures\ =\ "{}}+failureCount);}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ successCount+failureCount;}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00271\ }
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}mania"{}}))\ \{}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ simpleWalk=\textcolor{keyword}{false};}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ completed=0;}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!extenderPD.isBdry(v))}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(v,ColorUtil.getFGColor());}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ see\ if\ corners\ are\ specified}}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.remove(0);}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ nlink=getCornerX(StringUtil.reconItem(items));}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ setCorners(nlink);}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{\ \}}
+\DoxyCodeLine{00286\ }
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ are\ corners/arcs\ set?}}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bdryArcs==\textcolor{keyword}{null}\ ||\ bdryArcs.size()!=4)}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}Must\ 'set\_corners'\ first"{}});}
+\DoxyCodeLine{00290\ }
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ up\ conductances,\ probabilities}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ prepConductances();}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ up\ vector\ of\ interiors}}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ intV=\textcolor{keyword}{new}\ NodeLink(extenderPD,\textcolor{stringliteral}{"{}i"{}});}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ openVerts=\textcolor{keyword}{new}\ Vector<Integer>(intV.size());}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Integer>\ iV=intV.iterator();}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (iV.hasNext())}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ openVerts.add(iV.next());}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ calculate\ conductances}}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ conductances=random.Conductance.setConductances(extenderPD);}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ petalTrans}}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ setPetalTrans();}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ msg(\textcolor{stringliteral}{"{}everything\ is\ ready\ to\ go"{}});}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}go"{}}))\ \{\ \textcolor{comment}{//\ single\ pass}}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nextv=0;}
+\DoxyCodeLine{00313\ }
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ see\ if\ a\ vertex\ is\ given}}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items=flagSegs.remove(0);}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextv=Integer.parseInt(items.remove(0));}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ans=go(nextv);}
+\DoxyCodeLine{00321\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ System.out.println("{}go\ gave\ "{}+ans);}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (completed>100)}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ successCount++;}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (completed>0\ \&\&\ completed<100)}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ failureCount++;}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}Go"{}}))\ \{\ \textcolor{comment}{//\ continue\ until\ done}}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ debug=\textcolor{keyword}{false};}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=openVerts.size();}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (completed==0\ \&\&\ count>0)\ \{}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count-\/-\/;}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ans=go(0);}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ans<0)\ \{}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}go\ failed"{}});}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count=0;}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (debug)}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}go\ for\ "{}}+ans);}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (completed==0)\ \{}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}didn't\ get\ expected\ completion"{}});}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (completed>100)}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ successCount++;}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (completed>0\ \&\&\ completed<100)}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ failureCount++;}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ completed;}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00352\ }
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ default\ to\ superclass}}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ super.cmdParser(cmd,flagSegs);}
+\DoxyCodeLine{00355\ \ \ \ \ \}}
+\DoxyCodeLine{00356\ \ \ \ \ }
+\DoxyCodeLine{00357\ \ \ \ \ \textcolor{keyword}{public}\ NodeLink\ getCornerX(String\ str)\ \{}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ str=str.trim();}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ NodeLink\ nlink=\textcolor{keyword}{null};}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ String\ []split=str.split(\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ String\ last=split[split.length-\/1];}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=.5;}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (last.contains(\textcolor{stringliteral}{"{}."{}}))\ \{}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ x=Double.parseDouble(last);}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (x<=0.0\ ||\ x>=1.0)}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ sbd=\textcolor{keyword}{new}\ StringBuilder();}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<(split.length-\/1);j++)\ \{}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sbd.append(split[j]);}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sbd.append(\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ nlink=\textcolor{keyword}{new}\ NodeLink(extenderPD,sbd.toString());}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nlink==\textcolor{keyword}{null}\ ||\ nlink.size()!=3)}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ leftEnd=extenderPD.getCenter(nlink.get(2));}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ rightEnd=extenderPD.getCenter(nlink.get(0));}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ spot=leftEnd.times(1.0-\/x).add(rightEnd.times(x));}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ closest=\textcolor{keyword}{new}\ NodeLink(extenderPD,\textcolor{stringliteral}{"{}-\/c\ "{}}+spot.x+\textcolor{stringliteral}{"{}\ "{}}+spot.y+\textcolor{stringliteral}{"{}\ b"{}});}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (closest==\textcolor{keyword}{null}\ ||\ closest.size()==0)}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=closest.get(0);}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ nlink.add(v);}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ nlink;}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ NodeLink(extenderPD,str);}
+\DoxyCodeLine{00390\ \ \ \ \ \}}
+\DoxyCodeLine{00391\ \ \ \ \ }
+\DoxyCodeLine{00401\ \ \ \ \ \textcolor{keyword}{public}\ StringBuilder\ runBigData(PackData\ p,\textcolor{keywordtype}{int}\ N,NodeLink\ verts3)\ \{}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ two\ ends\ of\ the\ bottom\ edge}}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ left=verts3.get(2);}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ right=verts3.get(0);}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ Complex\ leftZ=p.getCenter(left);}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ Complex\ rightZ=p.getCenter(right);}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bottomLength=rightZ.minus(leftZ).abs();}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ linked\ list\ along\ bottom;\ need\ to\ toss\ first\ 2\ and\ last\ 2}}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ NodeLink\ spots=\textcolor{keyword}{new}\ NodeLink(p,\textcolor{stringliteral}{"{}b("{}}+left+\textcolor{stringliteral}{"{}\ "{}}+right+\textcolor{stringliteral}{"{})"{}});}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ spots.remove(0);}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ spots.remove(0);}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ spots.remove(spots.size()-\/1);}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ spots.remove(spots.size()-\/1);}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ start\ data\ in\ matlab\ form:\ vector\ 'data',\ 'vertCount'\ rows,\ each\ with}}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ entry\ x,s,\ where\ x\ is\ barycentric\ coord\ of\ point\ along\ edge,\ s\ is}}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ proportion\ of\ successes\ (connections\ between\ blue).}}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ StringBuilder\ outputData=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}\%\%\ CirclePack,\ percolation\ trials:\ nodecount\ "{}}+}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.nodeCount+\textcolor{stringliteral}{"{}\(\backslash\)n\(\backslash\)n"{}}+}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}data\ =\ [\(\backslash\)n"{}});}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ Iterator<Integer>\ \ spts=spots.iterator();}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (spts.hasNext())\ \{}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=spts.next();}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=p.getCenter(v).minus(leftZ).abs()/bottomLength;}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ corners=verts3.makeCopy();}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ corners.add(v);}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ setCorners(corners);}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (experiment(N)==0)\ \{}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputData.append(\textcolor{stringliteral}{"{}]\(\backslash\)n\%\%\ experiment\ "{}}+(count+1)+\textcolor{stringliteral}{"{}\ failed\(\backslash\)n"{}});}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ outputData;}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ result=(double)successCount/(\textcolor{keywordtype}{double})(successCount+failureCount);}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ outputData.append(x+\textcolor{stringliteral}{"{}\ \ "{}}+result+\textcolor{stringliteral}{"{};\(\backslash\)n"{}});}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ outputData.append(\textcolor{stringliteral}{"{}]\(\backslash\)n"{}});}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ outputData;}
+\DoxyCodeLine{00444\ \ \ \ \ \}}
+\DoxyCodeLine{00445\ \ \ \ \ }
+\DoxyCodeLine{00451\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ prepConductances()\ \{}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (simpleWalk)}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ conductances=random.Conductance.setSimpleConductances(extenderPD);}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ conductances=random.Conductance.setConductances(extenderPD);}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ setPetalTrans();}
+\DoxyCodeLine{00456\ \ \ \ \ \}}
+\DoxyCodeLine{00457\ \ \ \ \ }
+\DoxyCodeLine{00464\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ experiment(\textcolor{keywordtype}{int}\ N)\ \{}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ successCount=failureCount=0;}
+\DoxyCodeLine{00467\ \textcolor{comment}{//\ \ \ \ \ \ int\ []corners=new\ int[4];}}
+\DoxyCodeLine{00468\ \textcolor{comment}{//\ \ \ \ \ \ for\ (int\ i=0;i<4;i++)}}
+\DoxyCodeLine{00469\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ corners[i]=corns.get(i);}}
+\DoxyCodeLine{00470\ \textcolor{comment}{//\ \ \ \ \ \ if\ (setCorners(corners)==0)}}
+\DoxyCodeLine{00471\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ Oops("{}failed\ to\ set\ corners"{});}}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ NodeLink\ intV=\textcolor{keyword}{new}\ NodeLink(extenderPD,\textcolor{stringliteral}{"{}i"{}});}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ intCount=intV.size();}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00475\ }
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ run\ trials}}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ stop=\textcolor{keyword}{false};}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (count<N\ \&\&\ !stop)\ \{}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \ \ \ \ completed=0;}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!extenderPD.isBdry(v))\ }
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(v,ColorUtil.getFGColor());}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \ \ openVerts=\textcolor{keyword}{new}\ Vector<Integer>(intV.size());}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \ \ Iterator<Integer>\ iV=intV.iterator();}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (iV.hasNext())}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ openVerts.add(iV.next());}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ locCount=intCount;}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ debug=\textcolor{keyword}{false};}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (completed==0\ \&\&\ locCount>0)\ \{}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ locCount-\/-\/;}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ans=go(0);}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (debug)}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cpCommand(\textcolor{stringliteral}{"{}disp\ -\/wr\ -\/nc\ "{}}+ans);}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ans<0)\ \{}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}go\ failed"{}});}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count=0;}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stop=\textcolor{keyword}{true};}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (completed<=0)\ \{}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}Didn't\ complete\ as\ expected\ on\ pass\ "{}}+count);}
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (completed>100)}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ failureCount++;}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ successCount++;}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (stop)\ }
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \ \ \ \ msg(\textcolor{stringliteral}{"{}'exp'\ stopped\ at\ count\ "{}}+count);}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (\textcolor{keywordtype}{double})(successCount)/(\textcolor{keywordtype}{double})(successCount+failureCount);}
+\DoxyCodeLine{00515\ \ \ \ \ \}}
+\DoxyCodeLine{00516\ \ \ \ \ }
+\DoxyCodeLine{00522\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ go(\textcolor{keywordtype}{int}\ nextv)\ \{}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N\ =\ 0;}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (openVerts\ !=\ \textcolor{keyword}{null})}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ N\ =\ openVerts.size();}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextv\ ==\ 0)\ \{}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (N\ ==\ 0)}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (N\ ==\ 1)\ \{}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextv\ =\ openVerts.remove(0);}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ openVerts\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00535\ }
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextv\ ==\ 0)\ \{\ \textcolor{comment}{//\ get\ random\ vert\ from\ those\ remaining\ open}}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nextv\ =\ openVerts.remove(rand.nextInt(openVerts.size()));}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00539\ }
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nextv\ ==\ 0)\ \{}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}some\ problem\ getting\ nextv"{}});}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00543\ }
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ now\ have\ a\ vertex,\ choose\ its\ color}}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ans=0;}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (experimentMode==0)\ \{}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans\ =\ runWalker(nextv);}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ans\ ==\ 0)}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}walker\ "{}}\ +\ nextv\ +\ \textcolor{stringliteral}{"{}\ didn't\ succeed"{}});}
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ if\ (experimentMode==1)\ \{}}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans=243;\ \textcolor{comment}{//\ red}}
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rand.nextBoolean())}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans=244;\ \textcolor{comment}{//\ blue}}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ myColor\ =\ ans;}
+\DoxyCodeLine{00558\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(nextv,ColorUtil.coLor(ans));}
+\DoxyCodeLine{00559\ }
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ look\ to\ see\ if\ vert\ can\ be\ infected\ by\ a\ petal}}
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ infectedPetal\ =\ 0;}
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ petals=extenderPD.packDCEL.vertices[nextv].getPetals();}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ (j\ <\ petals.length\ \&\&\ infectedPetal\ ==\ 0);\ j++)\ \{}
+\DoxyCodeLine{00564\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k\ =\ petals[j];}
+\DoxyCodeLine{00565\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ m\ =\ ColorUtil.col\_to\_table(extenderPD.getCircleColor(k));}
+\DoxyCodeLine{00566\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ this\ petal\ infected\ by\ same\ color}}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((myColor\ ==\ 244\ \&\&\ m\ >\ 0\ \&\&\ m\ <\ 100)}
+\DoxyCodeLine{00568\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ||\ (myColor\ ==\ 243\ \&\&\ m\ >\ 100\ \&\&\ m\ <\ 200))}
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ infectedPetal\ =\ k;}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00571\ }
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (infectedPetal\ !=\ 0)}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ spreadInfection(infectedPetal);}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00576\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ nextv;}
+\DoxyCodeLine{00577\ \ \ \ \ \}}
+\DoxyCodeLine{00578\ }
+\DoxyCodeLine{00588\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ spreadInfection(\textcolor{keywordtype}{int}\ v)\ \{}
+\DoxyCodeLine{00589\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (areWeDone(v)!=0)}
+\DoxyCodeLine{00590\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ completed;}
+\DoxyCodeLine{00591\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00592\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ m=ColorUtil.col\_to\_table(extenderPD.getCircleColor(v));}
+\DoxyCodeLine{00593\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ lookfor=0;}
+\DoxyCodeLine{00594\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m>0\ \&\&\ m\ <100)}
+\DoxyCodeLine{00595\ \ \ \ \ \ \ \ \ \ \ \ \ lookfor=244;}
+\DoxyCodeLine{00596\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (m>100\ \&\&\ m<200)}
+\DoxyCodeLine{00597\ \ \ \ \ \ \ \ \ \ \ \ \ lookfor=243;}
+\DoxyCodeLine{00598\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=extenderPD.countFaces(v);}
+\DoxyCodeLine{00599\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=extenderPD.getFlower(v);}
+\DoxyCodeLine{00600\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;(j<num\ \&\&\ completed==0);j++)\ \{}
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=flower[j];}
+\DoxyCodeLine{00602\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ColorUtil.equalColors(extenderPD.getCircleColor(k),ColorUtil.coLor(lookfor)))\ \{\ }
+\DoxyCodeLine{00603\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(k,ColorUtil.coLor(m));}
+\DoxyCodeLine{00604\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count\ +=spreadInfection(k);}
+\DoxyCodeLine{00605\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00608\ \ \ \ \ \}}
+\DoxyCodeLine{00609\ }
+\DoxyCodeLine{00615\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ areWeDone(\textcolor{keywordtype}{int}\ v)\ \{}
+\DoxyCodeLine{00616\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ mark=ColorUtil.col\_to\_table(extenderPD.getCircleColor(v));}
+\DoxyCodeLine{00617\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ opposite=0;}
+\DoxyCodeLine{00618\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (mark)\ \{}
+\DoxyCodeLine{00619\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 1:\ \{opposite=2;\textcolor{keywordflow}{break};\}}
+\DoxyCodeLine{00620\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 2:\ \{opposite=1;\textcolor{keywordflow}{break};\}}
+\DoxyCodeLine{00621\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 198:\ \{opposite=199;\textcolor{keywordflow}{break};\}}
+\DoxyCodeLine{00622\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 199:\ \{opposite=198;\textcolor{keywordflow}{break};\}}
+\DoxyCodeLine{00623\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00624\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ petals=extenderPD.packDCEL.vertices[v].getPetals();}
+\DoxyCodeLine{00625\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<petals.length;j++)\ \{}
+\DoxyCodeLine{00626\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=petals[j];}
+\DoxyCodeLine{00627\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ColorUtil.col\_to\_table(extenderPD.getCircleColor(k))==opposite)\ \{}
+\DoxyCodeLine{00628\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ completed=mark;}
+\DoxyCodeLine{00629\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ completed;}
+\DoxyCodeLine{00630\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00631\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00632\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00633\ \ \ \ \ \}}
+\DoxyCodeLine{00634\ \ \ \ \ }
+\DoxyCodeLine{00640\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setCorners(NodeLink\ nlist)\ \{}
+\DoxyCodeLine{00641\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nlist==\textcolor{keyword}{null}\ ||\ nlist.size()!=4)}
+\DoxyCodeLine{00642\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00643\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []corners=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[4];}
+\DoxyCodeLine{00644\ \ \ \ \ \ \ \ \ corners[0]=nlist.get(0);}
+\DoxyCodeLine{00645\ \ \ \ \ \ \ \ \ corners[1]=nlist.get(1);}
+\DoxyCodeLine{00646\ \ \ \ \ \ \ \ \ corners[2]=nlist.get(2);}
+\DoxyCodeLine{00647\ \ \ \ \ \ \ \ \ corners[3]=nlist.get(3);}
+\DoxyCodeLine{00648\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ setCorners(corners);}
+\DoxyCodeLine{00649\ \ \ \ \ \}}
+\DoxyCodeLine{00650\ }
+\DoxyCodeLine{00657\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setCorners(\textcolor{keywordtype}{int}\ []corners)\ \{}
+\DoxyCodeLine{00658\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (corners==\textcolor{keyword}{null}\ ||\ corners.length!=4)}
+\DoxyCodeLine{00659\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00660\ \ \ \ \ \ \ \ \ bdryArcs=\textcolor{keyword}{new}\ Vector<NodeLink>(4);}
+\DoxyCodeLine{00661\ \ \ \ \ \ \ \ \ bdryArcs.add(\textcolor{keyword}{new}\ NodeLink(extenderPD,\textcolor{stringliteral}{"{}b("{}}+corners[0]+\textcolor{stringliteral}{"{},"{}}+corners[1]+\textcolor{stringliteral}{"{})"{}}));}
+\DoxyCodeLine{00662\ \ \ \ \ \ \ \ \ bdryArcs.add(\textcolor{keyword}{new}\ NodeLink(extenderPD,\textcolor{stringliteral}{"{}b("{}}+corners[1]+\textcolor{stringliteral}{"{},"{}}+corners[2]+\textcolor{stringliteral}{"{})"{}}));}
+\DoxyCodeLine{00663\ \ \ \ \ \ \ \ \ bdryArcs.add(\textcolor{keyword}{new}\ NodeLink(extenderPD,\textcolor{stringliteral}{"{}b("{}}+corners[2]+\textcolor{stringliteral}{"{},"{}}+corners[3]+\textcolor{stringliteral}{"{})"{}}));}
+\DoxyCodeLine{00664\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=extenderPD.getLastPetal(corners[0]);}
+\DoxyCodeLine{00665\ \ \ \ \ \ \ \ \ bdryArcs.add(\textcolor{keyword}{new}\ NodeLink(extenderPD,\textcolor{stringliteral}{"{}b("{}}+corners[3]+\textcolor{stringliteral}{"{},"{}}+v+\textcolor{stringliteral}{"{})"{}}));}
+\DoxyCodeLine{00666\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00667\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ mark\ the\ points\ on\ the\ various\ boundary\ arcs.}}
+\DoxyCodeLine{00668\ \ \ \ \ \ \ \ \ Iterator<Integer>\ arc=bdryArcs.get(0).iterator();}
+\DoxyCodeLine{00669\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (arc.hasNext())\ \{}
+\DoxyCodeLine{00670\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=arc.next();}
+\DoxyCodeLine{00671\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(w,ColorUtil.coLor(1));}
+\DoxyCodeLine{00672\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00673\ \ \ \ \ \ \ \ \ arc=bdryArcs.get(1).iterator();}
+\DoxyCodeLine{00674\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (arc.hasNext())\ \{}
+\DoxyCodeLine{00675\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=arc.next();}
+\DoxyCodeLine{00676\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(w,ColorUtil.coLor(199));}
+\DoxyCodeLine{00677\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00678\ \ \ \ \ \ \ \ \ arc=bdryArcs.get(2).iterator();}
+\DoxyCodeLine{00679\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (arc.hasNext())\ \{}
+\DoxyCodeLine{00680\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=arc.next();}
+\DoxyCodeLine{00681\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(w,ColorUtil.coLor(2));}
+\DoxyCodeLine{00682\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00683\ \ \ \ \ \ \ \ \ arc=bdryArcs.get(3).iterator();}
+\DoxyCodeLine{00684\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (arc.hasNext())\ \{}
+\DoxyCodeLine{00685\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=arc.next();}
+\DoxyCodeLine{00686\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(w,ColorUtil.coLor(198));}
+\DoxyCodeLine{00687\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00688\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00689\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ packing\ 'vlist'}}
+\DoxyCodeLine{00690\ \ \ \ \ \ \ \ \ extenderPD.vlist=\textcolor{keyword}{new}\ NodeLink(extenderPD,}
+\DoxyCodeLine{00691\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ String(corners[0]+\textcolor{stringliteral}{"{}\ "{}}+corners[1]+\textcolor{stringliteral}{"{}\ "{}}+corners[2]+\textcolor{stringliteral}{"{}\ "{}}+corners[3]));}
+\DoxyCodeLine{00692\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ corners[3];}
+\DoxyCodeLine{00693\ \ \ \ \ \}}
+\DoxyCodeLine{00694\ }
+\DoxyCodeLine{00701\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ runWalker(\textcolor{keywordtype}{int}\ v)\ \{}
+\DoxyCodeLine{00702\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=extenderPD.getFlower(v);}
+\DoxyCodeLine{00703\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ mySpot=v;}
+\DoxyCodeLine{00704\ }
+\DoxyCodeLine{00705\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ initial\ vertex\ already\ pinned?}}
+\DoxyCodeLine{00706\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!ColorUtil.equalColors(extenderPD.getCircleColor(mySpot),ColorUtil.FG\_Color))}
+\DoxyCodeLine{00707\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00708\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00709\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ run\ the\ walk;\ inherit\ the\ mark\ of\ first\ hit}}
+\DoxyCodeLine{00710\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (ColorUtil.equalColors(extenderPD.getCircleColor(mySpot),ColorUtil.FG\_Color))\ \{}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=rand.nextDouble();}
+\DoxyCodeLine{00712\ \ \ \ \ \ \ \ \ \ \ \ \ mySpot=flower[petalTrans[mySpot].whichPetal(x)];}
+\DoxyCodeLine{00713\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00714\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hitColor=ColorUtil.col\_to\_table(extenderPD.getCircleColor(mySpot));}
+\DoxyCodeLine{00715\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00716\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ hit\ fresh\ vert?\ use\ same\ color}}
+\DoxyCodeLine{00717\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hitColor>200)\ \{\ }
+\DoxyCodeLine{00718\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(v,ColorUtil.coLor(hitColor));}
+\DoxyCodeLine{00719\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ hitColor;}
+\DoxyCodeLine{00720\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00721\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00722\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else,\ determine\ what\ color\ to\ set}}
+\DoxyCodeLine{00723\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ myColor=0;}
+\DoxyCodeLine{00724\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{switch}\ (hitColor)\ \{}
+\DoxyCodeLine{00725\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 1:\ \{}
+\DoxyCodeLine{00726\ \ \ \ \ \ \ \ \ \ \ \ \ myColor=244;}
+\DoxyCodeLine{00727\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00728\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00729\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 2:\ \{}
+\DoxyCodeLine{00730\ \ \ \ \ \ \ \ \ \ \ \ \ myColor=244;}
+\DoxyCodeLine{00731\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00732\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00733\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 199:\ \{}
+\DoxyCodeLine{00734\ \ \ \ \ \ \ \ \ \ \ \ \ myColor=243;}
+\DoxyCodeLine{00735\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00736\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00737\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{case}\ 198:\ \{}
+\DoxyCodeLine{00738\ \ \ \ \ \ \ \ \ \ \ \ \ myColor=243;}
+\DoxyCodeLine{00739\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00740\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00741\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ switch}}
+\DoxyCodeLine{00742\ }
+\DoxyCodeLine{00743\ \ \ \ \ \ \ \ \ extenderPD.setCircleColor(v,ColorUtil.cloneMe(ColorUtil.coLor(myColor)));}
+\DoxyCodeLine{00744\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ myColor;}
+\DoxyCodeLine{00745\ \ \ \ \ \}}
+\DoxyCodeLine{00746\ \ \ \ \ }
+\DoxyCodeLine{00755\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setPetalTrans()\ \{}
+\DoxyCodeLine{00756\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=extenderPD.nodeCount;v++)\ \{}
+\DoxyCodeLine{00757\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=extenderPD.countFaces(v)+extenderPD.getBdryFlag(v)-\/1;}
+\DoxyCodeLine{00758\ \textcolor{comment}{//System.out.println("{}\ vert\ "{}+v+"{}\ num\ "{}+num);\ \ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00759\ \ \ \ \ \ \ \ \ \ \ \ \ petalTrans[v]=\textcolor{keyword}{new}\ PetalTrans(num);}
+\DoxyCodeLine{00760\ }
+\DoxyCodeLine{00761\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ totalCond=0.0;}
+\DoxyCodeLine{00762\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<=num;j++)\ \{}
+\DoxyCodeLine{00763\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ totalCond\ +=\ conductances[v][j];}
+\DoxyCodeLine{00764\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00765\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00766\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ accum=0.0;}
+\DoxyCodeLine{00767\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accum+=conductances[v][j]/totalCond;}
+\DoxyCodeLine{00769\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ petalTrans[v].portions[j]=accum;}
+\DoxyCodeLine{00770\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00771\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00772\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00773\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00774\ \ \ \ \ \}}
+\DoxyCodeLine{00775\ \ \ \ \ }
+\DoxyCodeLine{00779\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initCmdStruct()\ \{}
+\DoxyCodeLine{00780\ \ \ \ \ \ \ \ \ super.initCmdStruct();}
+\DoxyCodeLine{00781\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}reset"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}reset\ success/failure\ counters"{}}));}
+\DoxyCodeLine{00782\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}report"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}report\ success/failure\ counts"{}}));}
+\DoxyCodeLine{00783\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}mania"{}},\textcolor{stringliteral}{"{}[\{v..\}]"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Prepare\ for\ run\ using\ given\ vertices\ for\ corners"{}}));}
+\DoxyCodeLine{00784\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}go"{}},\textcolor{stringliteral}{"{}[v]"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Do\ a\ random\ walk\ from\ a\ random\ un-\/set\ vert\ (or\ from\ v,\ if\ given)"{}}));}
+\DoxyCodeLine{00785\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}Go"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Do\ a\ random\ walks\ from\ random\ un-\/set\ vertices\ until\ all\ are\ done"{}}));}
+\DoxyCodeLine{00786\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}exp"{}},\textcolor{stringliteral}{"{}-\/c\ \{v..\}\ -\/N\ \{n\}"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Run\ N\ trials\ using\ given\ corners"{}}));}
+\DoxyCodeLine{00787\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}RUN"{}},\textcolor{stringliteral}{"{}-\/c\ \{v..\}\ -\/N\ \{n\}\ -\/s\ -\/f\ \{filename.m\}"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}N\ trials\ each\ for\ "{}}+}
+\DoxyCodeLine{00788\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}vertices\ between\ corner[2]\ and\ corner[0],\ results\ to\ Matlab\ file.\ -\/s\ flag\ for\ simple\ "{}}+}
+\DoxyCodeLine{00789\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}(versus\ tailored)\ random\ walk"{}}));}
+\DoxyCodeLine{00790\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}color"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Color\ circles\ identified\ with\ 1/2\ and\ -\/1/-\/2\ blue\ and\ red,"{}}\ +}
+\DoxyCodeLine{00791\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}respectively\ and\ redraw\ the\ packing\ with\ these\ colors."{}}));}
+\DoxyCodeLine{00792\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_mode"{}},\textcolor{stringliteral}{"{}k"{}},\textcolor{keyword}{null},\textcolor{stringliteral}{"{}Random\ choice\ mode:\ 0\ =\ mania;\ 1\ =\ percolation\ (default)"{}}));}
+\DoxyCodeLine{00793\ \ \ \ \ \}}
+\DoxyCodeLine{00794\ \ \ \ \ }
+\DoxyCodeLine{00804\ \ \ \ \ \textcolor{keyword}{class\ }PetalTrans\ \{}
+\DoxyCodeLine{00805\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num;}
+\DoxyCodeLine{00806\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []portions;}
+\DoxyCodeLine{00807\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00808\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ PetalTrans(\textcolor{keywordtype}{int}\ n)\ \{}
+\DoxyCodeLine{00809\ \ \ \ \ \ \ \ \ \ \ \ \ num=n;}
+\DoxyCodeLine{00810\ \ \ \ \ \ \ \ \ \ \ \ \ portions=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[n];}
+\DoxyCodeLine{00811\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00812\ }
+\DoxyCodeLine{00820\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ whichPetal(\textcolor{keywordtype}{double}\ x)\ \{}
+\DoxyCodeLine{00821\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j=0;}
+\DoxyCodeLine{00822\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (j<num\ \&\&\ x>portions[j])}
+\DoxyCodeLine{00823\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ j++;}
+\DoxyCodeLine{00824\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ j;}
+\DoxyCodeLine{00825\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00826\ \ \ \ \ \}}
+\DoxyCodeLine{00827\ \}}
+
+\end{DoxyCode}

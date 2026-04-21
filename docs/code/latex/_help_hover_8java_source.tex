@@ -1,0 +1,584 @@
+\doxysection{Help\+Hover.\+java}
+\label{_help_hover_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/frames/HelpHover.java@{C:/Users/ashej/myGitRepos/CirclePack/src/frames/HelpHover.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }frames;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.BorderLayout;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.Font;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.Insets;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.Point;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.event.WindowAdapter;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.awt.event.WindowEvent;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ java.io.FileWriter;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ java.io.InputStreamReader;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ java.net.URL;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ java.util.StringTokenizer;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ java.util.regex.Matcher;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ java.util.regex.Pattern;}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{keyword}{import}\ javax.swing.Box;}
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ javax.swing.BoxLayout;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ javax.swing.JLabel;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ javax.swing.JScrollPane;}
+\DoxyCodeLine{00028\ \textcolor{keyword}{import}\ javax.swing.JTabbedPane;}
+\DoxyCodeLine{00029\ \textcolor{keyword}{import}\ javax.swing.JTextArea;}
+\DoxyCodeLine{00030\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00031\ \textcolor{keyword}{import}\ javax.swing.JTextPane;}
+\DoxyCodeLine{00032\ \textcolor{keyword}{import}\ javax.swing.border.EmptyBorder;}
+\DoxyCodeLine{00033\ \textcolor{keyword}{import}\ javax.swing.border.EtchedBorder;}
+\DoxyCodeLine{00034\ \textcolor{keyword}{import}\ javax.swing.border.TitledBorder;}
+\DoxyCodeLine{00035\ \textcolor{keyword}{import}\ javax.swing.event.HyperlinkEvent;}
+\DoxyCodeLine{00036\ \textcolor{keyword}{import}\ javax.swing.event.HyperlinkListener;}
+\DoxyCodeLine{00037\ \textcolor{keyword}{import}\ javax.swing.text.Document;}
+\DoxyCodeLine{00038\ \textcolor{keyword}{import}\ javax.swing.text.Element;}
+\DoxyCodeLine{00039\ \textcolor{keyword}{import}\ javax.swing.text.JTextComponent;}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{keyword}{import}\ org.apache.xerces.parsers.DOMParser;}
+\DoxyCodeLine{00042\ \textcolor{keyword}{import}\ org.w3c.dom.NamedNodeMap;}
+\DoxyCodeLine{00043\ \textcolor{keyword}{import}\ org.w3c.dom.Node;}
+\DoxyCodeLine{00044\ \textcolor{keyword}{import}\ org.w3c.dom.NodeList;}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00047\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00048\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00062\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }HelpHover\ \textcolor{keyword}{extends}\ HoverPanel\ implements\ HyperlinkListener\ \{}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00065\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{static}\ JPanel\ leftPanel;\ \textcolor{comment}{//\ left\ side\ with\ list\ and\ search}}
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{static}\ JTabbedPane\ helpTabbedPane\ =\ \textcolor{keyword}{new}\ JTabbedPane();\ \textcolor{comment}{//\ main\ tabbed\ panel}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{comment}{//\ in\ the\ leftPanel}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keyword}{private}\ JTextField\ search\_field;}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{private}\ JTextPane\ index\_list;}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{comment}{//\ in\ the\ tabbed\ pane}}
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ JTextPane\ detailArea;}
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ JTextPane\ DISPArea;}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keyword}{private}\ JScrollPane\ detailScroller;}
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keyword}{private}\ JScrollPane\ DISPScroller;}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ StringBuilder\ extendText;}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ JTextPane\ extenderArea;}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{private}\ JScrollPane\ extenderScroller;}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{private}\ IncrementalSearch\ isearch;}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{public}\ HelpHover(String\ helpfilename)\ \{}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ super(700,600,\textcolor{stringliteral}{"{}CirclePack\ Help\ Information"{}});}
+\DoxyCodeLine{00087\ \ \ \ \ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initComponents()\ \{}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ this.setLayout(\textcolor{keyword}{new}\ BoxLayout(\textcolor{keyword}{this},\ BoxLayout.LINE\_AXIS));}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Here\ are\ the\ various\ tabs\ (so\ far);\ tabs\ seem}}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ to\ be\ arranged\ in\ the\ order\ they're\ added}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ detailArea=\textcolor{keyword}{new}\ JTextPane();}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ detailArea.setContentType(\textcolor{stringliteral}{"{}text/html"{}});}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ detailArea.addHyperlinkListener(\textcolor{keyword}{new}\ IndexHyperlinkListener());}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ detailArea.setBorder(\textcolor{keyword}{new}\ EmptyBorder(\textcolor{keyword}{new}\ Insets(5,10,5,10)));}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ detailArea.setEditable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ detailArea.addFocusListener(\textcolor{keyword}{new}\ util.NavFocusListener(detailArea));}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ detailArea.setPage(CPBase.getResourceURL(\textcolor{stringliteral}{"{}/doc/CmdDetails.html"{}}));}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ detailScroller\ =\ \textcolor{keyword}{new}\ JScrollPane(detailArea);}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ helpTabbedPane.add(detailScroller,\textcolor{stringliteral}{"{}Command\ Details"{}});}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ need\ to\ know\ the\ name\ of\ the\ "{}DISP\ area"{}\ tab}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ DISPArea=\textcolor{keyword}{new}\ JTextPane();}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ DISPArea.setContentType(\textcolor{stringliteral}{"{}text/html"{}});}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ DISPArea.setBorder(\textcolor{keyword}{new}\ EmptyBorder(\textcolor{keyword}{new}\ Insets(5,10,5,10)));}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ DISPArea.setEditable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ DISPArea.addFocusListener(\textcolor{keyword}{new}\ util.NavFocusListener(DISPArea));}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ DISPArea.setPage(CPBase.getResourceURL(\textcolor{stringliteral}{"{}/doc/DispCmds.html"{}}));}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ DISPScroller\ =\ \textcolor{keyword}{new}\ JScrollPane(DISPArea);}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ helpTabbedPane.add(DISPScroller,\textcolor{stringliteral}{"{}Display\ Calls"{}});}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ TODO:\ addScrollArea("{}GUI\ Basics"{},"{}GUI\_Basics.info"{});}}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ extenderArea=\textcolor{keyword}{new}\ JTextPane();}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ extenderArea.setContentType(\textcolor{stringliteral}{"{}text/html"{}});}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ extenderArea.setBorder(\textcolor{keyword}{new}\ EmptyBorder(\textcolor{keyword}{new}\ Insets(5,10,5,10)));}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ extenderArea.setEditable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ extenderArea.addFocusListener(\textcolor{keyword}{new}\ util.NavFocusListener(extenderArea));}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ buffer\ to\ hold\ text}}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ extendText=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}<html>\(\backslash\)n<head>\(\backslash\)n"{}});}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ extendText.append(\textcolor{stringliteral}{"{}<p\ align=\(\backslash\)"{}center\(\backslash\)"{}><title><big><b>PackExtender</b>\ help\ information</big></title></p>\(\backslash\)n"{}});}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ extendText.append(\textcolor{stringliteral}{"{}</head>\(\backslash\)n<body>\(\backslash\)n<hr><br>"{}});}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ extendText.append(\textcolor{stringliteral}{"{}<basefont\ size=\(\backslash\)"{}2\(\backslash\)"{}>"{}});}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ extendText.append(\textcolor{stringliteral}{"{}Users\ can\ extend\ the\ class\ 'PackExtender'\ to\ "{}}+}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}their\ own\ specialized\ classes.\ Each\ gets\ an\ abbreviation\ "{}}+}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}'xx'\ so\ its\ commands\ can\ be\ called\ from\ CirclePack\ via\ "{}}+}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}'|xx|\ mycall'.<br>\(\backslash\)n<hr><br>\(\backslash\)n"{}});}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ load\ the\ actual\ info\ from\ an\ xml-\/formated\ file}}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ NOTE:\ disabled\ for\ now}}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ if\ (loadXMLinfo("{}Xtenders.inf"{},"{}packextender"{},extendText)==0)}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg("{}'Xtender.info'\ did\ not\ get\ parsed\ correctly"{});}}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ extendText.append("{}(Not\ yet\ ready\ for\ prime\ time)"{});}}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ extendText.append("{}\(\backslash\)n</body>\(\backslash\)n</html>"{});}}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ extenderArea.setText(extendText.toString());}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ extenderScroller\ =\ \textcolor{keyword}{new}\ JScrollPane(extenderArea);}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ helpTabbedPane.add(extenderScroller,\textcolor{stringliteral}{"{}Pack\ Extenders"{}});}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ JTextPane\ aboutArea=\textcolor{keyword}{new}\ JTextPane();}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ aboutArea.setContentType(\textcolor{stringliteral}{"{}text/html"{}});}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ aboutArea.addHyperlinkListener(\textcolor{keyword}{new}\ IndexHyperlinkListener());}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ aboutArea.setBorder(\textcolor{keyword}{new}\ EmptyBorder(\textcolor{keyword}{new}\ Insets(5,10,5,10)));}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ aboutArea.setEditable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ aboutArea.addFocusListener(\textcolor{keyword}{new}\ util.NavFocusListener(aboutArea));}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ aboutArea.setPage(CPBase.getResourceURL(\textcolor{stringliteral}{"{}/doc/About.html"{}}));}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ JScrollPane\ aboutScroller\ =\ \textcolor{keyword}{new}\ JScrollPane(aboutArea);}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ helpTabbedPane.add(aboutScroller,\textcolor{stringliteral}{"{}About"{}});}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ JTextPane\ miscArea=\textcolor{keyword}{new}\ JTextPane();}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ miscArea.setContentType(\textcolor{stringliteral}{"{}text/html"{}});}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ miscArea.addHyperlinkListener(\textcolor{keyword}{new}\ IndexHyperlinkListener());}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ miscArea.setBorder(\textcolor{keyword}{new}\ EmptyBorder(\textcolor{keyword}{new}\ Insets(5,10,5,10)));}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ miscArea.setEditable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ miscArea.addFocusListener(\textcolor{keyword}{new}\ util.NavFocusListener(miscArea));}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ miscArea.setPage(CPBase.getResourceURL(\textcolor{stringliteral}{"{}/doc/MiscInfo.html"{}}));}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ JScrollPane\ miscScroller\ =\ \textcolor{keyword}{new}\ JScrollPane(miscArea);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ helpTabbedPane.add(miscScroller,\textcolor{stringliteral}{"{}Misc"{}});}
+\DoxyCodeLine{00170\ }
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ JTextPane\ myNotesArea\ =\ \textcolor{keyword}{new}\ JTextPane();}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ myNotesArea.setContentType(\textcolor{stringliteral}{"{}text/html"{}});}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ myNotesArea.addHyperlinkListener(\textcolor{keyword}{new}\ IndexHyperlinkListener());}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ myNotesArea.setBorder(\textcolor{keyword}{new}\ EmptyBorder(\textcolor{keyword}{new}\ Insets(5,\ 10,\ 5,\ 10)));}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ myNotesArea.setEditable(\textcolor{keyword}{true});}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ myNotesArea.addFocusListener(\textcolor{keyword}{new}\ util.NavFocusListener(myNotesArea));}
+\DoxyCodeLine{00177\ }
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ MyNotes\ saved\ as\ <user.home>/myCirclePack/myNotes.txt}}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ File\ myNotesFile\ =\ \textcolor{keyword}{new}\ File(CPFileManager.HomeDirectory.toString()\ +\ File.separator\ +\ \textcolor{stringliteral}{"{}myCirclePack"{}}\ +\ File.separator\ +\ \textcolor{stringliteral}{"{}myNotes.txt"{}});}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!myNotesFile.exists())\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ If\ MyNotes\ file\ doesn't\ exist,\ create\ the\ file\ with\ default\ contents.}}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ myFileWriter\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myFileWriter\ =\ \textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(myNotesFile));}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ String.format()\ will\ convert\ the\ \%n\ token\ into\ the\ system\ dependent\ newline\ character.}}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myFileWriter.write(String.format(\textcolor{stringliteral}{"{}Put\ your\ own\ notes\ here.\%n"{}}));}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ e)\ \{}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ If\ we\ can't\ write\ the\ default\ file,\ output\ the\ error\ and\ move\ on.}}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}Failed\ to\ write\ default\ MyNotes\ file."{}});}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{finally}\ \{}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ Close\ the\ writer.\ If\ it\ fails\ to\ close,\ output\ the\ error\ and\ move\ on.}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myFileWriter\ !=\ \textcolor{keyword}{null})\ \textcolor{keywordflow}{try}\ \{myFileWriter.close();\}\ \textcolor{keywordflow}{catch}\ (IOException\ e)\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}Failed\ to\ close\ MyNotes\ file\ writer\ after\ writing\ default\ file."{}});}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ for\ some\ reason\ this\ "{}error"{}\ doesn't}}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ interfere\ with\ running\ the\ code}}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ Set\ the\ MyNotes\ text\ pane\ to\ the\ MyNotes\ file.}}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ myNotesArea.setPage(myNotesFile.toURI().toURL());}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ e)\ \{}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ If\ the\ IO\ operations\ fail,\ output\ an\ error\ and\ move\ on.\ The\ text\ pane\ will\ be\ blank.}}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}Failed\ to\ load\ MyNotes\ file."{}});}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ Create\ immutable\ references\ to\ the\ MyNotes\ file\ and\ text\ pane\ for\ saving\ behavior.}}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ File\ myNotesFileReference\ =\ myNotesFile;}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \textcolor{keyword}{final}\ JTextPane\ myNotesAreaReference\ =\ myNotesArea;}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ Create\ a\ window\ adapter\ to\ save\ the\ text\ pane\ when\ the\ help\ window\ is\ disposed\ on\ program\ exit.}}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ WindowAdapter\ saveOnClose\ =\ \textcolor{keyword}{new}\ WindowAdapter()\ \{}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ @Override}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ windowClosed(WindowEvent\ e)\ \{}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ Save\ the\ contents\ of\ the\ text\ pane\ to\ the\ file.}}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ myFileWriter\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myFileWriter\ =\ \textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(myNotesFileReference));}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myFileWriter.write(myNotesAreaReference.getText());}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ ioe)\ \{}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ If\ the\ write\ fails,\ output\ an\ error\ and\ move\ on.}}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}Failed\ to\ write\ current\ MyNotes\ file."{}});}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{finally}\ \{}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ Close\ the\ writer.\ If\ it\ fails\ to\ close,\ output\ the\ error\ and\ move\ on.}}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myFileWriter\ !=\ \textcolor{keyword}{null})\ \textcolor{keywordflow}{try}\ \{myFileWriter.close();\}\ \textcolor{keywordflow}{catch}\ (IOException\ ioe)\ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}Failed\ to\ close\ MyNotes\ file\ writer\ after\ writing\ on\ program\ exit."{}});}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ Attach\ the\ window\ adapter\ to\ the\ lockedFrame\ of\ the\ help\ window.}}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ AF:\ We\ could\ attach\ it\ to\ the\ hoverFrame\ instead.\ The\ choice\ is\ arbitrary.}}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ lockedFrame.addWindowListener(saveOnClose);}
+\DoxyCodeLine{00235\ }
+\DoxyCodeLine{00236\ \textcolor{comment}{/*\ \ \ \ \ \ 6/1/13:\ disabled:\ something\ is\ slowing\ CirclePack\ -\/-\/-\/\ maybe\ this\ thread??}}
+\DoxyCodeLine{00237\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ AF:\ Create\ the\ thread\ that\ auto-\/saves\ the\ MyNotes\ text\ area.}}
+\DoxyCodeLine{00238\ \textcolor{comment}{\ \ \ \ \ \ \ \ Thread\ autoSave\ =\ new\ Thread()\ \{}}
+\DoxyCodeLine{00239\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ @Override}}
+\DoxyCodeLine{00240\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ public\ void\ run()\ \{}}
+\DoxyCodeLine{00241\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ AF:\ This\ thread\ loops\ indefinitely,\ periodically\ saving\ the\ contents\ of\ MyNotes.}}
+\DoxyCodeLine{00242\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ while\ (true)\ \{}}
+\DoxyCodeLine{00243\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ \ AF:\ Sleep\ for\ three\ minutes.\ If\ the\ thread\ is\ interrupted,\ do\ nothing.\ The}}
+\DoxyCodeLine{00244\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ thread\ won't\ be\ interrupted\ unless\ it\ is\ explicitly\ and\ intentionally}}
+\DoxyCodeLine{00245\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ interrupted,\ or\ if\ the\ program\ is\ exiting.\ Either\ way,\ we\ don't\ need\ to\ know}}
+\DoxyCodeLine{00246\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ or\ care.}}
+\DoxyCodeLine{00247\ \textcolor{comment}{}}
+\DoxyCodeLine{00248\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ try\ \{Thread.sleep(3\ *\ 60\ *\ 1000);\}\ catch\ (InterruptedException\ e)\ \{\}}}
+\DoxyCodeLine{00249\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00250\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ AF:\ Create\ the\ sub-\/thread\ to\ actually\ save\ the\ contents\ of\ MyNotes.\ Here's\ why}}
+\DoxyCodeLine{00251\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ we\ do\ this:\ the\ autoSave\ thread\ is\ a\ daemon\ thread,\ which\ means\ it\ may\ be\ killed}}
+\DoxyCodeLine{00252\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ by\ the\ JVM\ if\ the\ JVM\ wants\ to\ exit\ and\ only\ daemon\ threads\ remain\ running.\ This}}
+\DoxyCodeLine{00253\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ is\ fine,\ because\ all\ it\ does\ is\ wait\ and\ periodically\ start\ a\ new\ thread.}}
+\DoxyCodeLine{00254\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00255\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ However,\ the\ save\ thread\ is\ not\ a\ daemon\ thread,\ but\ a\ user\ thread.\ If\ this\ thread}}
+\DoxyCodeLine{00256\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ is\ running,\ the\ JVM\ will\ wait\ for\ it\ to\ finish\ before\ exiting.\ It\ will\ successfully}}
+\DoxyCodeLine{00257\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ complete\ its\ IO\ operations\ and\ then\ exit,\ at\ which\ point\ the\ JVM\ will\ exit\ if\ only}}
+\DoxyCodeLine{00258\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ daemon\ threads\ remain\ running.}}
+\DoxyCodeLine{00259\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ }}
+\DoxyCodeLine{00260\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ If\ we\ performed\ actual\ IO\ in\ the\ daemon\ thread,\ the\ JVM\ might\ kill\ it\ during\ an\ IO}}
+\DoxyCodeLine{00261\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ operation\ and\ corrupt\ the\ file.\ If\ the\ indefinite\ loop\ of\ sleeping\ and\ saving}}
+\DoxyCodeLine{00262\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ periodically\ was\ a\ user\ thread,\ the\ JVM\ could\ never\ exit.}}
+\DoxyCodeLine{00263\ \textcolor{comment}{}}
+\DoxyCodeLine{00264\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Thread\ save\ =\ new\ Thread()\ \{}}
+\DoxyCodeLine{00265\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ @Override}}
+\DoxyCodeLine{00266\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ public\ void\ run()\ \{}}
+\DoxyCodeLine{00267\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ AF:\ Write\ the\ contents\ of\ MyNotes\ to\ the\ file.}}
+\DoxyCodeLine{00268\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ myFileWriter\ =\ null;}}
+\DoxyCodeLine{00269\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ try\ \{}}
+\DoxyCodeLine{00270\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myFileWriter\ =\ new\ BufferedWriter(new\ FileWriter(myNotesFileReference));}}
+\DoxyCodeLine{00271\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myFileWriter.write(myNotesAreaReference.getText());}}
+\DoxyCodeLine{00272\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ catch\ (IOException\ ioe)\ \{}}
+\DoxyCodeLine{00273\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ AF:\ If\ the\ write\ fails,\ output\ an\ error\ and\ move\ on.}}
+\DoxyCodeLine{00274\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println("{}Failed\ to\ auto-\/save\ current\ MyNotes\ file."{});}}
+\DoxyCodeLine{00275\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ finally\ \{}}
+\DoxyCodeLine{00276\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ AF:\ Close\ the\ file.\ If\ it\ fails,\ output\ an\ error\ and\ move\ on.}}
+\DoxyCodeLine{00277\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ if\ (myFileWriter\ !=\ null)\ try\ \{myFileWriter.close();\}\ catch\ (IOException\ ioe)\ \{}}
+\DoxyCodeLine{00278\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println("{}Failed\ to\ close\ MyNotes\ file\ after\ auto-\/saving."{});}}
+\DoxyCodeLine{00279\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00280\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00281\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00282\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \};}}
+\DoxyCodeLine{00283\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00284\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ //\ AF:\ This\ is\ a\ user\ thread.}}
+\DoxyCodeLine{00285\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ save.setDaemon(false);}}
+\DoxyCodeLine{00286\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ save.start();}}
+\DoxyCodeLine{00287\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00288\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00289\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00290\ \textcolor{comment}{\ \ \ \ \ \ \ \ \};}}
+\DoxyCodeLine{00291\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ AF:\ This\ is\ a\ daemon\ thread.}}
+\DoxyCodeLine{00292\ \textcolor{comment}{\ \ \ \ \ \ \ \ autoSave.setDaemon(true);}}
+\DoxyCodeLine{00293\ \textcolor{comment}{\ \ \ \ \ \ \ \ autoSave.start();}}
+\DoxyCodeLine{00294\ \textcolor{comment}{*/}}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ JScrollPane\ myScroller\ =\ \textcolor{keyword}{new}\ JScrollPane(myNotesArea);}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ helpTabbedPane.add(myScroller,\ \textcolor{stringliteral}{"{}MyNotes"{}});}
+\DoxyCodeLine{00298\ }
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ addScrollArea(\textcolor{stringliteral}{"{}List\ Specs"{}},\textcolor{stringliteral}{"{}List.info"{}});}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ addScrollArea(\textcolor{stringliteral}{"{}Formats"{}},\textcolor{stringliteral}{"{}DataFormats.info"{}});}
+\DoxyCodeLine{00301\ }
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ left\ panel\ has\ searchbox\ and\ index\ of\ commands}}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ leftPanel=\textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{new}\ BorderLayout());}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ JScrollPane\ jsp=(JScrollPane)helpTabbedPane.getSelectedComponent();}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ JTextComponent\ jta=(JTextComponent)jsp.getViewport().getView();}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ util.EmacsBindings.addEmacsBindings(jta);}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ search\ panel}}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ Box\ jp=Box.createVerticalBox();}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ jp.setBorder(\textcolor{keyword}{new}\ EtchedBorder());}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ JLabel\ label=\textcolor{keyword}{new}\ JLabel(\textcolor{stringliteral}{"{}search:"{}});}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ label.setFont(\textcolor{keyword}{new}\ Font(\textcolor{stringliteral}{"{}Serif"{}},Font.BOLD,10));}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ jp.add(label);}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ search\_field=\textcolor{keyword}{new}\ JTextField(12);}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ isearch=\textcolor{keyword}{new}\ IncrementalSearch(helpTabbedPane,search\_field,jta);}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ helpTabbedPane.addChangeListener(isearch);}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ search\_field.getDocument().addDocumentListener(isearch);}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ search\_field.addActionListener(isearch);}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ jp.add(search\_field);}
+\DoxyCodeLine{00319\ }
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ index\_list=\textcolor{keyword}{new}\ JTextPane();}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ index\_list.setContentType(\textcolor{stringliteral}{"{}text/html"{}});}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ index\_list.addHyperlinkListener(\textcolor{keyword}{new}\ IndexHyperlinkListener());}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ index\_list.addMouseListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ index\_list.setEditable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ index\_list.addFocusListener(\textcolor{keyword}{new}\ util.NavFocusListener(index\_list));}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ index\_list.setPage(CPBase.getResourceURL(\textcolor{stringliteral}{"{}/doc/CmdIndex.html"{}}));}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ JScrollPane\ scroll\ =\ \textcolor{keyword}{new}\ JScrollPane(index\_list);}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ scroll.setBorder(\textcolor{keyword}{new}\ TitledBorder(\textcolor{keyword}{new}\ EtchedBorder(),\textcolor{stringliteral}{"{}Command\ List:"{}}));}
+\DoxyCodeLine{00331\ }
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ leftPanel.add(jp,BorderLayout.NORTH);}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ leftPanel.add(scroll,BorderLayout.CENTER);}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ leftPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(180,-\/1));}
+\DoxyCodeLine{00335\ \ \ \ \ \}}
+\DoxyCodeLine{00336\ }
+\DoxyCodeLine{00337\ \ \ \ \ \textcolor{keywordtype}{void}\ addScrollArea(String\ title,String\ filename)\ \{}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ JTextArea\ textArea=\textcolor{keyword}{new}\ JTextArea();}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ textArea.setLineWrap(\textcolor{keyword}{true});}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ textArea.setWrapStyleWord(\textcolor{keyword}{true});}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ textArea.setEditable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ util.EmacsBindings.addEmacsBindings(textArea);}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ textArea.setBorder(\textcolor{keyword}{new}\ EmptyBorder(\textcolor{keyword}{new}\ Insets(5,10,5,10)));}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ textArea.setTabSize(3);}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ open(filename,textArea);}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ JScrollPane\ textScroll\ =\ \textcolor{keyword}{new}\ JScrollPane(textArea);}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ helpTabbedPane.add(textScroll,title);}
+\DoxyCodeLine{00348\ \ \ \ \ \}}
+\DoxyCodeLine{00349\ }
+\DoxyCodeLine{00350\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ loadHover()\ \{}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ this.removeAll();}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ helpTabbedPane.setPreferredSize(\textcolor{keyword}{new}\ Dimension(myWidth,myHeight));}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ this.add(helpTabbedPane);}
+\DoxyCodeLine{00354\ \ \ \ \ \}}
+\DoxyCodeLine{00355\ }
+\DoxyCodeLine{00356\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ loadLocked()\ \{}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ this.removeAll();}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ helpTabbedPane.setPreferredSize(\textcolor{keyword}{new}\ Dimension((\textcolor{keywordtype}{int})(myWidth*0.75),myHeight));}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ leftPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension((\textcolor{keywordtype}{int})(myWidth*0.25),myHeight));}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ this.add(leftPanel);}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ this.add(helpTabbedPane);}
+\DoxyCodeLine{00362\ \ \ \ \ \}}
+\DoxyCodeLine{00363\ }
+\DoxyCodeLine{00370\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ open(String\ filename,JTextArea\ textArea)\ \{}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ BufferedReader\ fileReader=\textcolor{keyword}{null};}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ URL\ urlFile=CPBase.getResourceURL(\textcolor{stringliteral}{"{}/doc/"{}}+filename);}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ fileReader\ =\ \textcolor{keyword}{new}\ BufferedReader(\textcolor{keyword}{new}\ InputStreamReader(urlFile.openStream()));}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ ex.printStackTrace();}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}failed\ to\ read\ resource"{}});}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00380\ }
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fileReader!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ com\ =\ fileReader.readLine();}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (com\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textArea.append(com+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ com\ =\ fileReader.readLine();}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ ioe)\ \{}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}Bombed\ reading\ '"{}}+filename+\textcolor{stringliteral}{"{}'"{}});}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00394\ \ \ \ \ \}}
+\DoxyCodeLine{00395\ }
+\DoxyCodeLine{00402\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ positionCmd(String\ word)\ \{}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (word==\textcolor{keyword}{null}\ ||\ word.length()==0)\ }
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ Document\ cmd\_doc=detailArea.getDocument();}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ Pattern\ pattern\ =\ Pattern.compile(word);}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ String\ body\ =\ cmd\_doc.getText(0,cmd\_doc.getLength());}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ Matcher\ matcher=pattern.matcher(body);}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (matcher!=\ \textcolor{keyword}{null}\ \&\&\ matcher.find())\ \{}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ need\ to\ find\ the\ 'details'\ tab\ index}}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ indx=0;}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (indx<helpTabbedPane.getTabCount()\ \&\&\ }
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ !helpTabbedPane.getTitleAt(indx).startsWith(\textcolor{stringliteral}{"{}Command\ D"{}}))}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ indx++;}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx<helpTabbedPane.getTabCount())}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ helpTabbedPane.setSelectedIndex(indx);\ }
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ detailArea.getCaret().setDot(matcher.start());}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ detailArea.getCaret().moveDot(matcher.end());}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ detailArea.getCaret().setSelectionVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00421\ }
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ fixups:\ reset\ viewport\ so\ chosen\ word\ is\ at\ top,\ not\ bottom}}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Element\ el\ =\ cmd\_doc.getDefaultRootElement();}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ y\ =\ 0;}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ j=0;\ j<el.getElementCount();\ j++)\ \{}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ el.getElement(j).getStartOffset()>=matcher.start()\ )\ \{}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ y=j-\/5;}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(y<0)\ y=0;}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00432\ }
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ lineHeight\ =\ detailArea.getFontMetrics(\ detailArea.getFont()).getHeight();}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ maxheight\ =\ detailArea.getPreferredSize().height;}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ y=y*lineHeight;}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(\ y>maxheight\ )\ y=maxheight;}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ detailScroller.getViewport().setViewPosition(\textcolor{keyword}{new}\ Point(0,y));}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ detailScroller.repaint();}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{\}}
+\DoxyCodeLine{00441\ \ \ \ \ \}}
+\DoxyCodeLine{00442\ }
+\DoxyCodeLine{00449\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ placeCmd(String\ cmd)\ \{}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ helpTabbedPane.setSelectedIndex(0);}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ detailArea.scrollToReference(cmd);\ }
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\{}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ ex.printStackTrace();}
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00456\ \ \ \ \ \}}
+\DoxyCodeLine{00457\ }
+\DoxyCodeLine{00465\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ AddXtendInfo(String\ xname,String\ abbrev,String\ text)\ \{}
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extendText.indexOf(xname)>0)\ \textcolor{keywordflow}{return};\ \textcolor{comment}{//\ already\ here}}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ extendText.append(\textcolor{stringliteral}{"{}<p><font=\(\backslash\)"{}+1\(\backslash\)"{}\ color=\(\backslash\)"{}red\(\backslash\)"{}>"{}}+xname+\textcolor{stringliteral}{"{}</font>\ \ ("{}}+abbrev+\textcolor{stringliteral}{"{})\ "{}});}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ extendText.append(text);}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ extenderArea.setText(extendText.toString());}
+\DoxyCodeLine{00470\ \ \ \ \ \}}
+\DoxyCodeLine{00471\ }
+\DoxyCodeLine{00480\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ loadXMLinfo(String\ filename,String\ keyword,StringBuilder\ textbuf)\ \{}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ String\ str=\textcolor{keyword}{null};}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ File\ file=\textcolor{keyword}{new}\ File(CPBase.getResourceURL(\textcolor{stringliteral}{"{}/doc/"{}}+filename).toString());}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ DOMParser\ parser\ =\ \textcolor{keyword}{new}\ DOMParser();}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ parser.parse(file.toString());}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (PackControl.consoleCmd!=\textcolor{keyword}{null})\ \textcolor{comment}{//\ this\ happens\ during\ startup}}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}Caught\ (probably)\ SAXParseException\ in\ "{}}+}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}trying\ to\ load\ script."{}});}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(ex.getMessage());}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ ex.printStackTrace(System.err);}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ org.w3c.dom.Document\ doc\ =\ parser.getDocument();}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ NodeList\ allNodes=doc.getDocumentElement().getChildNodes();}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (allNodes==\textcolor{keyword}{null}\ ||\ allNodes.getLength()==0)\ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ NamedNodeMap\ map=\textcolor{keyword}{null};}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ Node\ XType=\textcolor{keyword}{null};}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;k<allNodes.getLength();k++)\ \{}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \ \ \ \ Node\ curNode=allNodes.item(k);}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!curNode.getNodeName().equals(keyword)\ ||}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (map=curNode.getAttributes())==\textcolor{keyword}{null}\ ||\ }
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (XType=map.getNamedItem(\textcolor{stringliteral}{"{}name"{}}))==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00506\ }
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ packextender\ information}}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (keyword.equals(\textcolor{stringliteral}{"{}packextender"{}}))\ \{}
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ name}}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}<hr><b>"{}}+(String)XType.getNodeValue()+\textcolor{stringliteral}{"{}</b>"{}});}
+\DoxyCodeLine{00511\ }
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ abbreviation}}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Node\ ab=map.getNamedItem(\textcolor{stringliteral}{"{}abbrev"{}});}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ab!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}\ \ \ <i>"{}}+(String)ab.getNodeValue()+\textcolor{stringliteral}{"{}</i>"{}});}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}<br>"{}});}
+\DoxyCodeLine{00517\ }
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cycle\ through\ nodes\ for\ this\ extender}}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NodeList\ pXkids=curNode.getChildNodes();}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<pXkids.getLength();j++)\ \{}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Node\ domKid=(Node)(pXkids).item(j);}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NamedNodeMap\ kmap\ =\ domKid.getAttributes();}
+\DoxyCodeLine{00523\ }
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ tooltip}}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (domKid.getNodeName().equals(\textcolor{stringliteral}{"{}tooltip"{}}))\ \{}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ tip\_text\ =\ domKid.getFirstChild().getNodeValue();}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}<p\ allign=\(\backslash\)"{}center\(\backslash\)"{}>"{}}+tip\_text+\textcolor{stringliteral}{"{}</p>"{}});}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00529\ }
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ command}}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (domKid.getNodeName().equals(\textcolor{stringliteral}{"{}cmd"{}}))\ \{}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ must\ have\ command\ name}}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}((str=xmlText(kmap,\textcolor{stringliteral}{"{}name"{}}))!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}<p\ align=\(\backslash\)"{}left\(\backslash\)"{}\ color=\(\backslash\)"{}blue\(\backslash\)"{}\ size=\(\backslash\)"{}1\(\backslash\)"{}>"{}}+str);}
+\DoxyCodeLine{00535\ }
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ possible\ flags/options}}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}((str=xmlText(kmap,\textcolor{stringliteral}{"{}flags"{}}))!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}\ \ <color=\(\backslash\)"{}black\(\backslash\)"{}"{}}+str);}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}</p>"{}});}
+\DoxyCodeLine{00540\ }
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ look\ through\ sub\ nodes}}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NodeList\ kids=domKid.getChildNodes();}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ kk=0;kk<kids.getLength();kk++)\ \{}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Node\ kidskid=(Node)kids.item(kk);}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (kidskid.getNodeName().equals(\textcolor{stringliteral}{"{}param"{}}))\ \{}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NamedNodeMap\ kkmap\ =\ kidskid.getAttributes();}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}<p>"{}});}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((str=xmlText(kkmap,\textcolor{stringliteral}{"{}abbrev"{}}))!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}<tt>"{}}+str+\textcolor{stringliteral}{"{}</tt>\ \ "{}});}
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((str=kidskid.getFirstChild().getNodeValue().trim())!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(str);}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}</p>"{}});}
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ }
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ 'command'\ branch}}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ done\ with\ nodes\ of\ this\ 'PackExtender'}}
+\DoxyCodeLine{00558\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}<br>"{}});}
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ done\ if\ element\ is\ 'packextender'}}
+\DoxyCodeLine{00561\ }
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (keyword.equals(\textcolor{stringliteral}{"{}command"{}}))\ \{}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ name}}
+\DoxyCodeLine{00564\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}<hr><b>"{}}+(String)XType.getNodeValue()+\textcolor{stringliteral}{"{}</b>"{}});}
+\DoxyCodeLine{00565\ }
+\DoxyCodeLine{00566\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ possible\ flags/options}}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}((str=xmlText(map,\textcolor{stringliteral}{"{}flags"{}}))!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00568\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}\ \ <color=\(\backslash\)"{}black\(\backslash\)"{}<tt>"{}}+str+\textcolor{stringliteral}{"{}</tt>"{}});}
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}</p>"{}});}
+\DoxyCodeLine{00570\ }
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ look\ through\ sub\ nodes}}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NodeList\ kids=curNode.getChildNodes();}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ kk=0;kk<kids.getLength();kk++)\ \{}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Node\ kidskid=(Node)kids.item(kk);}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (kidskid.getNodeName().equals(\textcolor{stringliteral}{"{}param"{}}))\ \{}
+\DoxyCodeLine{00576\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ NamedNodeMap\ kkmap\ =\ kidskid.getAttributes();}
+\DoxyCodeLine{00577\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}<p>"{}});}
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((str=xmlText(kkmap,\textcolor{stringliteral}{"{}abbrev"{}}))!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}<tt>"{}}+str+\textcolor{stringliteral}{"{}</tt>\ \ "{}});}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((str=kidskid.getFirstChild().getNodeValue().trim())!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(str);}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}</p>"{}});}
+\DoxyCodeLine{00583\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00584\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ }}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ done\ if\ element\ is\ 'command'}}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \ \ \ \ textbuf.append(\textcolor{stringliteral}{"{}<br>"{}});}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ done\ looping\ through\ 'allNodes'}}
+\DoxyCodeLine{00589\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00590\ \ \ \ \ \}}
+\DoxyCodeLine{00591\ }
+\DoxyCodeLine{00598\ \ \ \ \ \textcolor{keyword}{public}\ String\ xmlText(NamedNodeMap\ map,String\ target)\ \{}
+\DoxyCodeLine{00599\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (map==\textcolor{keyword}{null}\ ||\ target==\textcolor{keyword}{null}\ ||\ target.length()==0)\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00600\ \ \ \ \ \ \ \ \ Node\ e=map.getNamedItem(target);}
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (e!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00602\ \ \ \ \ \ \ \ \ \ \ \ \ String\ str=e.getNodeValue();}
+\DoxyCodeLine{00603\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str!=\textcolor{keyword}{null}\ \&\&\ str.trim().length()!=0)\ \{}
+\DoxyCodeLine{00604\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ str.trim();}
+\DoxyCodeLine{00605\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00608\ \ \ \ \ \}}
+\DoxyCodeLine{00609\ }
+\DoxyCodeLine{00610\ \ \ \ \ \textcolor{keyword}{class\ }IndexHyperlinkListener\ \textcolor{keyword}{implements}\ HyperlinkListener}
+\DoxyCodeLine{00611\ \ \ \ \ \{}
+\DoxyCodeLine{00612\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ hyperlinkUpdate(HyperlinkEvent\ e)\ \{}
+\DoxyCodeLine{00613\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (e.getEventType()\ ==\ HyperlinkEvent.EventType.ACTIVATED)\ \{}
+\DoxyCodeLine{00614\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ StringTokenizer\ st\ =\ \textcolor{keyword}{new}\ StringTokenizer(e.getDescription(),\ \textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00615\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (st.hasMoreTokens())\ \{}
+\DoxyCodeLine{00616\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ s\ =\ st.nextToken();}
+\DoxyCodeLine{00617\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HelpHover.placeCmd(s);}
+\DoxyCodeLine{00618\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00619\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00620\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00621\ \ \ \ \ \}}
+\DoxyCodeLine{00622\ }
+\DoxyCodeLine{00623\ \ \ \ \ @Override}
+\DoxyCodeLine{00624\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ hyperlinkUpdate(HyperlinkEvent\ e)\ \{}
+\DoxyCodeLine{00625\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ Auto-\/generated\ method\ stub}}
+\DoxyCodeLine{00626\ }
+\DoxyCodeLine{00627\ \ \ \ \ \}}
+\DoxyCodeLine{00628\ }
+\DoxyCodeLine{00629\ \}}
+
+\end{DoxyCode}

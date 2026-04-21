@@ -1,0 +1,88 @@
+\doxysection{Socket\+Source.\+java}
+\label{_socket_source_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/input/SocketSource.java@{C:/Users/ashej/myGitRepos/CirclePack/src/input/SocketSource.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }input;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.io.IOException;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.io.InputStreamReader;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.io.PrintWriter;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.net.Socket;}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ cpTalk.sockets.CPSocketProtocol;}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }SocketSource\ \textcolor{keyword}{extends}\ CmdSource\ implements\ Runnable\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{public}\ Socket\ socket\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keyword}{public}\ PrintWriter\ out;}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keyword}{public}\ BufferedReader\ in;}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{public}\ SocketSource(Socket\ sokt)\ \{}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ super(CmdSource.CMD\_SOCKET);}
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ socket=sokt;}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}Socket\ client\ from\ "{}}+socket.getInetAddress().getCanonicalHostName());}
+\DoxyCodeLine{00031\ \ \ \ \ \}}
+\DoxyCodeLine{00032\ \ \ \ \ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{comment}{//\ this\ runs\ in\ a\ thread\ that\ watches\ for\ input\ from\ the\ socket}}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ run()\ \{}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.socketSources.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \ \ \ \ \ out\ =\ \textcolor{keyword}{new}\ PrintWriter(socket.getOutputStream(),\ \textcolor{keyword}{true});}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \ \ \ \ \ out.flush();}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \ in\ =\ \textcolor{keyword}{new}\ BufferedReader(\textcolor{keyword}{new}\ InputStreamReader(}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ socket.getInputStream()));}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPSocketProtocol\ cpSP\ =\ \textcolor{keyword}{new}\ CPSocketProtocol(\textcolor{keyword}{this});}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ watch\ for\ input,\ respond}}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ inputLine,\ outputLine;}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ haveName=\textcolor{keyword}{false};}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ inputLine\ =\ in.readLine().trim();}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (inputLine\ ==\ \textcolor{keyword}{null})\ \{\ \textcolor{comment}{//\ client\ closed\ connection;\ stop\ listening}}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputLine\ =\ \textcolor{stringliteral}{"{}bye"{}};}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ demand\ a\ name\ before\ accepting\ other\ info}}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (haveName)\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputLine\ =\ cpSP.processInput(inputLine);}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ name;}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (inputLine.startsWith(\textcolor{stringliteral}{"{}MYNAME"{}})\ \&\&\ inputLine.length()>7\ \&\&}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (name=inputLine.substring(7).trim()).length()>0)\ \{}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (name.length()>25)}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ name.substring(0,25);}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ haveName=\textcolor{keyword}{true};}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ theName=\textcolor{keyword}{new}\ String(socket.getInetAddress().getCanonicalHostName()+}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ "{}}+name);}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ this.setName(theName);}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputLine=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}Your\ name\ is\ '"{}}+theName);}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputLine=\textcolor{stringliteral}{"{}Client\ must\ start\ with\ 'MYNAME\ <name>'"{}};}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ debug}}
+\DoxyCodeLine{00076\ out.println(outputLine);\ \textcolor{comment}{//\ echo\ to\ client}}
+\DoxyCodeLine{00077\ System.err.println(\textcolor{stringliteral}{"{}server\ in:\ "{}}+inputLine);}
+\DoxyCodeLine{00078\ System.err.println(\textcolor{stringliteral}{"{}server\ out:\ "{}}+outputLine);}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (!outputLine.equalsIgnoreCase(\textcolor{stringliteral}{"{}bye"{}}));}
+\DoxyCodeLine{00081\ }
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ out.close();}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ in.close();}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ socket.close();}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.socketSources.remove(\textcolor{keyword}{this});}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (IOException\ e)\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ e.printStackTrace();}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00089\ \ \ \ \ \ \}\ \ }
+\DoxyCodeLine{00090\ \}}
+
+\end{DoxyCode}

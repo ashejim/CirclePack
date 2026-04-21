@@ -1,0 +1,459 @@
+\doxysection{Sph\+Widget.\+java}
+\label{_sph_widget_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/auxFrames/SphWidget.java@{C:/Users/ashej/myGitRepos/CirclePack/src/auxFrames/SphWidget.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }auxFrames;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ geometry.SphericalMath;}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.BorderLayout;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.awt.Dimension;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.awt.FlowLayout;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.awt.Point;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.awt.event.ActionEvent;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ java.awt.event.ActionListener;}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ javax.swing.JButton;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ javax.swing.JFrame;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ javax.swing.JLabel;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ javax.swing.JScrollPane;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ javax.swing.JTextArea;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00020\ \textcolor{keyword}{import}\ javax.swing.border.EmptyBorder;}
+\DoxyCodeLine{00021\ \textcolor{keyword}{import}\ javax.swing.border.EtchedBorder;}
+\DoxyCodeLine{00022\ \textcolor{keyword}{import}\ javax.swing.border.TitledBorder;}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{import}\ packing.CPdrawing;}
+\DoxyCodeLine{00025\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00026\ \textcolor{keyword}{import}\ util.UtilPacket;}
+\DoxyCodeLine{00027\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }SphWidget\ \textcolor{keyword}{extends}\ JFrame\ }
+\DoxyCodeLine{00030\ \ \ \ \ implements\ ActionListener\ \{}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00033\ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \ \ CPdrawing\ cpDrawing;}
+\DoxyCodeLine{00036\ \ \ \ \ PackData\ packData;}
+\DoxyCodeLine{00037\ \ \ \ \ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ BAR\_FOOTPRINT=25;\ \textcolor{comment}{//\ horizontal\ footprint\ of\ each\ bar}}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ TEXT\_PADDING=60;\ \textcolor{comment}{//\ padding\ on\ left\ for\ scale\ text}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ BAR\_PADDING=50;\ \textcolor{comment}{//\ space\ above/below\ bars}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ BAR\_DROP=30;\ \textcolor{comment}{//\ how\ far\ bar\ top\ is\ below\ panel\ top}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ RAD\_BAR\_HEIGHT=270;}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ ANG\_BAR\_HEIGHT=200;}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ INDX\_HEIGHT=50;}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ RAD\_BAR\_POWER=9.0;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ JPanel\ controlPanel;\ \textcolor{comment}{//\ option\ buttons,\ readouts}}
+\DoxyCodeLine{00048\ \ \ \ \ JScrollPane\ mainScroll;\ \textcolor{comment}{//\ contains\ barsPanel,\ scroll\ for\ larger\ packings}}
+\DoxyCodeLine{00049\ \ \ \ \ JPanel\ barsPanel;\ \textcolor{comment}{//\ barsPanel\ has\ rad,\ angsum,\ and\ index\ panels\ }}
+\DoxyCodeLine{00050\ \ \ \ \ JPanel\ radPanel;}
+\DoxyCodeLine{00051\ \ \ \ \ JPanel\ angsumPanel;}
+\DoxyCodeLine{00052\ \ \ \ \ JPanel\ indexPanel;}
+\DoxyCodeLine{00053\ \ \ \ \ }
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{public}\ DisplayBar\ []radBars;\ }
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{public}\ DisplayBar\ []angsumBars;}
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keywordtype}{double}\ []holdRadii;}
+\DoxyCodeLine{00057\ \ \ \ \ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keywordtype}{boolean}\ []lock;\ \textcolor{comment}{//\ hold\ radius\ lock\ status}}
+\DoxyCodeLine{00059\ \ \ \ \ }
+\DoxyCodeLine{00060\ \ \ \ \ \textcolor{comment}{//\ controlPanel\ stuff}}
+\DoxyCodeLine{00061\ \ \ \ \ numberField\ radiusField;}
+\DoxyCodeLine{00062\ \ \ \ \ numberField\ angsumField;}
+\DoxyCodeLine{00063\ \ \ \ \ numberField\ areaField;}
+\DoxyCodeLine{00064\ \ \ \ \ numberField\ angError;\ }
+\DoxyCodeLine{00065\ \ \ \ \ JTextField\ fileField;}
+\DoxyCodeLine{00066\ \ \ \ \ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{public}\ SphWidget(PackData\ p)\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ packData=p;}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ setTitle(\textcolor{stringliteral}{"{}Sphere\ Packing\ Widget,\ Pack\ "{}}+packData.packNum);}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ lock=\textcolor{keyword}{new}\ \textcolor{keywordtype}{boolean}[packData.nodeCount+1];}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=packData.nodeCount;v++)}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ lock[v]=\textcolor{keyword}{false};}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ initGUI();}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ installData();}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ setLocation(\textcolor{keyword}{new}\ Point(200,100));}
+\DoxyCodeLine{00077\ \ \ \ \ \}}
+\DoxyCodeLine{00078\ \ \ \ \ }
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initGUI()\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ this.setLayout(\textcolor{keyword}{null});}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Create\ control/data\ display\ area}}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ controlPanel\ =\ \textcolor{keyword}{new}\ JPanel(\textcolor{keyword}{new}\ FlowLayout(FlowLayout.LEFT));\textcolor{comment}{//\ new\ GridBagLayout());}}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Update\ button}}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ JButton\ button\ =\ \textcolor{keyword}{new}\ JButton(\textcolor{stringliteral}{"{}Update"{}});}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ button.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ button.setActionCommand(\textcolor{stringliteral}{"{}Recompute"{}});}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ button.setPreferredSize(\textcolor{keyword}{new}\ Dimension(90,\ 22));}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ button.setToolTipText(\textcolor{stringliteral}{"{}Recompute\ all\ values"{}});}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ controlPanel.add(button);}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ value\ displays}}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ angError\ =\ \textcolor{keyword}{new}\ numberField(\textcolor{stringliteral}{"{}Sum\ |Ang\ Error|/Pi"{}});}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ angError.setToolTipText(\textcolor{stringliteral}{"{}Sum\ of\ abs(angle\ sum\ errors)/Pi\ "{}});}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ angError.setPreferredSize(\textcolor{keyword}{new}\ Dimension(100,\ 45));}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ controlPanel.add(angError);}
+\DoxyCodeLine{00101\ }
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ radiusField\ =\ \textcolor{keyword}{new}\ numberField(\textcolor{stringliteral}{"{}radius/Pi"{}});}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ radiusField.setPreferredSize(\textcolor{keyword}{new}\ Dimension(100,\ 40));}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ radiusField.setToolTipText(\textcolor{stringliteral}{"{}Spherical\ radius\ of\ active\ vertex/Pi\ "{}});}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ controlPanel.add(radiusField);}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ angsumField\ =\ \textcolor{keyword}{new}\ numberField(\textcolor{stringliteral}{"{}Angle/Pi"{}});}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ angsumField.setToolTipText(\textcolor{stringliteral}{"{}Angle\ sum\ of\ active\ vertex/Pi\ "{}});}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ angsumField.setPreferredSize(\textcolor{keyword}{new}\ Dimension(100,\ 40));}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ controlPanel.add(angsumField);}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ areaField\ =\ \textcolor{keyword}{new}\ numberField(\textcolor{stringliteral}{"{}Area\ Error/Pi"{}});}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ areaField}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ .setToolTipText(\textcolor{stringliteral}{"{}Current\ (spherical)\ area\ minus\ target\ area/Pi\ "{}});}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ areaField.setPreferredSize(\textcolor{keyword}{new}\ Dimension(100,\ 40));}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ controlPanel.add(areaField);}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ button\ =\ \textcolor{keyword}{new}\ JButton(\textcolor{stringliteral}{"{}Help"{}});}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ button.addActionListener(\textcolor{keyword}{this});}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ button.setActionCommand(\textcolor{stringliteral}{"{}Help"{}});}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ button.setPreferredSize(\textcolor{keyword}{new}\ Dimension(80,\ 22));}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ button.setToolTipText(\textcolor{stringliteral}{"{}Help\ window\ for\ 'SphWidget'"{}});}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ controlPanel.add(button);}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Create\ panel\ with\ rad/ang/index\ bars}}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ barsPanel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ vectors\ containing\ data\ sliders;\ index\ from\ 1}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ radBars\ =\ \textcolor{keyword}{new}\ DisplayBar[packData.nodeCount\ +\ 1];}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ angsumBars\ =\ \textcolor{keyword}{new}\ DisplayBar[packData.nodeCount\ +\ 1];}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ panel\ showing\ vertical\ radii\ bars}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ wide=BAR\_FOOTPRINT*packData.nodeCount+TEXT\_PADDING+5;}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ high=ANG\_BAR\_HEIGHT+2*BAR\_PADDING+RAD\_BAR\_HEIGHT+INDX\_HEIGHT;}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ radPanel\ =\ \textcolor{keyword}{new}\ RadBarPanel(wide,RAD\_BAR\_POWER);}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ radPanel.setSize(\textcolor{keyword}{new}\ Dimension(wide,RAD\_BAR\_HEIGHT+BAR\_PADDING));}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ radPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(wide,RAD\_BAR\_HEIGHT+BAR\_PADDING));}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ radPanel.setBorder(\textcolor{keyword}{new}\ TitledBorder(\textcolor{keyword}{new}\ EtchedBorder(Color.red,}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Color.red),\ \textcolor{stringliteral}{"{}Radii\ (using\ log\ scale)"{}}));}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ panel\ showing\ vertical\ angle\ sum\ bars}}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ angsumPanel\ =\ \textcolor{keyword}{new}\ AngBarPanel(wide);}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ angsumPanel.setSize(\textcolor{keyword}{new}\ Dimension(wide,ANG\_BAR\_HEIGHT+BAR\_PADDING));}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ angsumPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(wide,ANG\_BAR\_HEIGHT+BAR\_PADDING));}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ angsumPanel.setBorder(\textcolor{keyword}{new}\ TitledBorder(\textcolor{keyword}{new}\ EtchedBorder(Color.blue,}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Color.blue),\ \textcolor{stringliteral}{"{}Angle\ Sums"{}}));}
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ indexPanel\ =\ \textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ indexPanel.setLayout(\textcolor{keyword}{null});}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ indexPanel.setSize(\textcolor{keyword}{new}\ Dimension(wide,INDX\_HEIGHT));}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ indexPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(wide,INDX\_HEIGHT));}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ indexPanel.setBorder(\textcolor{keyword}{new}\ EmptyBorder(0,\ 0,\ 0,\ 0));}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ barsPanel.add(radPanel);}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ barsPanel.add(angsumPanel);}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ barsPanel.add(indexPanel);}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ barsPanel.setSize(\textcolor{keyword}{new}\ Dimension(wide,high));}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ barsPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(wide,high));}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ mainScroll\ =\ \textcolor{keyword}{new}\ JScrollPane(barsPanel);}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ put\ in\ frame}}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ setLayout(\textcolor{keyword}{new}\ BorderLayout());}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ controlPanel.setBounds(1,1,wide,50);}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ controlPanel.setSize(\textcolor{keyword}{new}\ Dimension(wide,50));}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ controlPanel.setPreferredSize(\textcolor{keyword}{new}\ Dimension(wide,50));}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ add(controlPanel,\ BorderLayout.NORTH);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ mainScroll.setBounds(1,51,wide+20,high+5);}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ mainScroll.setSize(\textcolor{keyword}{new}\ Dimension(wide+20,high+5));}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ mainScroll.setPreferredSize(\textcolor{keyword}{new}\ Dimension(wide+20,high+5));}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ add(mainScroll,BorderLayout.CENTER);}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ pack();}
+\DoxyCodeLine{00175\ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \ \ }
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ installData()\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ radPanel.removeAll();}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ radPanel.setLayout(\textcolor{keyword}{null});}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ angsumPanel.removeAll();}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ angsumPanel.setLayout(\textcolor{keyword}{null});}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ indexPanel.removeAll();}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ indexPanel.setLayout(\textcolor{keyword}{null});}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ JLabel\ indexLabel;}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ radius\ bars\ (checking\ for\ illegal\ situations)}}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=packData.nodeCount;v++)\ \{}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad=packData.getRadius(v);}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ mx=SphericalMath.sph\_rad\_max(packData,v);}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (rad>=mx)\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}Illegal\ radius\ encountered"{}});}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ startX=TEXT\_PADDING+BAR\_FOOTPRINT*(v-\/1);}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ startY=BAR\_DROP;}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ radius}}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ radBars[v]=\textcolor{keyword}{new}\ DisplayBar(\textcolor{keyword}{this},v,\textcolor{keyword}{true},packData.getRadius(v));}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ radBars[v].setBounds(startX,startY,BAR\_FOOTPRINT,RAD\_BAR\_HEIGHT+BAR\_PADDING);}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ radPanel.add(radBars[v]);}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ radBars[v].barArea.setVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ radBars[v].placePointer(SphericalMath.sph\_rad\_max(packData,v));}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lock[v])\ radBars[v].barArea.setBackground(Color.blue);\textcolor{comment}{//new\ Color(220,220,255));}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ compute,\ set\ angle\ sum}}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ UtilPacket\ uP=\textcolor{keyword}{new}\ UtilPacket();}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packData.s\_anglesum(v,packData.getRadius(v),uP))\ \{}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ packData.setCurv(v,uP.value);}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ packData.setCurv(v,0.0);}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ angsumBars[v]=\textcolor{keyword}{new}\ DisplayBar(\textcolor{keyword}{this},v,\textcolor{keyword}{false},packData.getCurv(v));}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ angsumBars[v].setBounds(startX,startY,BAR\_FOOTPRINT,ANG\_BAR\_HEIGHT+BAR\_PADDING);}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ angsumPanel.add(angsumBars[v]);}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ angsumBars[v].barArea.setVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!lock[v])\ \textcolor{comment}{//\ only\ set\ initially\ for\ unlocked\ vertices\ }}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angsumBars[v].placePointer(packData.getAim(v));}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ enter\ indices}}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ indexLabel=\textcolor{keyword}{new}\ JLabel(Integer.toString(v),JLabel.LEFT);}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ indexLabel.setBounds(startX,0,16,15);}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ indexPanel.add(indexLabel);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ total\ area\ and\ error}}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ angError.setText(String.format(\textcolor{stringliteral}{"{}\%.6e"{}},(\textcolor{keywordtype}{double})(packData.angSumError()/Math.PI)));}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ radPanel.repaint();}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ angsumPanel.repaint();}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ indexPanel.repaint();}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ decide\ if\ area\ is\ relevant,\ compute\ area\ target}}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hit=0;}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ aimSum=0.0;}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=packData.nodeCount;k++)\ \{}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packData.getBdryFlag(k)!=0)\ hit++;}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ aimSum+=packData.getAim(k)-\/2*Math.PI;}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hit>0)\ areaField.setVisible(\textcolor{keyword}{false});}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ targetArea=4*Math.PI+aimSum;}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ curArea=packData.carrierArea();}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ areaField.setText(String.format(\textcolor{stringliteral}{"{}\%.6e"{}},(\textcolor{keywordtype}{double})((curArea-\/targetArea)/Math.PI)));}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ areaField.setVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00245\ \ \ \ \ \}}
+\DoxyCodeLine{00246\ \ \ \ \ }
+\DoxyCodeLine{00250\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ updateBars()\ \{}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=packData.nodeCount;v++)\ \{}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ radBars[v].setBarHeight(packData.getRadius(v));}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ radBars[v].placePointer(SphericalMath.sph\_rad\_max(packData,v));}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lock[v])\ radBars[v].barArea.setBackground(Color.blue);\textcolor{comment}{//new\ Color(220,220,255));}}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ UtilPacket\ uP=\textcolor{keyword}{new}\ UtilPacket();}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ packData.s\_anglesum(v,packData.getRadius(v),uP);}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ angsumBars[v].setBarHeight(uP.value);}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ angsumBars[v].placePointer(packData.getAim(v));}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00260\ \ \ \ \ \}}
+\DoxyCodeLine{00261\ \ \ \ \ }
+\DoxyCodeLine{00266\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ displayRad(\textcolor{keywordtype}{int}\ vert)\ \{}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ radiusField.setText(String.format(\textcolor{stringliteral}{"{}\%.6e"{}},}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{double})(packData.getRadius(vert)/Math.PI)));}
+\DoxyCodeLine{00269\ \ \ \ \ \}}
+\DoxyCodeLine{00270\ \ \ \ \ }
+\DoxyCodeLine{00275\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ displayAngSum(\textcolor{keywordtype}{int}\ vert)\ \{}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ angsumField.setText(String.format(\textcolor{stringliteral}{"{}\%.6e"{}},}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{double})(packData.getCurv(vert)/Math.PI)));}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ display\ sum\ of\ signed\ errors\ of\ (interior)\ curvatures}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ accum=0.0;}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packData.getBdryFlag(vert)==0)\ }
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ accum=packData.getCurv(vert)-\/packData.getAim(vert);}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ petals=packData.getPetals(vert);}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<petals.length;j++)\ \{}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=petals[j];}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!packData.isBdry(k))}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ accum\ +=\ Math.abs(packData.getCurv(k)-\/packData.getAim(k));}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ angError.setText(String.format(\textcolor{stringliteral}{"{}\%.6e"{}},(\textcolor{keywordtype}{double})(accum/Math.PI)));}
+\DoxyCodeLine{00289\ \ \ \ \ \}}
+\DoxyCodeLine{00290\ \ \ \ \ }
+\DoxyCodeLine{00294\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ displayArea()\ \{}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ area=packData.carrierArea();}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ aimSum=0.0;}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=1;k<=packData.nodeCount;k++)\ \{}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ aimSum+=packData.getAim(k)-\/2*Math.PI;}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ areaField.setText(String.format(\textcolor{stringliteral}{"{}\%.6e"{}},}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{double})(area-\/4*Math.PI-\/aimSum/Math.PI)));}
+\DoxyCodeLine{00302\ \ \ \ \ \}}
+\DoxyCodeLine{00303\ \ \ \ \ }
+\DoxyCodeLine{00307\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ displayAngError()\ \{}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ angError.setText(String.format(\textcolor{stringliteral}{"{}\%.6e"{}},}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (\textcolor{keywordtype}{double})(packData.angSumError()/Math.PI)));}
+\DoxyCodeLine{00310\ \ \ \ \ \}}
+\DoxyCodeLine{00311\ \ \ \ \ }
+\DoxyCodeLine{00312\ \ \ \ \ }
+\DoxyCodeLine{00317\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ lightupFlower(\textcolor{keywordtype}{int}\ vertnum)\ \{}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=packData.nodeCount;j++)\ \{}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ radBars[j].setBarGray();}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ angsumBars[j].setBarGray();}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packData==\textcolor{keyword}{null}\ ||\ vertnum>packData.nodeCount)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ radBars[vertnum].setBarRed();}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ angsumBars[vertnum].setBarRed();}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ displayRad(vertnum);}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ displayAngSum(vertnum);}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=packData.getFlower(vertnum);}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<=flower.length;j++)\ \{}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=flower[j];}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ radBars[v].setBarGreen();}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ angsumBars[v].setBarGreen();}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00336\ \ \ \ \ \}}
+\DoxyCodeLine{00337\ }
+\DoxyCodeLine{00338\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setLock(\textcolor{keywordtype}{int}\ vert)\ \{}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ lock[vert]=\textcolor{keyword}{true};}
+\DoxyCodeLine{00340\ \ \ \ \ \}}
+\DoxyCodeLine{00341\ \ \ \ \ }
+\DoxyCodeLine{00346\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ unLock(\textcolor{keywordtype}{int}\ vert)\ \{}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ lock[vert]=\textcolor{keyword}{false};}
+\DoxyCodeLine{00348\ \ \ \ \ \}}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00350\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setValue(\textcolor{keywordtype}{double}\ value,\textcolor{keywordtype}{int}\ vert,\textcolor{keywordtype}{boolean}\ mode)\ \{}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode)\ \{\ \textcolor{comment}{//\ radii;\ new:\ treat\ value\ as\ logarithmic\ factor.}}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ angsum;}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ was\ value*radius\ -\/-\/\ multiplier\ each\ time?\ }}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ packData.setRadius(vert,value);}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ UtilPacket\ uP=\textcolor{keyword}{new}\ UtilPacket();}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packData.s\_anglesum(vert,packData.getRadius(vert),uP))\ \{}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ packData.setCurv(vert,uP.value);}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angsum=uP.value;}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angsumBars[vert].setBarHeight(angsum);}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ radBars[vert].placePointer(SphericalMath.sph\_rad\_max(packData,vert));}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ update\ petals}}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ petals=packData.getPetals(vert);}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;k<petals.length;k++)\ \{}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=petals[k];}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uP=\textcolor{keyword}{new}\ UtilPacket();}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packData.s\_anglesum(v,packData.getRadius(v),uP))\ \{}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ packData.setCurv(v,uP.value);}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angsum=uP.value;}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angsumBars[v].setBarHeight(angsum);}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ radBars[v].placePointer(SphericalMath.sph\_rad\_max(packData,v));}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ displayRad(vert);}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ displayAngSum(vert);}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ just\ record\ chosen\ aim}}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ packData.setAim(vert,value);}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00380\ \ \ \ \ \}}
+\DoxyCodeLine{00381\ \ \ \ \ }
+\DoxyCodeLine{00382\ \ \ \ \ \textcolor{comment}{//\ Process\ button\ pressing\ events}}
+\DoxyCodeLine{00383\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ actionPerformed(ActionEvent\ evt)\ \{}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ String\ cmd=evt.getActionCommand();}
+\DoxyCodeLine{00385\ }
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.equals(\textcolor{stringliteral}{"{}Help"{}}))\ \{}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ JFrame\ auxHelpFrame=\textcolor{keyword}{new}\ JFrame();}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ auxHelpFrame.setTitle(\textcolor{stringliteral}{"{}Help\ for\ SpherePack"{}});}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ JTextArea\ helpText=\textcolor{keyword}{new}\ JTextArea();}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ helpText.setText(\textcolor{stringliteral}{"{}\ Mouse\ and\ mouse-\/button\ action\ are\ the\ main\ mode\ of\ control:\(\backslash\)n\(\backslash\)n\(\backslash\)n"{}}+}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ *\ Radii\ bars\ in\ top\ panel\ (logarithmic\ scale,\ 'stars'\ indicate\ max\ allowed)\(\backslash\)n\(\backslash\)n"{}}+}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ *\ Angle\ sums\ are\ in\ lower\ panel\(\backslash\)n\(\backslash\)n"{}}+}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ *\ Active\ vertex\ bars\ are\ red,\ its\ neighbors'\ green\(\backslash\)n\(\backslash\)n"{}}+}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ *\ Adjust\ radius\ bar\ with\ left-\/mouse:\ grab/move\ or\ click\ to\ set\(\backslash\)n\(\backslash\)n"{}}+}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ *\ Click\ right-\/mouse\ on\ radius\ bar\ to\ toggle\ between\ lock/unlock\(\backslash\)n\(\backslash\)n"{}}+}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ *\ Click\ left-\/mouse\ or\ right-\/mouse\ inside\ angle\ sum\ bar\ to\ position\ 'aim'\ target\ icon\(\backslash\)n\(\backslash\)n"{}}+}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ *\ Packings\ are\ limited\ to\ 32\ vertices\(\backslash\)n\(\backslash\)n"{}}+}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ *\ Buttons\ let\ you\ 'cache'\ and\ 'reset'\ radii\(\backslash\)n\(\backslash\)n"{}}+}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}\ \ *\ There\ are\ available\ buttons:\ any\ actions\ you\ want\ to\ propose?\(\backslash\)n\(\backslash\)n"{}});}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ auxHelpFrame.add(helpText);}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ helpText.setLineWrap(\textcolor{keyword}{true});}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ helpText.setWrapStyleWord(\textcolor{keyword}{true});}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ util.EmacsBindings.addEmacsBindings(helpText);}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ helpText.setPreferredSize(\textcolor{keyword}{new}\ Dimension(500,500));}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ auxHelpFrame.pack();}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ \ \ auxHelpFrame.setVisible(\textcolor{keyword}{true});}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00408\ }
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.equals(\textcolor{stringliteral}{"{}cache\ radii"{}}))\ \{}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=packData.nodeCount;j++)}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ holdRadii[j]=packData.getRadius(j);}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.equals(\textcolor{stringliteral}{"{}reset\ radii"{}})\ \&\&\ holdRadii!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=packData.nodeCount;j++)\ \{}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ packData.setRadius(j,holdRadii[j]);}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ radBars[j].setBarHeight(packData.getRadius(j));}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ UtilPacket\ uP=\textcolor{keyword}{new}\ UtilPacket();}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packData.s\_anglesum(j,packData.getRadius(j),uP))\ \{}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ packData.setCurv(j,uP.value);}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angsumBars[j].setBarHeight(packData.getCurv(j));}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}Increase"{}})\ ||\ cmd.startsWith(\textcolor{stringliteral}{"{}Decrease"{}}))\ \{}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<=packData.nodeCount;j++)\ \{}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!lock[j])\ \{}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ jrad=packData.getRadius(j);}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.equals(\textcolor{stringliteral}{"{}Increase1"{}}))}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ jrad\ *=1.01;}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.equals(\textcolor{stringliteral}{"{}Increase1.1"{}}))}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ jrad\ *=1.001;}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.equals(\textcolor{stringliteral}{"{}Increase1.01"{}}))}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ jrad\ *=1.0001;}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.equals(\textcolor{stringliteral}{"{}Decrease1"{}}))}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ jrad\ *=.99;}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.equals(\textcolor{stringliteral}{"{}Decrease1.1"{}}))}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ jrad\ *=.999;}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.equals(\textcolor{stringliteral}{"{}Decrease1.01"{}}))}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ jrad\ *=.9999;}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ packData.setRadius(j,\ jrad);}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ radBars[j].setBarHeight(packData.getRadius(j));}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ UtilPacket\ uP=\textcolor{keyword}{new}\ UtilPacket();}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packData.s\_anglesum(j,packData.getRadius(j),uP))\ \{}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ packData.setCurv(j,uP.value);}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ angsumBars[j].setBarHeight(uP.value);}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ displayAngError();}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ displayArea();}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.equals(\textcolor{stringliteral}{"{}Recompute"{}}))\ \{}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ updateBars();}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ displayAngError();}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ displayArea();}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00461\ \ \ \ \ \}}
+\DoxyCodeLine{00467\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }numberField\ \textcolor{keyword}{extends}\ JTextField\ \{}
+\DoxyCodeLine{00468\ }
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ }
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ numberField(String\ title)\ \{}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \ \ setEditable(\textcolor{keyword}{false});}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ setBorder(\textcolor{keyword}{new}\ TitledBorder(\textcolor{keyword}{new}\ EtchedBorder(Color.black,Color.gray),title));}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ setMaximumSize(\textcolor{keyword}{new}\ Dimension(170,20));}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ setMinimumSize(\textcolor{keyword}{new}\ Dimension(170,20));}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \ \ \ \ setText(\textcolor{stringliteral}{"{}-\/-\/"{}});}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ numberField(String\ title,\textcolor{keywordtype}{double}\ value)\ \{}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(title);}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ setText(Double.toString(value));}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00485\ \ \ \ \ \}}
+\DoxyCodeLine{00486\ \ \ \ \ }
+\DoxyCodeLine{00487\ \}}
+\DoxyCodeLine{00488\ }
+\DoxyCodeLine{00489\ }
+
+\end{DoxyCode}

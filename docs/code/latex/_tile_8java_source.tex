@@ -1,0 +1,631 @@
+\doxysection{Tile.\+java}
+\label{_tile_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/tiling/Tile.java@{C:/Users/ashej/myGitRepos/CirclePack/src/tiling/Tile.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }tiling;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ combinatorics.komplex.Face;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ combinatorics.komplex.RedEdge;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ dcel.CombDCEL;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ dcel.PackDCEL;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ dcel.RawManip;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ deBugging.DebugHelp;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ exceptions.CombException;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ komplex.EdgeSimple;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ listManip.VertexMap;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00063\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }Tile\ \textcolor{keyword}{extends}\ Face\ \{}
+\DoxyCodeLine{00064\ \ \ \ \ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ tileIndex;\ \ \ \ \ \ \ \textcolor{comment}{//\ index\ generally\ independent\ of\ }}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ associated\ packings\ }}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ tileType;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ -\/1=unset:\ give\ the\ 'type',\ e.g.,\ }}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ for\ subdivision\ rules.}}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{public}\ TileData\ TDparent;\ \textcolor{comment}{//\ 'TileData'\ structure\ to\ which\ this\ belongs}}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ baryVert;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ barycenter\ vertex\ in\ canonical\ packing}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[][]\ tileFlower;\ \ \textcolor{comment}{//\ ccw\ list\ (t\_j,e\_j),\ where\ 't\_j'\ is\ the\ }}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ index\ of\ the\ tile\ across\ edge\ }}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ (vert[j],vert[j+1])\ (may\ be\ 0\ for\ no\ }}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ nghb\ or\ this\ may\ be\ this\ same\ tile).\ }}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ e\_j\ is\ the\ index\ of\ the\ first\ vertex}}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ of\ the\ shared\ edge\ from\ perspective\ of\ }}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ tile\ t\_j.}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ In\ reading\ a\ tiling,\ the\ 't\_j'\ are\ filled\ \ }}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ first\ and\ may\ be\ set\ temporarily\ negative,\ }}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ then\ the\ 'e\_j'\ are\ determined\ and\ }}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ consistency\ checked.}}
+\DoxyCodeLine{00082\ \ \ \ \ }
+\DoxyCodeLine{00083\ \ \ \ \ \textcolor{comment}{//\ this\ tile\ may\ be\ a\ tiling\ itself\ after\ subdivision}}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keyword}{public}\ TileData\ myTileData;\ \textcolor{comment}{//\ null\ by\ default}}
+\DoxyCodeLine{00085\ \ \ \ \ }
+\DoxyCodeLine{00086\ \ \ \ \ \textcolor{comment}{//\ for\ edge-\/tracing\ during\ displays,\ augment\ border\ vertex\ list;}}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ augVertCount;\ \textcolor{comment}{//\ -\/1\ on\ startup}}
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{comment}{//\ these\ are\ generally\ null\ by\ default}}
+\DoxyCodeLine{00089\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[]\ augVert;\ \ \ \ \textcolor{comment}{//\ null\ until\ created:\ augVert[0]\ always\ }}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ equals\ vert[0]}}
+\DoxyCodeLine{00091\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[]\ wgIndices;\ \ \textcolor{comment}{//\ null\ until\ created:\ each\ n-\/gon\ breaks\ }}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ into\ 2n\ wg\ (white/grey)\ }}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ triangular\ tiles\ stored\ in\ 'tileData.wgTiles'.}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ Each\ wg\ tile\ has\ 'mark'\ set:\ }}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ 1=white,\ -\/1=grey,\ for\ orientation.\ vert[0]}}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ (the\ 'principal'\ vertex)\ is\ the\ 0-\/corner,\ \ }}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Each\ wgTile\ is\ bary\_refined,\ so\ its\ a\ hex\ flower.}}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ utilFlag;\ \ \ \ \ \textcolor{comment}{//\ utility\ for\ future\ use:\ e.g.,\ mark\ specific\ edge}}
+\DoxyCodeLine{00099\ \ \ \ \ }
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{comment}{//\ Constructors}}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keyword}{public}\ Tile(PackData\ p,TileData\ tdparent,\textcolor{keywordtype}{int}\ vCount)\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ super(vCount);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ TDparent=tdparent;}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ baryVert=-\/1;\ \textcolor{comment}{//\ depends\ on\ packing}}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ augVertCount=-\/1;}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ augVert=\textcolor{keyword}{null};}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ wgIndices=\textcolor{keyword}{null};}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ myTileData=\textcolor{keyword}{null};}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ tileFlower=\textcolor{keyword}{null};}
+\DoxyCodeLine{00110\ \ \ \ \ \}}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keyword}{public}\ Tile(TileData\ tdparent,\textcolor{keywordtype}{int}\ vCount)\ \{}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(\textcolor{keyword}{null},tdparent,vCount);}
+\DoxyCodeLine{00114\ \ \ \ \ \}}
+\DoxyCodeLine{00115\ \ \ \ \ }
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keyword}{public}\ Tile(\textcolor{keywordtype}{int}\ vCount)\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(\textcolor{keyword}{null},\textcolor{keyword}{null},vCount);}
+\DoxyCodeLine{00118\ \ \ \ \ \}}
+\DoxyCodeLine{00119\ \ \ \ \ }
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keyword}{public}\ PackData\ singleCanonical(\textcolor{keywordtype}{int}\ mode)\ \{}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode==1)\ \{\ \textcolor{comment}{//\ simple\ tiling}}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(vertCount<3)}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}unigons/digons\ not\ allowed\ in\ tile\ mode\ 1"{}});}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ PackData\ p=packing.PackCreation.seed(vertCount,0);}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ p.tileData=\textcolor{keyword}{new}\ TileData(1,1);}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ Tile\ tile=\textcolor{keyword}{new}\ Tile(p.tileData,vertCount);}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ tile.tileType=tileType;}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVertCount=vertCount;}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVert=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[tile.augVertCount];}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ tile.baryVert=1;}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ p.vertexMap=\textcolor{keyword}{new}\ VertexMap();}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(1,1);}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<vertCount;j++)\ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ m=2+j;}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tile.vert[j]=tile.augVert[j]=m;}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(m,2);}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.vertexMap.add(\textcolor{keyword}{new}\ EdgeSimple(j,m));}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ p.tileData.myTiles[1]=tile;}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mode==2)\ \{\ \textcolor{comment}{//\ edge\ barycenters\ added}}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}(vertCount<2)}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}unigons\ not\ allowed\ in\ tile\ mode\ 2"{}});}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ PackData\ p=packing.PackCreation.seed(2*vertCount,0);}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ p.tileData=\textcolor{keyword}{new}\ TileData(1,2);}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ Tile\ tile=\textcolor{keyword}{new}\ Tile(p.tileData,vertCount);}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ tile.tileType=tileType;}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVertCount=2*vertCount;}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVert=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[tile.augVertCount];}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ tile.baryVert=1;}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ p.vertexMap=\textcolor{keyword}{new}\ VertexMap();}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(1,1);}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<vertCount;j++)\ \{}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ m=2+2*j;}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(m,2);}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(m+1,3);}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.vertexMap.add(\textcolor{keyword}{new}\ EdgeSimple(j,m));}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tile.vert[j]=m;}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVert[2*j]=m;}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVert[2*j+1]=m+1;}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ p.tileData.myTiles[1]=tile;}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00193\ }
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ mode==3,\ more\ complicated\ combinatorics}}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ is\ this\ a\ uni-\/gon?\ It\ is\ not\ consistent\ with}}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ the\ construction\ of\ other\ tiles.}}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vertCount==1)\ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ build\ bouquet}}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[][]\ bouquet=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[10][];}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a1[]=\ \{6,7,8,9,6\};}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[1]=a1;}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a2[]=\{3,7,6,9,5\};\ }
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[2]=a2;}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a3[]=\ \{4,7,2\};}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[3]=\ a3;}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a4[]=\{5,9,8,7,3\};\ }
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[4]=\ a4;}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a5[]=\{2,9,4\};\ }
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[5]=\ a5;}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a6[]=\ \{1,9,2,7,1\};\ }
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[6]=a6;}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a7[]=\ \{1,6,2,3,4,8,1\};\ }
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[7]=a7;}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a8[]=\{1,7,4,9,1\};\ }
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[8]=\ a8;}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ a9[]=\{1,8,4,5,2,6,1\};\ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ bouquet[9]=\ a9;}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ PackDCEL\ pdcel=CombDCEL.getRawDCEL(bouquet,1);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ PackData\ p=\textcolor{keyword}{new}\ PackData(\textcolor{keyword}{null});}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ pdcel.fixDCEL(p);}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ p.setGamma(2);}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ p.activeNode=1;}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ p.hes=0;}
+\DoxyCodeLine{00227\ }
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(6,2.5/4.0);}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(7,2.5/6.0);}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(8,2.5/4.0);}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(9,2.5/6.0);}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(2,2.5/4.0);}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(3,2.5/4.0);}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(4,2.5/4.0);}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ p.setRadius(5,2.5/4.0);}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ p.set\_aim\_default();}
+\DoxyCodeLine{00237\ }
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ mark\ vertices\ and\ store\ info}}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(1,1);}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(2,2);}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(4,3);}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(7,\ -\/1);\ \textcolor{comment}{//\ hex\ refined\ face\ centers}}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(9,\ -\/1);}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ p.vertexMap=\textcolor{keyword}{new}\ VertexMap();}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ p.vertexMap.add(\textcolor{keyword}{new}\ EdgeSimple(0,2));\ \textcolor{comment}{//\ vert[0]\ -\/-\/>\ circle\ 2}}
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ p.tileData=\textcolor{keyword}{new}\ TileData(1,3);}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ Tile\ tile=\textcolor{keyword}{new}\ Tile(p,p.tileData,1);}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ tile.tileType=tileType;}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ tile.baryVert=1;}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ tile.vert[0]=2;}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVertCount=4;}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVert=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[4];}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVert[0]=2;}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVert[1]=3;}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVert[2]=4;}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVert[3]=5;}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ p.tileData.myTiles[1]=tile;}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ general\ n-\/gon\ case,\ n>=2}}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ PackDCEL\ pdcel=RawManip.seed\_raw(2*vertCount);}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ CombDCEL.redchain\_by\_edge(pdcel,\ \textcolor{keyword}{null},\ pdcel.alpha,\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ CombDCEL.fillInside(pdcel);}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ ArrayList<Integer>\ barycents=RawManip.hexBaryRefine\_raw(pdcel,\ \textcolor{keyword}{true});}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ PackData\ p=\textcolor{keyword}{new}\ PackData(\textcolor{keyword}{null});}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ pdcel.fixDCEL(p);}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ mark\ various\ vertices}}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ p.setVertMark(1,1);}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ p.vertexMap=\textcolor{keyword}{new}\ VertexMap();}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<vertCount;j++)\ \{}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ m=2+2*j;}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ p.vertexMap.add(\textcolor{keyword}{new}\ EdgeSimple(j,m));}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(m,2);}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(m+1,3);}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ Iterator<Integer>\ bis=barycents.iterator();}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (bis.hasNext())\ }
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ p.setVertMark(bis.next(),-\/1);}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ p.tileData=\textcolor{keyword}{new}\ TileData(1,3);}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ Tile\ tile=\textcolor{keyword}{new}\ Tile(p.tileData,vertCount);}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ tile.tileType=tileType;}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ tile.tileIndex=1;}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ tile.baryVert=1;}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<vertCount;j++)\ \{}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ tile.vert[j]=2+2*j;}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ redChain\ to\ start\ at\ vert\ 2}}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.packDCEL.redChain.myEdge.origin.vertIndx!=2)\ \{}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ RedEdge\ tmhe=p.packDCEL.redChain.nextRed;}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (tmhe.myEdge.origin.vertIndx!=2\ \&\&\ tmhe!=p.packDCEL.redChain)\ \{}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmhe=tmhe.nextRed;}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tmhe.myEdge.origin.vertIndx!=2)}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}redChain\ doesn't\ contain\ vert\ 2"{}});}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ p.packDCEL.redChain=tmhe;}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ tile.augVertCount=4*vertCount;}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ tile.augVert=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[tile.augVertCount];}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ RedEdge\ rtrace=p.packDCEL.redChain;}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ tile.augVert[tick++]=rtrace.myEdge.origin.vertIndx;}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ rtrace=rtrace.nextRed;}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (rtrace!=p.packDCEL.redChain);}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ p.tileData.myTiles[1]=tile;}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tile.tileFlower==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ tile.tileFlower=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[tile.vertCount][2];}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{00318\ \ \ \ \ \}}
+\DoxyCodeLine{00319\ \ \ \ \ }
+\DoxyCodeLine{00326\ \ \ \ \ \textcolor{keyword}{public}\ NodeLink\ tileBorderLink()\ \{}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ NodeLink\ bdry=\textcolor{keyword}{new}\ NodeLink();}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (augVert!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<augVertCount;j++)}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bdry.add(augVert[j]);}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ bdry.add(augVert[0]);}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ bdry;}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<vertCount;j++)\ }
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ bdry.add(vert[j]);}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ bdry.add(vert[0]);}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ bdry;}
+\DoxyCodeLine{00338\ \ \ \ \ \}}
+\DoxyCodeLine{00339\ \ \ \ \ }
+\DoxyCodeLine{00354\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ isTileEdge(\textcolor{keywordtype}{int}\ v,\textcolor{keywordtype}{int}\ w)\ \{}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ special\ case}}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v==w)\ \{}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vertCount==1)}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vertCount==2)\ \{}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tileFlower==\textcolor{keyword}{null}\ ||\ tileFlower[1][0]!=0)}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ typical\ search}}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vert[0]==w\ \&\&\ vert[vertCount-\/1]==v)}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vertCount-\/1;}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<(vertCount-\/1);i++)}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vert[i]==v\ \&\&\ vert[i+1]==w)}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ i;}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00375\ \ \ \ \ \}}
+\DoxyCodeLine{00376\ \ \ \ \ }
+\DoxyCodeLine{00387\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ nghb\_tile(\textcolor{keywordtype}{int}\ indx,\textcolor{keywordtype}{int}\ dir)\ \{}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx<0)}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/2;}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tileFlower==\textcolor{keyword}{null})}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/3;}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ indx=indx\%vertCount;}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (indx==0\ \&\&\ dir<0)}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.abs(tileFlower[vertCount-\/1][0]);}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dir<0)}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.abs(tileFlower[indx-\/1][0]);}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ }
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ Math.abs(tileFlower[indx][0]);}
+\DoxyCodeLine{00399\ \ \ \ \ \}}
+\DoxyCodeLine{00400\ \ \ \ \ }
+\DoxyCodeLine{00408\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ checkDepth()\ \{}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=0;}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ 'TileData'?\ then\ depth\ is\ zero}}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myTileData==\textcolor{keyword}{null}\ ||\ myTileData.tileCount<=0)}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ n;}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ someneg=\textcolor{keyword}{false};}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ min=myTileData.myTiles[1].checkDepth();}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (min<0)\ }
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ someneg=\textcolor{keyword}{true};}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ min=Math.abs(min);}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ t=2;t<=myTileData.tileCount;t++)\ \{}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ m=myTileData.myTiles[t].checkDepth();}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m<0)}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ someneg=\textcolor{keyword}{true};}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ m=Math.abs(m);}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (m!=min)}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ someneg=\textcolor{keyword}{true};}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ min=(m<min)?m:min;}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ new\ depth\ is\ min+1}}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ min++;}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (someneg)}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ min\ *=\ -\/1;}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ min;}
+\DoxyCodeLine{00434\ \ \ \ \ \}}
+\DoxyCodeLine{00435\ }
+\DoxyCodeLine{00444\ \ \ \ \ \textcolor{keyword}{public}\ NodeLink\ getAugBdry(\textcolor{keywordtype}{int}\ indx)\ \{}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ first\ edge}}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ NodeLink\ bdrylist=findAugEdge(0);}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ string\ together\ the\ middle\ edges}}
+\DoxyCodeLine{00449\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<(vertCount-\/1);j++)\ \{}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ NodeLink\ elist=findAugEdge(j);}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ elist.remove(elist.size()-\/1);}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ bdrylist.abutMore(elist);}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00455\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ add\ in\ the\ last\ edge,\ this\ should\ close\ it\ up}}
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ bdrylist.abutMore(findAugEdge(vertCount-\/1));}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ bdrylist;}
+\DoxyCodeLine{00459\ \ \ \ \ \}}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00474\ \ \ \ \ \textcolor{keyword}{public}\ NodeLink\ findAugEdge(\textcolor{keywordtype}{int}\ indx)\ \{}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ indx=Math.abs(indx)\%vertCount;}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=vert[indx];}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=vert[(indx+1)\%vertCount];}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ NodeLink\ out=\textcolor{keyword}{new}\ NodeLink();}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ 'augVert'?\ just\ return\ v,w}}
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (augVert==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ out.add(v);}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \ \ out.add(w);}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out;}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Because\ vert\ indices\ can\ be\ repeated,\ we}}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ have\ to\ identify\ indices\ of\ edge\ starts\ from}}
+\DoxyCodeLine{00490\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ 0th\ edge\ up\ until\ we\ reach\ indx\ edge.}}
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ starts=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[vertCount];\ \textcolor{comment}{//\ indices\ of\ edge\ starts}}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ starts[0]=0;}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (tick<indx)\ \{}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hit=vert[(tick+1)\%vertCount];}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=starts[tick]+1;}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (k<augVertCount)\ \{}
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (augVert[k]==hit)\ \{}
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ starts[tick]=k;}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{break};}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k++;}
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j=starts[tick];\ }
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ out.add(augVert[j]);}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ j++;\textcolor{comment}{//\ next\ possible\ edge\ starting}}
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ticker=(tick+1)\%vertCount;\ \textcolor{comment}{//\ last\ edge,\ have\ to\ wrap\ to\ 0}}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (j<augVertCount\ \&\&\ }
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ augVert[j]!=vert[ticker])\ \{}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \ \ \ \ out.add(augVert[j]);}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \ \ \ \ j++;}
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ out.add(vert[ticker]);\ \textcolor{comment}{//\ add\ the\ last\ one}}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ out;}
+\DoxyCodeLine{00517\ \ \ \ \ \}}
+\DoxyCodeLine{00518\ }
+\DoxyCodeLine{00527\ \ \ \ \ \textcolor{keyword}{public}\ Tile\ clone(TileData\ tdparent)\ \{}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ Tile\ stile=\textcolor{keyword}{new}\ Tile(tdparent,vertCount);}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ stile.tileIndex=tileIndex;}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ stile.tileType=tileType;}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ stile.baryVert=baryVert;}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ stile.color=\textcolor{keyword}{new}\ Color(color.getRed(),color.getGreen(),color.getBlue());}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ stile.indexFlag=indexFlag;}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ stile.mark=mark;}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ stile.vert=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[vertCount];}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<vertCount;j++)\ \{}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ stile.vert[j]=vert[j];}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ stile.tileFlower=\textcolor{keyword}{null};}
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tileFlower!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \ \ \ \ stile.tileFlower=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[vertCount][2];}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<vertCount;j++)\ \{}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stile.tileFlower[j][0]=tileFlower[j][0];}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stile.tileFlower[j][1]=tileFlower[j][1];}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (augVert!=\textcolor{keyword}{null})\ \{\ \textcolor{comment}{//\ have\ augmented\ vertices}}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \ \ stile.augVertCount=augVertCount;}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \ \ \ \ stile.augVert=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[augVertCount];}
+\DoxyCodeLine{00550\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<augVertCount;j++)\ \{}
+\DoxyCodeLine{00551\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stile.augVert[j]=augVert[j];}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (wgIndices!=\textcolor{keyword}{null})\ \{\ \textcolor{comment}{//\ these\ are\ just\ indices\ into\ tileData.wgTiles}}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nb=wgIndices.length;}
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ stile.wgIndices=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[nb];}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<nb;j++)\ }
+\DoxyCodeLine{00558\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stile.wgIndices[j]=wgIndices[j];}
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ stile.myTileData=\textcolor{keyword}{null};}
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ stile;}
+\DoxyCodeLine{00563\ \ \ \ \ \}}
+\DoxyCodeLine{00564\ \ \ \ \ }
+\DoxyCodeLine{00571\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ updateMyVerts(VertexMap\ vmap)\ \{}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vmap==\textcolor{keyword}{null})}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<augVertCount;j++)\ \{}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=vmap.findW(augVert[j]);}
+\DoxyCodeLine{00576\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (w!=0)}
+\DoxyCodeLine{00577\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ augVert[j]=w;}
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<vertCount;j++)\ \{}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=vmap.findW(vert[j]);}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (w!=0)}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vert[j]=w;}
+\DoxyCodeLine{00583\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00584\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (baryVert>0)\ \{}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=vmap.findW(baryVert);}
+\DoxyCodeLine{00586\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (w!=0)}
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ baryVert=w;}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00589\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myTileData!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00590\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ t=1;t<=myTileData.tileCount;t++)}
+\DoxyCodeLine{00591\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myTileData.myTiles[t].updateMyVerts(vmap);}
+\DoxyCodeLine{00592\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00593\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vertCount;}
+\DoxyCodeLine{00594\ \ \ \ \ \}}
+\DoxyCodeLine{00595\ \ \ \ \ }
+\DoxyCodeLine{00600\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ debugPrint()\ \{}
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00602\ \ \ \ \ \ \ \ \ StringBuilder\ strbld=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}tile:\ "{}}+tileIndex+\textcolor{stringliteral}{"{},\ baryVert\ "{}}+baryVert+\textcolor{stringliteral}{"{}\(\backslash\)nvert:\ "{}});}
+\DoxyCodeLine{00603\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<vertCount;j++)\ \{}
+\DoxyCodeLine{00604\ \ \ \ \ \ \ \ \ \ \ \ \ strbld.append(\textcolor{stringliteral}{"{}\ "{}}+vert[j]);}
+\DoxyCodeLine{00605\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ strbld.append(\textcolor{stringliteral}{"{}\(\backslash\)naugVert:\ "{}});}
+\DoxyCodeLine{00608\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<augVertCount;j++)\ \{}
+\DoxyCodeLine{00609\ \ \ \ \ \ \ \ \ \ \ \ \ strbld.append(\textcolor{stringliteral}{"{}\ "{}}+augVert[j]);}
+\DoxyCodeLine{00610\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00611\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00612\ \ \ \ \ \ \ \ \ System.out.println(strbld.toString());}
+\DoxyCodeLine{00613\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00614\ \ \ \ \ \}}
+\DoxyCodeLine{00615\ \ \ \ \ }
+\DoxyCodeLine{00650\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Vector<EdgeSimple>\ tile2tileMatch(\textcolor{keywordtype}{int}[][]\ t,}
+\DoxyCodeLine{00651\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tindx,\textcolor{keywordtype}{int}[][]\ nt,\textcolor{keywordtype}{int}\ ntindx)\ \{}
+\DoxyCodeLine{00652\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00653\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ hints\ for\ minimal\ consistency}}
+\DoxyCodeLine{00654\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ hints=\textcolor{keyword}{false};\ }
+\DoxyCodeLine{00655\ }
+\DoxyCodeLine{00656\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tnt=0;}
+\DoxyCodeLine{00657\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tfirstmiss=-\/1;}
+\DoxyCodeLine{00658\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ j=0;j<t.length;j++)\ \{}
+\DoxyCodeLine{00659\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (t[j][0]==ntindx)\ \{}
+\DoxyCodeLine{00660\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tnt++;}
+\DoxyCodeLine{00661\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ dx;}
+\DoxyCodeLine{00662\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((dx=t[j][1])>=0)\ \{}
+\DoxyCodeLine{00663\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!hints)}
+\DoxyCodeLine{00664\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hints=\textcolor{keyword}{true};\ \textcolor{comment}{//\ there's\ a\ matching\ hint}}
+\DoxyCodeLine{00665\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dx>=nt.length\ ||\ nt[t[j][1]][0]!=tindx\ ||}
+\DoxyCodeLine{00666\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (nt[dx][1]>=0\ \&\&\ nt[dx][1]!=j))}
+\DoxyCodeLine{00667\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}inconsistency\ between\ entries\ and\ hint\ "{}}+dx);}
+\DoxyCodeLine{00668\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00669\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ can\ set\ t[j][1]\ based\ on\ index\ given\ in\ nt}}
+\DoxyCodeLine{00670\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (t[j][1]<0\ \&\&\ nt[dx][1]==j)\ }
+\DoxyCodeLine{00671\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ t[j][1]=dx;}
+\DoxyCodeLine{00672\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00673\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00674\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (tfirstmiss<0)\ \textcolor{comment}{//\ find\ first\ miss}}
+\DoxyCodeLine{00675\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tfirstmiss=j;}
+\DoxyCodeLine{00676\ }
+\DoxyCodeLine{00677\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00678\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00679\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ntt=0;}
+\DoxyCodeLine{00680\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ntfirstmiss=-\/1;}
+\DoxyCodeLine{00681\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ j=0;j<nt.length;j++)\ \{}
+\DoxyCodeLine{00682\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nt[j][0]==tindx)\ \{}
+\DoxyCodeLine{00683\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ntt++;}
+\DoxyCodeLine{00684\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ dx;}
+\DoxyCodeLine{00685\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((dx=nt[j][1])>=0)\ \{}
+\DoxyCodeLine{00686\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!hints)}
+\DoxyCodeLine{00687\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hints=\textcolor{keyword}{true};\ \textcolor{comment}{//\ there's\ some\ hint\ for\ matchin}}
+\DoxyCodeLine{00688\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dx>=t.length\ ||\ t[nt[j][1]][0]!=ntindx\ ||}
+\DoxyCodeLine{00689\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (t[dx][1]>=0\ \&\&\ t[dx][1]!=j))}
+\DoxyCodeLine{00690\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}inconsistency\ other\ way\ between\ entries\ and\ hints\ "{}}+dx);}
+\DoxyCodeLine{00691\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00692\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ can\ set\ nt[j][1]\ based\ on\ index\ given\ in\ t}}
+\DoxyCodeLine{00693\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nt[j][1]<0\ \&\&\ t[dx][1]==j)\ }
+\DoxyCodeLine{00694\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nt[j][1]=dx;}
+\DoxyCodeLine{00695\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00696\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00697\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ntfirstmiss<0)}
+\DoxyCodeLine{00698\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ntfirstmiss=j;}
+\DoxyCodeLine{00699\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00700\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00701\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ inconsistency?}}
+\DoxyCodeLine{00702\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tnt!=ntt)}
+\DoxyCodeLine{00703\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}match\ counts\ between\ lists\ are\ not\ equal"{}});}
+\DoxyCodeLine{00704\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00705\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ no\ matches?}}
+\DoxyCodeLine{00706\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tnt==0)}
+\DoxyCodeLine{00707\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00708\ }
+\DoxyCodeLine{00709\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ most\ common\ situation}}
+\DoxyCodeLine{00710\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tnt==1)\ \{}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ thit=-\/1;}
+\DoxyCodeLine{00712\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;(j<t.length\ \&\&\ thit<0);j++)}
+\DoxyCodeLine{00713\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (t[j][0]==ntindx)}
+\DoxyCodeLine{00714\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ thit=j;}
+\DoxyCodeLine{00715\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nthit=-\/1;}
+\DoxyCodeLine{00716\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;(j<t.length\ \&\&\ nthit<0);j++)}
+\DoxyCodeLine{00717\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nt[j][0]==tindx)}
+\DoxyCodeLine{00718\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nthit=j;}
+\DoxyCodeLine{00719\ \ \ \ \ \ \ \ \ \ \ \ \ Vector<EdgeSimple>\ ans=\textcolor{keyword}{new}\ Vector<EdgeSimple>();}
+\DoxyCodeLine{00720\ \ \ \ \ \ \ \ \ \ \ \ \ ans.add(\textcolor{keyword}{new}\ EdgeSimple(thit,nthit));}
+\DoxyCodeLine{00721\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00722\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00723\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00724\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ complete\ string}}
+\DoxyCodeLine{00725\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((tnt==t.length\ ||\ ntt==nt.length)\ \&\&\ !hints)\ \{}
+\DoxyCodeLine{00726\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}all\ edges,\ but\ no\ hints\ to\ help\ match"{}});}
+\DoxyCodeLine{00727\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00728\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00729\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ 'tstarts'\ of\ starts\ of\ contiguous\ matches\ to\ 'nt'\ within\ 't'}}
+\DoxyCodeLine{00730\ \ \ \ \ \ \ \ \ Vector<EdgeSimple>\ tstarts=\textcolor{keyword}{new}\ Vector<EdgeSimple>();}
+\DoxyCodeLine{00731\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<t.length;i++)\ \{}
+\DoxyCodeLine{00732\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (t[i][0]==ntindx\ \&\&\ t[(i-\/1+t.length)\%t.length][0]!=ntindx)}
+\DoxyCodeLine{00733\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tstarts.add(\textcolor{keyword}{new}\ EdgeSimple(i,0));}
+\DoxyCodeLine{00734\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00735\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00736\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ and\ 'ntstarts'\ of\ starts\ of\ contiguous\ matches\ to\ 't'\ within\ 'nt'}}
+\DoxyCodeLine{00737\ \ \ \ \ \ \ \ \ Vector<EdgeSimple>\ ntstarts=\textcolor{keyword}{new}\ Vector<EdgeSimple>();}
+\DoxyCodeLine{00738\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<nt.length;i++)\ \{}
+\DoxyCodeLine{00739\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nt[i][0]==tindx\ \&\&\ nt[(i-\/1+nt.length)\%nt.length][0]!=tindx)}
+\DoxyCodeLine{00740\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ntstarts.add(\textcolor{keyword}{new}\ EdgeSimple(i,0));}
+\DoxyCodeLine{00741\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00742\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00743\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ determine/store\ lengths\ of\ contiguous\ sets\ of\ matches}}
+\DoxyCodeLine{00744\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;k<tstarts.size();k++)\ \{}
+\DoxyCodeLine{00745\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ st=tstarts.get(k).v;}
+\DoxyCodeLine{00746\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=1;}
+\DoxyCodeLine{00747\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (t[(st+tick)\%t.length][0]==ntindx)}
+\DoxyCodeLine{00748\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{00749\ \ \ \ \ \ \ \ \ \ \ \ \ tstarts.get(k).w=tick;}
+\DoxyCodeLine{00750\ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00751\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ k=0;k<ntstarts.size();k++)\ \{}
+\DoxyCodeLine{00752\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ nst=ntstarts.get(k).v;}
+\DoxyCodeLine{00753\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=1;}
+\DoxyCodeLine{00754\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (nt[(nst+tick)\%nt.length][0]==tindx)}
+\DoxyCodeLine{00755\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{00756\ \ \ \ \ \ \ \ \ \ \ \ \ ntstarts.get(k).w=tick;}
+\DoxyCodeLine{00757\ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00758\ }
+\DoxyCodeLine{00759\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tstarts.size()==0\ ||\ ntstarts.size()==0)\ }
+\DoxyCodeLine{00760\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}screwed\ up\ one\ of\ 'tstarts'\ or\ 'ntstarts'"{}});}
+\DoxyCodeLine{00761\ }
+\DoxyCodeLine{00762\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Now\ have\ segs\ for\ 't'\ and\ 'nt':\ need\ to\ match\ as\ best\ we\ can}}
+\DoxyCodeLine{00763\ \ \ \ \ \ \ \ \ Vector<EdgeSimple>\ ans=\textcolor{keyword}{new}\ Vector<EdgeSimple>();}
+\DoxyCodeLine{00764\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00765\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ most\ typical:\ single\ segment\ on\ each\ side\ (necessarily\ the\ same\ length)}}
+\DoxyCodeLine{00766\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tstarts.size()==1\ \&\&\ ntstarts.size()==1)\ \{}
+\DoxyCodeLine{00767\ \ \ \ \ \ \ \ \ \ \ \ \ EdgeSimple\ ts1=tstarts.get(0);}
+\DoxyCodeLine{00768\ \ \ \ \ \ \ \ \ \ \ \ \ EdgeSimple\ nts1=ntstarts.get(0);}
+\DoxyCodeLine{00769\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00770\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ number\ of\ entries}}
+\DoxyCodeLine{00771\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tcount=ts1.w;}
+\DoxyCodeLine{00772\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ntcount=nts1.w;}
+\DoxyCodeLine{00773\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (tcount!=ntcount\ ||\ tcount<=0)\ }
+\DoxyCodeLine{00774\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}some\ inconsistency\ in\ 'tstarts'\ and\ 'ntstarts'"{}});}
+\DoxyCodeLine{00775\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<tcount;j++)\ \{}
+\DoxyCodeLine{00776\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans.add(\textcolor{keyword}{new}\ EdgeSimple((ts1.v+j)\%(t.length),(nts1.v+tcount-\/j-\/1+nt.length)\%(nt.length)));}
+\DoxyCodeLine{00777\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00778\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00779\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00780\ }
+\DoxyCodeLine{00781\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ Here\ we\ need\ more\ sophisticated\ matching\ strategies;\ }}
+\DoxyCodeLine{00782\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ For\ now,\ pass\ back\ pairs\ <j,-\/3>\ so\ we\ don't\ look\ at\ this\ matching\ again}}
+\DoxyCodeLine{00783\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00784\ \ \ \ \ \ \ \ \ \ \ \ \ EdgeSimple\ ts1=tstarts.get(0);}
+\DoxyCodeLine{00785\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<ts1.w;j++)\ \{}
+\DoxyCodeLine{00786\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ans.add(\textcolor{keyword}{new}\ EdgeSimple((ts1.v+j)\%(t.length),-\/3));}
+\DoxyCodeLine{00787\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00788\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ans;}
+\DoxyCodeLine{00789\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00790\ }
+\DoxyCodeLine{00791\ \ \ \ \ \}}
+\DoxyCodeLine{00792\ \ \ \ \ }
+\DoxyCodeLine{00796\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ printAugVert()\ \{}
+\DoxyCodeLine{00797\ \ \ \ \ \ \ \ \ StringBuilder\ strbld=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}AugVerts\ for\ tile\ "{}}+this.tileIndex+\textcolor{stringliteral}{"{}\(\backslash\)n"{}});}
+\DoxyCodeLine{00798\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=0;v<this.augVertCount;v++)\ \{}
+\DoxyCodeLine{00799\ \ \ \ \ \ \ \ \ \ \ \ \ strbld.append(this.augVert[v]+\textcolor{stringliteral}{"{}\ "{}});}
+\DoxyCodeLine{00800\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00801\ \ \ \ \ \ \ \ \ System.out.println(strbld.toString());}
+\DoxyCodeLine{00802\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00803\ \ \ \ \ \}}
+\DoxyCodeLine{00804\ \ \ \ \ }
+\DoxyCodeLine{00805\ \}}
+
+\end{DoxyCode}

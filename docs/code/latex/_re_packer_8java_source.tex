@@ -1,0 +1,286 @@
+\doxysection{Re\+Packer.\+java}
+\label{_re_packer_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/rePack/RePacker.java@{C:/Users/ashej/myGitRepos/CirclePack/src/rePack/RePacker.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }rePack;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ dcel.PackDCEL;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ exceptions.PackingException;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ listManip.EdgeLink;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ listManip.FaceLink;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ listManip.GraphLink;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ listManip.VertexMap;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ packing.RData;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ util.TriData;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ util.UtilPacket;}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keyword}{class\ }RePacker\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ mp2=2*Math.PI;}
+\DoxyCodeLine{00048\ \ \ \ \ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{//\ status}}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ FAILURE=-\/1;\ \ \ \ \ \ \ \textcolor{comment}{//\ when\ something\ goes\ wrong}}
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ DO\_NOTHING=0;\ \ \ \ \ \textcolor{comment}{//\ when\ no\ repacking\ is\ needed\ (not\ yet\ used,\ 10/2011)}}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ LOADED=1;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ready\ to\ initiate\ riffling}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ RIFFLE=2;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ready\ to\ resume\ riffling}}
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ IN\_THREAD=3;\ \ \ \ \ \ \textcolor{comment}{//\ packing\ underway\ in\ some\ thread\ (e.g.,\ native\ code)}}
+\DoxyCodeLine{00055\ \ \ \ \ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{comment}{//\ aim\ less\ than\ this,\ treat\ as\ horocycle}}
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{double}\ AIM\_THRESHOLD=.0001;\ \ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{comment}{//\ for\ smaller\ packs,\ default\ to\ Java}}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{int}\ GOPACK\_THRESHOLD=501;\ }
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ MAX\_ALLOWABLE\_BAD\_CUTS=100;}
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ RP\_TOLER=.00000000001;}
+\DoxyCodeLine{00063\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ RP\_OKERR=.000000001;\ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ PASSLIMIT=2000;\ \ \ \ \textcolor{comment}{//\ default\ upper\ bound,\ may\ be\ changed}}
+\DoxyCodeLine{00065\ \ \ \ \ }
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keyword}{public}\ PackData\ p;\ \ \ \ \ \ \textcolor{comment}{//\ parent\ packing}}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{public}\ PackDCEL\ pdcel;\ \ \textcolor{comment}{//\ prepare\ for\ DCEL\ version}}
+\DoxyCodeLine{00068\ \ \ \ \ }
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{comment}{//\ create\ combo\ info\ to\ easily\ access\ triData}}
+\DoxyCodeLine{00070\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[]\ vNum;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ facecount\ for\ each\ vertex}}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[][]\ findices;\ \ \textcolor{comment}{//\ face\ index\ flower\ for\ each\ vertex}}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[][]\ vindices;\ \ \textcolor{comment}{//\ Coordinated\ with\ 'findices':\ this\ give,\ for}}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ each\ vert\ v\ the\ index\ of\ v\ in\ the\ corresponding}}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ entry\ of\ 'findices'.}}
+\DoxyCodeLine{00075\ \ \ \ \ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ chkCount;\ \ \ \ \textcolor{comment}{//\ minimal\ check\ on\ whether\ packing\ has\ been\ switched}}
+\DoxyCodeLine{00077\ \ \ \ \ }
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{comment}{//\ status\ information}}
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ status;\ \ \ \ \ \ \textcolor{comment}{//\ new?\ restarted?\ threaded\ (eventually)}}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ passLimit;}
+\DoxyCodeLine{00081\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ totalPasses;\ \ \ \ \ \textcolor{comment}{//\ cumulative\ since\ creation\ of\ this\ repacker}}
+\DoxyCodeLine{00082\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ localPasses;\ \ \ \ \ \textcolor{comment}{//\ during\ this\ run.}}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{comment}{//\ main\ data}}
+\DoxyCodeLine{00085\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}[]\ index;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ indices\ of\ adjustable\ radii}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{comment}{//\ holding\ area\ for\ list}}
+\DoxyCodeLine{00088\ \ \ \ \ NodeLink\ holdv=\textcolor{keyword}{null};}
+\DoxyCodeLine{00089\ \ \ \ \ EdgeLink\ holde=\textcolor{keyword}{null};}
+\DoxyCodeLine{00090\ \ \ \ \ FaceLink\ holdf=\textcolor{keyword}{null};}
+\DoxyCodeLine{00091\ \ \ \ \ GraphLink\ holdg=\textcolor{keyword}{null};}
+\DoxyCodeLine{00092\ \ \ \ \ VertexMap\ holdmap=\textcolor{keyword}{null};}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{comment}{//\ store\ info\ during\ repacking}}
+\DoxyCodeLine{00095\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ aimnum;}
+\DoxyCodeLine{00096\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ key;}
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ maxBadCuts;}
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ minBadCuts;}
+\DoxyCodeLine{00099\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ sumBadCuts;}
+\DoxyCodeLine{00100\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cntBadCuts;}
+\DoxyCodeLine{00101\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ sct;}
+\DoxyCodeLine{00102\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ fct;}
+\DoxyCodeLine{00103\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ m;}
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ accumErr2;}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ ttoler;}
+\DoxyCodeLine{00106\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ []R0;}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ []R1;}
+\DoxyCodeLine{00108\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ []R2;}
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{keyword}{public}\ UtilPacket\ utilPacket;}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{comment}{//\ When\ inv\ dist\ involved\ or\ optional,\ use\ old\ reliable\ }}
+\DoxyCodeLine{00112\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ oldReliable;\ }
+\DoxyCodeLine{00113\ \ \ \ \ }
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{comment}{//\ Constructor:\ }}
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{comment}{//\ NOTE:\ inherited\ repackers\ call\ this\ first}}
+\DoxyCodeLine{00116\ \ \ \ \ \textcolor{keyword}{public}\ RePacker()\ \{}
+\DoxyCodeLine{00117\ \ \ \ \ \}}
+\DoxyCodeLine{00118\ \ \ \ \ }
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keyword}{public}\ RePacker(PackData\ pd,\textcolor{keywordtype}{int}\ pass\_limit)\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ p=pd;}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pass\_limit<0)\ }
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ passLimit=PASSLIMIT;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ passLimit=pass\_limit;}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ status=load();\ \ }
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (status==LOADED)\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ totalPasses=0;}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ localPasses=0;}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ R1=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[p.nodeCount+1];}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ R2=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[p.nodeCount+1];}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ utilPacket=\textcolor{keyword}{new}\ UtilPacket();}
+\DoxyCodeLine{00133\ \ \ \ \ \}}
+\DoxyCodeLine{00134\ \ \ \ \ }
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{comment}{//\ use\ default\ number\ of\ iterations}}
+\DoxyCodeLine{00136\ \ \ \ \ \textcolor{keyword}{public}\ RePacker(PackData\ pd)\ \{\ }
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(pd,CPBase.RIFFLE\_COUNT);}
+\DoxyCodeLine{00138\ \ \ \ \ \}}
+\DoxyCodeLine{00139\ \ \ \ \ }
+\DoxyCodeLine{00140\ \ \ \ \ \textcolor{comment}{//\ abstract\ methods\ -\/-\/\ these\ must\ be\ implemented\ in\ derived\ classes}}
+\DoxyCodeLine{00141\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keywordtype}{int}\ load();\ \textcolor{comment}{//\ load\ initial\ data\ into\ local\ storage}}
+\DoxyCodeLine{00142\ \ \ \ \ }
+\DoxyCodeLine{00152\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{abstract}\ \textcolor{keywordtype}{int}\ startRiffle()\ throws\ PackingException;\ \textcolor{comment}{//\ initiate\ packing\ comp}}
+\DoxyCodeLine{00153\ \ \ \ \ }
+\DoxyCodeLine{00160\ \ \ \ \ public\ abstract\ \textcolor{keywordtype}{int}\ reStartRiffle(\textcolor{keywordtype}{int}\ passNum)\ throws\ PackingException;\ \ \textcolor{comment}{//\ continue,\ but\ with\ restart}}
+\DoxyCodeLine{00161\ \ \ \ \ }
+\DoxyCodeLine{00171\ \ \ \ \ public\ abstract\ \textcolor{keywordtype}{int}\ continueRiffle(\textcolor{keywordtype}{int}\ passNum)\ throws\ PackingException;}
+\DoxyCodeLine{00172\ \ \ \ \ }
+\DoxyCodeLine{00178\ \ \ \ \ public\ abstract\ \textcolor{keywordtype}{double}\ l2quality(\textcolor{keywordtype}{double}\ crit);}
+\DoxyCodeLine{00179\ \ \ \ \ }
+\DoxyCodeLine{00183\ \ \ \ \ public\ abstract\ \textcolor{keywordtype}{void}\ reapResults();}
+\DoxyCodeLine{00184\ \ \ \ \ }
+\DoxyCodeLine{00205\ \ \ \ \ public\ \textcolor{keywordtype}{int}\ genericRePack(\textcolor{keywordtype}{int}\ pass\_limit)\ throws\ PackingException\ \{}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ passLimit=pass\_limit;}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \textcolor{comment}{/*\ OBE:\ as\ of\ 2015,\ have\ retired\ the\ old\ HeavyC\ stuff}}
+\DoxyCodeLine{00210\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ *\ }}
+\DoxyCodeLine{00211\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ use\ sparse\ matrix\ riffle\ methods\ of\ SolverFunction\ if\ requested\ and\ OK\ (see\ 'setSparseC')}}
+\DoxyCodeLine{00212\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ TODO:\ having\ some\ problem\ with\ this\ for\ hyperbolic\ packings:\ crash\ with}}
+\DoxyCodeLine{00213\ \textcolor{comment}{\ \ \ \ \ \ \ \ //\ \ \ \ \ \ \ various\ error\ message,\ e.g.\ 'WData';\ don't\ know\ source.\ }}
+\DoxyCodeLine{00214\ \textcolor{comment}{\ \ \ \ \ \ \ \ if\ (useSparseC)\ \{}}
+\DoxyCodeLine{00215\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ PackLite\ pLite=new\ PackLite(p);}}
+\DoxyCodeLine{00216\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ if\ (HeavyC.putLite(pLite.counts,\ pLite.varIndices,\ pLite.origIndices,\ }}
+\DoxyCodeLine{00217\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pLite.radii,pLite.aimIndices,pLite.aims,pLite.invDistEdges,}}
+\DoxyCodeLine{00218\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pLite.invDistances,pLite.centerRe,pLite.centerIm)==0)\ \{}}
+\DoxyCodeLine{00219\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ throw\ new\ JNIException("{}C\ call\ to\ 'putLite'\ failed\ in\ hyp\ 'maxPackC'"{});}}
+\DoxyCodeLine{00220\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00221\ \textcolor{comment}{}}
+\DoxyCodeLine{00222\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ //\ This\ is\ the\ original\ C\ version\ of\ the\ riffle\ methods.}}
+\DoxyCodeLine{00223\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ if\ (HeavyC.genericRePack(passLimit,p.nodeCount)<=0.0)\ }}
+\DoxyCodeLine{00224\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ throw\ new\ PackingException("{}Hyperbolic\ 'maxPackC'\ call\ failed"{});}}
+\DoxyCodeLine{00225\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00226\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ //\ capture\ the\ radii:\ this\ is\ euclidean\ data}}
+\DoxyCodeLine{00227\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ double\ []radii=HeavyC.sendRadii(p.nodeCount,1);}}
+\DoxyCodeLine{00228\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ for\ (int\ v=1;v<=p.nodeCount;v++)\ \{}}
+\DoxyCodeLine{00229\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.rData[v].rad=radii[v];}}
+\DoxyCodeLine{00230\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00231\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ p.fillcurves();}}
+\DoxyCodeLine{00232\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ return\ 1;\ \ \ \ \ \ \ }}
+\DoxyCodeLine{00233\ \textcolor{comment}{\ \ \ \ \ \ \ \ \}\ */}}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ use\ Java\ computations;\ should\ have\ been\ loaded\ in\ constructor\ }}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (status!=LOADED\ \&\&\ status!=RIFFLE)\ \{}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.myErrorMsg(\textcolor{stringliteral}{"{}genericRePack:\ not\ in\ prepared\ status"{}});}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (status==LOADED)\ }
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ localPasses=startRiffle();}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ localPasses=0;}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ totalPasses\ +=\ localPasses;}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (continueRiffle(pass\_limit)!=0)\ \{\ \ \textcolor{comment}{//\ successful?}}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ totalPasses;}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00250\ \ \ \ \ \}}
+\DoxyCodeLine{00251\ }
+\DoxyCodeLine{00258\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ prepData()\ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ hit=\textcolor{keyword}{false};}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pdcel.triData==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ pdcel.triData=\textcolor{keyword}{new}\ TriData[pdcel.faceCount+1];}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ f=1;f<=pdcel.faceCount;f++)\ \{}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pdcel.triData[f]=\textcolor{keyword}{new}\ TriData(pdcel,pdcel.faces[f]);}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pdcel.triData[f].hasInvDist())}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hit=\textcolor{keyword}{true};}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ hit=pdcel.updateTriDataRadii();}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ 'vNum',\ 'findices',\ 'vindices'\ after\ a\ minimal}}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ check\ on\ whether\ they\ already\ exist}}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (findices==\textcolor{keyword}{null}\ ||\ findices.length!=p.nodeCount+1)\ \{}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ vNum=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[p.nodeCount+1];}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ findices=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[p.nodeCount+1][];}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ vindices=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[p.nodeCount+1][];}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ v=1;v<=p.nodeCount;v++)\ \{}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vNum[v]=p.countFaces(v);}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ findices[v]=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[vNum[v]];}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vindices[v]=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[vNum[v]];}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=pdcel.vertices[v].halfedge;}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ findices[v][tick]=he.face.faceIndx;}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ vindices[v][tick++]=he.face.getVertIndx(v);}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ he=he.prev.twin;}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}(he!=pdcel.vertices[v].halfedge\ \&\&\ he.face.faceIndx>=0);}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ hit;}
+\DoxyCodeLine{00292\ \ \ \ \ \}}
+\DoxyCodeLine{00293\ \ \ \ \ }
+\DoxyCodeLine{00299\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ holdLists(PackData\ pd)\ \{}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pd.vlist!=\textcolor{keyword}{null}\ \&\&\ pd.vlist.size()>0)}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ holdv=pd.vlist.makeCopy();}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pd.elist!=\textcolor{keyword}{null}\ \&\&\ pd.elist.size()>0)}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ holde=pd.elist.makeCopy(\textcolor{keyword}{false});}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pd.flist!=\textcolor{keyword}{null}\ \&\&\ pd.flist.size()>0)}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ holdf=pd.flist.makeCopy();}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pd.vertexMap!=\textcolor{keyword}{null}\ \&\&\ pd.vertexMap.size()>0)}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ holdmap=pd.vertexMap.makeCopy();}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ pd.vlist=\textcolor{keyword}{null};}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ pd.elist=\textcolor{keyword}{null};}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ pd.flist=\textcolor{keyword}{null};}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ pd.glist=\textcolor{keyword}{null};}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ pd.vertexMap=\textcolor{keyword}{null};}
+\DoxyCodeLine{00313\ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{00314\ \ \ \ \ }
+\DoxyCodeLine{00319\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ restoreLists(PackData\ pd)\ \{}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ pd.vlist=holdv;}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ pd.elist=holde;}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ pd.flist=holdf;}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ pd.vertexMap=holdmap;}
+\DoxyCodeLine{00324\ \ \ \ \ \}}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00330\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ repack\_activity\_msg()\ \{}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ how\ to\ update\ GUI\ on\ packing\ activity.}}
+\DoxyCodeLine{00332\ \ \ \ \ \}}
+\DoxyCodeLine{00333\ \ \ \ \ }
+\DoxyCodeLine{00334\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getPassLimit()\ \{}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ passLimit;}
+\DoxyCodeLine{00336\ \ \ \ \ \}}
+\DoxyCodeLine{00337\ \ \ \ \ }
+\DoxyCodeLine{00338\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getTotalPasses()\ \{}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ totalPasses;}
+\DoxyCodeLine{00340\ \ \ \ \ \}}
+\DoxyCodeLine{00341\ }
+\DoxyCodeLine{00342\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setPassLimit(\textcolor{keywordtype}{int}\ pl)\ \{}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (pl>0)\ passLimit=pl;}
+\DoxyCodeLine{00344\ \ \ \ \ \}}
+\DoxyCodeLine{00345\ \ \ \ \ }
+\DoxyCodeLine{00346\ \ \ \ \ \textcolor{comment}{//\ =========\ routines\ used\ with\ 'TriData'\ structure\ ============}}
+\DoxyCodeLine{00347\ }
+\DoxyCodeLine{00354\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ compTriCurv(\textcolor{keywordtype}{int}\ v,\textcolor{keywordtype}{double}\ rad)\ \{}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ curv=0;}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<findices[v].length;j++)\ \{}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=vindices[v][j];}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ang=pdcel.triData[findices[v][j]].compOneAngle(k,rad);}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ curv\ +=\ ang;}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ curv;}
+\DoxyCodeLine{00362\ \ \ \ \ \}}
+\DoxyCodeLine{00363\ \ \ \ \ }
+\DoxyCodeLine{00369\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ getTriRadius(\textcolor{keywordtype}{int}\ v)\ \{}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pdcel.triData[findices[v][0]].}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ radii[vindices[v][0]];}
+\DoxyCodeLine{00372\ \ \ \ \ \}}
+\DoxyCodeLine{00373\ \ \ \ \ }
+\DoxyCodeLine{00383\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ factorTriCurv(\textcolor{keywordtype}{int}\ v,\textcolor{keywordtype}{double}\ factor)\ \{}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ curv=0;}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<findices[v].length;j++)\ \{}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=vindices[v][j];}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ curv\ +=\ pdcel.triData[findices[v][j]].compFactorAngle(k,factor);}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ curv;}
+\DoxyCodeLine{00390\ \ \ \ \ \}}
+\DoxyCodeLine{00391\ \ \ \ \ }
+\DoxyCodeLine{00397\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setTriRadius(\textcolor{keywordtype}{int}\ v,\textcolor{keywordtype}{double}\ rad)\ \{}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<findices[v].length;j++)\ \{}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ pdcel.triData[findices[v][j]].radii[vindices[v][j]]=rad;}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00401\ \ \ \ \ \}}
+\DoxyCodeLine{00402\ }
+\DoxyCodeLine{00403\ \}}
+
+\end{DoxyCode}

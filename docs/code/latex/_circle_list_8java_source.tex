@@ -1,0 +1,247 @@
+\doxysection{Circle\+List.\+java}
+\label{_circle_list_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/geometry/CircleList.java@{C:/Users/ashej/myGitRepos/CirclePack/src/geometry/CircleList.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }geometry;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.geom.Path2D;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.geom.Point2D;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ math.Point3D;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ packing.CPdrawing;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ complex.MathComplex;}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }CircleList\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ m2pi=2.0*Math.PI;}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}[]\ A,B,C,Chat;\ }
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keyword}{static}\ Vector<Point2D.Double>\ vec;}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{comment}{//\ unit\ circle\ case,\ static}}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ ustep=m2pi/128;\ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ uss=ustep*ustep/4.0;}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ ua11=(1-\/uss)/(1+uss);}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ ua12=\ (-\/ustep)/(1+uss);}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ ua21=\ (-\/ua12);}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ ua22=ua11;}
+\DoxyCodeLine{00032\ \ \ \ \ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Vector<Point2D.Double>\ getArcList(Complex\ center,}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad,\textcolor{keywordtype}{double}\ startAng,\textcolor{keywordtype}{double}\ extent,\textcolor{keywordtype}{int}\ N)\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ zr,zi,wr,wi;}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ Point2D.Double\ startPt,endPt;}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (N<1)\ N=1;}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ zr=rad*Math.cos(startAng);}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ zi=rad*Math.sin(startAng);}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ startPt=\textcolor{keyword}{new}\ Point2D.Double(zr+center.x,zi+center.y);}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ endPt=\textcolor{keyword}{new}\ Point2D.Double(rad*Math.cos(startAng+extent)+center.x,}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rad*Math.sin(startAng+extent)+center.y);}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Proportion\ of\ those\ steps\ to\ use\ based\ on\ 'extent'\ an\ 'N'}}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=(int)(Math.floor(N*Math.abs(extent)/m2pi));\ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ Vector<Point2D.Double>\ vect=\textcolor{keyword}{new}\ Vector<Point2D.Double>(n+2);}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Start\ with\ first\ point}}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ vect.add(startPt);}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Perhaps\ just\ add\ line\ segment}}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n<=1)\ \{\ }
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ vect.add(endPt);}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vect;}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ A\ 2x2\ matrix\ propogates\ points\ of\ circle\ based\ on\ N\ divisions}}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ step=m2pi/N;\ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (extent<0.0)\ step\ =\ -\/step;}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ss=step*step/4.0;}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a11=(1-\/ss)/(1+ss);}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a12=\ (-\/step)/(1+ss);}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a21=\ (-\/a12);}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a22=a11;\ }
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<n;j++)\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ wr=zr;}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ wi=zi;\ \ \ \ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ zr=a11*wr+a12*wi;}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ zi=a21*wr+a22*wi;}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ vect.add(\textcolor{keyword}{new}\ Point2D.Double(zr+center.x,zi+center.y));}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ finish\ with\ endpoint}}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ vect.add(endPt);\ }
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vect;}
+\DoxyCodeLine{00088\ \ \ \ \ \}}
+\DoxyCodeLine{00089\ }
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Vector<Point2D.Double>\ getUnitArcList(Complex\ z1,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z2)\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ Point3D\ a=\textcolor{keyword}{new}\ Point3D(z1);}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ Point3D\ b=\textcolor{keyword}{new}\ Point3D(z2);}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ang1=Math.atan2(a.z,a.y);}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ang2=Math.atan2(b.z,b.y);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ extent=MathComplex.radAngDiff(ang1,ang2);}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vec=CircleList.getUnitArcList(ang1,extent);}
+\DoxyCodeLine{00105\ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Vector<Point2D.Double>\ getUnitArcList(\textcolor{keywordtype}{double}\ startAng,}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ extent)\ \{}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ zr,zi,wr,wi;}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ Point2D.Double\ startPt,endPt;}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ zr=Math.cos(startAng);}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ zi=Math.sin(startAng);}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ startPt=\textcolor{keyword}{new}\ Point2D.Double(zr,zi);}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ endPt=\textcolor{keyword}{new}\ Point2D.Double(Math.cos(startAng+extent),}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Math.sin(startAng+extent));}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ proportion\ of\ 128\ increments\ we\ use,\ based\ on\ extent}}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ n=(int)(Math.floor(128*Math.abs(extent)/m2pi));\ }
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ Vector<Point2D.Double>\ vect=\textcolor{keyword}{new}\ Vector<Point2D.Double>(n+2);}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Start\ with\ first\ point}}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ vect.add(startPt);}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Perhaps\ just\ add\ line\ segment}}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (n<=1)\ \{\ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ vect.add(endPt);}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vect;}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ static\ 2x2\ matrix\ propogates\ points\ }}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<n;j++)\ \{}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ wr=zr;}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ wi=zi;\ \ \ \ }
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ zr=ua11*wr+ua12*wi;}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ zi=ua21*wr+ua22*wi;}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ vect.add(\textcolor{keyword}{new}\ Point2D.Double(zr,zi));}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ finish\ with\ endpoint}}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ vect.add(endPt);\ }
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ vect;}
+\DoxyCodeLine{00146\ \ \ \ \ \}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00153\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ convertToVec(Vector<Point2D.Double>\ twoD)\ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ pt=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[3];}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=1;j<twoD.size();j++)\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ Point2D.Double\ p2D=(Point2D.Double)twoD.get(j);}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ pt[1]=\ Chat[1]+p2D.getX()*A[1]+p2D.getY()*B[1];\ }
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ pt[2]=\ Chat[2]+p2D.getX()*A[2]+p2D.getY()*B[2];}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ vec.add(\textcolor{keyword}{new}\ Point2D.Double(pt[1],pt[2]));}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00161\ \ \ \ \ \}}
+\DoxyCodeLine{00181\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ buildSphList(Point3D\ A,Point3D\ B,Point3D\ Cent,}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sphrad,Point3D\ end1,Point3D\ end2,Path2D.Double\ gp,}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ start,\textcolor{keywordtype}{int}\ N,CPdrawing\ cpS)\ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a1,extent;}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ full\ circle?}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (end1==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ a1=0.0;}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ extent=2.0*Math.PI;}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ a1=Math.atan2(Point3D.DotProduct(B,end1),}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D.DotProduct(A,end1));}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a2=Math.atan2(Point3D.DotProduct(B,end2),}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D.DotProduct(A,end2));}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ extent=MathComplex.radAngDiff(a1,a2);}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad=Math.sin(sphrad);}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Here's\ a\ 2D\ circle\ in\ AB-\/coords\ as\ seen\ from\ Cent\ direction:}}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ Vector<Point2D.Double>\ vec=}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ CircleList.getArcList(MathComplex.ZERO,rad,a1,extent,N);}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Now\ convert\ to\ 3D\ using\ AB-\/coords,\ then\ project\ back\ to\ }}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ viewer's\ yz-\/coords\ to\ put\ in\ path.\ }}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ Y,Z;}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ sz=vec.size();}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ init\_i=0;}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ cosr=Math.cos(sphrad);}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ Cy=cosr*Cent.y;}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ Cz=cosr*Cent.z;}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (start)\ \{\ \textcolor{comment}{//\ gp\ is\ to\ be\ reset\ and\ started\ again}}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ gp.reset();}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sz==0)\ }
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ set\ first\ point}}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point2D.Double\ pt=(Point2D.Double)vec.get(0);}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Y=Cy+pt.x*A.y+pt.y*B.y;}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Z=Cz+pt.x*A.z+pt.y*B.z;}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gp.moveTo(cpS.toPixX(Y),cpS.toPixY(Z));}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ init\_i=1;}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=init\_i;i<vec.size();i++)\ \{}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ Point2D.Double\ pt=(Point2D.Double)vec.get(i);}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ Y=Cy+pt.x*A.y+pt.y*B.y;}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ Z=Cz+pt.x*A.z+pt.y*B.z;}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ gp.lineTo(cpS.toPixX(Y),cpS.toPixY(Z));}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ \}}
+\DoxyCodeLine{00231\ \ \ \ \ }
+\DoxyCodeLine{00238\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ circlePoints(Vector<Point2D.Double>\ vec,}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ Path2D.Double\ gp,\textcolor{keywordtype}{boolean}\ start,CPdrawing\ cpS)\ \{}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ sz=vec.size();}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sz==0)\ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (start)\ \{}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ gp.reset();}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ Point2D.Double\ fpt=(Point2D.Double)vec.get(0);}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ gp.moveTo(cpS.toPixX(fpt.x),cpS.toPixY(fpt.y));}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<sz;i++)\ \{}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fpt=(Point2D.Double)vec.get(i);}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gp.lineTo(cpS.toPixX(fpt.x),cpS.toPixY(fpt.y));}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<sz;i++)\ \{}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point2D.Double\ fpt=(Point2D.Double)vec.get(i);}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gp.lineTo(cpS.toPixX(fpt.x),cpS.toPixY(fpt.y));}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00257\ \ \ \ \ \}}
+\DoxyCodeLine{00258\ \ \ \ \ }
+\DoxyCodeLine{00268\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ sphGeodesicList(SphGeodesic\ sg,Path2D.Double\ gp,}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ start,\textcolor{keywordtype}{int}\ N,CPdrawing\ cpS)\ \{}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (start)\ gp.reset();}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg.lineFlag)\ \{}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ a=SphericalMath.sphToVisualPlane(sg.z1.x,sg.z1.y);}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ b=SphericalMath.sphToVisualPlane(sg.z2.x,sg.z2.y);}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (start)\ }
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ gp.moveTo(cpS.toPixX(a.x),cpS.toPixY(a.y));}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ gp.lineTo(cpS.toPixX(a.x),cpS.toPixY(a.y));}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ gp.lineTo(cpS.toPixX(b.x),cpS.toPixY(b.y));}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sg.followHorizon()!=0)\ \{\ \textcolor{comment}{//\ geodesic\ lies\ along\ horizon;\ }}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ straight\ line,\ already\ handled\ above}}
+\DoxyCodeLine{00283\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ \ \ int\ N=getNumSteps(6.0/wwidth);}}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Vector<Point2D.Double>\ vec=}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CircleList.getUnitArcList(sg.z1,sg.z2);}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CircleList.circlePoints(vec,gp,start,cpS);}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ an\ orthonormal\ basis;\ note\ it\ is\ easier\ }}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ here\ for\ geodesic\ circles\ than\ for\ other\ circles.}}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ C=\textcolor{keyword}{new}\ Point3D(sg.center);}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ plen=Math.sqrt(C.y*C.y+C.z*C.z);}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ unit\ orthog\ to\ yz-\/proj\ of\ C}}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ A=\textcolor{keyword}{new}\ Point3D(0.0,-\/C.z/plen,C.y/plen);\ }
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ B=Point3D.CrossProduct(C,A);}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ both\ ends\ should\ be\ visible}}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ end1=\textcolor{keyword}{new}\ Point3D(sg.z1);}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ end2=\textcolor{keyword}{new}\ Point3D(sg.z2);}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ create\ path}}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CircleList.buildSphList(A,B,\textcolor{keyword}{new}\ Point3D(0,0,0),}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.piby2,end1,end2,gp,start,N,cpS);}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00306\ \ \ \ \ \}}
+\DoxyCodeLine{00307\ \ \ \ \ }
+\DoxyCodeLine{00316\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ getNumSteps(\textcolor{keywordtype}{double}\ footprint)\ \{}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (footprint<.001)\ \textcolor{keywordflow}{return}\ 3;}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (footprint<.01)\ \textcolor{keywordflow}{return}\ 8;}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (footprint<.05)\ \textcolor{keywordflow}{return}\ 16;}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (footprint<.1)\ \textcolor{keywordflow}{return}\ 32;}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (footprint<.5)\ \textcolor{keywordflow}{return}\ 64;}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 128;\ }
+\DoxyCodeLine{00323\ \ \ \ \ \}}
+\DoxyCodeLine{00324\ \}}
+
+\end{DoxyCode}

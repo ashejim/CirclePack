@@ -1,0 +1,171 @@
+\doxysection{Shell\+Control.\+java}
+\label{_shell_control_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/circlePack/ShellControl.java@{C:/Users/ashej/myGitRepos/CirclePack/src/circlePack/ShellControl.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }circlePack;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.io.BufferedWriter;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.io.FileWriter;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.net.InetAddress;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.net.UnknownHostException;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ java.text.DateFormat;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ java.util.Date;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ cpTalk.sockets.CPMultiServer;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ input.SocketSource;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00018\ \textcolor{keyword}{import}\ panels.CPPreferences;}
+\DoxyCodeLine{00019\ \textcolor{keyword}{import}\ util.CPTimer;}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00031\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }ShellControl\ \textcolor{keyword}{extends}\ CPBase\ \{}
+\DoxyCodeLine{00032\ \ \ \ \ }
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ String\ CPVersion=\ \textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}CirclePack,\ "{}}+circlePack.Version.version+\textcolor{stringliteral}{"{},\ "{}}+}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ \ \ \ \ DateFormat.getDateInstance(DateFormat.MEDIUM).format(\textcolor{keyword}{new}\ Date()));}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ CPTimer\ cpTimer;\ \textcolor{comment}{//\ for\ crude\ timings}}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ CPPreferences\ preferences;\ \textcolor{comment}{//\ user\ preferences}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{public}\ ShellControl()\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ socketActive=\textcolor{keyword}{true};\ \ \textcolor{comment}{//\ means\ that\ socket\ server\ will\ be\ started}}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ cpSocketHost=\textcolor{keyword}{null};}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ cpMultiServer=\textcolor{keyword}{null};}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ socketSources=\textcolor{keyword}{new}\ Vector<SocketSource>();}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ NUM\_PACKS=3;\ \textcolor{comment}{//\ number\ of\ packings\ to\ maintain}}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ FAUX\_RAD=20000;}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ cpTimer=\textcolor{keyword}{new}\ CPTimer();}
+\DoxyCodeLine{00048\ \ \ \ \ \}}
+\DoxyCodeLine{00049\ \ \ \ \ }
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initShellControl()\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ look\ for\ preference\ directory/file\ in\ 'homeDirectory/myCirclePack';}}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ File\ prefDir\ =\ \textcolor{keyword}{new}\ File(CPFileManager.HomeDirectory,\ \textcolor{stringliteral}{"{}myCirclePack"{}});\ \textcolor{comment}{//\ .circlepack"{});}}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!prefDir.exists())\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ prefDir.mkdir();}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (prefDir.exists())\ \{}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ String\ myPrefFilename\ =\ \textcolor{stringliteral}{"{}cpprefrc"{}};}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CPBase.CPprefFile\ =\ \textcolor{keyword}{new}\ File(prefDir,\ myPrefFilename);}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ would\ rather\ read\ this\ from\ default\ file\ in\ "{}/Resources"{},}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ but\ ran\ into\ problems.}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!CPBase.CPprefFile.exists())\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BufferedWriter\ writer\ =\ \textcolor{keyword}{new}\ BufferedWriter(\textcolor{keyword}{new}\ FileWriter(CPBase.CPprefFile));}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}PACKINGS\_DIR\ packings/"{}});}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}SCRIPT\_DIR\ scripts/"{}});}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}TOOL\_DIR\ mytools/"{}});}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}EXTENDER\_DIR\ myCirclePack/bin/"{}});}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}PRINT\_COMMAND\ lpr"{}});}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}WEB\_URL\_FILE\ web\_URLs/"{}});}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}SCRIPT\_URL\_FILE\ script\_URLs/"{}});}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}ACTIVE\_CANVAS\_SIZE\ 650"{}});}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}PAIR\_CANVAS\_SIZE\ 400"{}});}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.write(\textcolor{stringliteral}{"{}FONT\_INCREMENT\ 0"{}});}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.newLine();}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.flush();}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ writer.close();}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}failed\ to\ find/create\ 'myCirclePack/cpprefrc'"{}});}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ preferences\ =\ \textcolor{keyword}{new}\ CPPreferences();\ \textcolor{comment}{//\ pref\ stuff\ set\ here}}
+\DoxyCodeLine{00098\ }
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Create\ the\ packing\ data\ memory\ storage\ areas}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ packings=\textcolor{keyword}{new}\ PackData[NUM\_PACKS];}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ 0;\ i\ <\ NUM\_PACKS;\ i++)\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ packings[i]=\textcolor{keyword}{new}\ PackData(i);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ If\ we\ needed\ an\ image\ to\ use,\ we\ would\ instantiate\ it\ here}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ runSpinner=\textcolor{keyword}{new}\ ShellSpinner();}
+\DoxyCodeLine{00107\ \ \ \ \ \}}
+\DoxyCodeLine{00108\ \ \ \ \ }
+\DoxyCodeLine{00109\ \ \ \ \ \textcolor{comment}{//\ =============\ abstract\ methods\ required\ by\ CPBase\ =============}}
+\DoxyCodeLine{00110\ }
+\DoxyCodeLine{00114\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ myMsg(String\ msgstr)\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ System.out.println(msgstr);}
+\DoxyCodeLine{00116\ \ \ \ \ \}}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ myErrorMsg(String\ msgstr)\ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ System.err.println(msgstr);}
+\DoxyCodeLine{00123\ \ \ \ \ \}}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ myDebugMsg(String\ msgstr)\ \{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ System.err.println(msgstr);}
+\DoxyCodeLine{00131\ \ \ \ \ \}}
+\DoxyCodeLine{00132\ \ \ \ \ }
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keyword}{public}\ PackData\ getActivePackData()\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ packings[activePackNum];}
+\DoxyCodeLine{00135\ \ \ \ \ \}}
+\DoxyCodeLine{00136\ \ \ \ \ }
+\DoxyCodeLine{00137\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getActivePackNum()\ \{}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ activePackNum;}
+\DoxyCodeLine{00139\ \ \ \ \ \}}
+\DoxyCodeLine{00140\ \ \ \ \ }
+\DoxyCodeLine{00149\ \ \ \ \ \textcolor{keyword}{public}\ PackData\ swapPackData(PackData\ p,\textcolor{keywordtype}{int}\ pnum,\textcolor{keywordtype}{boolean}\ keepX)\ \{}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p==\textcolor{keyword}{null})}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ before\ replacing,\ handle\ extension}}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (keepX)\ \{\ }
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ p.packExtensions=packings[pnum].packExtensions;}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ x=0;x<p.packExtensions.size();x++)}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.packExtensions.get(x).extenderPD=p;}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00160\ \textcolor{comment}{//\ \ \ \ \ \ CPBase.packings[pnum].cpDrawing=null;\ //\ detach\ from\ cpDrawing}}
+\DoxyCodeLine{00161\ \textcolor{comment}{//\ \ \ \ \ \ p.cpDrawing=CPBase.cpDrawing[pnum];\ }}
+\DoxyCodeLine{00162\ \textcolor{comment}{//\ \ \ \ \ \ p.cpDrawing.setPackData(p);}}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ CPBase.packings[pnum]=p;\ }
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p;}
+\DoxyCodeLine{00166\ \ \ \ \ \}}
+\DoxyCodeLine{00167\ \ \ \ \ }
+\DoxyCodeLine{00168\ \ \ \ \ \textcolor{comment}{//\ done\ with\ abstract\ methods}}
+\DoxyCodeLine{00169\ \ \ \ \ }
+\DoxyCodeLine{00170\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ switchActivePack(\textcolor{keywordtype}{int}\ packnum)\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ old\_pack\ =\ activePackNum;}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (packnum<0\ ||\ packnum>2\ ||\ old\_pack==packnum)\ }
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ activePackNum=packnum;}
+\DoxyCodeLine{00175\ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ startCPSocketServer(\textcolor{keywordtype}{int}\ port)\ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ cpSocketHost=InetAddress.getLocalHost().getCanonicalHostName();}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (UnknownHostException\ e)\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}Could\ not\ find\ the\ local\ host\ for\ the\ socket\ "{}});}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ e.printStackTrace();}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ cpSocketHost=\textcolor{keyword}{null};}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ cpSocketPort=port;}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ cpMultiServer\ =\ \textcolor{keyword}{new}\ CPMultiServer(port);}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ cpMultiServer.start();}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}Failed\ to\ start\ cpMultiServer:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ CirclePack.cpb.msg(\textcolor{stringliteral}{"{}CirclePack\ has\ a\ socket\ server:\ host\ =\ "{}}+}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ cpSocketHost+\textcolor{stringliteral}{"{},\ port\ =\ "{}}+port);}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cpSocketPort=port;}
+\DoxyCodeLine{00203\ \ \ \ \ \}}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00205\ \}}
+
+\end{DoxyCode}

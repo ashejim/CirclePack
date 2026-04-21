@@ -1,0 +1,293 @@
+\doxysection{Qual\+Measures.\+java}
+\label{_qual_measures_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/packing/QualMeasures.java@{C:/Users/ashej/myGitRepos/CirclePack/src/packing/QualMeasures.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }packing;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ geometry.CircleSimple;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ geometry.CommonMath;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ geometry.HyperbolicMath;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ geometry.SphericalMath;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ komplex.EdgeSimple;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ listManip.EdgeLink;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ listManip.FaceLink;}
+\DoxyCodeLine{00016\ \textcolor{keyword}{import}\ listManip.HalfLink;}
+\DoxyCodeLine{00017\ \textcolor{keyword}{import}\ util.UtilPacket;}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00028\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }QualMeasures\ \{}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ HalfEdge\ visualErrMax(PackData\ p,HalfLink\ elist,}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ UtilPacket\ uP)\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ HalfEdge\ worstedge=\textcolor{keyword}{null};}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (elist==\textcolor{keyword}{null}\ ||\ elist.size()==0)}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ worstedge;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ worstviserr=0.0;}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ Iterator<HalfEdge>\ elst=elist.iterator();}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ uP.rtnFlag=0;}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (elst.hasNext())\ \{}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ edge=elst.next();}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ edge\_error=edge\_vis\_error(p,edge);}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (edge\_error>worstviserr)\ \{}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ worstedge=edge;}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ worstviserr=edge\_error;}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (edge\_error<0)\ }
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uP.rtnFlag=-\/1;}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ uP.value=worstviserr;}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ worstedge;}
+\DoxyCodeLine{00065\ \ \ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00075\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ sph\_visual\_error(\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\ Complex\ z1,\ Complex\ z2,\ \textcolor{keywordtype}{double}\ inv\_dist)\ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ desired=Math.acos(Math.cos(r1)*Math.cos(r2)-\/Math.sin(r1)*Math.sin(r2)*inv\_dist);}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ diff=Math.abs(desired-\/SphericalMath.s\_dist(z1,z2));}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r\ =\ (r2<r1)\ ?\ r2:r1;}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (r<CPBase.GENERIC\_TOLER)}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1.0;\ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ diff/r;}
+\DoxyCodeLine{00082\ \ \ \ \ \}}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ pin\_face(PackData\ p,\textcolor{keywordtype}{int}\ face)\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ it=p.packDCEL.faces[face].getVerts()[0];}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dlength,elength,newrat,rat=-\/1.0;}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []qual=\textcolor{keyword}{new}\ \textcolor{keywordtype}{int}[3];}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<3;i++)\ \{}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ qual[i]=0;}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=p.packDCEL.faces[face].getVerts()[0];}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=p.countFaces(v)+p.getBdryFlag(v);}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=p.getFlower(v);}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<flower.length;j++)\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=flower[j];}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((dlength=desired\_length(p,v,w))>0.0}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ (elength=edge\_length(p,v,w))>0.0}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ elength<2.0*dlength)}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ qual[i]\ +=\ 1;}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((newrat=((\textcolor{keywordtype}{double})qual[i])/((\textcolor{keywordtype}{double})num))>rat)\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rat=newrat;}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ it=v;}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ it;}
+\DoxyCodeLine{00113\ \ \ \ \ \}}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ }
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ desired\_length(PackData\ p,\ \textcolor{keywordtype}{int}\ v,\ \textcolor{keywordtype}{int}\ w)\ \{}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.packDCEL.findHalfEdge(\textcolor{keyword}{new}\ EdgeSimple(v,w))==\textcolor{keyword}{null})}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rv=p.getRadius(v);}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rw=p.getRadius(w);}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ivd=p.getInvDist(v,w);}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ CommonMath.ivd\_edge\_length(rv,\ rw,\ ivd,\ p.hes);}
+\DoxyCodeLine{00130\ \ \ \ \ \}\ }
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ edge\_length(PackData\ p,\ \textcolor{keywordtype}{int}\ v,\ \textcolor{keywordtype}{int}\ w)\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ Complex\ a,\ b;}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ a\ =\ p.getCenter(v);}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ b\ =\ p.getCenter(w);}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Complex.isNaN(a)\ ||\ Complex.isNaN(b))}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}encountered\ NaN"{}});}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes\ >\ 0)\ \textcolor{comment}{//\ sph}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (SphericalMath.s\_dist(a,\ b));}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes\ ==\ 0)\ \textcolor{comment}{//\ eucl}}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ a.minus(b).abs();}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ HyperbolicMath.h\_dist(a,\ b);\ \textcolor{comment}{//\ }}
+\DoxyCodeLine{00151\ \ \ \ \ \}}
+\DoxyCodeLine{00152\ \ \ \ \ }
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ count\_face\_error(PackData\ p,\textcolor{keywordtype}{double}\ crit,FaceLink\ facelist)\ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ elength,dlength,recip,quo;}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ }
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (crit<=1.0\ ||\ facelist==\textcolor{keyword}{null}\ ||\ facelist.size()==0)\ }
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ recip=1/crit;}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ Iterator<Integer>\ flist=facelist.iterator();}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (flist.hasNext())\ \{}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ face=flist.next();}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ verts=p.getFaceVerts(face);}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<3;i++)\ \{}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v1=verts[i];}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v2=verts[(i+1)\%3];}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((elength=edge\_length(p,v1,v2))>=0.0}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ (dlength=desired\_length(p,v1,v2))>0.0}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ ((quo=elength/dlength)>crit\ ||\ quo<recip))\ \{}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ i=3;\ \textcolor{comment}{//\ break\ out\ of\ for\ loop}}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ for\ loop}}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00191\ \ \ \ \ \}}
+\DoxyCodeLine{00192\ \ \ \ \ }
+\DoxyCodeLine{00200\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ HalfEdge\ worst\_rel\_err(PackData\ p,HalfLink\ hlist,UtilPacket\ uP)\ \{}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ EdgeLink\ elist=\textcolor{keyword}{new}\ EdgeLink(hlist);}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ EdgeSimple\ es=worst\_rel\_err(p,elist,uP);}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p.packDCEL.findHalfEdge(es);}
+\DoxyCodeLine{00204\ \ \ \ \ \}}
+\DoxyCodeLine{00205\ \ \ \ \ }
+\DoxyCodeLine{00216\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ EdgeSimple\ worst\_rel\_err(PackData\ p,EdgeLink\ elist,UtilPacket\ uP)\ \{}
+\DoxyCodeLine{00217\ }
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ EdgeSimple\ retedge=\textcolor{keyword}{null};}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ Iterator<EdgeSimple>\ elst=elist.iterator();}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (elst.hasNext())\ \{}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ EdgeSimple\ edge=elst.next();}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ desired=desired\_length(p,edge.v,edge.w);}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ length=edge\_length(p,edge.v,edge.w);}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ smallest\ of\ two\ radii}}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ smaller=p.getRadius(edge.v);}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ smaller\ =\ (p.getRadius(edge.w)<smaller)\ ?\ p.getRadius(edge.w)\ :\ smaller;}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ myrelerr=Math.abs((desired-\/length)/smaller);}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (myrelerr>uP.value)\ \{}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uP.value=myrelerr;}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ retedge=\textcolor{keyword}{new}\ EdgeSimple(edge);}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ System.err.println(\textcolor{stringliteral}{"{}rel\_contact\_error\ problem:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uP.rtnFlag=-\/1;\ }
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ retedge;}
+\DoxyCodeLine{00241\ \ \ \ \ \}}
+\DoxyCodeLine{00242\ \ \ \ \ }
+\DoxyCodeLine{00252\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ badOrientation(PackData\ p,\ FaceLink\ flink)\ \{}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ default\ to\ all\ faces}}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flink==\textcolor{keyword}{null}\ ||\ flink.size()==0)}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ flink=\textcolor{keyword}{new}\ FaceLink(p,\textcolor{stringliteral}{"{}a"{}});}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ Iterator<Integer>\ flk=flink.iterator();}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ failface=0;}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (failface==0\ \&\&\ flk.hasNext())\ \{}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ f=flk.next();}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ vert=p.getFaceVerts(f);}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ vz=p.getCenter(vert[0]);}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ uz=p.getCenter(vert[1]);}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ wz=p.getCenter(vert[2]);}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes>0)\ \{\ \textcolor{comment}{//\ sphere\ case}}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []vu\_tan=SphericalMath.sph\_tangent(vz,\ uz);}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []vw\_tan=SphericalMath.sph\_tangent(vz,\ wz);}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []cross=SphericalMath.crossProduct(vu\_tan,vw\_tan);}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []vdir=SphericalMath.s\_pt\_to\_vec(vz);}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dp=SphericalMath.dot\_prod(cross,\ vdir);}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dp<.000000001)\ \textcolor{comment}{//\ points\ opposite\ to\ vz?}}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ f;}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ eucl\ or\ hyp\ cases}}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ vu=uz.minus(vz);}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ vw=wz.minus(vz);}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ third\ component\ of\ cross\ product\ should\ be\ positive}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ k=(vu.x*vw.y-\/vu.y*vw.x);}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k<.000000001)}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ f;}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}(Exception\ ex)\ \{}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1;}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ got\ here,\ then\ all\ is\ okay}}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00291\ \ \ \ \ \}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00300\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ vert\_ErrMax(PackData\ p,\textcolor{keywordtype}{int}\ v)\ \{}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ worstviserr=0.0;}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ HalfLink\ spokes=p.packDCEL.vertices[v].getSpokes(\textcolor{keyword}{null});}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ Iterator<HalfEdge>\ sis=spokes.iterator();}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (sis.hasNext())\ \{}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ he=sis.next();}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ verr=edge\_vis\_error(p,he);}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (verr>worstviserr)\ \{}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ worstviserr=verr;}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ worstviserr;}
+\DoxyCodeLine{00312\ \ \ \ \ \}}
+\DoxyCodeLine{00313\ \ \ \ \ }
+\DoxyCodeLine{00327\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ visual\_error(\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\ }
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1,\ Complex\ z2,\ \textcolor{keywordtype}{double}\ inv\_dist)\ \{}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ diff=Math.abs(z1.minus(z2).abs()-\/Math.sqrt(r1*r1+r2*r2+2.0*r1*r2*inv\_dist));}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r\ =\ (r2<r1)\ ?\ r2:r1;}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (r<CPBase.GENERIC\_TOLER)}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ -\/1.0;\ }
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ diff/r;}
+\DoxyCodeLine{00334\ \ \ \ \ \}}
+\DoxyCodeLine{00335\ \ \ \ \ }
+\DoxyCodeLine{00342\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ edge\_vis\_error(PackData\ p,HalfEdge\ edge)\ \{}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ inv\_dist=edge.getInvDist();}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ Complex\ z1=p.packDCEL.getVertCenter(edge);}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ Complex\ z2=p.packDCEL.getVertCenter(edge.next);}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r1=p.packDCEL.getVertRadius(edge);}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2=p.packDCEL.getVertRadius(edge.next);}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ verr=-\/1.0;}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes<0)\ \{\ \textcolor{comment}{//\ hyperbolic,\ use\ euclidean\ data}}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ sc=HyperbolicMath.h\_to\_e\_data(z1,\ r1);}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ z1=sc.center;}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ r1=sc.rad;}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ sc=HyperbolicMath.h\_to\_e\_data(z2,\ r2);}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ z2=sc.center;}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ r2=sc.rad;}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ verr=visual\_error(r1,r2,z1,z2,inv\_dist);}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (p.hes>0)\ \{\ \textcolor{comment}{//\ spherical}}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ verr=sph\_visual\_error(r1,r2,z1,z2,inv\_dist);}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ eucl}}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ verr=visual\_error(r1,r2,z1,z2,inv\_dist);}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ verr;}
+\DoxyCodeLine{00367\ \ \ \ \ \}}
+\DoxyCodeLine{00368\ \ \ \ \ }
+\DoxyCodeLine{00376\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ edge\_rel\_vis\_err(PackData\ p,HalfEdge\ edge)\ \{}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ relverr=0.0;}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ inv\_dist=edge.getInvDist();}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1=p.packDCEL.getVertCenter(edge);}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z2=p.packDCEL.getVertCenter(edge.next);}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r1=p.packDCEL.getVertRadius(edge);}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2=p.packDCEL.getVertRadius(edge.next);}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ minrad=1.0;}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes<0)\ \{\ \textcolor{comment}{//\ hyperbolic,\ use\ euclidean\ data}}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ sc=HyperbolicMath.h\_to\_e\_data(z1,\ r1);}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z1=sc.center;}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r1=sc.rad;}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sc=HyperbolicMath.h\_to\_e\_data(z2,\ r2);}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ z2=sc.center;}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r2=sc.rad;}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ minrad=(r2<r1)\ ?\ r2:r1;}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ relverr=visual\_error(r1,r2,z1,z2,inv\_dist)/minrad;}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ relverr;}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ minrad=(r2<r1)\ ?\ r2:r1;}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes>0)\ \textcolor{comment}{//\ spherical}}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ relverr=sph\_visual\_error(r1,r2,z1,z2,inv\_dist)/minrad;}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ relverr=visual\_error(r1,r2,z1,z2,inv\_dist)/minrad;}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{\}\ \textcolor{comment}{//\ return\ 0.0;}}
+\DoxyCodeLine{00404\ }
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ relverr;}
+\DoxyCodeLine{00406\ \ \ \ \ \}}
+\DoxyCodeLine{00407\ }
+\DoxyCodeLine{00408\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,85 @@
+\doxysection{Surface3\+D.\+java}
+\label{_surface3_d_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/Surface3D.java@{C:/Users/ashej/myGitRepos/CirclePack/src/ftnTheory/Surface3D.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }ftnTheory;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.io.BufferedReader;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ input.CPFileManager;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ packing.PackExtender;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ packing.ReadWrite;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ util.CmdStruct;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ util.StringUtil;}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }Surface3D\ \textcolor{keyword}{extends}\ PackExtender\ \{}
+\DoxyCodeLine{00015\ }
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{public}\ PackData\ basePack;\ \textcolor{comment}{//\ store\ for\ reference;\ we\ will\ be\ using\ 'this'\ for\ microgrid}}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ gridGen;}
+\DoxyCodeLine{00018\ \ \ \ \ }
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keyword}{public}\ Surface3D(PackData\ p,\textcolor{keywordtype}{int}\ packQ,String\ intensityField,\textcolor{keywordtype}{int}\ genN)\ \{}
+\DoxyCodeLine{00020\ \ \ \ \ \ \ \ \ super(p);}
+\DoxyCodeLine{00021\ \ \ \ \ \ \ \ \ extensionType=\textcolor{stringliteral}{"{}Surface3D"{}};}
+\DoxyCodeLine{00022\ \ \ \ \ \ \ \ \ extensionAbbrev=\textcolor{stringliteral}{"{}S3"{}};}
+\DoxyCodeLine{00023\ \ \ \ \ \ \ \ \ toolTip=\textcolor{stringliteral}{"{}'Surface3D'\ for\ 3D\ printing\ on\ curved\ surfaces."{}};}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ registerXType();}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ basePack=p.copyPackTo();}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (running)}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ \ \ \ \ extenderPD.packExtensions.add(\textcolor{keyword}{this});}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ gridGen=genN;\ \textcolor{comment}{//\ number\ of\ generations\ of\ hex}}
+\DoxyCodeLine{00029\ \ \ \ \ \}}
+\DoxyCodeLine{00030\ \ \ \ \ }
+\DoxyCodeLine{00031\ \ \ \ \ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cmdParser(String\ cmd,Vector<Vector<String>>\ flagSegs)\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ Vector<String>\ items=\textcolor{keyword}{null};}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}bary\_field"{}}))\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flagSegs==\textcolor{keyword}{null}\ ||\ flagSegs.size()==0\ ||\ (items=flagSegs.get(0))==\textcolor{keyword}{null}\ ||}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ items.size()==0)}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}usage:\ bary\_field\ \{filename\}"{}});}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ script\_flag=\textcolor{keyword}{false};}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ String\ str=items.remove(0);}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (StringUtil.isFlag(str))\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str.startsWith(\textcolor{stringliteral}{"{}-\/s"{}}))}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ script\_flag=\textcolor{keyword}{true};}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ String\ filename\ =items.get(0);}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ File\ file=\textcolor{keyword}{new}\ File(filename);}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ File\ dir=CPFileManager.CurrentDirectory;}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ String\ name=file.getName();}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ BufferedReader\ fp=CPFileManager.openReadFP(dir,name,script\_flag);}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fp==\textcolor{keyword}{null})}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}failed\ to\ open\ file\ "{}}+name+\textcolor{stringliteral}{"{}\ in\ Surface3D"{}});}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ ReadWrite.readpack(fp,basePack,filename);}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (basePack.utilBary==\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Oops(\textcolor{stringliteral}{"{}failed\ to\ fill\ 'utilBary'"{}});}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ got\ the\ data\ into\ 'utilBary',\ ready\ for\ use}}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ this.msg(\textcolor{stringliteral}{"{}read\ "{}}+filename+\textcolor{stringliteral}{"{}\ for\ BARY\_DATA"{}});}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===============\ set\_grid\_intensities\ ===============}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (cmd.startsWith(\textcolor{stringliteral}{"{}set\_grid\_int"{}}))\ \{}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00072\ \ \ \ \ }
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00074\ \ \ \ \ \}}
+\DoxyCodeLine{00075\ \ \ \ \ }
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initCmdStruct()\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ super.initCmdStruct();}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}bary\_field"{}},\textcolor{stringliteral}{"{}filename"{}},\textcolor{keyword}{null},}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Read\ \{filename\}\ for\ BARY\_DATA\ giving\ field\ intensities\ "{}}+}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}at\ the\ vertices\ of\ 'basePack'."{}}));}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ cmdStruct.add(\textcolor{keyword}{new}\ CmdStruct(\textcolor{stringliteral}{"{}set\_grid\_intensities"{}},\textcolor{keyword}{null},\textcolor{keyword}{null},}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Set\ intensities\ on\ vertices\ from\ 'utilBary'\ and\ on\ faces\ "{}}+}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}from\ area\ density"{}}));}
+\DoxyCodeLine{00087\ \ \ \ \ \}}
+\DoxyCodeLine{00088\ \}}
+
+\end{DoxyCode}

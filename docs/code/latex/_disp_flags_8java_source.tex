@@ -1,0 +1,232 @@
+\doxysection{Disp\+Flags.\+java}
+\label{_disp_flags_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/util/DispFlags.java@{C:/Users/ashej/myGitRepos/CirclePack/src/util/DispFlags.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }util;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ }
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00023\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }DispFlags\ \{}
+\DoxyCodeLine{00024\ \ \ \ \ String\ dispStr;\ \ \ \ \ \textcolor{comment}{//\ compact\ display\ string}}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ draw;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ draw\ or\ don't\ draw?}}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ fill;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ object\ filled\ vs\ open?}}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ colBorder;\ \ \ \textcolor{comment}{//\ border\ in\ color?\ vs\ foreground}}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ label;\ \ \ \ \ \ \ \textcolor{comment}{//\ show\ index?}}
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{keyword}{private}\ String\ labelStr;\ \ \ \ \textcolor{comment}{//\ label\ (generally\ index,\ set\ later)}}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ colorIsSet;\ \ \textcolor{comment}{//\ true\ -\/>\ 'color'\ provided\ in\ the\ string,\ else\ as\ stored}}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{private}\ Color\ color;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ color\ (set\ later,\ if\ !colorIsSet)}}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keyword}{public}\ Integer\ thickness;\ \ \ \textcolor{comment}{//\ line\ thickness}}
+\DoxyCodeLine{00033\ \ \ \ \ \textcolor{keyword}{public}\ Integer\ depth;\ \ \ \ \ \ \ \textcolor{comment}{//\ depth\ for\ subdivision\ tilings}}
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keyword}{public}\ Integer\ fillOpacity;\ \textcolor{comment}{//\ may\ be\ null\ -\/-\/-\/\ set\ from\ CPDrawing\ for\ 'fill'\ operations\ \ }}
+\DoxyCodeLine{00035\ \ \ \ \ }
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{comment}{//\ Constructor(s)}}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{public}\ DispFlags()\ \{}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ dispStr=\textcolor{keyword}{new}\ String(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ labelStr\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ draw\ =\ \textcolor{keyword}{true};\ \textcolor{comment}{//\ default\ to\ true}}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ fill\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ label\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ colBorder\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ colorIsSet\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ color\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ thickness\ =\ Integer.valueOf(0);}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ depth\ =\ 0;}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ fillOpacity=Integer.valueOf(CPBase.DEFAULT\_FILL\_OPACITY);}
+\DoxyCodeLine{00049\ \ \ \ \ \}}
+\DoxyCodeLine{00050\ \ \ \ \ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{public}\ DispFlags(String\ str)\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}();}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ dispStr\ =\ \textcolor{keyword}{new}\ String(str);}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ parseDispStr(str);}
+\DoxyCodeLine{00056\ \ \ \ \ \}}
+\DoxyCodeLine{00057\ \ \ \ \ }
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{keyword}{public}\ DispFlags(String\ str,\textcolor{keywordtype}{int}\ opacity)\ \{}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(str);}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ fillOpacity=Integer.valueOf(opacity);}
+\DoxyCodeLine{00061\ \ \ \ \ \}}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ parseDispStr(String\ str)\ \{}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str\ !=\ \textcolor{keyword}{null}\ \&\&\ str.length()\ >\ 0)\ \{}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (str.startsWith(\textcolor{stringliteral}{"{}-\/"{}}))}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ str=str.substring(1);}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ need\ buffer\ to\ manipulate}}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ StringBuilder\ strbuf\ =\ \textcolor{keyword}{new}\ StringBuilder(str.trim());}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ truncate\ anything\ after\ first\ whitespace}}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k\ =\ 0;}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (k\ <\ strbuf.length()\ \&\&\ !Character.isWhitespace(strbuf.charAt(k)))\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k++;}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k\ <\ (strbuf.length()-\/1))}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.delete(k,\ strbuf.length());}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ ===========\ searches\ ================}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ foreground\ fill?}}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((k\ =\ strbuf.indexOf(\textcolor{stringliteral}{"{}fg"{}}))\ >=\ 0)\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ color\ =\ ColorUtil.getFGColor();}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ colorIsSet\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.delete(k,\ k\ +\ 2);}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else\ background\ fill?}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((k\ =\ strbuf.indexOf(\textcolor{stringliteral}{"{}bg"{}}))\ >=\ 0)\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ color\ =\ ColorUtil.getBGColor();}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ colorIsSet\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.delete(k,\ k\ +\ 2);}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00099\ }
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ fill\ object?\ ('fg'\ would\ have\ been\ removed)}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((k\ =\ strbuf.indexOf(\textcolor{stringliteral}{"{}f"{}}))\ >=\ 0)}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fill\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ label?\ remove\ the\ 'n'\ so\ it\ doesn't\ interfere}}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((k\ =\ strbuf.indexOf(\textcolor{stringliteral}{"{}n"{}}))\ >=\ 0)\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ label\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.delete(k,\ k\ +\ 1);}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'c'\ can\ mean\ draw\ object\ in\ color;\ but\ if}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ followed\ by\ digit,\ must\ be\ color\ code}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((k\ =\ strbuf.indexOf(\textcolor{stringliteral}{"{}c"{}}))\ >=\ 0}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \&\&\ (strbuf.length()\ ==\ (k\ +\ 1)\ ||\ }
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ !Character.isDigit(strbuf.charAt(k\ +\ 1))))\ \{}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ colBorder\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.delete(k,\ k\ +\ 1);}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00118\ }
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Can\ get\ at\ most\ one\ color\ code:}}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ might\ be\ 'fc'\ or\ 'cf'\ for\ fill\ color\ or\ just\ 'c'}}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ coloring\ the\ object\ itself.}}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ String\ digits\ =\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((k\ =\ strbuf.indexOf(\textcolor{stringliteral}{"{}fc"{}}))\ >=\ 0\ ||\ (k\ =\ strbuf.indexOf(\textcolor{stringliteral}{"{}cf"{}}))\ >=\ 0)}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ digits\ =\ StringUtil.getDigitStr(strbuf,\ k\ +\ 2);}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'c'\ with\ digits\ would\ have\ been\ caught\ earlier}}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ ((k\ =\ strbuf.indexOf(\textcolor{stringliteral}{"{}c"{}}))\ >=\ 0)\ \{}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ colBorder\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ digits\ =\ StringUtil.getDigitStr(strbuf,\ k\ +\ 1);}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ K\ =\ 0;}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (digits\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ K\ =\ digits.length();}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ color\ =\ ColorUtil.coLor(Integer.parseInt(digits));}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ colorIsSet\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.delete(k,\ k\ +\ K\ +\ 1);}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 't'\ for\ thickness?}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((k\ =\ strbuf.indexOf(\textcolor{stringliteral}{"{}t"{}}))\ >=\ 0)\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ digits\ =\ StringUtil.getDigitStr(strbuf,\ k\ +\ 1);}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ K\ =\ 0;}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (digits\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ K\ =\ digits.length();}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ thickness\ =\ Integer.parseInt(digits);}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (thickness\ <\ 0)}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ thickness\ =\ Integer.valueOf(0);}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (thickness\ >\ 15)}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ thickness\ =\ Integer.valueOf(15);}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.delete(k,\ k\ +\ K\ +\ 1);}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00152\ }
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 'd'\ for\ depth?\ (1/2014)}}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ (intended\ for\ use\ with\ tiling\ tree\ depth\ -\/-\/\ may\ have\ other\ uses)}}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((k\ =\ strbuf.indexOf(\textcolor{stringliteral}{"{}d"{}}))\ >=\ 0)\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ digits\ =\ StringUtil.getDigitStr(strbuf,\ k\ +\ 1);}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ K\ =\ 0;}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (digits\ !=\ \textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ K\ =\ digits.length();}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ depth\ =\ Integer.parseInt(digits);}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ strbuf.delete(k,\ k\ +\ K\ +\ 1);}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00165\ \ \ \ \ \}}
+\DoxyCodeLine{00166\ \ \ \ \ }
+\DoxyCodeLine{00170\ \ \ \ \ \textcolor{keyword}{public}\ Color\ getColor()\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ ColorUtil.cloneMe(color);}
+\DoxyCodeLine{00172\ \ \ \ \ \}}
+\DoxyCodeLine{00173\ \ \ \ \ }
+\DoxyCodeLine{00178\ \ \ \ \ \textcolor{keyword}{public}\ Color\ getFillColor()\ \{}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Color(color.getRed(),color.getGreen(),color.getBlue(),fillOpacity);}
+\DoxyCodeLine{00180\ \ \ \ \ \}}
+\DoxyCodeLine{00181\ \ \ \ \ }
+\DoxyCodeLine{00185\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setColor(Color\ col)\ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ color=ColorUtil.cloneMe(col);}
+\DoxyCodeLine{00187\ \ \ \ \ \}}
+\DoxyCodeLine{00188\ \ \ \ \ }
+\DoxyCodeLine{00193\ \ \ \ \ \textcolor{keyword}{public}\ String\ getLabel()\ \{}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (label)}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ labelStr;}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00197\ \ \ \ \ \}}
+\DoxyCodeLine{00198\ \ \ \ \ }
+\DoxyCodeLine{00203\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setLabel(String\ lab)\ \{}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ label=\textcolor{keyword}{true};}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (lab!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ labelStr=\textcolor{keyword}{new}\ String(lab);}
+\DoxyCodeLine{00207\ \ \ \ \ \}}
+\DoxyCodeLine{00208\ \ \ \ \ }
+\DoxyCodeLine{00221\ \ \ \ \ \textcolor{keyword}{public}\ String\ reconstitute()\ \{}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ StringBuilder\ stb=\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ bg\_set=\textcolor{keyword}{false};}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ fg\_set=\textcolor{keyword}{false};}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (color!=\textcolor{keyword}{null}\ \&\&\ color==ColorUtil.getBGColor())}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ bg\_set=\textcolor{keyword}{true};}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (color!=\textcolor{keyword}{null}\ \&\&\ color==ColorUtil.getFGColor())}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ fg\_set=\textcolor{keyword}{true};}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ special\ case:\ draw\ thing\ itself\ in\ background\ color}}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!fill\ \&\&\ color==\textcolor{keyword}{null}\ \&\&\ colBorder\ \&\&\ bg\_set)\ }
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ stb.append(\textcolor{stringliteral}{"{}cbg"{}});}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ typical}}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fill)}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stb.append(\textcolor{charliteral}{'f'});}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fg\_set\ ||\ bg\_set)\ \{\ }
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (fg\_set)}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stb.append(\textcolor{stringliteral}{"{}fg"{}});}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stb.append(\textcolor{stringliteral}{"{}bg"{}});}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ 'fg'\ or\ 'bg'\ preempts\ 'color'}}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (colBorder\ \&\&\ (fill\ ||\ color==\textcolor{keyword}{null}))}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stb.append(\textcolor{charliteral}{'c'});}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (color!=\textcolor{keyword}{null})\ }
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ stb.append(\textcolor{stringliteral}{"{}c"{}}+ColorUtil.col\_to\_table(color));}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (label)}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ stb.append(\textcolor{charliteral}{'n'});}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (thickness!=1)}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ stb.append(\textcolor{stringliteral}{"{}t"{}}+thickness);}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (depth!=0)}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ stb.append(\textcolor{stringliteral}{"{}d"{}}+Math.abs(depth));}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ stb.toString();}
+\DoxyCodeLine{00259\ \ \ \ \ \}}
+\DoxyCodeLine{00260\ }
+\DoxyCodeLine{00264\ \ \ \ \ \textcolor{keyword}{public}\ DispFlags\ clone()\ \{}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ DispFlags\ rslt=\textcolor{keyword}{new}\ DispFlags(\textcolor{stringliteral}{"{}"{}});}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ rslt.dispStr=\textcolor{keyword}{new}\ String(this.dispStr);}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ rslt.draw=this.draw;}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ rslt.fill=this.fill;}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ rslt.label=this.label;}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ rslt.colBorder=this.colBorder;}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ rslt.color=ColorUtil.cloneMe(this.color);}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ rslt.colorIsSet=this.colorIsSet;}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ rslt.thickness=this.thickness;}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ rslt.depth=this.depth;}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ rslt.fillOpacity=Integer.valueOf(this.fillOpacity);}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ rslt;}
+\DoxyCodeLine{00277\ \ \ \ \ \}}
+\DoxyCodeLine{00278\ }
+\DoxyCodeLine{00279\ \}}
+
+\end{DoxyCode}

@@ -1,0 +1,299 @@
+\doxysection{Generator\+Type\+Group.\+java}
+\label{_generator_type_group_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/math/group/GeneratorTypeGroup.java@{C:/Users/ashej/myGitRepos/CirclePack/src/math/group/GeneratorTypeGroup.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }math.group;}
+\DoxyCodeLine{00002\ \textcolor{keyword}{import}\ java.util.Vector;}
+\DoxyCodeLine{00003\ }
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ math.Mobius;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }GeneratorTypeGroup\ \{}
+\DoxyCodeLine{00007\ \ \ \textcolor{keyword}{protected}\ Vector<GroupElement>\ generatorValues\ =\ \textcolor{keyword}{new}\ Vector<GroupElement>();}
+\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{protected}\ Vector<String>\ generatorKeys\ =\ \textcolor{keyword}{new}\ Vector<String>();}
+\DoxyCodeLine{00009\ \ \ \textcolor{keyword}{protected}\ Vector<GroupElement>\ groupValues\ =\ \textcolor{keyword}{new}\ Vector<GroupElement>(60000);}
+\DoxyCodeLine{00010\ \ \ \textcolor{keyword}{protected}\ Vector<String>\ groupKeys\ =\ \textcolor{keyword}{new}\ Vector<String>(60000);}
+\DoxyCodeLine{00011\ \ \ \textcolor{keyword}{protected}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ depth=4;}
+\DoxyCodeLine{00012\ \ \ \textcolor{keyword}{protected}\ \textcolor{keywordtype}{boolean}\ isGroupComputed\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \ \ \textcolor{keyword}{public}\ String\ getInverseSymbol(String\ s)\ \{}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{char}\ ch\ =\ s.charAt(0);}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keywordflow}{if}(ch>=\textcolor{charliteral}{'A'}\ \&\&\ ch<=\textcolor{charliteral}{'Z'})}
+\DoxyCodeLine{00017\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String()+(char)(ch+32);}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00019\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ String()+(char)(ch-\/32);}
+\DoxyCodeLine{00020\ \ \ \}}
+\DoxyCodeLine{00021\ }
+\DoxyCodeLine{00029\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ addGenerator(GroupElement\ m,\ String\ s)\ \{}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{int}\ ind;}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keywordflow}{if}((ind=generatorKeys.indexOf(s))>=0)\ \{}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ generatorValues.remove(ind);}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ generatorKeys.remove(s);}
+\DoxyCodeLine{00034\ \ \ \ \ \}}
+\DoxyCodeLine{00035\ \ \ \ \ generatorKeys.add(s);}
+\DoxyCodeLine{00036\ \ \ \ \ generatorValues.add(m);}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{comment}{//groupKeys.add(s);}}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{comment}{//groupValues.add(m);}}
+\DoxyCodeLine{00039\ \ \ \ \ this.resetGroup();}
+\DoxyCodeLine{00040\ \ \ \}}
+\DoxyCodeLine{00046\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ addGeneratorWithInverse(GroupElement\ m,\ String\ s)\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keywordtype}{int}\ ind=-\/1;}
+\DoxyCodeLine{00048\ \ \ \ \ \textcolor{keywordflow}{if}((ind=generatorKeys.indexOf(s))>=0)\ \{}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ generatorValues.remove(ind);}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ generatorKeys.remove(s);}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \textcolor{comment}{//ind\ =\ groupKeys.indexOf(s);}}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \textcolor{comment}{//groupValues.remove(ind);}}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \textcolor{comment}{//groupKeys.remove(s);}}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \textcolor{comment}{//isGroupComputed\ =\ false;}}
+\DoxyCodeLine{00055\ \ \ \ \ \}}
+\DoxyCodeLine{00056\ \ \ \ \ generatorKeys.add(s);}
+\DoxyCodeLine{00057\ \ \ \ \ generatorValues.add(m);}
+\DoxyCodeLine{00058\ \ \ \ \ \textcolor{comment}{//groupKeys.add(s);}}
+\DoxyCodeLine{00059\ \ \ \ \ \textcolor{comment}{//groupValues.add(m);}}
+\DoxyCodeLine{00060\ \ \ \ \ GroupElement\ \ mInverse\ =\ (GroupElement)m.inverse();}
+\DoxyCodeLine{00061\ \ \ \ \ String\ sInverse\ =\ getInverseSymbol(s);}
+\DoxyCodeLine{00062\ \ \ \ \ generatorKeys.add(sInverse);}
+\DoxyCodeLine{00063\ \ \ \ \ generatorValues.add(mInverse);}
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{comment}{//groupKeys.add(sInverse);}}
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//groupValues.add(mInverse);}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{comment}{//isGroupComputed\ =\ false;}}
+\DoxyCodeLine{00067\ \ \ \ \ this.resetGroup();}
+\DoxyCodeLine{00068\ \ \ \}}
+\DoxyCodeLine{00069\ }
+\DoxyCodeLine{00070\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setGenerator(GroupElement\ m,\ String\ s)\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \textcolor{comment}{//generatorKeys.remove(s);}}
+\DoxyCodeLine{00072\ \ \ \ \ \textcolor{comment}{//generatorValues.remove(m);}}
+\DoxyCodeLine{00073\ \ \ \ \ addGenerator(m,s);}
+\DoxyCodeLine{00074\ \ \ \ \ this.resetGroup();}
+\DoxyCodeLine{00075\ \ \ \}}
+\DoxyCodeLine{00076\ \ \ \textcolor{keyword}{public}\ GroupElement\ getElement(\textcolor{keywordtype}{int}\ i)\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \textcolor{keywordflow}{return}\ (GroupElement)groupValues.get(i);}
+\DoxyCodeLine{00078\ \ \ \}}
+\DoxyCodeLine{00079\ \ \ \textcolor{keyword}{public}\ String\ getKey(\textcolor{keywordtype}{int}\ i)\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \textcolor{keywordflow}{return}\ (String)groupKeys.get(i);}
+\DoxyCodeLine{00081\ \ \ \}}
+\DoxyCodeLine{00082\ }
+\DoxyCodeLine{00083\ \ \ \textcolor{keyword}{public}\ GroupElement\ getElement(String\ s)\ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keywordflow}{return}\ (GroupElement)(groupValues.get(groupKeys.indexOf(s)));}
+\DoxyCodeLine{00085\ \ \ \}}
+\DoxyCodeLine{00086\ \ \ \textcolor{keyword}{public}\ GroupElement\ getGenerator(String\ s)\ \{}
+\DoxyCodeLine{00087\ \ \ \ \ \textcolor{keywordflow}{return}\ (GroupElement)(generatorValues.get(generatorKeys.indexOf(s)));}
+\DoxyCodeLine{00088\ \ \ \}}
+\DoxyCodeLine{00094\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ addGroupElement(GroupElement\ m,\ String\ s)\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ groupKeys.add(s);}
+\DoxyCodeLine{00096\ \ \ \ \ groupValues.add(m);}
+\DoxyCodeLine{00097\ \ \ \}}
+\DoxyCodeLine{00098\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setGroupElement(GroupElement\ m,\ String\ s)\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ groupValues.set(groupKeys.indexOf(s),m);}
+\DoxyCodeLine{00100\ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ index(String\ s)\ \{}
+\DoxyCodeLine{00107\ \ \ \ \ \textcolor{keywordflow}{return}\ groupKeys.indexOf(s);}
+\DoxyCodeLine{00108\ \ \ \}}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00117\ \ \ \textcolor{keyword}{public}\ GroupElement\ parse(String\ s)\ \{}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keywordtype}{int}\ temp\ =\ groupKeys.indexOf(s);}
+\DoxyCodeLine{00119\ \ \ \ \ \textcolor{keywordflow}{if}(temp>=0)}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (GroupElement)(groupValues.get(temp));}
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keywordtype}{int}\ size\ =\ s.length();}
+\DoxyCodeLine{00122\ \ \ \ \ \textcolor{comment}{//\ Stupid\ Java\ !!!}}
+\DoxyCodeLine{00123\ \ \ \ \ \textcolor{comment}{//\ walk\ around\ -\/\ pass\ that\ as\ an\ argument}}
+\DoxyCodeLine{00124\ \ \ \ \ GroupElement\ element\ =\ \textcolor{keyword}{new}\ Mobius();}
+\DoxyCodeLine{00125\ \ \ \ \ \textcolor{keywordflow}{for}(\textcolor{keywordtype}{int}\ i=0;i<size;i++)\ \{}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ String\ gen\ =\ \textcolor{keyword}{new}\ String()+s.charAt(i);}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ element\ =\ element.rmultby(getGenerator(gen));}
+\DoxyCodeLine{00128\ \ \ \ \ \}}
+\DoxyCodeLine{00129\ \ \ \ \ \textcolor{keywordflow}{return}\ element;}
+\DoxyCodeLine{00130\ \ \ \}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \textcolor{comment}{//\ \ private\ static\ boolean\ isInv(char\ c1,\ char\ c2)\ \{}}
+\DoxyCodeLine{00133\ \textcolor{comment}{//\ \ \ \ if((int)(c1-\/32)==(int)c2\ ||\ (int)(c2-\/32)==(int)c1)}}
+\DoxyCodeLine{00134\ \textcolor{comment}{//\ \ \ \ \ \ return\ true;}}
+\DoxyCodeLine{00135\ \textcolor{comment}{//\ \ \ \ else}}
+\DoxyCodeLine{00136\ \textcolor{comment}{//\ \ \ \ \ \ return\ false;}}
+\DoxyCodeLine{00137\ \textcolor{comment}{//\ \ \}}}
+\DoxyCodeLine{00138\ \ \ \textcolor{comment}{//\ applies\ up\ to\ level}}
+\DoxyCodeLine{00145\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ isIrreducible(String\ word,\ String\ generator)\ \{}
+\DoxyCodeLine{00146\ \ \ \ \ \textcolor{keywordflow}{if}(getInverseSymbol(word.substring(word.length()-\/1,word.length())).compareTo(generator)==0)}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00148\ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00149\ \ \ \}}
+\DoxyCodeLine{00153\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ computeGroup()\ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \textcolor{comment}{//\ go\ over\ every\ word\ in\ the\ current\ group\ and\ add\ a\ letter}}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{comment}{//\ let\ begin\ and\ end\ label\ the\ beginning\ and\ the\ end}}
+\DoxyCodeLine{00156\ \ \ \ \ \textcolor{comment}{//\ of\ the\ previous\ level\ computed}}
+\DoxyCodeLine{00157\ \ \ \ \ \textcolor{keywordtype}{int}\ begin\ =\ 0;}
+\DoxyCodeLine{00158\ \ \ \ \ \textcolor{keywordtype}{int}\ nGenerators\ =\ numberOfGenerators();}
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{keywordtype}{int}\ end\ =\ nGenerators;}
+\DoxyCodeLine{00160\ \ \ \ \ \textcolor{comment}{//\ add\ generators}}
+\DoxyCodeLine{00161\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ nGenerators;\ j++)\ \{}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ groupValues.add(generatorValues.get(j));}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ groupKeys.add(generatorKeys.get(j));}
+\DoxyCodeLine{00164\ \ \ \ \ \}}
+\DoxyCodeLine{00165\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ lev\ =\ 1;\ lev\ <\ depth;\ lev++)\ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i\ =\ begin;\ i\ <\ end;\ i++)\ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ GroupElement\ word\ =\ (GroupElement)\ groupValues.get(i);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ String\ key\ =\ (String)\ groupKeys.get(i);}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j\ =\ 0;\ j\ <\ nGenerators;\ j++)\ \{}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ GroupElement\ gen\ =\ (GroupElement)\ generatorValues.get(j);}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ String\ genKey\ =\ (String)\ generatorKeys.get(j);}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (isIrreducible(key,\ genKey))\ \{}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ groupKeys.add(key\ +\ genKey);}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ GroupElement\ newWord\ =\ word.rmultby(gen);}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ newWord.setLevel(word.getLevel()+1);}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ groupValues.add(newWord);}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ begin\ =\ end;}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ end\ =\ end\ +\ count;}
+\DoxyCodeLine{00184\ \ \ \ \ \}}
+\DoxyCodeLine{00185\ \ \ \ \ isGroupComputed\ =\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00186\ \ \ \}}
+\DoxyCodeLine{00187\ }
+\DoxyCodeLine{00188\ \textcolor{comment}{//\ \ public\ static\ void\ computeGroup()\ \{}}
+\DoxyCodeLine{00189\ \textcolor{comment}{//\ \ \ \ if(isGroupComputed)}}
+\DoxyCodeLine{00190\ \textcolor{comment}{//\ \ \ \ \ \ return;}}
+\DoxyCodeLine{00191\ \textcolor{comment}{//\ \ \ \ String\ s,\ st;}}
+\DoxyCodeLine{00192\ \textcolor{comment}{//\ \ \ \ int[]\ num\ =\ new\ int[el+1];}}
+\DoxyCodeLine{00193\ \textcolor{comment}{//\ \ \ \ num[0]\ =\ 0;}}
+\DoxyCodeLine{00194\ \textcolor{comment}{//\ \ \ \ int\ count\ =\ 0;}}
+\DoxyCodeLine{00195\ \textcolor{comment}{//\ do\ level\ 1\ -\/\ should\ be\ done}}
+\DoxyCodeLine{00196\ \textcolor{comment}{//\ \ \ \ for\ (int\ i\ =\ 0;\ i\ <\ numberOfGenerators();\ i++)\ \{}}
+\DoxyCodeLine{00197\ \textcolor{comment}{//\ \ \ \ \ \ s\ =\ Letters.substring(i,\ i\ +\ 1);}}
+\DoxyCodeLine{00198\ \textcolor{comment}{//\ \ \ \ \ \ group.add(s);}}
+\DoxyCodeLine{00199\ \textcolor{comment}{//\ \ \ \ \ \ count++;}}
+\DoxyCodeLine{00200\ \textcolor{comment}{//\ \ \ \ \ \ s\ =\ invLetters.substring(i,\ i\ +\ 1);}}
+\DoxyCodeLine{00201\ \textcolor{comment}{//\ \ \ \ \ \ group.add(s);}}
+\DoxyCodeLine{00202\ \textcolor{comment}{//\ \ \ \ \ \ count++;}}
+\DoxyCodeLine{00203\ \textcolor{comment}{//\ \ \ \ \}}}
+\DoxyCodeLine{00204\ \textcolor{comment}{//\ \ \ \ num[1]\ =\ count;}}
+\DoxyCodeLine{00205\ \textcolor{comment}{//}}
+\DoxyCodeLine{00206\ \textcolor{comment}{//\ do\ higher\ levels}}
+\DoxyCodeLine{00207\ \textcolor{comment}{//\ \ \ \ char\ ch,\ lastCh;}}
+\DoxyCodeLine{00208\ \textcolor{comment}{//\ \ \ \ for\ (int\ lev\ =\ 1;\ lev\ <\ level;\ lev++)\ \{}}
+\DoxyCodeLine{00209\ \textcolor{comment}{//\ \ \ \ \ \ count\ =\ 0;}}
+\DoxyCodeLine{00210\ \textcolor{comment}{//\ \ \ \ \ \ for\ (int\ i\ =\ num[lev\ -\/\ 1];\ i\ <\ num[lev];\ i++)\ \{}}
+\DoxyCodeLine{00211\ \textcolor{comment}{//\ \ \ \ \ \ \ \ s\ =\ (String)\ group.elementAt(i);}}
+\DoxyCodeLine{00212\ \textcolor{comment}{//\ \ \ \ \ \ \ \ lastCh\ =\ s.charAt(s.length()\ -\/\ 1);}}
+\DoxyCodeLine{00213\ \textcolor{comment}{//\ \ \ \ \ \ \ \ for\ (int\ j\ =\ 0;\ j\ <\ Letters.length();\ j++)\ \{}}
+\DoxyCodeLine{00214\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ ch\ =\ Letters.charAt(j);}}
+\DoxyCodeLine{00215\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ if\ (!isInv(lastCh,\ ch))\ \{}}
+\DoxyCodeLine{00216\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ group.add(s\ +\ ch);}}
+\DoxyCodeLine{00217\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ count++;}}
+\DoxyCodeLine{00218\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00219\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ ch\ =\ invLetters.charAt(j);}}
+\DoxyCodeLine{00220\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ if\ (!isInv(lastCh,\ ch))\ \{}}
+\DoxyCodeLine{00221\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ group.add(s\ +\ ch);}}
+\DoxyCodeLine{00222\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ count++;}}
+\DoxyCodeLine{00223\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00224\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00225\ \textcolor{comment}{//\ \ \ \ \ \ \}}}
+\DoxyCodeLine{00226\ \textcolor{comment}{//\ \ \ \ \ \ num[lev\ +\ 1]\ =\ num[lev]\ +\ count;}}
+\DoxyCodeLine{00227\ \textcolor{comment}{//\ \ \ \ \}}}
+\DoxyCodeLine{00228\ \textcolor{comment}{//\ \ \ \ isGroupComputed\ =\ true;}}
+\DoxyCodeLine{00229\ \textcolor{comment}{//\ \ \}}}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ }
+\DoxyCodeLine{00232\ \textcolor{comment}{//\ \ public\ static\ void\ showFixedPoints()\ \{}}
+\DoxyCodeLine{00233\ \textcolor{comment}{//\ \ \ \ collection\ =\ Trans.values();}}
+\DoxyCodeLine{00234\ \textcolor{comment}{//\ \ \ \ iterator\ =\ collection.iterator();}}
+\DoxyCodeLine{00235\ \textcolor{comment}{//\ \ \ \ if(!isFixedPointsShown)\ \{}}
+\DoxyCodeLine{00236\ \textcolor{comment}{//\ \ \ \ \ \ while(iterator.hasNext())}}
+\DoxyCodeLine{00237\ \textcolor{comment}{//\ \ \ \ \ \ \ \ addFixedPoints((GroupElement)iterator.next());}}
+\DoxyCodeLine{00238\ \textcolor{comment}{//\ \ \ \ \ \ isFixedPointsShown=true;}}
+\DoxyCodeLine{00239\ \textcolor{comment}{//\ \ \ \ \}}}
+\DoxyCodeLine{00240\ \textcolor{comment}{//\ \ \ \ else\ \{}}
+\DoxyCodeLine{00241\ \textcolor{comment}{//\ \ \ \ \ \ fixedPoints.removeAllElements();}}
+\DoxyCodeLine{00242\ \textcolor{comment}{//\ \ \ \ \ \ isFixedPointsShown=false;}}
+\DoxyCodeLine{00243\ \textcolor{comment}{//\ \ \ \ \}}}
+\DoxyCodeLine{00244\ \textcolor{comment}{//\ \ \ \ if(DC!=null)}}
+\DoxyCodeLine{00245\ \textcolor{comment}{//\ \ \ \ \ \ DC.repaint();}}
+\DoxyCodeLine{00246\ \textcolor{comment}{//\ \ \}}}
+\DoxyCodeLine{00247\ }
+\DoxyCodeLine{00248\ }
+\DoxyCodeLine{00249\ \textcolor{comment}{//\ \ public\ void\ clear()\ \{}}
+\DoxyCodeLine{00250\ \textcolor{comment}{//\ \ \ \ isGroupComputed=false;}}
+\DoxyCodeLine{00251\ \ \ \ \ \textcolor{comment}{//\ keep\ generators?}}
+\DoxyCodeLine{00252\ \textcolor{comment}{//\ \ \ \ groupValues.removeAllElements();}}
+\DoxyCodeLine{00253\ \textcolor{comment}{//\ \ \ \ groupKeys.removeAllElements();}}
+\DoxyCodeLine{00254\ \textcolor{comment}{//\ \ \ \ for(int\ i=0;i<generatorValues.size();i++)\ \{}}
+\DoxyCodeLine{00255\ \textcolor{comment}{//\ \ \ \ \ \ groupValues.add(generatorValues.get(i));}}
+\DoxyCodeLine{00256\ \textcolor{comment}{//\ \ \ \ \ \ groupKeys.add(generatorKeys.get(i));}}
+\DoxyCodeLine{00257\ \textcolor{comment}{//\ \ \ \ \}}}
+\DoxyCodeLine{00258\ \textcolor{comment}{//\ \}}}
+\DoxyCodeLine{00259\ }
+\DoxyCodeLine{00260\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setGroupElement(GroupElement\ m)\ \{}
+\DoxyCodeLine{00261\ \ \ \}}
+\DoxyCodeLine{00266\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ numberOfGenerators()\ \{}
+\DoxyCodeLine{00267\ \ \ \ \ \textcolor{keywordflow}{return}\ generatorValues.size();}
+\DoxyCodeLine{00268\ \ \ \}}
+\DoxyCodeLine{00272\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ reset()\ \{}
+\DoxyCodeLine{00273\ \ \ \ \ groupKeys.removeAllElements();}
+\DoxyCodeLine{00274\ \ \ \ \ groupValues.removeAllElements();}
+\DoxyCodeLine{00275\ \ \ \ \ generatorKeys.removeAllElements();}
+\DoxyCodeLine{00276\ \ \ \ \ generatorValues.removeAllElements();}
+\DoxyCodeLine{00277\ \ \ \ \ isGroupComputed\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00278\ \ \ \}}
+\DoxyCodeLine{00282\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ resetGroup()\ \{}
+\DoxyCodeLine{00283\ \ \ \ \ groupKeys.removeAllElements();}
+\DoxyCodeLine{00284\ \ \ \ \ groupValues.removeAllElements();}
+\DoxyCodeLine{00285\ \ \ \ \ isGroupComputed\ =\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00286\ \ \ \}}
+\DoxyCodeLine{00287\ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ getDepth()\ \{}
+\DoxyCodeLine{00288\ \ \ \ \ \textcolor{keywordflow}{return}\ depth;}
+\DoxyCodeLine{00289\ \ \ \}}
+\DoxyCodeLine{00290\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setDepth(\textcolor{keywordtype}{int}\ d)\ \{}
+\DoxyCodeLine{00291\ \ \ \ \ depth\ =\ d;\ resetGroup();}
+\DoxyCodeLine{00292\ \ \ \}}
+\DoxyCodeLine{00293\ \textcolor{comment}{//\ \ public\ static\ GroupElement\ getElement(char\ t)\ \{}}
+\DoxyCodeLine{00294\ \textcolor{comment}{//\ \ \ \ int\ ind\ =\ Letters.indexOf(t);}}
+\DoxyCodeLine{00295\ \textcolor{comment}{//\ \ \ \ if(ind<0\ ||\ ind>Letters.length())}}
+\DoxyCodeLine{00296\ \textcolor{comment}{//\ \ \ \ \ \ return\ null;}}
+\DoxyCodeLine{00297\ \textcolor{comment}{//\ \ \ \ return\ (GroupElement)\ Trans.elementAt(ind);}}
+\DoxyCodeLine{00298\ \textcolor{comment}{//\ \ \}}}
+\DoxyCodeLine{00299\ \textcolor{comment}{//\ \ public\ static\ GroupElement\ getInverseElement(char\ t)\ \{}}
+\DoxyCodeLine{00300\ \textcolor{comment}{//\ \ \ \ int\ ind\ =\ invLetters.indexOf(t);}}
+\DoxyCodeLine{00301\ \textcolor{comment}{//\ \ \ \ return\ (GroupElement)\ invTrans.elementAt(ind);}}
+\DoxyCodeLine{00302\ \textcolor{comment}{//\ \ \}}}
+\DoxyCodeLine{00303\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ groupSize()\ \{}
+\DoxyCodeLine{00304\ \ \ \ \ \textcolor{keywordflow}{return}\ groupValues.size();}
+\DoxyCodeLine{00305\ \ \ \}}
+\DoxyCodeLine{00306\ \textcolor{comment}{//\ \ public\ static\ String\ getGroupElement(int\ k)\ \{}}
+\DoxyCodeLine{00307\ \textcolor{comment}{//\ \ \ \ return\ (String)\ group.get(k);}}
+\DoxyCodeLine{00308\ \textcolor{comment}{//\ \ \}}}
+\DoxyCodeLine{00309\ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ printGroup()\ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=0;i<groupValues.size();i++)\ \{}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ System.out.println(groupKeys.get(i)+\textcolor{stringliteral}{"{}="{}}+groupValues.get(i));}
+\DoxyCodeLine{00312\ \ \ \ \ \}}
+\DoxyCodeLine{00313\ \ \ \}}
+\DoxyCodeLine{00314\ \ \ \textcolor{comment}{//\ should\ it\ go\ to\ Map\ or\ it\ belongs\ here}}
+\DoxyCodeLine{00315\ \textcolor{comment}{//\ \ public\ void\ applyN()\ \{}}
+\DoxyCodeLine{00316\ \ \ \ \ \textcolor{comment}{//\ assumes\ map\ is\ ready\ (initialize\ called)}}
+\DoxyCodeLine{00317\ \ \ \ \ \textcolor{comment}{//Map.initialize();}}
+\DoxyCodeLine{00318\ \textcolor{comment}{//\ \ \ \ if(!isGroupComputed)}}
+\DoxyCodeLine{00319\ \textcolor{comment}{//\ \ \ \ \ \ computeGroup();}}
+\DoxyCodeLine{00320\ \textcolor{comment}{//\ \ \ \ map.removeTransformed();}}
+\DoxyCodeLine{00321\ \textcolor{comment}{//\ \ \ \ for\ (int\ k\ =\ 0;\ k\ <\ this.groupSize();\ k++)}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \textcolor{comment}{//\ essentially\ it\ can\ be\ any\ kind\ of\ transformation}}
+\DoxyCodeLine{00323\ \textcolor{comment}{//\ \ \ \ \ \ map.apply((ComplexTransformation)groupValues.get(k));}}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \textcolor{comment}{//new\ GroupElement(1f,0f,0f,1f);}}
+\DoxyCodeLine{00325\ \textcolor{comment}{//\ \ \ \ \ \ tr\ =\ (String)\ group.elementAt(k);}}
+\DoxyCodeLine{00326\ \textcolor{comment}{//\ \ \ \ \ \ GraphObject.setLevel(tr.length());}}
+\DoxyCodeLine{00327\ \textcolor{comment}{//\ \ \ \ \ \ for(int\ l=tr.length()-\/1;l>=0;l-\/-\/)\ \{}}
+\DoxyCodeLine{00328\ \textcolor{comment}{//\ \ \ \ \ \ \ \ t\ =\ tr.charAt(l);}}
+\DoxyCodeLine{00329\ \textcolor{comment}{//\ \ \ \ \ \ \ \ if((ind=Letters.indexOf(t))>=0)}}
+\DoxyCodeLine{00330\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ Mob\ =\ Mob.lmult((GroupElement)Trans.elementAt(ind));}}
+\DoxyCodeLine{00331\ \textcolor{comment}{//\ \ \ \ \ \ \ \ else\ \{}}
+\DoxyCodeLine{00332\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ ind\ =\ invLetters.indexOf(t);}}
+\DoxyCodeLine{00333\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ \ \ Mob\ =\ Mob.lmult(\ (GroupElement)\ invTrans.elementAt(ind));}}
+\DoxyCodeLine{00334\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00335\ \textcolor{comment}{//\ \ \ \ \ \ \}}}
+\DoxyCodeLine{00336\ \textcolor{comment}{//\ \ \}}}
+\DoxyCodeLine{00337\ \textcolor{comment}{//\ \ public\ static\ void\ setMap(algorithm.Map\ m)\ \{}}
+\DoxyCodeLine{00338\ \textcolor{comment}{//\ \ \ \ map\ =\ m;}}
+\DoxyCodeLine{00339\ \textcolor{comment}{//\ \ \}}}
+\DoxyCodeLine{00340\ }
+\DoxyCodeLine{00341\ \}}
+
+\end{DoxyCode}

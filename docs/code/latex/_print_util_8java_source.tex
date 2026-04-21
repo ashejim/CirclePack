@@ -1,0 +1,85 @@
+\doxysection{Print\+Util.\+java}
+\label{_print_util_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/printStuff/PrintUtil.java@{C:/Users/ashej/myGitRepos/CirclePack/src/printStuff/PrintUtil.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }printStuff;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.print.PageFormat;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.print.Paper;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.print.PrinterException;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.awt.print.PrinterJob;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ java.io.File;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00019\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }PrintUtil\ \{}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ PrintJPG(File\ jpgfile)\ \{}
+\DoxyCodeLine{00025\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ up\ printerJob\ and\ page\ format}}
+\DoxyCodeLine{00026\ \ \ \ \ \ \ \ \ PrinterJob\ printerJob\ =\ PrinterJob.getPrinterJob();}
+\DoxyCodeLine{00027\ \ \ \ \ \ \ \ \ PageFormat\ pageFormat\ =\ printerJob.defaultPage();}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ NOTE:\ Paper()\ chooses\ letter\ size\ with\ 1\ inch\ margins}}
+\DoxyCodeLine{00030\ \ \ \ \ \ \ \ \ pageFormat.setPaper(\textcolor{keyword}{new}\ Paper());}
+\DoxyCodeLine{00031\ }
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \textcolor{comment}{//Set\ the\ job\ name\ to\ the\ selected\ file\ name.}}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ printerJob.setJobName(jpgfile.getName());}
+\DoxyCodeLine{00034\ }
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ printable}}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ JPGPrintable\ jpgPrintable\ =\ \textcolor{keyword}{new}\ JPGPrintable(jpgfile);}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ printerJob.setPrintable(jpgPrintable,\ pageFormat);}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ print\ dialog\ is\ hanging\ (on\ office\ machine)}}
+\DoxyCodeLine{00041\ \textcolor{comment}{//\ \ \ \ \ \ if\ (printerJob.printDialog())\ \{\ }}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ printerJob.print();}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (PrinterException\ e)\ \{}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}Printing\ error:\ "{}}\ +\ e.getMessage());}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00047\ \textcolor{comment}{//\ \ \ \ \ \ \}}}
+\DoxyCodeLine{00048\ \ \ \ \ \}}
+\DoxyCodeLine{00049\ \ \ \ \ }
+\DoxyCodeLine{00050\ \textcolor{comment}{/*\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/\ old\ version\ -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00051\ \textcolor{comment}{\ \ \ \ \ \ \ \ //Construct\ a\ new,\ empty\ print\ request\ attribute\ set,\ essentially\ the\ requirements\ of\ a\ print\ job.}}
+\DoxyCodeLine{00052\ \textcolor{comment}{}}
+\DoxyCodeLine{00053\ \textcolor{comment}{\ \ \ \ \ \ \ \ PrintRequestAttributeSet\ pras\ =\ new\ HashPrintRequestAttributeSet();}}
+\DoxyCodeLine{00054\ \textcolor{comment}{}}
+\DoxyCodeLine{00055\ \textcolor{comment}{\ \ \ \ \ \ \ \ //Add\ an\ attribute\ to\ the\ requirements.\ In\ this\ case,\ set\ the\ job\ to\ print\ a\ single\ copy.}}
+\DoxyCodeLine{00056\ \textcolor{comment}{}}
+\DoxyCodeLine{00057\ \textcolor{comment}{\ \ \ \ \ \ \ \ pras.add(new\ Copies(1));}}
+\DoxyCodeLine{00058\ \textcolor{comment}{}}
+\DoxyCodeLine{00059\ \textcolor{comment}{\ \ \ \ \ \ \ \ //Fill\ array\ pss\ with\ all\ printers\ capable\ of\ printing\ with\ selected\ requirements\ and\ file\ type,}}
+\DoxyCodeLine{00060\ \textcolor{comment}{\ \ \ \ \ \ \ \ //passed\ as\ a\ DocFlavor.}}
+\DoxyCodeLine{00061\ \textcolor{comment}{}}
+\DoxyCodeLine{00062\ \textcolor{comment}{\ \ \ \ \ \ \ \ PrintService\ pss[]\ =\ PrintServiceLookup.}}
+\DoxyCodeLine{00063\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ lookupPrintServices(DocFlavor.INPUT\_STREAM.JPEG,\ pras);}}
+\DoxyCodeLine{00064\ \textcolor{comment}{}}
+\DoxyCodeLine{00065\ \textcolor{comment}{\ \ \ \ \ \ \ \ //Empty\ array\ means\ no\ printers\ with\ the\ passed\ capabilities\ are\ avaiable.}}
+\DoxyCodeLine{00066\ \textcolor{comment}{\ \ \ \ \ \ \ \ if\ (pss.length\ ==\ 0)\ throw\ new\ RuntimeException("{}No\ printer\ services\ available."{});}}
+\DoxyCodeLine{00067\ \textcolor{comment}{}}
+\DoxyCodeLine{00068\ \textcolor{comment}{\ \ \ \ \ \ \ \ //Select\ the\ printer.\ In\ this\ case,\ the\ first\ available\ printer\ is\ arbitrarily\ selected.}}
+\DoxyCodeLine{00069\ \textcolor{comment}{\ \ \ \ \ \ \ \ PrintService\ ps\ =\ pss[0];}}
+\DoxyCodeLine{00070\ \textcolor{comment}{\ \ \ \ \ \ \ \ System.out.println("{}Printing\ to\ "{}\ +\ ps);}}
+\DoxyCodeLine{00071\ \textcolor{comment}{}}
+\DoxyCodeLine{00072\ \textcolor{comment}{\ \ \ \ \ \ \ \ //Creates\ a\ PrintJob\ capable\ of\ handling\ data\ from\ the\ specified\ document\ flavors.}}
+\DoxyCodeLine{00073\ \textcolor{comment}{\ \ \ \ \ \ \ \ DocPrintJob\ job\ =\ ps.createPrintJob();}}
+\DoxyCodeLine{00074\ \textcolor{comment}{}}
+\DoxyCodeLine{00075\ \textcolor{comment}{\ \ \ \ \ \ \ \ try\ \{}}
+\DoxyCodeLine{00076\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ //\ Create\ a\ bytestream\ from\ the\ data\ to\ be\ printed.}}
+\DoxyCodeLine{00077\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ FileInputStream\ fin\ =\ new\ FileInputStream(jpgfile);}}
+\DoxyCodeLine{00078\ \textcolor{comment}{}}
+\DoxyCodeLine{00079\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ //\ Create\ a\ new\ Doc,\ specifying\ the\ bytestream,\ DocFlavor,\ and\ DocAttributeSet.}}
+\DoxyCodeLine{00080\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ Doc\ doc\ =\ new\ SimpleDoc(fin,\ DocFlavor.INPUT\_STREAM.PNG,\ null);}}
+\DoxyCodeLine{00081\ \textcolor{comment}{\ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00082\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ //\ Print\ the\ Doc\ using\ the\ print\ request\ attribute\ set.}}
+\DoxyCodeLine{00083\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ job.print(doc,\ pras);}}
+\DoxyCodeLine{00084\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ fin.close();}}
+\DoxyCodeLine{00085\ \textcolor{comment}{\ \ \ \ \ \ \ \ \}\ catch\ (Exception\ ex)\ \{}}
+\DoxyCodeLine{00086\ \textcolor{comment}{\ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg("{}Printing\ error:\ "{}+ex.getMessage());}}
+\DoxyCodeLine{00087\ \textcolor{comment}{\ \ \ \ \ \ \ \ \}}}
+\DoxyCodeLine{00088\ \textcolor{comment}{\ \ \ \ \ \ \ \ }}
+\DoxyCodeLine{00089\ \textcolor{comment}{\ \ \ \ \ \ \ \ CirclePack.cpb.msg("{}File\ "{}+jpgfile+"{}\ sent\ to\ printer"{});}}
+\DoxyCodeLine{00090\ \textcolor{comment}{\ \ \ \ \ \ \}}}
+\DoxyCodeLine{00091\ \textcolor{comment}{\ \ \ \ \ \ */}\ \ \ \ }
+\DoxyCodeLine{00092\ \}}
+
+\end{DoxyCode}

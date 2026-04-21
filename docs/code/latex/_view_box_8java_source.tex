@@ -1,0 +1,105 @@
+\doxysection{View\+Box.\+java}
+\label{_view_box_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/util/ViewBox.java@{C:/Users/ashej/myGitRepos/CirclePack/src/util/ViewBox.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }util;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ packing.CPdrawing;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00015\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }ViewBox\ \{}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \ \ CPdrawing\ parent;\ \ \ \ \textcolor{comment}{//\ parent\ canvas}}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ Aspect;\ \textcolor{comment}{//\ aspect\ ratio,\ length/height}}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keyword}{public}\ Complex\ lz;\ \ \ \ \textcolor{comment}{//\ lower\ left\ corner}}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keyword}{public}\ Complex\ rz;\ \ \ \ \textcolor{comment}{//\ upper\ right\ corner}}
+\DoxyCodeLine{00021\ \ \ \ \ }
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{comment}{//\ Constructor}}
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{public}\ ViewBox()\ \{\ \textcolor{comment}{//\ default\ initiation}}
+\DoxyCodeLine{00024\ \ \ \ \ \ \ \ \ reset();}
+\DoxyCodeLine{00025\ \ \ \ \ \}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setParent(CPdrawing\ cpd)\ \{}
+\DoxyCodeLine{00028\ \ \ \ \ \ \ \ \ parent=cpd;}
+\DoxyCodeLine{00029\ \ \ \ \ \}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ reset()\ \{}
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ Aspect=1.0;}
+\DoxyCodeLine{00033\ \ \ \ \ \ \ \ \ lz=\textcolor{keyword}{new}\ Complex(-\/1.1,-\/1.1);}
+\DoxyCodeLine{00034\ \ \ \ \ \ \ \ \ rz=\textcolor{keyword}{new}\ Complex(1.1,1.1);}
+\DoxyCodeLine{00035\ \ \ \ \ \}}
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setView(Complex\ llz,Complex\ rrz)\ \{}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ length=rrz.x-\/llz.x;}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ height=rrz.y-\/llz.y;}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (length<=0\ ||\ height<=0)\ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ Aspect=1.0;\ \textcolor{comment}{//\ for\ now,\ must\ be\ square;\ use\ center\ and\ larger\ dimension}}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dim=(length>=height)\ ?\ length/2.0\ :\ height/2.0;}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ Complex\ cent=rrz.add(llz).divide(2.0);\ \textcolor{comment}{//\ center\ of\ desired\ box}}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ lz.x=cent.x-\/dim;}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ lz.y=cent.y-\/dim;}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ rz.x=cent.x+dim;}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ rz.y=cent.y+dim;}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (parent!=\textcolor{keyword}{null})}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ parent.update(2);}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00057\ \ \ \ \ \}}
+\DoxyCodeLine{00058\ \ \ \ \ }
+\DoxyCodeLine{00064\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setWidthHeight(\textcolor{keywordtype}{double}\ wh)\ \{}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ f=wh/getWidth();}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ scaleView(f);}
+\DoxyCodeLine{00067\ \ \ \ \ \}}
+\DoxyCodeLine{00068\ \ \ \ \ }
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ scaleView(\textcolor{keywordtype}{double}\ f)\ \{}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (f<=0.0)\ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ width=rz.x-\/lz.x;}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ height=rz.y-\/lz.y;}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ centx=(rz.x+lz.x)/2.0;\ \textcolor{comment}{//\ we\ will\ keep\ original\ center}}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ centy=(rz.y+lz.y)/2.0;}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dim=(width>=height)\ ?\ f*width/2.0\ :\ f*height/2.0;}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ lz.x=centx-\/dim;}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ lz.y=centy-\/dim;}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ rz.x=centx+dim;}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ rz.y=centy+dim;}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ parent.update(2);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00087\ \ \ \ \ \}}
+\DoxyCodeLine{00088\ \ \ \ \ }
+\DoxyCodeLine{00094\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ focusView(Complex\ z)\ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ width=rz.x-\/lz.x;}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ height=rz.y-\/lz.y;}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ dim=(width>=height)\ ?\ width/2.0\ :\ height/2.0;}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ lz.x=z.x-\/dim;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ lz.y=z.y-\/dim;}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ rz.x=z.x+dim;}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ rz.y=z.y+dim;}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ parent.update(2);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00104\ \ \ \ \ \}}
+\DoxyCodeLine{00105\ \ \ \ \ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ transView(Complex\ z)\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ lz=lz.add(z);}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ rz=rz.add(z);}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ parent.update(1);}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00115\ \ \ \ \ \}}
+\DoxyCodeLine{00116\ }
+\DoxyCodeLine{00121\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ transView(\textcolor{keywordtype}{double}\ x,\textcolor{keywordtype}{double}\ y)\ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ lz.x+=x;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ lz.y+=y;}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ rz.x+=x;}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ rz.y+=y;}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ parent.update(1);}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 1;}
+\DoxyCodeLine{00128\ \ \ \ \ \}}
+\DoxyCodeLine{00129\ \ \ \ \ }
+\DoxyCodeLine{00130\ \ \ \ \ }
+\DoxyCodeLine{00135\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ getWidth()\ \{}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (rz.x-\/lz.x);}
+\DoxyCodeLine{00137\ \ \ \ \ \}}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00143\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ getHeight()\ \{}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (rz.y-\/lz.y);}
+\DoxyCodeLine{00145\ \ \ \ \ \}}
+\DoxyCodeLine{00146\ \}}
+
+\end{DoxyCode}

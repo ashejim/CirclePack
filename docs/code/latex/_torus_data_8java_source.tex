@@ -1,0 +1,243 @@
+\doxysection{Torus\+Data.\+java}
+\label{_torus_data_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/packing/TorusData.java@{C:/Users/ashej/myGitRepos/CirclePack/src/packing/TorusData.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }packing;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.util.ArrayList;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ combinatorics.komplex.RedEdge;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ dcel.SideData;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ exceptions.CombException;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ input.CommandStrParser;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ math.Mobius;}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00033\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }TorusData\ \{}
+\DoxyCodeLine{00034\ \ \ \ \ PackData\ packData;}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{boolean}\ flat;\ \ \ \textcolor{comment}{//\ yes\ for\ regular\ torus,\ no\ for\ affine\ }}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ cornerVert;\ \textcolor{comment}{//\ corner\ vertex}}
+\DoxyCodeLine{00037\ \ \ \ \ \textcolor{keyword}{public}\ ArrayList<Complex>\ cornerPts;\ \textcolor{comment}{//\ cclw\ corners,\ indexed\ from\ 1.}}
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{keyword}{public}\ Complex\ x\_ratio;\ \textcolor{comment}{//\ cross-\/ratio\ (z1-\/z2)*(z3-\/z4)/((z1-\/z4)*(z3-\/z2))}}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{public}\ Complex\ mean;\ \ \textcolor{comment}{//\ average\ of\ four\ corners\ -\/-\/-\/\ for\ display\ use}}
+\DoxyCodeLine{00040\ \ \ \ \ \textcolor{keyword}{public}\ Complex\ teich;\ \ \textcolor{comment}{//\ Teichmuller\ parameter}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{public}\ Complex\ tau;\ \ \ \ \textcolor{comment}{//\ conformal\ modulus}}
+\DoxyCodeLine{00042\ \ \ \ \ \textcolor{keyword}{public}\ Complex\ affCoeff;\ \textcolor{comment}{//\ affine\ coefficient,\ 0.0\ for\ flat}}
+\DoxyCodeLine{00043\ \ \ \ \ }
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{comment}{//\ constructor}}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{public}\ TorusData(PackData\ p)\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ packData=p;}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!TorusData.isTopTorus(packData))}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}packing\ is\ not\ a\ torus"{}});}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ arrange\ two\ side-\/pairings,\ if\ necessary}}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.packDCEL.pairLink==\textcolor{keyword}{null}\ ||\ p.packDCEL.pairLink.size()!=5)\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(p,\textcolor{stringliteral}{"{}newRed\ -\/t"{}});}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(p,\textcolor{stringliteral}{"{}layout"{}});}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.packDCEL.updatePairMob()==0)}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}failed\ to\ update\ side-\/pairings"{}});}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ flat?}}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ flat=\textcolor{keyword}{true};}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (TorusData.isAffineTorus(packData))}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ flat=\textcolor{keyword}{false};}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ normalizing\ Mobius}}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ Mobius\ mob=normalizeTorus(packData);}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Apply\ the\ Mobius\ transformation,\ update}}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ Mobius.mobiusDirect(p,mob);}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ p.packDCEL.updatePairMob();}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ cornerPts=TorusData.getTorusCorners(packData);}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ cornerVert=p.packDCEL.pairLink.get(1).startEdge.}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ myEdge.origin.vertIndx;}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ cross-\/ratio\ (z1-\/z2)*(z3-\/z4)/((z1-\/z4)*(z3-\/z2))}}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ x\_ratio=cornerPts.get(1).minus(cornerPts.get(2)).}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ times(cornerPts.get(3).minus(cornerPts.get(4))).}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ divide(cornerPts.get(1).minus(cornerPts.get(4)).}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ times(cornerPts.get(3).minus(cornerPts.get(2))));}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ for\ viewing\ purposes}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ mean=\textcolor{keyword}{new}\ Complex(0.0);}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ i=1;i<5;i++)\ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ mean.add(cornerPts.get(i).times(.25));}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ tiech\ and\ tau}}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flat)\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ affCoeff=\textcolor{keyword}{new}\ Complex(0.0);}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ teich=cornerPts.get(4);}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ tau=TorusData.Teich2Tau(teich);}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00092\ }
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ else,\ affine:\ compute\ Teichmuller\ parameter\ 'T'}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ Sass\ affCoeff\ parameter\ c.\ Corners\ of\ affine\ }}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ fundamental\ domain\ are\ <1,\ exp(c),\ exp(cT+c),\ exp(T)>,\ }}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ which\ is\ image\ of\ parallelogram\ <0,1,T+1,T>\ under\ }}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ z\ -\/>\ exp(cz).\ Multi-\/valued\ nature\ of\ logs\ requires}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ finding\ change\ in\ argument\ along\ edges.}}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ a;\ \ \ \textcolor{comment}{//\ log(|z2|)}}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ b;\ \ \ \textcolor{comment}{//\ argument\ change\ on\ [z1\ z2]}}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ M;\ \ \ \textcolor{comment}{//\ log(|z4|)}}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ N;\ \ \ \textcolor{comment}{//\ argument\ change\ on\ [z1,z4]}}
+\DoxyCodeLine{00104\ }
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ a=Math.log(cornerPts.get(1).abs());}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ b=0.0;\ \textcolor{comment}{//\ arg\ change\ along\ [z1,z2]\ edge}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ SideData\ sd=p.packDCEL.pairLink.get(1);}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ RedEdge\ rtrace=sd.startEdge;}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ b\ +=\ rtrace.nextRed.getCenter().}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ divide(rtrace.getCenter()).arg();}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rtrace=rtrace.nextRed;}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (rtrace!=sd.endEdge.nextRed);}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ M=Math.log(cornerPts.get(3).abs());}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ N=0.0;\ \ \textcolor{comment}{//\ arg\ change\ along\ [z1,z4]\ edge\ }}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ sd=p.packDCEL.pairLink.get(4);}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ rtrace=sd.startEdge;}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{do}\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ N\ -\/=\ rtrace.nextRed.getCenter().}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ divide(rtrace.getCenter()).arg();}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rtrace=rtrace.nextRed;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{while}\ (rtrace!=sd.endEdge.nextRed);}
+\DoxyCodeLine{00124\ }
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ affCoeff=\textcolor{keyword}{new}\ Complex(a,b);}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ teich=\textcolor{keyword}{new}\ Complex(M,N).}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ divide(affCoeff);}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ tau=TorusData.Teich2Tau(teich);}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00130\ \ \ \ \ \}}
+\DoxyCodeLine{00131\ \ \ \ \ }
+\DoxyCodeLine{00139\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Mobius\ normalizeTorus(PackData\ p)\ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!TorusData.isTopTorus(p))}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}packing\ is\ not\ a\ torus"{}});}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ arrange\ two-\/side\ pairings\ only}}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.packDCEL.pairLink==\textcolor{keyword}{null}\ ||\ p.packDCEL.pairLink.size()!=5)\ \{}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(p,\textcolor{stringliteral}{"{}newRed\ -\/t"{}});}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(p,\textcolor{stringliteral}{"{}layout"{}});}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.packDCEL.updatePairMob()==0)}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}failed\ to\ update\ side-\/pairings"{}});}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ the\ 4\ locations\ for\ the\ corner\ vertex}}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ Iterator<SideData>\ pdpl=}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ p.packDCEL.pairLink.iterator();}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ SideData\ epair=\textcolor{keyword}{null};}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ epair=pdpl.next();\ \textcolor{comment}{//\ first\ slot\ is\ empty}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ Complex[]\ Z=\textcolor{keyword}{new}\ Complex[4];}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j=0;}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(pdpl.hasNext())\ \{}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ epair=pdpl.next();}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ Z[j]=epair.startEdge.getCenter();}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ j++;}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ Mobius\ mob=\textcolor{keyword}{new}\ Mobius();}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!isAffineTorus(p))\ \{}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ mob.b=Z[0].times(-\/1.0);}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ mob.d=Z[1].minus(Z[0]);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ mob;}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ affine\ case}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ In\ affine\ case,\ side-\/pairings\ are\ linear:}}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ z0\ -\/>\ z3\ and\ z1\ -\/>\ z2}}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ z0\ -\/>\ z1\ and\ z3\ -\/>\ z2}}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ have\ a\ common\ finite\ fixed\ point.}}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ where\ 'fixed'\ is\ common\ fixed\ point,\ }}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ Complex\ numtor=Z[0].times(Z[2]).minus(Z[1].times(Z[3]));}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ Complex\ denom=Z[0].add(Z[2]).minus(Z[1]).minus(Z[3]);}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ Complex\ fixed=numtor.minus(denom);}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ So\ so\ mob(z)=az+b\ where\ b=fixed/(fixed-\/Z[0])\ and\ a=\ 1/(Z[0]-\/fixed)}}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ mob.a=\textcolor{keyword}{new}\ Complex(1.0).divide(Z[0].minus(fixed));}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ mob.b=fixed.divide(fixed.minus(Z[0]));}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ mob;}
+\DoxyCodeLine{00184\ \ \ \ \ \}}
+\DoxyCodeLine{00185\ \ \ \ \ }
+\DoxyCodeLine{00191\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ isTopTorus(PackData\ p)\ \{}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.genus==1\ \&\&\ p.getBdryCompCount()==0)}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00195\ \ \ \ \ \}}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00205\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ isAffineTorus(PackData\ p)\ \{}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!isTopTorus(p))}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}This\ is\ not\ a\ torus"{}});}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ No\ side\ pairings?}}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.packDCEL.pairLink==\textcolor{keyword}{null})}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}Not\ a\ torus\ or\ side-\/pairings\ are\ not\ set"{}});}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ check\ number\ of\ sides}}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ N=p.packDCEL.pairLink.size()-\/1;}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (N!=4\ \&\&\ N!=6)\ }
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ CombException(\textcolor{stringliteral}{"{}Incorrect\ number\ of\ side-\/pairings"{}});}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ compare\ radii\ of\ opposite\ vertex\ on\ each\ sidepair\ }}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ radcomp=1.0;}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ Iterator<SideData>\ plink=p.packDCEL.pairLink.iterator();}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ plink.next();\ \textcolor{comment}{//\ first\ is\ empty}}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (plink.hasNext())\ \{}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ SideData\ ep=(SideData)plink.next();}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad=ep.endEdge.getRadius();}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ SideData\ oppep=p.packDCEL.pairLink.get(ep.mateIndex);}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ratio=rad/oppep.startEdge.nextRed.getRadius();}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ radcomp=(ratio>radcomp)\ ?\ ratio\ :\ radcomp;\ }
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ significant\ difference\ in\ some\ pair\ of\ }}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ \ opposite\ radii,\ then\ must\ be\ affine.}}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (radcomp>1.00001)}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00237\ \ \ \ \ \}}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00244\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ ArrayList<Complex>\ getTorusCorners(PackData\ p)\ \{}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.packDCEL.pairLink==\textcolor{keyword}{null}\ ||\ !TorusData.isTopTorus(p))}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}packing\ not\ a\ torus\ or\ side-\/pairs\ missing"{}});}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ ArrayList<Complex>\ corners=\textcolor{keyword}{new}\ ArrayList<Complex>(0);}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ corners.add(\textcolor{keyword}{null});\ \textcolor{comment}{//\ first\ entry\ is\ null}}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ Iterator<SideData>\ pdpl=p.packDCEL.pairLink.iterator();}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ SideData\ epair=\textcolor{keyword}{null};}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ epair=pdpl.next();\ \textcolor{comment}{//\ first\ slot\ is\ empty}}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}(pdpl.hasNext())\ \{}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ epair=pdpl.next();}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ corners.add(epair.startEdge.getCenter());}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ corners;}
+\DoxyCodeLine{00258\ \ \ \ \ \}}
+\DoxyCodeLine{00259\ \ \ \ \ }
+\DoxyCodeLine{00269\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Complex\ Teich2Tau(Complex\ teich)\ \{}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (teich.y<=0.0)\ }
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ Complex\ w=\textcolor{keyword}{new}\ Complex(teich);}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ w.x=w.x-\/Math.floor(w.x)-\/}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ Math.floor(2*(w.x-\/Math.floor(w.x)));}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ Complex\ m\_one=\textcolor{keyword}{new}\ Complex(-\/1.0);}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (count<1000\ \&\&\ (w.y<Math.sqrt(1.0-\/w.x*w.x)))\ \{}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ w=m\_one.divide(w);}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ w.x=w.x-\/Math.floor(w.x)-\/}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ Math.floor(2*(w.x-\/Math.floor(w.x)));}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (count==1000)\ \{\ \textcolor{comment}{//\ error}}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ w;}
+\DoxyCodeLine{00287\ \ \ \ \ \}}
+\DoxyCodeLine{00288\ }
+\DoxyCodeLine{00289\ \}}
+
+\end{DoxyCode}

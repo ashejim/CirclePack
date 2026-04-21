@@ -1,0 +1,120 @@
+\doxysection{Quaternion.\+java}
+\label{_quaternion_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/math/Quaternion.java@{C:/Users/ashej/myGitRepos/CirclePack/src/math/Quaternion.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }math;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ math.group.GroupElement;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00022\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }Quaternion\ \ \textcolor{keyword}{implements}\ GroupElement\ \{}
+\DoxyCodeLine{00023\ \ \ \ \ }
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{double}\ q1;}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{double}\ q2;}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{double}\ q3;}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{double}\ q4;\ \textcolor{comment}{//\ scalar\ term}}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{int}\ level;\ \textcolor{comment}{//\ needed\ for\ GroupElements}}
+\DoxyCodeLine{00029\ \ \ \ \ }
+\DoxyCodeLine{00030\ \ \ \ \ @SuppressWarnings(\textcolor{stringliteral}{"{}unused"{}})}
+\DoxyCodeLine{00031\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ Quaternion\ multIdentity\ =\ }
+\DoxyCodeLine{00032\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Quaternion(1.0,0.0,0.0,0.0);}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ @SuppressWarnings(\textcolor{stringliteral}{"{}unused"{}})}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ Quaternion\ addIdentity\ =\ }
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ Quaternion(0.0,0.0,0.0,0.0);}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \ \ \ \ \textcolor{comment}{//\ Constructor(s)}}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{public}\ Quaternion()\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ q1=1.0;}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ q2=q3=q4=0.0;}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ level=1;}
+\DoxyCodeLine{00043\ \ \ \ \ \}}
+\DoxyCodeLine{00044\ \ \ \ \ }
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{public}\ Quaternion(\textcolor{keywordtype}{double}\ k1,\textcolor{keywordtype}{double}\ k2,\textcolor{keywordtype}{double}\ k3,\ \textcolor{keywordtype}{double}\ k4)\ \{}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ q1=k1;}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ q2=k2;}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ q3=k3;}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ q4=k4;}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ level=1;}
+\DoxyCodeLine{00051\ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ norm()\ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.sqrt(q1*q1+q2*q2+q3*q3+q4*q4);}
+\DoxyCodeLine{00055\ \ \ \ \ \}}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ normalize()\ \{}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ len=norm();}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (len<PackData.TOLER)}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ q1\ /=\ len;}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ q2\ /=\ len;}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ q3\ /=\ len;}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ q4\ /=\ len;}
+\DoxyCodeLine{00065\ \ \ \ \ \}}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ scalarPart()\ \{}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ q1;}
+\DoxyCodeLine{00069\ \ \ \ \ \}}
+\DoxyCodeLine{00070\ \ \ \ \ }
+\DoxyCodeLine{00076\ \ \ \ \ \textcolor{keyword}{public}\ Point3D\ vectorPart()\ \{}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Point3D(q2,q3,q4);}
+\DoxyCodeLine{00078\ \ \ \ \ \}}
+\DoxyCodeLine{00079\ \ \ \ \ }
+\DoxyCodeLine{00084\ \ \ \ \ \textcolor{keyword}{public}\ Quaternion\ conj()\ \{}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Quaternion(q1,-\/q2,-\/q3,-\/q4);}
+\DoxyCodeLine{00086\ \ \ \ \ \}}
+\DoxyCodeLine{00087\ \ \ \ \ }
+\DoxyCodeLine{00088\ \ \ \ \ \textcolor{keyword}{public}\ Quaternion\ add(Quaternion\ qtn)\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Quaternion(q1+qtn.q1,q2+qtn.q2,q3+qtn.q3,q4+qtn.q4);}
+\DoxyCodeLine{00090\ \ \ \ \ \}}
+\DoxyCodeLine{00091\ }
+\DoxyCodeLine{00097\ \ \ \ \ \textcolor{keyword}{public}\ Quaternion\ minus(Quaternion\ qtn)\ \{}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Quaternion(q1-\/qtn.q1,q2-\/qtn.q2,q3-\/qtn.q3,q4-\/qtn.q4);}
+\DoxyCodeLine{00099\ \ \ \ \ \}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \ \ @Override}
+\DoxyCodeLine{00105\ \ \ \ \ \textcolor{keyword}{public}\ GroupElement\ lmultby(GroupElement\ g)\ \{}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ Quaternion\ G=(Quaternion)g;}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Quaternion(}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ G.q1*q1-\/G.q2*q2-\/G.q3*q3-\/G.q4*q4,}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ G.q1*q2+G.q2*q1+G.q3*q4-\/G.q4*q3,}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ G.q1*q3-\/G.q2*q4+G.q3*q1+G.q4*q2,}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ G.q1*q4+G.q2*q3-\/G.q3*q2+G.q4*q1);}
+\DoxyCodeLine{00112\ \ \ \ \ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \ \ @Override}
+\DoxyCodeLine{00118\ \ \ \ \ \textcolor{keyword}{public}\ GroupElement\ rmultby(GroupElement\ g)\ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ Quaternion\ G=(Quaternion)g;}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Quaternion(}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ q1*G.q1-\/q2*G.q2-\/q3*G.q3-\/q4*G.q4,}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ q1*G.q2+q2*G.q1+q3*G.q4-\/q4*G.q3,}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ q1*G.q3-\/q2*G.q4+q3*G.q1+q4*G.q2,}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ q1*G.q4+q2*G.q3-\/q3*G.q2+q4*G.q1);}
+\DoxyCodeLine{00125\ \ \ \ \ \}}
+\DoxyCodeLine{00126\ }
+\DoxyCodeLine{00127\ \ \ \ \ @Override}
+\DoxyCodeLine{00128\ \ \ \ \ }
+\DoxyCodeLine{00133\ \ \ \ \ \textcolor{keyword}{public}\ GroupElement\ inverse()\ \{}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ns=norm();}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ ns=ns*ns;}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ns<PackData.TOLER)}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}quaternion\ norm\ is\ too\ small\ to\ invert"{}});}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{new}\ Quaternion(q1/ns,-\/q2/ns,-\/q3/ns,-\/q4/ns);}
+\DoxyCodeLine{00139\ \ \ \ \ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \ \ @Override}
+\DoxyCodeLine{00145\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setLevel(\textcolor{keywordtype}{int}\ t)\ \{}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ Auto-\/generated\ method\ stub}}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ level=t;}
+\DoxyCodeLine{00148\ \ \ \ \ \}}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ \ \ @Override}
+\DoxyCodeLine{00155\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getLevel()\ \{}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO\ Auto-\/generated\ method\ stub}}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ level;}
+\DoxyCodeLine{00158\ \ \ \ \ \}}
+\DoxyCodeLine{00159\ }
+\DoxyCodeLine{00160\ \}}
+
+\end{DoxyCode}

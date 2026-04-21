@@ -1,0 +1,203 @@
+\doxysection{Radii\+Sliders.\+java}
+\label{_radii_sliders_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/widgets/RadiiSliders.java@{C:/Users/ashej/myGitRepos/CirclePack/src/widgets/RadiiSliders.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }widgets;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.awt.Color;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.awt.event.WindowAdapter;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ java.awt.event.WindowEvent;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00007\ }
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ input.CommandStrParser;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00021\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }RadiiSliders\ \textcolor{keyword}{extends}\ SliderFrame\ \{}
+\DoxyCodeLine{00022\ \ \ \ \ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ serialVersionUID\ =\ 1L;}
+\DoxyCodeLine{00024\ \ \ \ \ }
+\DoxyCodeLine{00025\ \ \ \ \ NodeLink\ verts;\ \ \textcolor{comment}{//\ objects\ for\ the\ widget}}
+\DoxyCodeLine{00026\ \textcolor{comment}{//\ \ int\ N;\ \ \ \ \ \ \ \ \ \ \ //\ number\ of\ objects}}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ \ \ \ \ }
+\DoxyCodeLine{00029\ \ \ \ \ \textcolor{comment}{//\ constructors}}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keyword}{public}\ RadiiSliders(PackData\ p,NodeLink\ vlist)\ \{}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \textcolor{keyword}{this}(p,\textcolor{stringliteral}{"{}"{}},\textcolor{stringliteral}{"{}"{}},vlist);}
+\DoxyCodeLine{00032\ \ \ \ \ \}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keyword}{public}\ RadiiSliders(PackData\ p,String\ chgcmd,String\ movcmd,NodeLink\ vlist)\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ \ \ \ \ super(p,chgcmd,movcmd);}
+\DoxyCodeLine{00036\ \ \ \ \ \ \ \ \ type=RADSLIDER;}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ throw\ back\ to\ CirclePack\ to\ kill\ this\ window}}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ this.addWindowListener(\textcolor{keyword}{new}\ WindowAdapter()\{\ \ }
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ windowClosing(WindowEvent\ e)\ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ killMe();}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \});}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ verts=NodeLink.removeDuplicates(vlist);}
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ sliderCount=verts.size();}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ setTitle(\textcolor{stringliteral}{"{}Radii\ from\ p"{}}+packData.packNum);}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ setHelpText(\textcolor{keyword}{new}\ StringBuilder(\textcolor{stringliteral}{"{}These\ sliders\ control\ selected\ radii.\ The\ "{}}}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}user\ can\ specify\ two\ active\ command\ strings,\ 'change\ cmd'\ and\ "{}}}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}'motion\ cmd'.\ When\ checked\ to\ activate,\ the\ associated\ command\ "{}}}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}string\ will\ be\ executed\ when\ the\ mouse\ changes\ a\ slider\ or\ "{}}}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}enters\ slider\ label,\ respectively.\(\backslash\)n\(\backslash\)n"{}}}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}Implement\ with,\ e.g.\(\backslash\)n\(\backslash\)n"{}}}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}sliders\ -\/R\ -\/c\ ''rld''\ -\/m\ ''disp\ -\/wr\ -\/c\_Obj''\ "{}}}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}-\/o\ ''dual\_layout''\ \{v...\}.\(\backslash\)n\(\backslash\)n"{}}}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}The\ variable\ 'Obj'\ is\ set\ to\ an\ object\ when\ the\ commands\ are"{}}}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ +\ \textcolor{stringliteral}{"{}executed."{}}));}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ mySliders=\textcolor{keyword}{new}\ ActiveSlider[sliderCount];}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ initGUI();}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ setChangeField(holdChangeCmd);}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ setMotionField(holdMotionCmd);}
+\DoxyCodeLine{00063\ \ \ \ \ \}}
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \ \ \ \ \textcolor{comment}{//\ =============\ abstract\ methods\ ==================}}
+\DoxyCodeLine{00066\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ populate()\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ mySliders\ =\ \textcolor{keyword}{new}\ ActiveSlider[sliderCount];}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ Iterator<Integer>\ vlst=verts.iterator();}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ tick=0;}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (vlst.hasNext())\ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=vlst.next();}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ mySliders[tick]=\textcolor{keyword}{new}\ ActiveSlider(\textcolor{keyword}{this},tick,Integer.toString(v),}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ packData.getRadius(v),\textcolor{keyword}{true});}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ sliderPanel.add(mySliders[tick]);}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ tick++;}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00077\ \ \ \ \ \}}
+\DoxyCodeLine{00078\ \ \ \ \ }
+\DoxyCodeLine{00079\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ addObject(String\ objstr)\ \{}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ NodeLink\ nl=\textcolor{keyword}{new}\ NodeLink(packData,objstr);}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nl==\textcolor{keyword}{null}\ ||\ nl.size()==0)}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ ActiveSlider[]\ tmpSliders=\textcolor{keyword}{new}\ ActiveSlider[+sliderCount+nl.size()];}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<sliderCount;j++)\ }
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ tmpSliders[j]=mySliders[j];}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ Iterator<Integer>\ nls=nl.iterator();}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hit=0;}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (nls.hasNext())\ \{}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ Integer\ v=nls.next();}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (verts.contains(v))}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ String\ str=Integer.toString(v);}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad=packData.getRadius(v);}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ tmpSliders[sliderCount+hit]=}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{new}\ ActiveSlider(\textcolor{keyword}{this},sliderCount+hit,str,rad,\textcolor{keyword}{true});}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ sliderPanel.add(tmpSliders[sliderCount+hit]);}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ verts.add(v);}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ hit++;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hit>0)\ \{}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ sliderCount\ +=\ hit;}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ mySliders=\textcolor{keyword}{new}\ ActiveSlider[sliderCount];}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<sliderCount;j++)}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mySliders[j]=tmpSliders[j];}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ this.pack();}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ hit;}
+\DoxyCodeLine{00108\ \ \ \ \ \}}
+\DoxyCodeLine{00109\ \ \ \ \ }
+\DoxyCodeLine{00110\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ removeObject(String\ objstr)\ \{}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ NodeLink\ nl=\textcolor{keyword}{new}\ NodeLink(packData,objstr);}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nl==\textcolor{keyword}{null}\ ||\ nl.size()==0)}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ ActiveSlider[]\ tmpSliders=\textcolor{keyword}{new}\ ActiveSlider[sliderCount];}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<sliderCount;j++)\ }
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ tmpSliders[j]=mySliders[j];}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ Iterator<Integer>\ vls=nl.iterator();}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ hit=0;}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (vls.hasNext())\ \{}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=vls.next();}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ vindx=-\/1;}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((vindx=verts.containsV(v))<0)\ \textcolor{comment}{//\ no\ such\ object}}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=(vindx+1);j<(sliderCount-\/hit);j++)\ \{}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmpSliders[j-\/1]=tmpSliders[j];}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tmpSliders[j-\/1].setIndex(j-\/1);}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ }
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ verts.remove(vindx);}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ sliderPanel.remove(mySliders[vindx]);}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ mySliders[vindx]=\textcolor{keyword}{null};}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ hit++;}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hit>0)\ \{}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ sliderCount\ -\/=\ hit;}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ mySliders=\textcolor{keyword}{new}\ ActiveSlider[sliderCount];}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<sliderCount;j++)}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mySliders[j]=tmpSliders[j];}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ this.pack();}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ this.repaint();}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ hit;}
+\DoxyCodeLine{00143\ \ \ \ \ \}}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00150\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}\ getParentValue(\textcolor{keywordtype}{int}\ indx)\ \{}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0.0;}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ }
+\DoxyCodeLine{00158\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ valueToPacking(\textcolor{keywordtype}{int}\ indx)\ \{}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=verts.get(indx);}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ packData.setRadius(v,mySliders[indx].value);}
+\DoxyCodeLine{00161\ \ \ \ \ \}}
+\DoxyCodeLine{00162\ \ \ \ \ }
+\DoxyCodeLine{00167\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ valueFromPacking(\textcolor{keywordtype}{int}\ indx)\ \{}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=verts.get(indx);}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ mySliders[indx].updateValue(packData.getRadius(v));}
+\DoxyCodeLine{00170\ \ \ \ \ \}}
+\DoxyCodeLine{00171\ \ \ \ \ }
+\DoxyCodeLine{00175\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ createSliderPanel()\ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ sliderPanel=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ sliderPanel.setBackground(\textcolor{keyword}{new}\ Color(200,230,255));}
+\DoxyCodeLine{00178\ \ \ \ \ \}}
+\DoxyCodeLine{00179\ \ \ \ \ }
+\DoxyCodeLine{00180\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setChangeField(String\ cmd)\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ changeCmdField.setText(cmd);}
+\DoxyCodeLine{00182\ \ \ \ \ \}}
+\DoxyCodeLine{00183\ \ \ \ \ }
+\DoxyCodeLine{00184\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setMotionField(String\ cmd)\ \{}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ motionCmdField.setText(cmd);}
+\DoxyCodeLine{00186\ \ \ \ \ \}}
+\DoxyCodeLine{00187\ \ \ \ \ }
+\DoxyCodeLine{00188\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setOptCmdField(String\ cmd)\ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ optCmdField.setText(cmd);}
+\DoxyCodeLine{00190\ \ \ \ \ \}}
+\DoxyCodeLine{00191\ \ \ \ \ }
+\DoxyCodeLine{00192\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ mouse\_entry\_action(\textcolor{keywordtype}{int}\ indx)\ \{}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ motionAction(indx);\ \textcolor{comment}{//\ see\ if\ there's\ a\ motion\ command\ to\ execute}}
+\DoxyCodeLine{00194\ \ \ \ \ \}}
+\DoxyCodeLine{00195\ \ \ \ \ }
+\DoxyCodeLine{00196\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ changeValueField\_action(\textcolor{keywordtype}{double}\ val,\ \textcolor{keywordtype}{int}\ indx)\ \{}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ valueField\_action(val,indx);}
+\DoxyCodeLine{00198\ \ \ \ \ \}}
+\DoxyCodeLine{00199\ }
+\DoxyCodeLine{00200\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ initRange()\ \{}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ val\_min=1000000;}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ val\_max=-\/1;}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ Iterator<Integer>\ vlst=verts.iterator();}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (vlst.hasNext())\ \{}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=vlst.next();}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad=packData.getRadius(v);}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ val\_min=\ (rad<val\_min)\ ?\ rad\ :val\_min;}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ val\_max=\ (rad>val\_max)\ ?\ rad\ :val\_max;}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ val\_min\ /=2.0;}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ val\_max\ *=2.0;}
+\DoxyCodeLine{00212\ \ \ \ \ \}}
+\DoxyCodeLine{00213\ }
+\DoxyCodeLine{00214\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ killMe()\ \{}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ CommandStrParser.jexecute(packData,\textcolor{stringliteral}{"{}slider\ -\/R\ -\/x"{}});}
+\DoxyCodeLine{00216\ \ \ \ \ \}}
+\DoxyCodeLine{00217\ }
+\DoxyCodeLine{00218\ \}}
+\DoxyCodeLine{00219\ }
+
+\end{DoxyCode}

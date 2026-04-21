@@ -1,0 +1,122 @@
+\doxysection{Slider\+Control\+Panel.\+java}
+\label{_slider_control_panel_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/variables/SliderControlPanel.java@{C:/Users/ashej/myGitRepos/CirclePack/src/variables/SliderControlPanel.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }variables;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ java.util.Iterator;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ java.util.LinkedHashMap;}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ javax.swing.BoxLayout;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ javax.swing.JButton;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ javax.swing.JPanel;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ javax.swing.JScrollPane;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ javax.swing.JTextField;}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ allMains.CPBase;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ circlePack.PackControl;}
+\DoxyCodeLine{00014\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00015\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00027\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }SliderControlPanel\ \textcolor{keyword}{extends}\ JPanel\ \{}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{comment}{/*}}
+\DoxyCodeLine{00029\ \textcolor{comment}{\ \ \ \ \ *\ Regenerate\ serialVersionUID\ whenever\ the\ nature\ of\ this\ }}
+\DoxyCodeLine{00030\ \textcolor{comment}{\ \ \ \ \ *\ class's\ fields\ change\ so\ that\ this\ class\ may\ be\ flattened.\ }}
+\DoxyCodeLine{00031\ \textcolor{comment}{\ \ \ \ \ *\ As\ background,\ serialization\ provides\ a\ unified\ interface\ }}
+\DoxyCodeLine{00032\ \textcolor{comment}{\ \ \ \ \ *\ for\ writing\ and\ reading\ an\ instance's\ current\ state\ to\ and}}
+\DoxyCodeLine{00033\ \textcolor{comment}{\ \ \ \ \ *\ from\ the\ file\ system.\ The\ value\ of\ serialVersionUID\ is\ }}
+\DoxyCodeLine{00034\ \textcolor{comment}{\ \ \ \ \ *\ used\ to\ ensure\ that\ an\ instance\ state\ being\ read\ from\ the\ }}
+\DoxyCodeLine{00035\ \textcolor{comment}{\ \ \ \ \ *\ file\ system\ is\ compatible.}}
+\DoxyCodeLine{00036\ \textcolor{comment}{\ \ \ \ \ *\ }}
+\DoxyCodeLine{00037\ \textcolor{comment}{\ \ \ \ \ *\ Note\ that\ we\ are\ sub-\/classing\ a\ class\ that\ implements\ }}
+\DoxyCodeLine{00038\ \textcolor{comment}{\ \ \ \ \ *\ serialization\ (JPanel),\ so\ we\ must\ respect\ that\ in\ our\ }}
+\DoxyCodeLine{00039\ \textcolor{comment}{\ \ \ \ \ *\ implementation.}}
+\DoxyCodeLine{00040\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{private}\ \textcolor{keyword}{static}\ \textcolor{keyword}{final}\ \textcolor{keywordtype}{long}\ serialVersionUID\ =\ 5199506647863934696L;}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ \textcolor{keyword}{protected}\ JPanel\ sliderStack;\ \ \ \ \textcolor{comment}{//\ panel\ containing\ all\ the\ 'sliderPanel's}}
+\DoxyCodeLine{00044\ \ \ \ \ \textcolor{keyword}{protected}\ JTextField\ nameEntry;\ \ \textcolor{comment}{//\ for\ adding\ new\ variables}}
+\DoxyCodeLine{00045\ \ \ \ \ \textcolor{keyword}{protected}\ JButton\ addButton;}
+\DoxyCodeLine{00046\ \ \ \ \ }
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{comment}{//\ convenience\ local\ pointers\ to\ the\ hashmaps}}
+\DoxyCodeLine{00048\ \ \ \ \ LinkedHashMap<String,\ String>\ variables;}
+\DoxyCodeLine{00049\ \ \ \ \ LinkedHashMap<String,\ SliderPanel>\ sliderVariables;}
+\DoxyCodeLine{00050\ \ \ \ \ }
+\DoxyCodeLine{00051\ \ \ \ \ \textcolor{keyword}{public}\ SliderControlPanel()\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ super();}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ variables=CPBase.varControl.variables;}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ sliderVariables=CPBase.varControl.sliderVariables;}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Create\ stack,\ put\ in\ scroll\ in\ case\ we\ have\ many\ variables.}}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ sliderStack=\textcolor{keyword}{new}\ JPanel();}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ sliderStack.setLayout(\textcolor{keyword}{new}\ BoxLayout(sliderStack,BoxLayout.PAGE\_AXIS));}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ JScrollPane\ sliderScroller\ =\ \textcolor{keyword}{new}\ JScrollPane(sliderStack);}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ sliderScroller.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL\_SCROLLBAR\_NEVER);}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ sliderScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL\_SCROLLBAR\_ALWAYS);}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Add\ everything\ to\ this\ panel.}}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ this.setLayout(\textcolor{keyword}{new}\ BoxLayout(\textcolor{keyword}{this},\ BoxLayout.PAGE\_AXIS));}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ this.add(sliderScroller);}
+\DoxyCodeLine{00066\ \ \ \ \ \}}
+\DoxyCodeLine{00067\ \ \ \ \ }
+\DoxyCodeLine{00068\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ getSliderCount()\ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sliderVariables.size();\ \textcolor{comment}{//\ One\ sliderPanel\ for\ each\ variable\ entry.}}
+\DoxyCodeLine{00070\ \ \ \ \ \}}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00078\ \ \ \ \ \textcolor{keyword}{protected}\ String\ getSliderValue(String\ key)\ \{}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ JPanel\ sliderPanel=sliderVariables.get(key);}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (sliderPanel!=\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ find\ and\ query\ the\ appropriate\ slider\ for\ current\ value}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ String\ value=\textcolor{stringliteral}{"{}"{}};}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ value;}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00086\ \ \ \ \ \}}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00098\ \ \ \ \ \textcolor{keyword}{public}\ String\ putSlider(String\ key,String\ specs,String\ value)\ \{}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ key\ =\ key.trim();\ \textcolor{comment}{//\ Remove\ leading\ and\ trailing\ whitespace.}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ doubleVal=0.0;}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ doubleVal=Double.valueOf(value);}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}slider\ attempt\ failed:\ can't\ convert\ '"{}}+value+\textcolor{stringliteral}{"{}'\ to\ double"{}});}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ SliderPanel\ sliderPanel=\textcolor{keyword}{null};}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ sliderPanel=\textcolor{keyword}{new}\ SliderPanel(key,specs,Double.toString(doubleVal));}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}failed\ to\ parse\ SLIDER\ specs:\ "{}}+ex.getMessage());}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ sliderVariables.put(key,\ sliderPanel);}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ sliderStack.add(sliderPanel);}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ PackControl.packDataHover.sliderControlPanel.revalidate();}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sliderPanel.toString();\ \textcolor{comment}{//\ string\ version\ of\ value}}
+\DoxyCodeLine{00116\ \ \ \ \ \}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00127\ \ \ \ \ \textcolor{keyword}{protected}\ String\ revertSlider(String\ key)\ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ SliderPanel\ returnValue\ =\ sliderVariables.remove(key);}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ returnValue.toString();}
+\DoxyCodeLine{00130\ \ \ \ \ \}}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ removeSliderPanel(SliderPanel\ sp)\ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ sliderStack.remove(sp);}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ sp=\textcolor{keyword}{null};\ \textcolor{comment}{//\ sliderStack.repaint();}}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ PackControl.packDataHover.sliderControlPanel.revalidate();}
+\DoxyCodeLine{00136\ \ \ \ \ \}}
+\DoxyCodeLine{00137\ \ \ \ \ }
+\DoxyCodeLine{00142\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ resetStack()\ \{}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ count=0;}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ sliderStack.removeAll();}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ Iterator<String>\ sPanels=sliderVariables.keySet().iterator();}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (sPanels.hasNext())\ \{}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ SliderPanel\ sp=sliderVariables.get(sPanels.next());}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ sliderStack.add(sp);}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ count++;}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ count;}
+\DoxyCodeLine{00152\ \ \ \ \ \}}
+\DoxyCodeLine{00153\ \ \ \ \ }
+\DoxyCodeLine{00154\ \ \ \ \ }
+\DoxyCodeLine{00155\ \}}
+
+\end{DoxyCode}

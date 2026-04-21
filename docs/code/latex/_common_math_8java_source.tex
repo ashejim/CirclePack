@@ -1,0 +1,382 @@
+\doxysection{Common\+Math.\+java}
+\label{_common_math_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/geometry/CommonMath.java@{C:/Users/ashej/myGitRepos/CirclePack/src/geometry/CommonMath.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }geometry;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ combinatorics.komplex.Vertex;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ exceptions.ParserException;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ listManip.NodeLink;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ math.Mobius;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ util.UtilPacket;}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }CommonMath\ \{}
+\DoxyCodeLine{00025\ \ \ \ \ }
+\DoxyCodeLine{00041\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ placeOneFace(CircleSimple\ sC0,CircleSimple\ sC1,}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ sC2,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ invD=\ \{1.0,1.0,1.0\};}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ placeOneFace(sC0,sC1,sC2,invD,hes);}
+\DoxyCodeLine{00045\ \ \ \ \ \}}
+\DoxyCodeLine{00046\ \ \ \ \ }
+\DoxyCodeLine{00056\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ normAlphaGamma(PackData\ p,\textcolor{keywordtype}{int}\ a,\textcolor{keywordtype}{int}\ g)\ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ Mobius\ mob=\textcolor{keyword}{new}\ Mobius();}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ Vertex\ alpvert=p.packDCEL.vertices[a];}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (alpvert.isBdry())}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ ParserException(\textcolor{stringliteral}{"{}Vertex\ "{}}+a+\textcolor{stringliteral}{"{}\ is\ not\ interior"{}});}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ Vertex\ gamvert=p.packDCEL.vertices[g];\ \ \ \ \ \ }
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (p.hes<0)\ \{\ \textcolor{comment}{//\ hyperbolic}}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ mob=Mobius.mobNormDisc(alpvert.center,gamvert.center);}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (p.hes>0)\ \{\ \textcolor{comment}{//\ eucl}}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ mob=Mobius.mobNormSphere(alpvert.center,gamvert.center);}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ spherical,\ rigid\ motino}}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ mob=Mobius.mobNormPlane(alpvert.center,gamvert.center);}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ p.apply\_Mobius(mob,\textcolor{keyword}{new}\ NodeLink(p,\textcolor{stringliteral}{"{}a"{}}));}
+\DoxyCodeLine{00072\ \ \ \ \ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00090\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{int}\ placeOneFace(CircleSimple\ sC0,CircleSimple\ sC1,}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ sC2,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}[]\ invDist,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \textcolor{comment}{//\ first\ is\ always\ at\ origin}}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ sC0.center=\textcolor{keyword}{new}\ Complex(0.0);}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ }
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)\ \{\ \textcolor{comment}{//\ hyp\ case}}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x0=sC0.rad;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (x0<=0)\ \{\ \textcolor{comment}{//\ horocycle?\ can't\ handle\ this}}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}Can't\ place\ hyp\ triple:\ first\ is\ horocycle"{}});}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ next\ circle\ on\ positive\ axis}}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x1=sC1.rad;}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (x1<=0)\ \{\ \textcolor{comment}{//\ horocycle?}}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ R=HyperbolicMath.h\_horo\_rad(x1,invDist[2]);}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sC1.center=\textcolor{keyword}{new}\ Complex(1.0);}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sC1.rad=-\/R;\ \textcolor{comment}{//\ negative\ of\ euclidean\ radius}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ h=HyperbolicMath.h\_ivd\_length(x0,\ x1,\ invDist[2]);}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ e=Math.exp(h);}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sC1.center=\textcolor{keyword}{new}\ Complex((e-\/1)/(e+1));}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hes>0)\ \{\ \textcolor{comment}{//\ sphere\ case\ }}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ next\ out\ pos\ x-\/axis\ }}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ sdist=SphericalMath.s\_ivd\_length(sC0.rad,sC1.rad,invDist[2]);}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ sC1.center\ =\ \textcolor{keyword}{new}\ Complex(0.0,sdist);}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ eucl\ case\ }}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ next\ on\ positive\ x-\/axis}}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r=sC0.rad;}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2=sC1.rad;}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ sC1.center=\textcolor{keyword}{new}\ Complex(Math.sqrt(r*r+r2*r2+2*r*r2*invDist[2]));}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ CircleSimple\ sC=\textcolor{keyword}{new}\ CircleSimple();}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ sC=CommonMath.comp\_any\_center(sC0.center,\ sC1.center,sC0.rad,sC1.rad,}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ sC2.rad,\ invDist[0],invDist[1],invDist[2],hes);}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ sC2.center=sC.center;}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sC.flag;\ \ \textcolor{comment}{//\ in\ case\ there's\ an\ error}}
+\DoxyCodeLine{00134\ \ \ \ \ \}}
+\DoxyCodeLine{00135\ \ \ \ \ }
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ CircleSimple\ naiveData(HalfEdge\ hedge,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hedge==\textcolor{keyword}{null}\ ||\ (hedge.face!=\textcolor{keyword}{null}\ \&\&\ hedge.face.faceIndx<0))}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ Vertex\ v1=hedge.origin;}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ Vertex\ v2=hedge.twin.origin;}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ Vertex\ v3=hedge.prev.origin;}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ Complex\ z1=v1.center;}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r1=v1.rad;}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ Complex\ z2=v2.center;}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r2=v2.rad;}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ CircleSimple\ cs=CommonMath.comp\_any\_center(z1,z2,r1,r2,v3.rad,}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ hedge.getInvDist(),1.0,1.0,hes);}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ cs;}
+\DoxyCodeLine{00157\ \ \ \ \ \}}
+\DoxyCodeLine{00158\ }
+\DoxyCodeLine{00159\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ CircleSimple\ comp\_any\_center(CircleSimple\ cs1,}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ cs2,\textcolor{keywordtype}{double}\ r3,\textcolor{keywordtype}{double}\ o1,\textcolor{keywordtype}{double}\ o2,\textcolor{keywordtype}{double}\ o3,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ comp\_any\_center(cs1.center,cs2.center,cs1.rad,cs2.rad,}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ r3,o1,o2,o3,hes);}
+\DoxyCodeLine{00163\ \ \ \ \ \}}
+\DoxyCodeLine{00164\ \ \ \ \ }
+\DoxyCodeLine{00179\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ CircleSimple\ comp\_any\_center(Complex\ z0,\ Complex\ z1,}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r0,\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\ \textcolor{keywordtype}{double}\ ivd0,\textcolor{keywordtype}{double}\ ivd1,\textcolor{keywordtype}{double}\ ivd2,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ HyperbolicMath.h\_compcenter(z0,z1,r0,r1,r2,ivd0,ivd1,ivd2);}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ SphericalMath.s\_compcenter(z0,z1,r0,r1,r2,ivd0,ivd1,ivd2);}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ EuclMath.e\_compcenter(z0,z1,r0,r1,r2,ivd0,ivd1,ivd2);}
+\DoxyCodeLine{00187\ \ \ \ \ \}}
+\DoxyCodeLine{00188\ \ \ \ \ }
+\DoxyCodeLine{00200\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ CircleSimple\ comp\_any\_center(Complex\ z0,\ Complex\ z1,}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r0,\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\ \textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ HyperbolicMath.h\_compcenter(z0,z1,r0,r1,r2,1.0,1.0,1.0);}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ SphericalMath.s\_compcenter(z0,z1,r0,r1,r2,1.0,1.0,1.0);}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ EuclMath.e\_compcenter(z0,z1,r0,r1,r2,1.0,1.0,1.0);}
+\DoxyCodeLine{00208\ \ \ \ \ \}\ }
+\DoxyCodeLine{00209\ \ \ \ \ }
+\DoxyCodeLine{00220\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ CircleSimple\ tri\_incircle(}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z0,Complex\ z1,Complex\ z2,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)\ }
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ HyperbolicMath.hyp\_tri\_incircle(z0,z1,z2);}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ SphericalMath.sph\_tri\_incircle(z0,\ z1,\ z2);}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ EuclMath.eucl\_tri\_incircle(z0,\ z1,\ z2);}
+\DoxyCodeLine{00227\ \ \ \ \ \}}
+\DoxyCodeLine{00228\ \ \ \ \ }
+\DoxyCodeLine{00240\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ pt\_in\_triangle(Complex\ pt,}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z0,Complex\ z1,Complex\ z2,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ HyperbolicMath.pt\_in\_hyp\_tri(pt,z0,z1,z2);}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)\ \textcolor{comment}{//\ points\ in\ (theta,phi)\ form}}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ SphericalMath.pt\_in\_sph\_tri(pt,z0,z1,z2);}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ EuclMath.pt\_in\_eucl\_tri(pt,z0,z1,z2);}
+\DoxyCodeLine{00247\ \ \ \ \ \}}
+\DoxyCodeLine{00248\ \ \ \ \ }
+\DoxyCodeLine{00258\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ circleCompError(CircleSimple\ cs1,CircleSimple\ cs2,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ avgRad=(0.5)*(cs1.rad+cs2.rad);}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ diff\_radii=Math.abs(cs1.rad-\/cs2.rad);}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ diff\_centers=get\_pt\_dist(cs1.center,cs2.center,hes);}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (diff\_radii+diff\_centers)/avgRad;}
+\DoxyCodeLine{00263\ \ \ \ \ \}}
+\DoxyCodeLine{00264\ \ \ \ \ }
+\DoxyCodeLine{00273\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ get\_pt\_dist(Complex\ z,Complex\ w,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ HyperbolicMath.h\_dist(z,\ w);}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hes>0)}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ SphericalMath.s\_dist(z,\ w);}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ EuclMath.e\_dist(z,w);}
+\DoxyCodeLine{00280\ \ \ \ \ \}}
+\DoxyCodeLine{00281\ \ \ \ \ }
+\DoxyCodeLine{00291\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ get\_inv\_dist(Complex\ z1,Complex\ z2,\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)\ \{}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ sC1=HyperbolicMath.h\_to\_e\_data(z1,r1);}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ sC2=HyperbolicMath.h\_to\_e\_data(z2,r2);}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ EuclMath.inv\_dist(sC1.center,sC2.center,sC1.rad,sC2.rad);}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)\ \{}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ SphericalMath.s\_inv\_dist(z1,\ z2,\ r1,\ r2);}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ EuclMath.inv\_dist(z1,\ z2,r1,\ r2);}
+\DoxyCodeLine{00301\ \ \ \ \ \}}
+\DoxyCodeLine{00302\ \ \ \ \ }
+\DoxyCodeLine{00312\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ ivd\_edge\_length(\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\ \textcolor{keywordtype}{double}\ ivd,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)\ }
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ HyperbolicMath.h\_ivd\_length(r1,\ r2,\ ivd);}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hes>0)}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ SphericalMath.s\_ivd\_length(r1,\ r2,\ ivd);}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ EuclMath.e\_ivd\_length(r1,\ r2,\ ivd);}
+\DoxyCodeLine{00319\ \ \ \ \ \}}
+\DoxyCodeLine{00320\ }
+\DoxyCodeLine{00330\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ get\_face\_angle(\textcolor{keywordtype}{double}\ rad0,}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ rad1,\textcolor{keywordtype}{double}\ rad2,\textcolor{keywordtype}{int}\ hes)}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throws}\ DataException\ \{}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ theCos=0.0;}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)\ \textcolor{comment}{//\ hyp\ with\ x-\/radii}}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ theCos=HyperbolicMath.h\_comp\_x\_cos(rad0,rad1,rad2);}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hes>0)\ \{\ \textcolor{comment}{//\ sph}}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ theCos=SphericalMath.s\_comp\_cos(rad0,\ rad1,\ rad2);}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ eucl}}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ theCos=EuclMath.e\_cos\_overlap(rad0,\ rad1,\ rad2);}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(theCos)>1.0)}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}error\ calculating\ angle"{}});}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.acos(theCos);}
+\DoxyCodeLine{00345\ \ \ \ \ \}}
+\DoxyCodeLine{00346\ }
+\DoxyCodeLine{00361\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{double}\ get\_face\_angle(\textcolor{keywordtype}{double}\ r0,\textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ ivd0,\textcolor{keywordtype}{double}\ ivd1,\textcolor{keywordtype}{double}\ ivd2,\textcolor{keywordtype}{int}\ hes)\ }
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throws}\ DataException\ \{}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ theCos=0.0;}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)\ \{\ \textcolor{comment}{//\ hyp\ }}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ theCos=HyperbolicMath.h\_comp\_cos(r0,r1,r2,ivd0,ivd1,ivd2);}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hes>0)\ \{\ \textcolor{comment}{//\ sph;\ not\ ready\ for\ inversive\ distances}}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ theCos=SphericalMath.s\_comp\_cos(r0,\ r1,\ r2);}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{\ \textcolor{comment}{//\ eucl}}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ theCos=EuclMath.e\_cos\_overlap(r0,\ r1,\ r2,\ ivd0,ivd1,ivd2);}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(theCos)>1.0)}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}error\ calculating\ angle"{}});}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ Math.acos(theCos);}
+\DoxyCodeLine{00377\ \ \ \ \ \}}
+\DoxyCodeLine{00378\ }
+\DoxyCodeLine{00388\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ get\_anglesum(PackData\ p,\textcolor{keywordtype}{int}\ v,\textcolor{keywordtype}{double}\ rad,UtilPacket\ uP)\ \{}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ uP.value=p.packDCEL.getVertAngSum(p.packDCEL.vertices[v],rad);}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00395\ \ \ \ \ \}}
+\DoxyCodeLine{00396\ }
+\DoxyCodeLine{00407\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Complex\ tripleIncircle(Complex\ p0,}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ p1,Complex\ p2,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ CircleSimple\ sc=\textcolor{keyword}{null};}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<=0)\ \textcolor{comment}{//\ in\ hyp\ case,\ use\ eucl\ incircle}}
+\DoxyCodeLine{00411\ \ \ \ \ \textcolor{comment}{//\ TODO:\ need\ incenter\ of\ generic\ hyperbolic\ triangle.}}
+\DoxyCodeLine{00412\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ need\ radii\ to\ use\ 'HyperbolicMath.hyp\_tang\_incircle'}}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ sc=EuclMath.eucl\_tri\_incircle(p0,p1,p2);}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ }
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ sc=SphericalMath.sph\_tri\_incircle(p0,p1,p2);}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ sc.center;}
+\DoxyCodeLine{00417\ \ \ \ \ \}}
+\DoxyCodeLine{00418\ \ \ \ \ }
+\DoxyCodeLine{00428\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ CircleSimple\ circle3Incircle(CircleSimple\ cs0,}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ cs1,CircleSimple\ cs2,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ CircleSimple[]\ cS=\ \{cs0,cs1,cs2\};}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ Complex[]\ pts=\textcolor{keyword}{new}\ Complex[3];}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ \{}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ pts[j]=CommonMath.genTangPoint(cS[j],cS[(j+1)\%3],hes);}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pts[j]=SphericalMath.s\_pt\_to\_plane(pts[j]);}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ CircleSimple\ theCircle=EuclMath.circle\_3(pts[0],\ pts[1],\ pts[2]);}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ theCircle=HyperbolicMath.e\_to\_h\_data(theCircle);}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ theCircle=SphericalMath.e\_to\_s\_data(theCircle);}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ theCircle;}
+\DoxyCodeLine{00443\ \ \ \ \ \}}
+\DoxyCodeLine{00444\ }
+\DoxyCodeLine{00445\ \ \ \ \ \textcolor{comment}{//\ TODO:\ improve\ notion\ of\ "{}generalized\ tangency"{}\ to}}
+\DoxyCodeLine{00446\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ get\ conformal\ invariant\ definition\ and}}
+\DoxyCodeLine{00447\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ tangency\ in\ (essentially)\ tangent\ case.}}
+\DoxyCodeLine{00448\ \ \ \ \ \textcolor{comment}{//\ Note:\ sph\ case\ can\ go\ wrong\ if\ one\ or\ both\ circles}}
+\DoxyCodeLine{00449\ \ \ \ \ \textcolor{comment}{//\ \ \ \ \ \ \ contain\ infinity.}}
+\DoxyCodeLine{00450\ \ \ \ \ \textcolor{comment}{/*\ As\ of\ 6/2021:}}
+\DoxyCodeLine{00451\ \textcolor{comment}{\ \ \ \ \ *\ Work\ with\ eucl\ circles\ c1=(z1,r1),\ c2=(z2,r2).\ }}
+\DoxyCodeLine{00452\ \textcolor{comment}{\ \ \ \ \ *\ The\ GT\ point\ will\ be\ located\ on\ the\ ray\ L\ from}}
+\DoxyCodeLine{00453\ \textcolor{comment}{\ \ \ \ \ *\ z1\ through\ z2,\ so\ we\ work\ with\ real\ number\ }}
+\DoxyCodeLine{00454\ \textcolor{comment}{\ \ \ \ \ *\ distances\ on\ L.\ }}
+\DoxyCodeLine{00455\ \textcolor{comment}{\ \ \ \ \ *\ }}
+\DoxyCodeLine{00456\ \textcolor{comment}{\ \ \ \ \ *\ First\ get\ inversive\ distance\ between\ c1/c2.}}
+\DoxyCodeLine{00457\ \textcolor{comment}{\ \ \ \ \ *\ \ \ \ invD=(|z1-\/z2|\string^2-\/(r1\string^2+r2\string^2))/(2*r1*r2).}}
+\DoxyCodeLine{00458\ \textcolor{comment}{\ \ \ \ \ *\ (this\ may\ or\ may\ not\ correspond\ with\ "{}intended"{}\ }}
+\DoxyCodeLine{00459\ \textcolor{comment}{\ \ \ \ \ *\ inversive\ distance).\ }}
+\DoxyCodeLine{00460\ \textcolor{comment}{\ \ \ \ \ *\ }}
+\DoxyCodeLine{00461\ \textcolor{comment}{\ \ \ \ \ *\ We\ identify\ the\ c1/c2\ configuration\ with\ a\ }}
+\DoxyCodeLine{00462\ \textcolor{comment}{\ \ \ \ \ *\ normalized\ configuration\ C-\//C+\ that\ is\ a}}
+\DoxyCodeLine{00463\ \textcolor{comment}{\ \ \ \ \ *\ mobius\ image:\ namely,\ based\ on\ inD\ alone,\ }}
+\DoxyCodeLine{00464\ \textcolor{comment}{\ \ \ \ \ *\ can\ compute\ radius\ R\ and\ center\ circles\ }}
+\DoxyCodeLine{00465\ \textcolor{comment}{\ \ \ \ \ *\ C-\/,\ C+\ of\ radius\ R\ on\ the\ negative/positive\ }}
+\DoxyCodeLine{00466\ \textcolor{comment}{\ \ \ \ \ *\ real\ axis\ (resp.)\ the\ left\ edge\ of\ C-\/\ hits\ -\/1\ }}
+\DoxyCodeLine{00467\ \textcolor{comment}{\ \ \ \ \ *\ and\ the\ right\ edge\ of\ C+\ hits\ +1.}}
+\DoxyCodeLine{00468\ \textcolor{comment}{\ \ \ \ \ *\ }}
+\DoxyCodeLine{00469\ \textcolor{comment}{\ \ \ \ \ *\ Here's\ R:\ }}
+\DoxyCodeLine{00470\ \textcolor{comment}{\ \ \ \ \ *\ \ \ \ R=(-\/2+sqrt(2+2*invD))/(invD-\/1)}}
+\DoxyCodeLine{00471\ \textcolor{comment}{\ \ \ \ \ *\ \ \ \ }}
+\DoxyCodeLine{00472\ \textcolor{comment}{\ \ \ \ \ *\ Triples\ of\ points\ to\ be\ identified\ are\ \{A,B,C\}}}
+\DoxyCodeLine{00473\ \textcolor{comment}{\ \ \ \ \ *\ on\ L\ and\ \{a,b,c\}\ in\ the\ normalized\ situation.}}
+\DoxyCodeLine{00474\ \textcolor{comment}{\ \ \ \ \ *\ }}
+\DoxyCodeLine{00475\ \textcolor{comment}{\ \ \ \ \ *\ For\ \{A,B,C\},\ let\ x\ =\ |z1-\/z2|.\ Then\ A\ =\ x-\/r2,\ }}
+\DoxyCodeLine{00476\ \textcolor{comment}{\ \ \ \ \ *\ B=r1,\ C=x+r2.\ (These\ are\ points\ along\ L)}}
+\DoxyCodeLine{00477\ \textcolor{comment}{\ \ \ \ \ *\ A\ is\ the\ distance\ along\ L\ from\ z1\ to\ the\ first}}
+\DoxyCodeLine{00478\ \textcolor{comment}{\ \ \ \ \ *\ intersection\ point\ of\ L\ and\ c2,\ B\ is\ intersection}}
+\DoxyCodeLine{00479\ \textcolor{comment}{\ \ \ \ \ *\ point\ of\ L\ and\ c1,\ and\ C\ is\ the\ further\ intersection}}
+\DoxyCodeLine{00480\ \textcolor{comment}{\ \ \ \ \ *\ point\ of\ L\ and\ c2.\ (Note\ that\ B\ and\ C\ are\ positive,\ }}
+\DoxyCodeLine{00481\ \textcolor{comment}{\ \ \ \ \ *\ but\ A\ may\ be\ negative\ in\ case\ of\ deep\ overlap.)}}
+\DoxyCodeLine{00482\ \textcolor{comment}{\ \ \ \ \ *\ }}
+\DoxyCodeLine{00483\ \textcolor{comment}{\ \ \ \ \ *\ The\ corresponding\ points\ \{a,b,c\}\ of\ the\ real\ line}}
+\DoxyCodeLine{00484\ \textcolor{comment}{\ \ \ \ \ *\ are:\ a\ is\ the\ left\ edge\ of\ C+,\ b\ is\ the\ right\ edge}}
+\DoxyCodeLine{00485\ \textcolor{comment}{\ \ \ \ \ *\ of\ C-\/,\ and\ c\ is\ +1.\ Thus,\ a\ =\ 1-\/2R,\ b\ =\ -\/1+2R,\ and}}
+\DoxyCodeLine{00486\ \textcolor{comment}{\ \ \ \ \ *\ c\ =\ 1.}}
+\DoxyCodeLine{00487\ \textcolor{comment}{\ \ \ \ \ *\ }}
+\DoxyCodeLine{00488\ \textcolor{comment}{\ \ \ \ \ *\ If\ T\ is\ the\ Mobius\ map:\ T\{a,b,c\}\ -\/-\/>\ \{A,B,C\},\ then}}
+\DoxyCodeLine{00489\ \textcolor{comment}{\ \ \ \ \ *\ by\ obvious\ symmetry\ about\ the\ y-\/axis\ in\ the\ }}
+\DoxyCodeLine{00490\ \textcolor{comment}{\ \ \ \ \ *\ normalized\ situation,\ T(0)\ is\ what\ we\ are\ after.\ }}
+\DoxyCodeLine{00491\ \textcolor{comment}{\ \ \ \ \ *\ Return\ the\ point\ along\ L\ which\ is\ distance\ T(0)\ }}
+\DoxyCodeLine{00492\ \textcolor{comment}{\ \ \ \ \ *\ from\ z1\ in\ the\ direction\ of\ z2.}}
+\DoxyCodeLine{00493\ \textcolor{comment}{\ \ \ \ \ *}}
+\DoxyCodeLine{00494\ \textcolor{comment}{\ \ \ \ \ *\ @param\ cs1\ CircleSimple}}
+\DoxyCodeLine{00495\ \textcolor{comment}{\ \ \ \ \ *\ @param\ cs2\ CircleSimple}}
+\DoxyCodeLine{00496\ \textcolor{comment}{\ \ \ \ \ *\ @param\ hes\ int}}
+\DoxyCodeLine{00497\ \textcolor{comment}{\ \ \ \ \ *\ @return\ new\ Complex\ }}
+\DoxyCodeLine{00498\ \textcolor{comment}{\ \ \ \ \ */}}
+\DoxyCodeLine{00499\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Complex\ genTangPoint(CircleSimple\ cs1,}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ CircleSimple\ cs2,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00501\ }
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ convert\ to\ eucl\ circles}}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes<0)\ \{}
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ cs1=HyperbolicMath.h\_to\_e\_data(cs1);}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \ \ \ cs2=HyperbolicMath.h\_to\_e\_data(cs2);}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hes>0)\ \{}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \ \ \ \ cs1=SphericalMath.s\_to\_e\_data(cs1);}
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \ \ \ \ cs2=SphericalMath.s\_to\_e\_data(cs2);}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ x=cs1.center.minus(cs2.center).abs();}
+\DoxyCodeLine{00513\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ t=cs1.rad;\ \textcolor{comment}{//\ prepare\ for\ tangency}}
+\DoxyCodeLine{00514\ }
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ invD=(x*x-\/(cs1.rad*cs1.rad+cs2.rad*cs2.rad))/(2*cs1.rad*cs2.rad);}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ not\ essentially\ tangent,\ find\ real\ value\ t}}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (Math.abs(invD-\/1.0)>.001)\ \{}
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ points\ on\ L}}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ A=\textcolor{keyword}{new}\ Complex(x-\/cs2.rad);}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ B=\textcolor{keyword}{new}\ Complex(cs1.rad);}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ C=\textcolor{keyword}{new}\ Complex(x+cs2.rad);}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ radius\ and\ points\ for\ normalized\ config}}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ R=(-\/2.0+Math.sqrt(2.0+2.0*invD))/(invD-\/1.0);}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ a=\textcolor{keyword}{new}\ Complex(1.0-\/2.0*R);}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ b=\textcolor{keyword}{new}\ Complex(-\/1+2.0*R);}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ c=\textcolor{keyword}{new}\ Complex(1.0);}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \ \ \ \ Mobius\ mob=Mobius.mob\_xyzXYZ(a,b,c,A,B,C,0,0);}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \ \ \ \ t=mob.apply(\textcolor{keyword}{new}\ Complex(0.0)).x;}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ have\ t,\ find\ point\ distance\ t\ along\ L\ from\ cs1.center}}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ Complex\ pt=cs2.center.minus(cs1.center).times(t/x).add(cs1.center);}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes>0)\ }
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ SphericalMath.proj\_pt\_to\_sph(pt);}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ pt;}
+\DoxyCodeLine{00540\ \ \ \ \ \}}
+\DoxyCodeLine{00541\ \ \ \ \ }
+\DoxyCodeLine{00553\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ Complex\ get\_tang\_pt(Complex\ z1,Complex\ z2,}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ r1,\textcolor{keywordtype}{double}\ r2,\textcolor{keywordtype}{int}\ hes)\ \{}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (hes==0)}
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ EuclMath.eucl\_tangency(z1,z2,r1,r2);}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (hes>0)}
+\DoxyCodeLine{00558\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ SphericalMath.sph\_tangency(z1,z2,r1,r2);}
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00560\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ HyperbolicMath.hyp\_tangency(z1,z2,r1,r2);}
+\DoxyCodeLine{00561\ \ \ \ \ \}}
+\DoxyCodeLine{00562\ \ \ \ \ }
+\DoxyCodeLine{00563\ \}\ \textcolor{comment}{//\ end\ of\ class}}
+\DoxyCodeLine{00564\ }
+\DoxyCodeLine{00572\ \textcolor{keyword}{class\ }TmpFaceData\ \{}
+\DoxyCodeLine{00573\ \ \ \ \ \textcolor{keyword}{public}\ Complex[]\ center;}
+\DoxyCodeLine{00574\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}[]\ rad;}
+\DoxyCodeLine{00575\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{double}[]\ invDist;}
+\DoxyCodeLine{00576\ \ \ \ \ }
+\DoxyCodeLine{00577\ \ \ \ \ \textcolor{keyword}{public}\ TmpFaceData(Complex[]\ pts,\textcolor{keywordtype}{double}[]\ r,\textcolor{keywordtype}{double}[]\ \textcolor{keywordtype}{id})\ \{}
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<3;j++)\ \{}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \ \ \ \ center[j]=pts[j];}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \ \ \ \ rad[j]=r[j];}
+\DoxyCodeLine{00581\ \ \ \ \ \ \ \ \ \ \ \ \ invDist[j]=\textcolor{keywordtype}{id}[j];}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00583\ \ \ \ \ \}}
+\DoxyCodeLine{00584\ \}}
+
+\end{DoxyCode}

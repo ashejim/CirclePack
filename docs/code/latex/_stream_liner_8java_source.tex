@@ -1,0 +1,356 @@
+\doxysection{Stream\+Liner.\+java}
+\label{_stream_liner_8java_source}\index{C:/Users/ashej/myGitRepos/CirclePack/src/geometry/StreamLiner.java@{C:/Users/ashej/myGitRepos/CirclePack/src/geometry/StreamLiner.java}}
+\textbf{ Go to the documentation of this file.}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{keyword}{package\ }geometry;}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{keyword}{import}\ allMains.CirclePack;}
+\DoxyCodeLine{00004\ \textcolor{keyword}{import}\ baryStuff.BaryPacket;}
+\DoxyCodeLine{00005\ \textcolor{keyword}{import}\ baryStuff.BaryPoint;}
+\DoxyCodeLine{00006\ \textcolor{keyword}{import}\ combinatorics.komplex.HalfEdge;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{import}\ complex.Complex;}
+\DoxyCodeLine{00008\ \textcolor{keyword}{import}\ exceptions.DataException;}
+\DoxyCodeLine{00009\ \textcolor{keyword}{import}\ komplex.EdgeSimple;}
+\DoxyCodeLine{00010\ \textcolor{keyword}{import}\ listManip.BaryCoordLink;}
+\DoxyCodeLine{00011\ \textcolor{keyword}{import}\ listManip.FaceLink;}
+\DoxyCodeLine{00012\ \textcolor{keyword}{import}\ math.Point3D;}
+\DoxyCodeLine{00013\ \textcolor{keyword}{import}\ packing.PackData;}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00034\ \textcolor{keyword}{public}\ \textcolor{keyword}{class\ }StreamLiner\ \{}
+\DoxyCodeLine{00035\ \ \ \ \ PackData\ basePack;\ \ \ \ \ \ \textcolor{comment}{//\ copy\ for\ combinatorics\ and\ centers\ }}
+\DoxyCodeLine{00036\ \ \ \ \ \textcolor{keywordtype}{double}[]\ dataValues;\ \ \ \ \textcolor{comment}{//\ values\ engendering\ the\ streamlines}}
+\DoxyCodeLine{00037\ \ \ \ \ Point3D[]\ normals;\ \ \ \ \ \ \textcolor{comment}{//\ normals\ to\ the\ faces\ (ccw\ oriented)}}
+\DoxyCodeLine{00038\ \ \ \ \ }
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{public}\ StreamLiner(PackData\ p)\ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ basePack=p.copyPackTo();}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ dataValues=\textcolor{keyword}{null};}
+\DoxyCodeLine{00042\ \ \ \ \ \}}
+\DoxyCodeLine{00043\ \ \ \ \ }
+\DoxyCodeLine{00054\ \ \ \ \ \textcolor{keyword}{public}\ BaryCoordLink\ getStreamline(Complex\ pt,\ \textcolor{keywordtype}{boolean}\ uphill)\ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ BaryCoordLink\ outLink=\textcolor{keyword}{new}\ BaryCoordLink();}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ what\ face\ are\ we\ in?}}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ FaceLink\ flk=basePack.tri\_search(pt);}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (flk==\textcolor{keyword}{null}\ ||\ flk.size()==0)}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ combinatorics.komplex.DcelFace\ face=basePack.packDCEL.faces[flk.get(0)];}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ vert=face.getVerts();}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ Complex\ v0=basePack.getCenter(vert[0]);}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ Complex\ v1=basePack.getCenter(vert[1]);}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ Complex\ v2=basePack.getCenter(vert[2]);}
+\DoxyCodeLine{00066\ }
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ find\ the\ first\ 'BaryPoint'}}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ BaryPoint\ startBpt=BaryPoint.complex2bp(basePack.hes,\ pt,\ v0,\ v1,\ v2);}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ startBpt.face=face.faceIndx;}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ chase\ along\ }}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ safety=1000;}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{while}\ (startBpt!=\textcolor{keyword}{null}\ \&\&\ safety>0)\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ safety-\/-\/;}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ decide\ which\ way\ to\ go\ from\ 'startBpt'}}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ startBpt=whichWay(startBpt,uphill);}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ did\ we\ reach\ an\ error\ or\ a\ stopping\ point?}}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (startBpt==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (outLink!=\textcolor{keyword}{null}\ \&\&\ outLink.size()>0)}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ outLink;}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ BaryPacket\ newBP=faceTransit(startBpt,uphill);}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (newBP==\textcolor{keyword}{null})\ \{}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (outLink!=\textcolor{keyword}{null}\ \&\&\ outLink.size()>0)}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ outLink;}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ outLink.add(newBP);}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ startBpt=newBP.end.clone();}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ while}}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (outLink!=\textcolor{keyword}{null}\ \&\&\ outLink.size()>0)}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ outLink;}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00100\ \ \ \ \ \}}
+\DoxyCodeLine{00101\ \ \ \ \ }
+\DoxyCodeLine{00111\ \ \ \ \ \textcolor{keyword}{public}\ BaryPacket\ faceTransit(BaryPoint\ spt,\textcolor{keywordtype}{boolean}\ uphill)\ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (spt==\textcolor{keyword}{null}\ ||\ spt.face<1)}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ grad}}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ Complex\ grad=\textcolor{keyword}{new}\ Complex(-\/normals[spt.face].x,-\/normals[spt.face].y);}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!uphill)\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ grad=grad.times(-\/1.0);}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ combinatorics.komplex.DcelFace\ face=basePack.packDCEL.faces[spt.face];}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ vert=face.getVerts();}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ Complex\ vec=BaryPoint.vec2simplex(grad,basePack.getCenter(vert[0]),}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ basePack.getCenter(vert[1]),basePack.getCenter(vert[2]));}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ []baryc=BaryPoint.upGrad(spt.b0,spt.b1,vec);}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (baryc==\textcolor{keyword}{null})}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ BaryPoint\ exitpt=\textcolor{keyword}{new}\ BaryPoint(baryc[0],baryc[1]);}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ exitpt.face=spt.face;}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ BaryPacket\ outPacket=\ \textcolor{keyword}{new}\ BaryPacket(vert[0],\ vert[1],\ vert[2]);}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ outPacket.faceIndx\ =\ spt.face;}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ outPacket.start\ =\ spt.clone();}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ outPacket.start.face=spt.face;}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ outPacket.end\ =\ exitpt;}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ outPacket;}
+\DoxyCodeLine{00137\ \ \ \ \ \}}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00144\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{void}\ setNormals()\ \{}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (dataValues==\textcolor{keyword}{null})}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}'dataValues'\ are\ not\ set,\ see\ 'logmod'"{}});}
+\DoxyCodeLine{00147\ \textcolor{comment}{//\ \ \ \ \ \ if\ (dataValues.length!=basePack.nodeCount+1)\ \{}}
+\DoxyCodeLine{00148\ \textcolor{comment}{//\ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg("{}Note:\ sizes\ of\ 'streamLiner.basePack'\ and\ 'logmod'\ don't\ agree"{});}}
+\DoxyCodeLine{00149\ \textcolor{comment}{//\ \ \ \ \ \ \}}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ normals=\textcolor{keyword}{new}\ Point3D[basePack.faceCount+1];}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ f=1;f<=basePack.faceCount;f++)\ \{}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ combinatorics.komplex.DcelFace\ face=basePack.packDCEL.faces[f];}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ v=face.getVerts();}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z0=basePack.getCenter(v[0]);}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z1=basePack.getCenter(v[1]);}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ z2=basePack.getCenter(v[2]);}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ get\ the\ sides\ as\ 3\ vectors}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ side01=\textcolor{keyword}{new}\ Point3D(z1.x-\/z0.x,z1.y-\/z0.y,}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dataValues[v[1]]-\/dataValues[v[0]]);}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ Point3D\ side12=\textcolor{keyword}{new}\ Point3D(z2.x-\/z1.x,z2.y-\/z1.y,}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ dataValues[v[2]]-\/dataValues[v[1]]);}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ normals[f]=Point3D.CrossProduct(side01,side12);}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ nm=normals[f].norm();}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (nm<.00000001\ \&\&\ nm<.000001*side01.norm()*side12.norm())\ \textcolor{comment}{//\ should\ not\ be\ so\ small}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ \textcolor{keyword}{new}\ DataException(\textcolor{stringliteral}{"{}face\ normal\ is\ ambiguous"{}});}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ normalize}}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ normals[f]=normals[f].divide(nm);}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TODO:\ might\ want\ check\ to\ see\ if\ essentially\ vertical}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return};}
+\DoxyCodeLine{00175\ \ \ \ \ \}}
+\DoxyCodeLine{00176\ \ \ \ \ }
+\DoxyCodeLine{00182\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keywordtype}{int}\ setDataValues(\textcolor{keywordtype}{double}\ []values)\ \{}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (values==\textcolor{keyword}{null})}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ 0;}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (values.length>basePack.nodeCount+1)\ \{}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ CirclePack.cpb.errMsg(\textcolor{stringliteral}{"{}given\ vector\ is\ too\ long\ ("{}}+values.length+\textcolor{stringliteral}{"{})\ for\ 'basePack'\ ("{}}+basePack.nodeCount+\textcolor{stringliteral}{"{})"{}});}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ dataValues=\textcolor{keyword}{new}\ \textcolor{keywordtype}{double}[values.length];}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ j=0;}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (j=1;j<values.length;j++)\ }
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ dataValues[j]=values[j];}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ j-\/1;}
+\DoxyCodeLine{00194\ \ \ \ \ \}}
+\DoxyCodeLine{00195\ \ \ \ \ }
+\DoxyCodeLine{00209\ \ \ \ \ \textcolor{keyword}{public}\ BaryPoint\ whichWay(BaryPoint\ inpt,\textcolor{keywordtype}{boolean}\ uphill)\ \{}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (inpt.face<=0)}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ ins=BaryPoint.baryPtInside(inpt);}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ outside?\ error}}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ins<0)\ }
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ interior?\ use\ same\ face}}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ins==0)\ \{}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ BaryPoint\ outpt=\textcolor{keyword}{new}\ BaryPoint(inpt);}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ outpt.face=inpt.face;}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ outpt;}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ at\ vertex?}}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ins<4)\ \{}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=basePack.packDCEL.faces[inpt.face].getVerts()[ins-\/1];}
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ boundary\ vertex,\ stop}}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (basePack.isBdry(v))}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ num=basePack.countFaces(v);}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ flower=basePack.getFlower(v);}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ []edgevec=\textcolor{keyword}{new}\ Complex[num+1];}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ edgevec[j]=basePack.getCenter(flower[j]).minus(basePack.getCenter(v));}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ edgevec[num]=edgevec[0];}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ what\ is\ the\ largest\ gradient\ that\ goes\ into\ its\ face?}}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bestindx=-\/1;}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bestgrad=-\/1.0;}
+\DoxyCodeLine{00244\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}[]\ faceFlower=basePack.getFaceFlower(v);}
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ grad=\textcolor{keyword}{new}\ Complex(-\/normals[faceFlower[j]].x,-\/normals[faceFlower[j]].y);}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!uphill)}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ grad=grad.times(-\/1.0);}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (gradFaceCheck(grad,edgevec[j],edgevec[j+1]))\ \{}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (grad.abs()>bestgrad)\ \{}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bestgrad=grad.abs();}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bestindx=j;}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ if\ there's\ none,\ then\ look\ for\ best\ edge}}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bestindx<0\ ||\ bestgrad<=0.0)\ \{}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bestgrad=-\/1;}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bestindx=-\/1;}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;j<num;j++)\ \{}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ jump=dataValues[flower[j]]-\/dataValues[v];}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!uphill)}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ jump\ *=\ -\/1.0;}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ jump\ /=\ edgevec[j].abs();}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (jump>bestgrad)\ \{}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bestgrad=jump;}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bestindx=j;}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ did\ we\ find\ some\ direction\ to\ go?}}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (bestgrad>0.0\ \&\&\ bestindx>=0)\ \{}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ bestface=faceFlower[bestindx];}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ vindx=basePack.packDCEL.faces[bestface].getVertIndx(v);}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ b1=0.0;}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ b2=0.0;}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vindx==0)}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ b1=1.0;}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (vindx==1)}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ b2=1.0;}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BaryPoint\ outpt=\textcolor{keyword}{new}\ BaryPoint(b1,b2);}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outpt.face=bestface;}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ outpt;\ }
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ vert\ must\ be\ extremum}}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ end\ of\ vertex}}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ on\ edge?\ }}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ins>10)\ \{}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ combinatorics.komplex.DcelFace\ face=basePack.packDCEL.faces[inpt.face];}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ []vert=face.getVerts();}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v=-\/1;}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ w=-\/1;}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ v\_indx;\ \textcolor{comment}{//\ which\ index\ in\ 'vert'?}}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (ins==12)\ \{}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v\_indx=0;}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=vert[0];}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=vert[1];}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (ins==13)\ \{}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v\_indx=2;}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=vert[2];}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=vert[0];}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v\_indx=1;}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ v=vert[1];}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ w=vert[2];}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ stop\ if\ this\ is\ boundary\ edge}}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (basePack.isBdry(v)\ \&\&\ basePack.isBdry(w))}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00318\ }
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ inpt.face\ is\ on\ the\ left\ of\ vw\_edge}}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ face\_l=inpt.face;}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ HalfEdge\ vwhe=basePack.packDCEL.findHalfEdge(\textcolor{keyword}{new}\ EdgeSimple(v,w));}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ face\_r=vwhe.twin.face.faceIndx;}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ vw\_edge=basePack.getCenter(w).minus(basePack.getCenter(v));}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ have\ to\ decide\ if\ going\ left\ (this\ same\ face)\ or\ going\ right\ (neighboring}}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ \ \ face)\ are\ viable,\ then\ compare\ them.}}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ grad\_l=\textcolor{keyword}{new}\ Complex(-\/normals[face\_l].x,-\/normals[face\_l].y);}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ Complex\ grad\_r=\textcolor{keyword}{new}\ Complex(-\/normals[face\_r].x,-\/normals[face\_r].y);}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!uphill)\ \{}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ grad\_l=grad\_l.times(-\/1.0);}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ grad\_r=grad\_r.times(-\/1.0);}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ ck\_left=\textcolor{keyword}{true};}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{boolean}\ ck\_right=\textcolor{keyword}{true};}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ do\ the\ gradients\ point\ into\ the\ faces?}}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ arg\_l=grad\_l.divide(vw\_edge).arg();}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ arg\_r=grad\_r.divide(vw\_edge).arg();}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ ((arg\_l<0.0\ \&\&\ arg\_l>-\/Math.PI)\ ||\ grad\_l.abs()<PackData.TOLER)\ }
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ck\_left=\textcolor{keyword}{false};}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (arg\_r>=0\ ||\ grad\_r.abs()<PackData.TOLER)}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ck\_right=\textcolor{keyword}{false};}
+\DoxyCodeLine{00343\ }
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ neither\ face?\ perhaps\ follow\ edge,\ so\ return\ current\ face}}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!ck\_left\ \&\&\ !ck\_right)\ \{}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ inpt.clone();}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!ck\_right)\ \{}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BaryPoint\ outpt=\textcolor{keyword}{new}\ BaryPoint(inpt);}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outpt.face=face\_l;}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ outpt;}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ right\ is\ our\ choice;\ must\ adjust\ face}}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ vert=basePack.packDCEL.faces[face\_r].getVerts();}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ k=-\/1;}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{int}\ j=0;(j<3\ \&\&\ k<0);j++)\ \{}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (vert[j]==w)}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k=j;}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k<0)}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ have\ to\ find\ bary\ coords\ from\ face\_l}}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bv=0.0;}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{double}\ bw=0.0;}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (v\_indx==0)\ \{}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bv=inpt.b0;}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw=inpt.b1;}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (v\_indx==1)\ \{}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bv=inpt.b1;}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw=inpt.b2;}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bv=inpt.b2;}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ bw=inpt.b0;}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ set\ them\ \ w.r.t.\ face\_r}}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ BaryPoint\ outpt=\textcolor{keyword}{null};}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (k==0)\ \{}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outpt=\textcolor{keyword}{new}\ BaryPoint(bw,bv);}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (k==1)\ \{}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outpt=\textcolor{keyword}{new}\ BaryPoint(0,bw);}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \{}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outpt=\textcolor{keyword}{new}\ BaryPoint(bv,0);}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ outpt.face=face\_r;}
+\DoxyCodeLine{00393\ }
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ outpt;}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \}\ \textcolor{comment}{//\ done\ with\ edge}}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ }
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ shouldn't\ reach\ here}}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{null};\ }
+\DoxyCodeLine{00399\ \ \ \ \ \}}
+\DoxyCodeLine{00400\ }
+\DoxyCodeLine{00410\ \ \ \ \ \textcolor{keyword}{public}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{boolean}\ gradFaceCheck(Complex\ grad,Complex\ right,Complex\ left)\ \{}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{try}\ \{}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (left.divide(grad).arg()<0.0\ ||\ right.divide(grad).arg()>0.0)}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \}\ \textcolor{keywordflow}{catch}\ (Exception\ ex)\ \{}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{true};}
+\DoxyCodeLine{00418\ \ \ \ \ \}}
+\DoxyCodeLine{00419\ }
+\DoxyCodeLine{00420\ \}}
+
+\end{DoxyCode}
