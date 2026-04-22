@@ -3,13 +3,11 @@ name: deploy-docs
 
 on:
   push:
-    branches: [main] #to rename to main: 
-    # Rename your default branch on GitHub: Settings → Branches → Default branch → switch to main, 
-    # then locally 'git branch -m master main && git fetch && git branch -u origin/main main'.
+    branches: [main]
     paths:
       - 'docs/**'
-      - 'src/**'                         # Doxygen rebuilds when code changes
-      - 'Doxyfile'
+      - 'src/**'
+      # - 'docs/Doxyfile'
       - '.github/workflows/deploy-docs.yml'
   workflow_dispatch:
 
@@ -26,11 +24,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # -------- Build the user guide (Jupyter Book + MyST) --------
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
 
@@ -38,7 +36,7 @@ jobs:
         run: uv python install 3.12
 
       - name: Install Node.js (for MyST engine)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "20"
 
@@ -55,6 +53,7 @@ jobs:
           sudo apt-get install -y doxygen graphviz
 
       - name: Generate Doxygen docs
+        working-directory: docs
         run: doxygen Doxyfile
 
       # -------- Assemble combined site --------
@@ -63,13 +62,11 @@ jobs:
           mkdir -p _site
           cp docs/landing/index.html _site/index.html
           cp -r docs/user_guide/_build/html _site/guide
-          # Adjust the source path below to match your Doxyfile's output.
-          # If HTML_OUTPUT = html (common), use: docs/code_documentation/html
-          # If HTML_OUTPUT = . (also common), use: docs/code_documentation
+          # Adjust source path to match your Doxyfile's HTML_OUTPUT setting.
           cp -r docs/code_documentation/html _site/api
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: _site
 
