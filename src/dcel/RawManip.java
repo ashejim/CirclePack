@@ -1232,6 +1232,8 @@ public class RawManip {
 	   * barycenter. If 'fullbox', then attach three new bdry edges
 	   * to given 'edge' to form the box; else two new bdry edges,
 	   * one to base of 'edge' and one to end of 'edge.next'.
+	   * Note that 'vutil' of orig bdry vert is index of new
+	   * bdry nghb, while 'vutil' of new nghb is orig index.
 	   * @param pdcel PackDCEL
 	   * @param edge HalfEdge
 	   * @param fullbox boolean,
@@ -1254,12 +1256,16 @@ public class RawManip {
 		  HalfEdge leftleg=edge.prev.twin;
 		  Vertex leftV=RawManip.addVert_raw(pdcel,leftleg);
 		  leftV.rad=edge.origin.rad;
+		  edge.origin.vutil=leftV.vertIndx;
+		  leftV.vutil=edge.origin.vertIndx;
 		  
 		  // if full, add second vertex
 		  if (fullbox) { 
 			  HalfEdge rightleg=edge.next.twin;
 			  Vertex rightV=RawManip.addVert_raw(pdcel,rightleg);
 			  rightV.rad=edge.twin.origin.rad;
+			  edge.twin.origin.vutil=rightV.vertIndx;
+			  rightV.vutil=edge.twin.origin.vertIndx;
 		  }
 		  else {
 			  RawManip.enfold_raw(pdcel,edge.twin.origin.vertIndx);

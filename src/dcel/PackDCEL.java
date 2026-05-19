@@ -71,7 +71,7 @@ public class PackDCEL {
 	public int sizeLimit;
 	public PackData p;
 
-	public int vertCount;		// number of vertices (eventually sync'ed with nodeCount)
+	public int vertCount; // number of vertices (eventually sync'ed with nodeCount)
 	public int edgeCount;
 	public int faceCount;
 	public int intFaceCount;	// number of interior faces (larger face indices are ideal faces)

@@ -42,7 +42,34 @@ import util.UtilPacket;
 */
 public class SphericalMath{
   public static final double S_TOLER = .0000000000001;
+  public static double OKERR=.000000001; 
   public static final int INITIAL_CAPACITY = 100;
+  
+  /**
+   * Finding average of spherical (theta,phi) centers
+   * can be tricky because of the 2pi periodicity of
+   * theta: eg. (3.14,y) and (-3.14,y) are very close,
+   * but the average is (0,y). 
+   * Convert to (x,y,z), average, and project. This
+   * can also cause problems, but should work if
+   * points are restricted, e.g., to a hemisphere.
+   * 
+   * @param pts Complex[]
+   * @return Complex
+   */
+  public static Complex average_s_pts(Complex[] pts) {
+	  double xd=0;
+	  double yd=0;
+	  double zd=0;
+	  int n=pts.length;
+	  for (int j=0;j<n;j++) {
+		  double[] xyz=s_pt_to_vec(pts[j]);
+		  xd+=xyz[0];
+		  yd+=xyz[1];
+		  zd+=xyz[2];
+	  }
+	  return proj_vec_to_sph(xd/n,yd/n,zd/n);
+  }
   
   /**
    * Find inversive distance on sphere between circles.
@@ -73,6 +100,138 @@ public class SphericalMath{
 	  double cosphi=Math.cos(r1)*Math.cos(r2)-ivd*Math.sin(r1)*Math.sin(r2);
 	  return Math.acos(cosphi);
   }
+  
+  /**
+   * Specialized routine to find the bearing 
+   * circle in a quad interstice; needed for 
+   * "reflect" command.
+   * This quad has reflective symmetry, so there
+   * is a bearing circle. We compute its radius
+   * with a typical secant method in sph geometry,
+   * the compute center using average of the
+   * placements using contiguous tangent pairs of 
+   * given petal circles. 
+   * Caution: this may go wrong. There may be two
+   * solutions, one for each interstice. Choose
+   * the smallest. Also, monotonicity may be lost
+   * due to large initial radii.
+   * @param cir_a CircleSimple
+   * @param cir_b CircleSimple
+   * @param cir_c CircleSimple
+   * @param cir_d CircleSimple
+   * @param uP UtilPacket, instantiated by calling routine
+   * @return CircleSimple, null on error. uP.value contains
+   *    2pi-anglesum.
+   */
+  public static CircleSimple quad_bearing(Complex[] centers,
+		  double[] radii,UtilPacket uP) {
+	  int N=10; // iterations allowed
+	  boolean done=false;
+	  
+	  	  // expect result to be between 'lower' and 'upper'
+	  double uprad=Math.PI;
+	  double lowrad=0.0;
+	  double upcurv=1.0;
+	  double lowcurv=0.0;
+	  double[] theta=new double[4];
+	  double bestrad=(radii[0]+radii[1]+radii[2]+radii[3])/4;
+	  
+	  // find upcurv, lowcurv to start
+	  for (int j=0;j<4;j++) 
+		  theta[j]=Math.acos(s_comp_cos(bestrad,radii[j],radii[(j+1)%4]));
+	  double bestcurv=CPBase.pi2-(theta[0]+theta[1]+theta[2]+theta[3]);
+	  // if bestrad is too small
+	  if (bestcurv<0.0) {
+		  lowrad=bestrad;
+		  lowcurv=bestcurv;
+		  // keep making bestrad larger
+		  while (bestcurv<0) {
+			  bestrad=(bestrad+uprad)/2.0;
+			  for (int j=0;j<4;j++) 
+				  theta[j]=Math.acos(s_comp_cos(bestrad,radii[j],radii[(j+1)%4]));
+			  bestcurv=CPBase.pi2-(theta[0]+theta[1]+theta[2]+theta[3]);
+		  }
+		  uprad=bestrad;
+		  upcurv=bestcurv;
+	  }
+	  // else if bestrad is too large
+	  else if (bestcurv>0.0) {
+		  uprad=bestrad;
+		  upcurv=bestcurv;
+		  // keep making bestrad smaller
+		  while (bestcurv>0.0) {
+			  bestrad=(bestrad+lowrad)/2.0;
+			  for (int j=0;j<4;j++) 
+				  theta[j]=Math.acos(s_comp_cos(bestrad,radii[j],radii[(j+1)%4]));
+			  bestcurv=CPBase.pi2-(theta[0]+theta[1]+theta[2]+theta[3]);
+		  }
+		  lowrad=bestrad;
+		  lowcurv=bestcurv;
+	  }
+	  // unlikely, but might be done
+	  else
+		  done=true;
+	  
+	  // apply secant method
+	  for (int n=1;(n<=N && !done);n++) {
+
+		  // if bestcurv too large, increase bestrad
+		  if (bestcurv<-OKERR) {
+			  bestrad=lowrad+(uprad-lowrad)*(-lowcurv)/(upcurv-lowcurv);
+			  for (int j=0;j<4;j++) 
+				  theta[j]=Math.acos(s_comp_cos(bestrad,radii[j],radii[(j+1)%4]));
+			  bestcurv=CPBase.pi2-(theta[0]+theta[1]+theta[2]+theta[3]);
+			  // bestcurv still too large
+			  if (bestcurv>0) {
+				  uprad=bestrad;
+				  upcurv=bestcurv;
+			  }
+			  else if (bestcurv>-OKERR) // done?
+				  done=true;
+			  else
+				  lowrad=bestrad;
+		  }
+		  // else bestcurv too small, decrease bestrad
+		  else if (bestcurv>OKERR) { 
+			  bestrad=lowrad+(uprad-lowrad)*(-lowcurv)/(upcurv-lowcurv);			  uprad=bestrad;
+			  for (int j=0;j<4;j++) 
+				  theta[j]=Math.acos(s_comp_cos(bestrad,radii[j],radii[(j+1)%4]));
+			  bestcurv=CPBase.pi2-(theta[0]+theta[1]+theta[2]+theta[3]);
+			  // bestcurv still too small
+			  if (bestcurv>0) {
+				  uprad=bestrad;
+				  upcurv=bestcurv;
+			  }
+			  else if (bestcurv>-OKERR) // done?
+				  done=true;
+			  else
+				  uprad=bestrad;
+		  }
+		  else
+			  done=true;
+	  }
+	  uP.value=bestcurv;
+
+	  // If we failed, return null
+	  if (!done && Math.abs(bestcurv)>0.001) {
+		  uP.rtnFlag=-1;
+		  return null;
+	  }
+	  
+	  // we now have bestrad
+	  CircleSimple cs=new CircleSimple();
+	  cs.rad=bestrad;
+	  
+	  // we need the center; average the 
+	  Complex[] z=new Complex[4];
+	  for (int j=0;j<4;j++) {
+		  z[j]=s_compcenter(centers[j],centers[(j+1)%4],
+				  radii[j],radii[(j+1)%4],bestrad).center;
+	  }
+	  cs.center=average_s_pts(z);
+	  return cs;
+  }
+  
   
   /** 
    * Compute cosine of angle at the first circle in spherical
@@ -260,7 +419,8 @@ public class SphericalMath{
 	}
 	
   /**
-   * Spherical distance between two spherical (i.e., (theta,phi)) points
+   * Spherical distance between two spherical 
+   * (i.e., (theta,phi)) points
    * @param z Complex
    * @param w Complex
    * @return double
@@ -275,8 +435,8 @@ public class SphericalMath{
     v1 = s_pt_to_vec(z);
     v2 = s_pt_to_vec(w);
     dotprod = dot_prod(v1, v2);
-    if(Math.abs(dotprod) > (1.0 - S_TOLER))
-      return Math.PI;
+    if(Math.abs(dotprod) < S_TOLER)
+      return Math.PI/2.0;
 
     return Math.acos(dotprod);
   }
@@ -419,8 +579,8 @@ public static double dot_prod(double V[], double W[]){
 
 /**
  * Length of real 3-vector.
- * @param X
- * @return
+ * @param X double[]
+ * @return double
  */
 public static double vec_norm(double X[]){
     return(Math.sqrt(X[0] * X[0] + X[1] * X[1] + X[2] * X[2]));
@@ -549,8 +709,8 @@ public static double vec_norm(double X[]){
   }
   
   /** 
-   * Find center of third circle in ordered triple in tangency
-   * case. 
+   * Find center of third circle in ordered triple 
+   * in tangency case. 
    * @param z0 Complex, (theta, phi)
    * @param z1 Complex
    * @param r0 double
@@ -664,11 +824,13 @@ public static double vec_norm(double X[]){
   } 
 
   /**
-   * Returns new Complex giving stereographic projection (recall, we
-   * project from the south pole) of spherical point z to complex 
-   * point w in plane. Key is |w| = sin(phi)/(1+cos(phi)).
+   * Returns new Complex giving stereographic projection 
+   * (recall, we project from the south pole) of spherical 
+   * point z to complex point w in plane. Key is 
+   * |w| = sin(phi)/(1+cos(phi)).
    * 
-   * If z is essentially sorth pole, project to distance 10000 from origin.
+   * If z is essentially sorth pole, project to distance 
+   * 10000 from origin.
    * @param z Complex (theta,phi)
    * @return new Complex
    */
@@ -710,7 +872,7 @@ public static double vec_norm(double X[]){
    * 'flipflag==-1'.)
    * @param z Complex, (theta,phi) center
    * @param r double, sph radius
-   * @return CircleSimple
+   * @return CircleSimple, 'flag'='flipflag'
   */
   public static CircleSimple s_to_e_data(Complex z,double r) {
     int flipflag=1; // set to -1 if south pole enclosed
@@ -889,7 +1051,7 @@ public static double vec_norm(double X[]){
 	    return true;
 	    
   }
-  
+      
   /** 
    * Given a complex point (y,z) on the viewing screen, find the
    * corresponding spherical point (theta,phi) on the front. Return 
@@ -1046,9 +1208,12 @@ public static double vec_norm(double X[]){
 	}
 	
 	/**
-	 * Stereographic projection: (u,v) --> (x,y,z) on unit sphere
-	 *     z=(1-(u*u+v*v))/(1+(u*u=v*v));    x=u(1+z);    y=v(1+z).
-	 * @param z
+	 * Stereographic projection: (u,v) --> (x,y,z) 
+	 * on unit sphere
+	 *     z=(1-(u*u+v*v))/(1+(u*u=v*v));
+	 *     x=u(1+z);
+	 *     y=v(1+z).
+	 * @param ez Complex
 	 * @return Point3D
 	 */
 	public static Point3D e_to_sph_vec(Complex ez) {

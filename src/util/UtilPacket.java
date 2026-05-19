@@ -5,10 +5,9 @@ import java.util.Vector;
 import complex.Complex;
 
 /**
- * Utility class to carry data to/from subroutines, especially, e.g., the angle
- * sum computations, lists of points, etc.
+ * Utility class to carry data to/from subroutines, especially, 
+ * e.g., angle sum computations, lists of points, etc.
  * @author kens
- *
  */
 public class UtilPacket {
 	public int rtnFlag; // typically, int returned by routines, -1 on error or count

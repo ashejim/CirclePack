@@ -96,47 +96,17 @@ public class VertexMap extends EdgeLink {
 			return null;
 		return nmap;
 	}
-	
+
 	/**
-	 * Given w, return v if this list contains (v,w) (use first occurrence).
-	 * @param w second entry
-	 * @return v, 0 if not found
+	 * Clone with the same 'PackData'
 	 */
-	public int findV(int w) {
-		Iterator<EdgeSimple> ed=this.iterator();
-		EdgeSimple edge=null;
-		while (ed.hasNext()) {
-			edge=(EdgeSimple)ed.next();
-			if (edge.w==w) return edge.v;
-		}
-		return 0;
+	public VertexMap clone() {
+		VertexMap vm=new VertexMap();
+		vm.packData=packData;
+		Iterator<EdgeSimple> tis=this.iterator();
+		while (tis.hasNext()) 
+			vm.add(tis.next().clone());
+		return vm;
 	}
-	
-	/**
-	 * Given v, return w if this list contains (v,w) (use first occurrence).
-	 * @param v first entry
-	 * @return w, 0 if not found
-	 */
-	public int findW(int v) {
-		Iterator<EdgeSimple> ed=this.iterator();
-		EdgeSimple edge=null;
-		while (ed.hasNext()) {
-			edge=(EdgeSimple)ed.next();
-			if (edge.v==v) return edge.w;
-		}
-		return 0;
-	}
-	
-	 /**
-	  * Clone with the same 'PackData'
-	  */
-	 public VertexMap clone() {
-		 VertexMap vm=new VertexMap();
-		 vm.packData=packData;
-		 Iterator<EdgeSimple> tis=this.iterator();
-		 while (tis.hasNext()) 
-			 vm.add(tis.next().clone());
-		 return vm;
-	 }
 	
 }

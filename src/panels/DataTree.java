@@ -87,14 +87,15 @@ public class DataTree extends JPanel {
 			return null;
 
 		Vector<String> v1 = new Vector<String>(4);
-		double []curvErr=p.packCurvError();
+		double[] curvErr=p.packCurvError();
 		if (p.packDCEL!=null) {
 			v1.add("Topology: " + setTopologyStr(p));
 			v1.add("Node/Face Count = " + p.nodeCount+" / "+p.faceCount);
 			v1.add("Genus/Euler = "+p.genus+" / "+p.euler);
 			v1.add("Alpha/Gamma vertices = "+p.packDCEL.alpha.origin.vertIndx+
 					" / "+p.packDCEL.gamma.origin.vertIndx);
-			v1.add("Total/Average angle error = "+
+			if (curvErr!=null) 
+				v1.add("Total/Average angle error = "+
 					String.format("%.6e",curvErr[0])+" / "+
 					String.format("%.6e",curvErr[1]));
 			sub.put("Basic (with DCEL structure):", v1);
@@ -104,6 +105,7 @@ public class DataTree extends JPanel {
 			v1.add("Node/Face Count = " + p.nodeCount+" / "+p.faceCount);
 			v1.add("Genus/Euler = "+p.genus+" / "+p.euler);
 			v1.add("Alpha/Gamma Vertices = "+p.getAlpha()+" / "+p.getGamma());
+			if (curvErr!=null) 
 			v1.add("Total/Average angle error = "+
 					String.format("%.6e",curvErr[0])+" / "+
 					String.format("%.6e",curvErr[1]));

@@ -261,8 +261,9 @@ public class CommonMath {
 	}
 	
 	/** 
-	 * Compute the distance between two points. Note that in the spherical
-	 * case, centers are expected to be (theta,phi) form.
+	 * Compute the distance between two points. 
+	 * Note that in the spherical case, centers are 
+	 * expected to be (theta,phi) form.
 	 * @param z Complex
 	 * @param w Complex
 	 * @param hes int, geometry
@@ -275,6 +276,33 @@ public class CommonMath {
 			return SphericalMath.s_dist(z, w);
 		else
 			return EuclMath.e_dist(z,w);
+	}
+	
+	/**
+	 * is the given point in the complex plane interior
+	 * to the given circle in the given geometry?
+	 * @param eucl_pt Complex
+	 * @param cs CircleSimple
+	 * @param hes int
+	 * @return boolean
+	 */
+	public static boolean pt_in_circle(Complex eucl_pt,CircleSimple cs,int hes) {
+		if (hes>0) { // sphere
+			Complex spt=SphericalMath.proj_pt_to_sph(eucl_pt);
+			if (get_pt_dist(cs.center,spt,hes)<cs.rad)
+				return true;
+			return false;
+		}
+		else if (hes<0) { // hyp
+			if (eucl_pt.abs()>.999999)
+				return false;
+			if (get_pt_dist(cs.center,eucl_pt,hes)<cs.rad)
+				return true;
+			return false;
+		}
+		if (get_pt_dist(cs.center,eucl_pt,hes)<cs.rad)
+			return true;
+		return false;
 	}
 	
 	/**

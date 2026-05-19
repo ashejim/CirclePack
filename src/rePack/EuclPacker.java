@@ -386,14 +386,15 @@ public class EuclPacker extends RePacker {
     }
 
     /**
-     * DCEL version of original repack algorithm implemented in Java. 
-     * Accommodates inversive distances, where other methods may fail.
-     * This manipulates radii in 'pdcel.triData' structure, so user must 
-     * call 'load' first and then 'reapResults' after. 
+     * The original repack algorithm Java implementation. 
+     * Accommodates inversive distances, where other 
+     * methods may fail. This manipulates radii in 
+     * 'pdcel.triData' structure, so user must call 
+     * 'load' first and then 'reapResults' after. 
      * @param passes int 
      * @return int count, -1 on error
      */
-    public int d_oldReliable(int passes) {
+    public int oldReliable(int passes) {
       int count = 0;
       double accum=0.0;
       int N=5; // iterations in each radius comp
@@ -402,7 +403,7 @@ public class EuclPacker extends RePacker {
       int []inDex =new int[p.nodeCount+1];
       aimnum=0;
       for (int v=1;v<=p.nodeCount;v++) {
-    	  if (p.getAim(v)>0) { //   p.getAim(j)>0) {
+    	  if (p.getAim(v)>0) { //  p.getAim(j)>0) {
     		  inDex[aimnum++]=v;
         	  double curv=compTriCurv(v,getTriRadius(v));
         	  double err=curv-p.getAim(v);
@@ -444,7 +445,7 @@ public class EuclPacker extends RePacker {
     
    
     /**
-     * Copied from '*_radcalc'. This uses data in
+     * Copied from 'PackData.*_radcalc'. This uses data in
      * 'TriData' structure, so it knows the geometry.
      * @param v int
      * @param r double
@@ -479,7 +480,7 @@ public class EuclPacker extends RePacker {
   	      	}
     	}
   	    
-  	    // iterative secand method
+  	    // iterative secant method
   	    for (int n=1;n<=N;n++) {
   	    	if (bestcurv>(aim+RP_OKERR)) {
   	    		lower=r;

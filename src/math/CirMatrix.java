@@ -14,7 +14,7 @@ import geometry.SphericalMath;
  * circles in this form can be manipulated via compositions 
  * with Mobius transformations. See, e.g., 'mobius_of_circle'.
  * 
- * Note: or purposes of drawing, all straight lines are 
+ * Note: for purposes of drawing, all straight lines are 
  * stored in 'CircleSimple' objects as very large circles,
  * but with 'lineflag' true: the center is FAUX_RAD times 
  * the unit normal pointing to the interior, radius is 
@@ -116,113 +116,12 @@ public class CirMatrix extends Mobius {
 		d=mb.d;
 		oriented=mb.oriented;
 	}
-	
-	/** 
-	 * For C a 2x2 'CirMatrix', this returns its 
-	 * image under M (oriented true) or M^{-1} 
-	 * (oriented false). Returns a 2x2 'CirMatrix' 
-	 * with the normalization conventions.
-	 * 
-	 * The computation is: result = G^{t}*C*conj(G), 
-	 * where G = M^{-1}*det(M) Note: If M = [a b;c d], 
-	 * then G=[d -b;-c a] and G^{t}=[d -c;-b a] (i.e.,
-	 * NOT the hermitian transpose).
-	 * 
-	 * @param M Mobius
-	 * @param C CirMatrix
-	 * @param oriented boolean, false ==> use Mob^{-1}
-	 * @return CirMatrix
-	 */
-	public static CirMatrix applyTransform(Mobius M, CirMatrix C, boolean oriented) {
-		// get working Mobius
-		Mobius MM=M.cloneMe();
-		if (!oriented) // want M^{-1}?
-			MM=(Mobius)MM.inverse();
-		boolean outsideC=false; // disc is outside of incoming C
-		Complex pt=new Complex(0.0);
-		
-		// get working CirMatrix CC as normal circle (or straight line)
-		//   and find reference pt "inside"
-		CirMatrix CC=new CirMatrix();
-		CC.a=new Complex(C.a);
-		CC.b=new Complex(C.b);
-		CC.c=new Complex(C.c);
-		CC.d=new Complex(C.d);
-		
-		if (C.a.x==-1) { // outside of original circle
-			outsideC=true;
-			CC.a=CC.a.times(-1.0);
-			CC.b=CC.b.times(-1.0);
-			CC.c=CC.c.times(-1.0);
-			CC.d=CC.d.times(-1.0);
-		}
-		if (C.a.x==0) { // original is a line
-			pt=C.c.times(Math.abs(C.d.x)*20); // move in direction of normal 
-		}
-		else pt=CC.c.times(-1.0);
-
-		// define G=MM^(-1) * det(MM)
-		Mobius G = new Mobius(); 
-		G.a = new Complex(MM.d);  
-		G.b = MM.b.times(-1.0);
-		G.c = MM.c.times(-1.0);
-		G.d = new Complex(MM.a);
-
-		// compute G^{t}*C: do NOT use usual matrix 'rmult/lmult': 
-		//    then normalize
-		CirMatrix tmpC=new CirMatrix();
-		tmpC.a=(G.a.times(CC.a)).plus(G.c.times(CC.c));
-		tmpC.b=(G.a.times(CC.b)).plus(G.c.times(CC.d));
-		tmpC.c=(G.b.times(CC.a)).plus(G.d.times(CC.c));
-		tmpC.d=(G.b.times(CC.b)).plus(G.d.times(CC.d));
-		
-		// compute tmpC*conj(G)
-		G.conj();
-		CirMatrix outC = new CirMatrix();
-		outC.a=(tmpC.a.times(G.a)).plus(tmpC.b.times(G.c));
-		outC.b=(tmpC.a.times(G.b)).plus(tmpC.b.times(G.d));
-		outC.c=(tmpC.c.times(G.a)).plus(tmpC.d.times(G.c));
-		outC.d=(tmpC.c.times(G.b)).plus(tmpC.d.times(G.d));
-		
-		// due to round off, have to identify lines, then normalize
-		if (outC.a.abs()<.0001) {
-			outC.a=new Complex(0.0);
-			double divisor=outC.c.abs();
-			outC.b=outC.b.divide(divisor);
-			outC.c=outC.c.divide(divisor);
-			outC.d=new Complex(outC.d.divide(divisor).x); // should be real
-		}
-		
-		// else should be a regular circle; normalize for roundoff 
-		//     and to insure a = +1
-		else {Complex scalar=outC.a.reciprocal();
-			outC.a=new Complex(1.0);
-			outC.b=outC.b.times(scalar);
-			outC.c=outC.c.times(scalar);
-			outC.d=outC.d.times(scalar);
-		}
-		
-		// See if reference point for CC is mapped inside outC
-		//   and adjust accordingly. If it's inside outC but 
-		//   but 'outsideC' is set, of if outC is a line and 
-		//   pt is not inside, then multiply by -1. 
-		Complex MMpt=MM.apply(pt); // outC.getCenter();
-		int cent_inside=pt_inside(outC,MMpt); // outC.getRadius();
-		if ((cent_inside==1 && outsideC) || 
-				cent_inside==-1) { // && outC.a.x==0) { // put on same side of both
-			outC.a=outC.a.times(-1.0);
-			outC.b=outC.b.times(-1.0); // cent_inside=1.0;
-			outC.c=outC.c.times(-1.0);
-			outC.d=outC.d.times(-1.0);
-		}
-
-		return outC;
-	}
 
 	/**
-	 * Create 2x2 matrix representation of circle given sph 
-	 * radius/center; normalize for inside/outside conventions.
-	 * 
+	 * Create 2x2 matrix representation of circle given 
+	 * sph radius/center; normalize for inside/outside 
+	 * conventions. Recall that centers are not preserved
+	 * under stereographic projection.
 	 * @param center Complex, (theta,phi) form
 	 * @param rad double
 	 * @param C CirMatrix, instantiated by calling routine
@@ -250,8 +149,8 @@ public class CirMatrix extends Mobius {
 			double R = Math.sin(center.y - rad) / (1 + Math.cos(center.y - rad));
 			// R = signed eucl distance from origin to the line, 
 			C.d=new Complex(R/(-2.0),0);
-			return C;
 			// when C.d.x>0, origin is inside the halfplane, else outside
+			return C;
 		} 
 
 		// project to circle
@@ -339,7 +238,7 @@ public class CirMatrix extends Mobius {
 		// typical data
 		Complex ecent=CC.c.times(-1.0);  // c entry is -center
 		double reald=CC.d.x; // throw out any extraneous imaginary part
-		if (CC.a.x<.5) { // a.x=-1 ==> all entries were multiplied by -1 
+		if (CC.a.x<-.5) { // a.x=-1 ==> all entries were multiplied by -1 
 			ecent=ecent.times(-1.0);
 			reald *=-1.0;
 		} 
@@ -351,7 +250,7 @@ public class CirMatrix extends Mobius {
 		// positive eucl radius
 		double erad=Math.sqrt(rsq); 
 
-		// sph case, radius/center. See the conventions about inside/outside, 
+		// sph case, radius/center. See in/out conventions. 
 		if (hes>0) {
 			// circle is a straight line (goes through south pole)
 			if (CC.a.abs() < CirMatrix.CM_TOLER) {
@@ -379,11 +278,11 @@ public class CirMatrix extends Mobius {
 			CircleSimple sc=SphericalMath.e_to_s_data(ecent, erad);
 			outCS.center=sc.center;
 			outCS.rad=sc.rad;
-			if (CC.a.x<0) { // want outside of euclidean circle
+			if (CC.a.x<-.5) { // want outside of euclidean circle
 				outCS.center=SphericalMath.getAntipodal(sc.center);
 				outCS.rad=Math.PI-sc.rad;
 			}
-			return outCS;
+			return outCS; // 
 		} // done with sph
 		
 		// hyp case: return null if circle is not in unit disc

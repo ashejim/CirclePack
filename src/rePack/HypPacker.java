@@ -515,7 +515,7 @@ public class HypPacker extends RePacker {
     }
 
     /**
-     * Copied from '*_radcalc'. This uses data in
+     * Copied from 'PackData.*_radcalc'. This uses data in
      * 'TriData' structure, so it knows the geometry.
      * @param v int
      * @param r double

@@ -97,6 +97,7 @@ import listManip.NodeLink;
 import listManip.PointLink;
 import listManip.TileLink;
 import listManip.VertexMap;
+import math.CirMatrix;
 import math.Matrix3D;
 import math.Mobius;
 import microLattice.MicroGrid;
@@ -3962,51 +3963,22 @@ public class CommandStrParser {
     	  // ========= set_mobius (set_Mobius) ==============
     	  if (cmd.trim().equalsIgnoreCase("mobius")) {
     		  Mobius mob=null;
+    		  boolean oriented=true;
     		  
-    		  String str=items.get(0);
-    		  if (StringUtil.isFlag(str)) {
-    			  
-    			  // map 3 complex points to 3 other complex points
-    			  if (str.equals("-xyzXYZ")) {
-    				  items.remove(0);
-
-    				  Iterator<String> its=items.iterator();
-
-    				  // read 6 complex numbers
-    				  try {
-    					  Complex x=new Complex(Double.parseDouble((String)its.next()),
-        					  Double.parseDouble((String)its.next()));
-    					  Complex y=new Complex(Double.parseDouble((String)its.next()),
-        					  Double.parseDouble((String)its.next()));
-    					  Complex z=new Complex(Double.parseDouble((String)its.next()),
-        					  Double.parseDouble((String)its.next()));
-    					  Complex X=new Complex(Double.parseDouble((String)its.next()),
-        					  Double.parseDouble((String)its.next()));
-    					  Complex Y=new Complex(Double.parseDouble((String)its.next()),
-        					  Double.parseDouble((String)its.next()));
-    					  Complex Z=new Complex(Double.parseDouble((String)its.next()),
-        					  Double.parseDouble((String)its.next()));
-    					  CPBase.Mob=Mobius.mob_xyzXYZ(x, y, z, X, Y, Z,0,0);
-    				  } catch (Exception ex) {
-    					  throw new MobException("Mobius flag -xyzXYZ format error");
-    				  }
-
-    				  return 1;
-    			  }
-    			  
-    			  // otherwise, send flags to define 'HalfLink'
-    			  else { 
-    				  HalfLink hlink=new HalfLink(packData,items);
-    				  CPBase.Mob=PackData.holonomyMobius(packData,hlink);
-    				  return 1;
-    			  }
+    		  // simply reorient?
+    		  if (flagSegs!=null && flagSegs.size()==1 &&
+    				  flagSegs.get(0).get(0).equals("-f")) {
+    			  if (CPBase.Mob!=null)
+    				  CPBase.Mob.oriented=false;
+    			  count++;
+    			  return count;
     		  }
     		  
-    		  // default is 8 doubles, plus perhaps one integer
-    		  else {
-    			  
+    		  String str=items.get(0);
+    		  if (!StringUtil.isFlag(str)) {
+    			  flagSegs.remove(0); // dump this item
+    			  // read 8 doubles
     			  Iterator<String> its=items.iterator();
-        		  
     			  try {
     				  Complex a=new Complex(Double.parseDouble((String)its.next()),
     					  Double.parseDouble((String)its.next()));
@@ -4020,15 +3992,98 @@ public class CommandStrParser {
     			  } catch(Exception ex) {
     				  throw new MobException("Mobius format error");
     			  }
-    		  
-    			  try {
-    				  int flip=Integer.parseInt((String)its.next());
-    				  if (flip!=0) mob.oriented=false;
-    			  } catch(Exception ex) {} // this integer may not be present
-    			  CPBase.Mob=mob; 
-    			  return 1;
     		  }
     		  
+    		  // now there may be flags
+    		  if (flagSegs!=null && flagSegs.size()>0) {
+    			  Iterator<Vector<String>> fit=flagSegs.iterator();
+    			  while (fit.hasNext()) {
+    				  items=fit.next();
+    				  str=items.remove(0);
+
+    				  // map 3 complex points to 3 other complex points
+    				  if (str.startsWith("-xyz")) {
+    				  Iterator<String> its=items.iterator();
+
+    				  // read 6 complex numbers
+    				  	try {
+    					  Complex x=new Complex(Double.parseDouble((String)its.next()),
+        					  Double.parseDouble((String)its.next()));
+    					  Complex y=new Complex(Double.parseDouble((String)its.next()),
+        					  Double.parseDouble((String)its.next()));
+    					  Complex z=new Complex(Double.parseDouble((String)its.next()),
+        					  Double.parseDouble((String)its.next()));
+    					  Complex X=new Complex(Double.parseDouble((String)its.next()),
+        					  Double.parseDouble((String)its.next()));
+    					  Complex Y=new Complex(Double.parseDouble((String)its.next()),
+        					  Double.parseDouble((String)its.next()));
+    					  Complex Z=new Complex(Double.parseDouble((String)its.next()),
+        					  Double.parseDouble((String)its.next()));
+    					  mob=Mobius.mob_xyzXYZ(x, y, z, X, Y, Z,0,0);
+    				  	} catch (Exception ex) {
+    					  throw new MobException("Mobius flag -xyzXYZ format error");
+    				  	}
+    				  	count++;
+    				  }
+    				  // else (for spherical only) map given circle
+    				  //    to the unit circle (equator), center to 0.
+    				  else if (str.equals("-N")) {
+    					  if (packData.hes<=0)
+    						  throw new ParserException(
+    							"set_Mobius -N {v} is for spherical only");
+    					  try {
+    						  int v=Integer.parseInt(items.get(0));
+    						  Vertex vert=packData.packDCEL.vertices[v];
+    						  mob=(Mobius)Mobius.rotate2North(vert.center);
+    						  count++; 
+    						  // mob.apply(SphericalMath.s_pt_to_plane(vert.center));
+    					  }catch(Exception ex) {
+    						  throw new ParserException(
+    							"set_Mobius failed: usage -N {v}");
+    					  }
+    				  }
+    				  // else (for spherical only) map given circle
+    				  //    to the unit circle (equator), center to 0.
+    				  else if (str.equals("-c")) {    				  // else (for spherical only) map given circle
+        				  //    to the unit circle (equator), center to 0.
+
+    					  if (packData.hes<=0)
+    						  throw new ParserException(
+    							"set_Mobius -c {v} is for spherical only");
+    					  try {
+    						  int v=Integer.parseInt(items.get(0));
+    						  Vertex vert=packData.packDCEL.vertices[v];
+    						  mob=(Mobius)Mobius.mob_cir2unitcir(vert.center,vert.rad);
+    						  count++;
+    					  } catch(Exception ex) {
+    						  throw new ParserException(
+    							"set_Mobius failed: usage -c {v}");
+    					  }
+    				  }
+    				  else if (str.equals("-f")) {
+    					  oriented=false;
+    				  }
+    				  // otherwise, send flags to define 'HalfLink'
+    				  else if (str.startsWith("-h ")) {
+    					  StringBuilder strbld=new StringBuilder(
+    							  StringUtil.reconstitute(flagSegs));
+    					  int k=strbld.indexOf("-h");
+    					  if (k>0) {
+    						  strbld.substring(k+2);
+        					  HalfLink hlink=new HalfLink(packData,strbld.toString());
+        					  mob=PackData.holonomyMobius(packData,hlink);
+        					  count++;
+    					  }
+    				  }
+    			  } // end of while
+    		  } 
+    		  if (mob!=null) {
+    			  CPBase.Mob=mob;
+    			  if (!oriented)
+    				  CPBase.Mob.oriented=false;
+    			  return 1;
+    		  }
+    		  return 0;
     	  }
     	  
     	  // ========= set_cycles ============
@@ -5113,7 +5168,6 @@ public class CommandStrParser {
    * @param cmd String
    * @param flagSegs Vector<Vector<String>>
    * @return int
-   * 
    */
   private static int packExecute(PackData packData,String cmd,
 		  Vector<Vector<String>> flagSegs) {
@@ -5353,7 +5407,7 @@ public class CommandStrParser {
 	    						  Iterator<Integer> vlist=vertlist.iterator();
 	    						  v=(Integer)vlist.next();
 	    						  w=(Integer)vlist.next();
-	    						  if (!packData.onSameBdryComp(v,w)) 
+	    						  if (!CombDCEL.onSameBdryComp(packData.packDCEL,v,w)) 
 	    							  throw new CombException(v+" and "+
 	    									  w+" aren't on the same "+
 	    									  "bdry component");
@@ -5603,7 +5657,7 @@ public class CommandStrParser {
 	    				  "has no boundary?");
 	    	  }
 	    	  
-	    	  // should have only one segment
+	    	  // should have only one flag segment
 	      	  items=flagSegs.elementAt(0);
 	      	  if (StringUtil.isFlag(items.elementAt(0))) {
 	      		  char c=items.elementAt(0).charAt(1);
@@ -5664,7 +5718,14 @@ public class CommandStrParser {
 	   		  }
 
    			  PackDCEL pdcel=packData.packDCEL;
-  			  int ans= CombDCEL.addlayer(pdcel,mode,degree,v1,v2);
+   			  int ans=0;
+   			  if (mode==2) {
+   				  NodeLink bblink=new NodeLink();
+   				  ans= CombDCEL.addlayer(pdcel,mode,degree,v1,v2,bblink);
+   			  }
+   			  else {
+				  ans= CombDCEL.addlayer(pdcel,mode,degree,v1,v2);
+   			  }
    			  if (ans<=0)
    				  return 0;
    			  pdcel.fixDCEL(packData);
@@ -8919,7 +8980,142 @@ public class CommandStrParser {
 	  case 'r': // fall through
 	  case 'R':
 	  {
-		  
+		  // =========== reflect in circle =========
+		  if (cmd.startsWith("ref")) {
+	    	  boolean segment=false;
+	    	  NodeLink vertlist=null;
+	    	  Complex CirCenter=null;
+	    	  double CirRadius=1;
+	    	  
+	    	  // tmp: to find symmetric alpha in the doubled result
+    		  int sym_alp_tmp=packData.getAlpha()+packData.nodeCount; 
+    		  int alp_sym=0;
+    		  
+	    	  // first, get data: either list of verts, 
+    		  //   one for each bdry comp (default to all), 
+    		  //   or one bdry component segment of form 
+    		  //   "b(v,w)".
+	    	  if (flagSegs==null || flagSegs.size()==0 ||
+	    			  StringUtil.isFlag(flagSegs.get(0).get(0)))
+	    		  vertlist=new NodeLink(packData,"B");
+	    	  else {
+	    		  Iterator<Vector<String>> fls=flagSegs.iterator();
+	    		  while (fls.hasNext()) {
+	    			  items=fls.next();
+	    			  String str=(String)items.get(0);
+	    			  if(!StringUtil.isFlag(items.get(0))) {
+		    			  if (str.contains("b(")) { // should be form b(u v)
+		    				  vertlist=new NodeLink(packData,str);
+		    				  segment=true;
+		    			  }
+		    			  else
+		    				  vertlist=new NodeLink(packData,items);
+		    		  }
+	    			  else { // look for -c x y r
+	    				  if (str.charAt(1)!='c')
+	    					  throw new ParserException("usage: reflect; improper flag "+str);
+	    				  try {
+	    					  double x=Double.parseDouble(items.get(1));
+	    					  double y=Double.parseDouble(items.get(2));
+	    					  double r=Double.parseDouble(items.get(3));
+		    				  CirCenter=new Complex(x,y);
+		    				  CirRadius=r;
+	    				  } catch(NumberFormatException nex) {
+	    					  throw new ParserException("usage: reflect .. -c x y r");
+	    				  }
+	    			  }
+	    		  }
+	    	  }
+	    	  if (vertlist==null || vertlist.size()==0) 
+	    		  throw new ParserException("usage: reflect v1.. [b(v,w)]");
+
+    		  // Prepare the geometry:
+			  // if spherical, assume already in proper 
+    		  //    position, else max_pack and project
+    		  if (packData.hes<=0) {
+    			  CommandStrParser.jexecute(packData,"max_pack");
+    			  CommandStrParser.jexecute(packData,"geom_to_s");
+    		  }
+
+    		  // reflect combinatorics in designated bdry verts
+	    	  int origVC=packData.packDCEL.vertCount;
+	    	  NodeLink bblink=new NodeLink();
+    		  PackDCEL pdans=CombDCEL.reflect_in_circle(packData.packDCEL,
+    				  vertlist,segment,bblink);
+    		  alp_sym=pdans.oldNew.findW(packData.getAlpha());
+    		  if (alp_sym==0)
+    			  alp_sym=sym_alp_tmp;
+    		  if (alp_sym!=pdans.vertCount) {
+    			  pdans.swapNodes(alp_sym,pdans.vertCount);
+    			  pdans.oldNew.swapW(alp_sym,pdans.vertCount);
+    		  }
+    		  pdans.redChain=null;
+    		  VertexMap vmap=pdans.oldNew;
+    		  pdans.fixDCEL(packData);
+    		  packData.vertexMap=vmap;
+	    		  
+    		  // prepare to reflect the geometry
+    		  boolean unitcircle=true; // default
+    		  Mobius mobref=null;
+			  if (CirCenter!=null) {
+				  try {
+					  mobref=Mobius.reflected(CirCenter,CirRadius);
+				  }catch(MobException mex) {
+					  throw new ParserException("given circle "+mex.getMessage());
+				  }
+				  unitcircle=false;
+			  }
+    		  
+    		  // for new circles (last origVC indices),
+    		  //   reflect in circle 
+    		  if (packData.vertexMap!=null) {
+    			  int nc=packData.packDCEL.vertCount-origVC+1;
+    			  for (int v=1;v<=origVC;v++) {
+    				  int new_v=packData.vertexMap.findW(v);
+    				  if (new_v>0) {
+    					  double rad=packData.getRadius(v);
+    					  Complex cent=packData.getCenter(v);
+    					  if (unitcircle) {
+    						  packData.setRadius(new_v,rad);
+    						  Complex newCent=new Complex(cent);
+    						  newCent.y=Math.PI-newCent.y;
+    						  packData.setCenter(new_v,newCent);
+    					  }
+    					  else {
+    						  CircleSimple csin=new CircleSimple(cent,rad);
+    						  CircleSimple csout=new CircleSimple();
+    						  Mobius.mobius_of_circle(mobref,1, csin, csout,true);
+    						  packData.setRadius(new_v,csout.rad);
+    						  packData.setCenter(new_v, csout.center);
+    					  }
+    				  }
+    			  }
+    		  }
+    		  
+    		  // have to position the ball bearings
+    		  Iterator<Integer> bbst=bblink.iterator();
+    		  while (bbst.hasNext()) {
+    			  Vertex tv=packData.packDCEL.vertices[bbst.next()];
+    			  HalfEdge he=tv.halfedge;
+    			  Complex[] centers=new Complex[4];
+    			  double[] radii=new double[4];
+    			  for (int j=0;j<4;j++) {
+    				  Vertex vert=he.twin.origin;
+    				  centers[j]=new Complex(vert.center);
+    				  radii[j]=vert.rad;
+    				  he=he.prev.twin; // cclw spoke
+    			  }
+    			  UtilPacket uP=new UtilPacket();
+    			  CircleSimple csout=SphericalMath.quad_bearing(centers, radii, uP);
+    			  int v=tv.vertIndx;
+				  packData.setRadius(v,csout.rad);
+				  packData.setCenter(v, csout.center);
+    		  }
+    		  
+    		  return 1;
+	    	  
+		  }
+			  
 		  // =========== renumber =========
 		  if (cmd.startsWith("renum")) {
 			  int rslt=CombDCEL.reNumber(packData.packDCEL); // packData.getFlower(1132);

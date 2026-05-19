@@ -3131,9 +3131,106 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * Combinatorial reflection with ball bearings.
+	 * That is, attach a reflected copy across one 
+	 * or more boundary components or a segment, 
+	 * then add ball bearings to resulting quad 
+	 * interstices. If segment, then 'blist' is
+	 * cclw segment specified by (v,w).
+	 * Output 'oldNew' tells new indices associated with 
+	 * old indices of the reflected packing: 
+	 * e.g. (4,37) means that a reflected copy of 
+	 * 4 has index 37 in the new complex. We have
+	 * to keep adusting oldNew if we have several 
+	 * edge identifications.
+	 * Using clones, so original data should be 
+	 * unchanged.
+	 * @param pdc PackDCEL
+	 * @param blist NodeLink
+	 * @param segment boolean
+	 * @param bbl NodeLink, instantiated by calling routine
+	 * @return PackDCEL
+	 */
+	public static PackDCEL reflect_in_circle(PackDCEL pdc,
+			NodeLink blist,boolean segment,NodeLink bbl) {
+		try {
+			// clone two copies (may need more)
+			PackDCEL pdc1=CombDCEL.cloneDCEL(pdc);
+			PackDCEL pdc2=CombDCEL.cloneDCEL(pdc);
+			CombDCEL.reorient(pdc2);
+			
+			if (segment) {				
+				int v=blist.get(0); // number of edges
+				int w=blist.getLast(); // clw end
+				CombDCEL.addlayer(pdc1,2, 0,v,w,bbl); // DUPLICATE
+
+				// count bdry edges from new v to new w
+				int nv=pdc1.vertices[v].vutil;
+				int nw=pdc1.vertices[w].vutil;
+				HalfEdge he=pdc1.vertices[nv].halfedge;
+				Vertex wert=he.twin.origin;
+				int n=1;
+				while (wert.vertIndx!=nw) {
+					wert=wert.halfedge.twin.origin;
+					n++;
+				}
+				
+				PackDCEL pdcel=adjoin(pdc1,pdc2,nw,w,n);
+				return pdcel;
+			}
+
+			// else reflect all or selected bdry components
+			if (blist==null || blist.size()==0)
+				blist=new NodeLink(pdc.p,"B");
+			Iterator<Integer> blst=blist.iterator();
+			while (blst.hasNext()) {
+				int v=blst.next();
+				CombDCEL.addlayer(pdc1,2, 0,v,v,bbl);
+			}
+			
+			// have to capture new vert indices. Entry
+			//   (v,w) means v was original bdry,
+			//   w is its bdry nghb after 'addlayer'.
+			EdgeLink elist=new EdgeLink();
+			blst=blist.iterator();
+			while (blst.hasNext()) {
+				int v=blst.next();
+				elist.add(new EdgeSimple(v,pdc1.vertices[v].vutil));
+			}
+					
+			// do first adjoin, rest are self-adjoins
+			EdgeSimple el=elist.remove(0);
+			// el.w is v's new bdry nghb in pdc1 and
+			// el.v is original v in pdc2.
+			pdc1=adjoin(pdc1,pdc2,el.w,el.v,-1);
+			if (elist==null || elist.size()==0)
+				return pdc1;
+
+			// further components are self adjoins
+			Iterator<EdgeSimple> elst=elist.iterator();
+			while (elst.hasNext()) {
+				VertexMap holdvm=pdc1.oldNew; 
+				el=elst.next();
+				int w=el.w;
+				int vv=pdc1.oldNew.findW(el.v);
+				// w is new bdry nghb of v in pdc1 and
+				//   vv is v in pdc2 with its new index
+				//   in pdc1.
+				pdc1=adjoin(pdc1,pdc1,w,vv,-1);
+				pdc1.oldNew=VertexMap.followedBy(holdvm,pdc1.oldNew);				
+			}
+			return pdc1;
+			
+		}catch (Exception ex) {
+			throw new CombException("reflect: "+ex.getMessage());
+		}
+	}
+	
+	/**
 	 * Double this packing across one or more full 
 	 * bdry components, or if 'segment' is true, 
-	 * double across a segment of one bdry component. 
+	 * double across a segment of one bdry component
+	 * specified by (v,w).
 	 * Using clones, so original data should be unchanged.
 	 * 'oldNew' can be used to find reflection of alpha.
 	 * @param pdc PackDCEL
@@ -3150,16 +3247,30 @@ public class CombDCEL {
 			PackDCEL pdc2=CombDCEL.cloneDCEL(pdc);
 			CombDCEL.reorient(pdc2);
 			
+			// default to all bdry components
 			if (blist==null || blist.size()==0)
 	    		  blist=new NodeLink(pdc.p,"B");
 
 			else if (segment) {
-				int n=blist.size()-1; // number of edges
-				int v=blist.getLast(); // choose last to be clw
-				PackDCEL newpdcel=CombDCEL.adjoin(pdc1, pdc2,v,v,n);
+				int v=blist.size()-1; // number of edges
+				int w=blist.getLast(); // choose last to be clw
+
+				// count number of edges
+				Vertex vert=pdc1.vertices[v];
+				HalfEdge he=vert.halfedge;
+				Vertex wert=he.twin.origin;
+				int n=1;
+				while (wert.vertIndx!=w) {
+					wert=wert.halfedge.twin.origin;
+					n++;
+				}
+				
+				// adjoin
+				PackDCEL newpdcel=CombDCEL.adjoin(pdc1, pdc2,w,w,n);
 				return newpdcel; 
 			}			
 		
+			// next are adjoins along full bdry components.
 			// first adjoins two, the rest are self-adjoins 
 			int v=blist.remove(0); 
 			int shift=pdc1.vertCount; // will be added to indices of pdc2 
@@ -3178,10 +3289,12 @@ public class CombDCEL {
 			
 			// The rest are self-adjoins
 			while (indxlink.size()>0) {
+				VertexMap holdvm=pdcel.oldNew;
 				
 				// next adjoin
 				EdgeSimple nextid=indxlink.remove(0); 	
 				pdcel=CombDCEL.adjoin(pdcel,pdcel,nextid.v,nextid.w,-1);
+				pdcel.oldNew=VertexMap.followedBy(holdvm,pdcel.oldNew);
 				
 				// readjust remaining indices
 				Iterator<EdgeSimple> eis=indxlink.iterator();
@@ -4651,191 +4764,200 @@ public class CombDCEL {
 	 * @return int[2]={first,last}, null on error
 	 */
 	public static int[] slitComplex(PackDCEL pdcel,HalfLink hlink) {
-		  if (hlink==null || hlink.isEmpty() || pdcel.p==null)
-			  return null;
+		if (hlink==null || hlink.isEmpty() || pdcel.p==null)
+			return null;
 		  
-		  // check conditions and linkage
-		  HalfEdge he;
-		  if (hlink.size()==1) {
-			  he=hlink.get(0);
-			  if (he.origin.bdryFlag>0 && he.twin.origin.bdryFlag>0) {
-				  throw new CombException("usage: 'slit' cannot be done "+
-						  "for a single edge with both ends on the bdry.");
-			  }
-		  }
-		  Iterator<HalfEdge> his=hlink.iterator();
-		  he=his.next();
-		  NodeLink verts=new NodeLink();
-		  Vertex startV=he.origin;
-		  verts.add(startV.vertIndx);
-		  Vertex endV=he.next.origin;
-		  while(his.hasNext()) {
-			  he=his.next();
-			  startV=he.origin;
-			  verts.add(startV.vertIndx);
-			  if (startV.bdryFlag>0)
-				  throw new DataException("usage: slit; intermediate "+
-						  "vertices must be interior");
-			  if (he.origin!=endV) 
-				  throw new DataException("usage: slit; HalfLink must "+
-						  " form a contiguous chain");
-			  endV=he.next.origin;
-		  }
-		  verts.add(endV.vertIndx);
+		// check conditions and linkage
+		HalfEdge he;
+		if (hlink.size()==1) {
+			he=hlink.get(0);
+			if (he.origin.bdryFlag>0 && he.twin.origin.bdryFlag>0) {
+				throw new CombException("usage: 'slit' cannot be done "+
+				  "for a single edge with both ends on the bdry.");
+			}
+		}
+		Iterator<HalfEdge> his=hlink.iterator();
+		he=his.next();
+		NodeLink verts=new NodeLink();
+		Vertex startV=he.origin;
+		verts.add(startV.vertIndx);
+		Vertex endV=he.next.origin;
+		while(his.hasNext()) {
+			he=his.next();
+			startV=he.origin;
+			verts.add(startV.vertIndx);
+			if (startV.bdryFlag>0)
+				throw new DataException("usage: slit; intermediate "+
+				  "vertices must be interior");
+			if (he.origin!=endV) 
+			    throw new DataException("usage: slit; HalfLink must "+
+				  " form a contiguous chain");
+			endV=he.next.origin;
+		}
+		verts.add(endV.vertIndx);
 
-		  int firstEnd=-1;
-		  int lastEnd=-1;
+		int firstEnd=-1;
+		int lastEnd=-1;
 		  
-		  // if start is interior, end bdry, then reverse chain
-		  if (startV.bdryFlag==0 && endV.bdryFlag!=0) {
-			  hlink=HalfLink.reverseLink(hlink);
-			  hlink=HalfLink.reverseElements(hlink);
-		  }
+		// if start is interior, end bdry, then reverse chain
+		if (startV.bdryFlag==0 && endV.bdryFlag!=0) {
+			hlink=HalfLink.reverseLink(hlink);
+			hlink=HalfLink.reverseElements(hlink);
+		}
 
-		  // proceed via "cookie" approach?
-		  startV=hlink.get(0).origin;
-		  firstEnd=startV.vertIndx;
-		  if (startV.bdryFlag>0)
-			  firstEnd=pdcel.vertCount+1; // this will be the clone's index
-		  lastEnd=hlink.getLast().twin.origin.vertIndx;
-		  redchain_by_edge(pdcel,hlink,pdcel.alpha,false);
-		  fillInside(pdcel);
-		  int[] ans=new int[2];
-		  ans[0]=firstEnd;
-		  ans[1]=lastEnd;
-		  return ans;
+		// proceed via "cookie" approach?
+		startV=hlink.get(0).origin;
+		firstEnd=startV.vertIndx;
+		if (startV.bdryFlag>0)
+			firstEnd=pdcel.vertCount+1; // this will be the clone's index
+		lastEnd=hlink.getLast().twin.origin.vertIndx;
+		redchain_by_edge(pdcel,hlink,pdcel.alpha,false);
+		fillInside(pdcel);
+		int[] ans=new int[2];
+		ans[0]=firstEnd;
+		ans[1]=lastEnd;
+		return ans;
 	}
 
-	  /**
-	   * Add a layer of nodes to bdry segment from vertex v1 to v2. 
-	   * Three modes:
-	   * 
-	   * TENT: add one-on-one layer, a new bdry vert for each edge 
-	   * between v1 and v2. Unless v1==v2, v1 and v2 remain as 
-	   * bdry vertices.
-	   * 
-	   * DEGREE: add nghb's to make verts from v1 to v2 (inclusive) 
-	   * interior with degree d. Note that v1 gets at least one new
-	   * nghb, so this could exceed degree d. If v1==v2 or v1 is 
-	   * nghb of v2, do whole bdry component.
-	   * 
-	   * DUPLICATE: attach "square" face with bary center to 
-	   * each edge between v1 and v2. Unless v1==v2, v1 and v2 
-	   * remain on bdry.
-	   * 
-	   * Set centers and radii of new vertices based on reference
-	   * vertices.
-	   * 
-	   * Calling routine checks v1,v2 and updates combinatorics.
-	   * 
-	   * @param pdcel  PackDCEL
-	   * @param mode   int, how to add: 0=TENT, 1=DEGREE, 2=DUPLICATE
-	   * @param degree int
-	   * @param v1     int, start bdry vert
-	   * @param v2     int, end bdry vert
-	   * @return int, count of added vertices
-	   */
-	  public static int addlayer(PackDCEL pdcel, int mode, 
-			  int deg, int v1, int v2) {
-		  if (!pdcel.p.onSameBdryComp(v1,v2)) 
-			  throw new CombException(
-					  v1+" and "+v2+" are not on the same bdry component");
+	public static int addlayer(PackDCEL pdcel, int mode, 
+		  int deg, int v1, int v2) {
+		return addlayer(pdcel,mode,deg,v1,v2,null);
+	}
 
-		  int count = 0;
-		  HalfLink addedEdges=new HalfLink();
-		  HalfEdge edge = pdcel.vertices[v1].halfedge.twin;
-		  if (mode == CPBase.TENT) {
-			  // int lastv=pdcel.vertices[v2].halfedge.twin.next.twin.origin.vertIndx;
-			  
-			  // tent over first edge
-			  Vertex newV=RawManip.addVert_raw(pdcel,edge);
-			  addedEdges.add(edge);
-			  int nextv=edge.origin.vertIndx;
-			  while (nextv != v2) {
-				  edge = pdcel.vertices[nextv].halfedge.twin;
-				  newV=RawManip.addVert_raw(pdcel,edge);
-				  if (newV==null)
-					  throw new CombException("failed to add tent to "+edge);
-				  addedEdges.add(edge);
-				  RawManip.enfold_raw(pdcel,nextv);
-				  nextv=edge.origin.vertIndx;
-				  count++;
-			  }
-			  if (v1 == v2) {
-				  RawManip.enfold_raw(pdcel, v1);
-				  count++;
-			  }
-		  }
-		  else if (mode == CPBase.DEGREE) {
-			  int origCount=pdcel.vertCount;
-			  Vertex vert = pdcel.vertices[v1];
-			  if (v2 == v1) // move v2 upstream from v1
-				  v2 = vert.halfedge.twin.next.twin.origin.vertIndx;
-			  int v = v1;
-			  int nextv = v;
+	/**
+	 * Add a layer of nodes to bdry segment from 
+	 * vertex v1 to v2. Three modes:
+	 * 
+	 * TENT: add one-on-one layer, a new bdry vert for each edge between v1 and v2.
+	 * Unless v1==v2, v1 and v2 remain as bdry vertices.
+	 * 
+	 * DEGREE: add nghb's to make verts from v1 to v2 (inclusive) interior with
+	 * degree d. Note that v1 gets at least one new nghb, so this could exceed
+	 * degree d. If v1==v2 or v1 is nghb of v2, do whole bdry component.
+	 * 
+	 * DUPLICATE: attach "square" face with bary center to each edge between v1 and
+	 * v2. Unless v1==v2, v1 and v2 remain on bdry.
+	 * 
+	 * Set centers and radii of new vertices based on reference vertices.
+	 * 
+	 * Calling routine checks v1,v2 and updates combinatorics.
+	 * 
+	 * In DUPLICATE case, bblink must be instantiated by calling routine and
+	 * contains the ballbearing vertices that have been added.
+	 * 
+	 * @param pdcel  PackDCEL
+	 * @param mode   int, how to add: 0=TENT, 1=DEGREE, 2=DUPLICATE
+	 * @param degree int
+	 * @param v1     int, start bdry vert
+	 * @param v2     int, end bdry vert
+	 * @param bblink NodeLink, non-null in DUPLICATE case
+	 * @return int, count of added vertices
+	 */
+	public static int addlayer(PackDCEL pdcel, int mode, 
+			int deg, int v1, int v2, NodeLink bblink) {
+		if (!CombDCEL.onSameBdryComp(pdcel, v1, v2))
+			throw new CombException(v1 + " and " + v2 + " are not on the same bdry component");
 
-			  // start with tent over clw edge 
-			  edge=pdcel.vertices[v].halfedge.twin.next;
-			  if (RawManip.addVert_raw(pdcel, edge)==null)
-				  return 0;
-			  addedEdges.add(edge);
-			  count++;
+		int count = 0;
+		HalfLink addedEdges = new HalfLink();
+		HalfEdge edge = pdcel.vertices[v1].halfedge.twin;
+		if (mode == CPBase.TENT) {
+			// int lastv=pdcel.vertices[v2].halfedge.twin.next.twin.origin.vertIndx;
 
-			  // go until you finish v2
-			  do {
-				  v = nextv; // get 'v' and downstream bdry nghb 'nextv'
-				  nextv = pdcel.vertices[v].halfedge.twin.origin.vertIndx;
-				  int need = deg - pdcel.countPetals(v);
-				  for (int i = 1; i <= need; i++) {
-					  edge=pdcel.vertices[v].halfedge.twin.next;
-					  if (RawManip.addVert_raw(pdcel,edge)==null)
-						  return count;
-					  addedEdges.add(edge);
-					  count++;
-				  }
-				  RawManip.enfold_raw(pdcel,v);
-			  } while (nextv<=origCount && v!=v2 && pdcel.redChain!=null);
-		  }
-		  else if (mode == CPBase.DUPLICATE) { // DCELdebug.redConsistency(pdcel);
-			  
-			  // if doing full bdry, stop before last box
-			  boolean close=(v1==v2);
-			  if (close)
-				  v2=edge.next.twin.origin.vertIndx;
-			  
-			  int v=edge.origin.vertIndx;
-			  
-			  // add full box to 'edge'
-			  RawManip.addBox_raw(pdcel,edge,true);
- 			  addedEdges.add(edge);
- 			  addedEdges.add(edge.next.twin);
- 			  addedEdges.add(edge.prev.twin);
- 			  count++;
- 			  while (v!=v2) {
- 				  edge=pdcel.vertices[v].halfedge.twin;
- 				  v=edge.origin.vertIndx;
- 				  RawManip.addBox_raw(pdcel,edge,false);
- 	 			  addedEdges.add(edge);
- 	 			  addedEdges.add(edge.next.twin.prev.twin);
- 	 			  count++;
- 			  }
- 			  
- 			  // closed?
- 			  if (close) {
- 				  edge=pdcel.vertices[v].halfedge.twin;
- 				  Vertex baryV=RawManip.addVert_raw(pdcel,edge);
- 	 			  addedEdges.add(edge);
- 	 			  RawManip.enfold_raw(pdcel,edge.origin.vertIndx);
- 	 			  RawManip.enfold_raw(pdcel,edge.twin.origin.vertIndx);
- 	 			  RawManip.enfold_raw(pdcel,baryV.vertIndx);
- 				  count++;
- 			  }
-		  }
-		  if (count>0) { // store successive new cent/rad
-			  pdcel.addedVertData(addedEdges);
-		  }
-		  return count;
-	  }
+			// tent over first edge
+			Vertex newV = RawManip.addVert_raw(pdcel, edge);
+			addedEdges.add(edge);
+			int nextv = edge.origin.vertIndx;
+			while (nextv != v2) {
+				edge = pdcel.vertices[nextv].halfedge.twin;
+				newV = RawManip.addVert_raw(pdcel, edge);
+				if (newV == null)
+					throw new CombException("failed to add tent to " + edge);
+				addedEdges.add(edge);
+				RawManip.enfold_raw(pdcel, nextv);
+				nextv = edge.origin.vertIndx;
+				count++;
+			}
+			if (v1 == v2) {
+				RawManip.enfold_raw(pdcel, v1);
+				count++;
+			}
+		} else if (mode == CPBase.DEGREE) {
+			int origCount = pdcel.vertCount;
+			Vertex vert = pdcel.vertices[v1];
+			if (v2 == v1) // move v2 upstream from v1
+				v2 = vert.halfedge.twin.next.twin.origin.vertIndx;
+			int v = v1;
+			int nextv = v;
+
+			// start with tent over clw edge
+			edge = pdcel.vertices[v].halfedge.twin.next;
+			if (RawManip.addVert_raw(pdcel, edge) == null)
+				return 0;
+			addedEdges.add(edge);
+			count++;
+
+			// go until you finish v2
+			do {
+				v = nextv; // get 'v' and downstream bdry nghb 'nextv'
+				nextv = pdcel.vertices[v].halfedge.twin.origin.vertIndx;
+				int need = deg - pdcel.countPetals(v);
+				for (int i = 1; i <= need; i++) {
+					edge = pdcel.vertices[v].halfedge.twin.next;
+					if (RawManip.addVert_raw(pdcel, edge) == null)
+						return count;
+					addedEdges.add(edge);
+					count++;
+				}
+				RawManip.enfold_raw(pdcel, v);
+			} while (nextv <= origCount && v != v2 && pdcel.redChain != null);
+		} else if (mode == CPBase.DUPLICATE) { // DCELdebug.redConsistency(pdcel);
+			NodeLink bbl = bblink;
+
+			// if bblink is null, create link data
+			// that doesn't get used
+			if (bbl == null)
+				bbl = new NodeLink();
+
+			// if doing full bdry, stop before last box
+			boolean close = (v1 == v2);
+			if (close) // set v2 to previous edge vert
+				v2 = edge.next.twin.origin.vertIndx;
+
+			int v = edge.origin.vertIndx;
+
+			// add full box to 'edge'
+			bbl.add(RawManip.addBox_raw(pdcel, edge, true).vertIndx);
+			addedEdges.add(edge);
+			addedEdges.add(edge.next.twin);
+			addedEdges.add(edge.prev.twin);
+			count++;
+			while (v != v2) {
+				edge = pdcel.vertices[v].halfedge.twin;
+				v = edge.origin.vertIndx;
+				bbl.add(RawManip.addBox_raw(pdcel, edge, false).vertIndx);
+				addedEdges.add(edge);
+				addedEdges.add(edge.next.twin.prev.twin);
+				count++;
+			}
+
+			// closed?
+			if (close) {
+				edge = pdcel.vertices[v].halfedge.twin;
+				Vertex baryV = RawManip.addVert_raw(pdcel, edge);
+				bbl.add(baryV.vertIndx);
+				addedEdges.add(edge);
+				RawManip.enfold_raw(pdcel, edge.origin.vertIndx);
+				RawManip.enfold_raw(pdcel, edge.twin.origin.vertIndx);
+				RawManip.enfold_raw(pdcel, baryV.vertIndx);
+				count++;
+			}
+		}
+		if (count > 0 && pdcel.p != null) { // store successive new cent/rad
+			pdcel.addedVertData(addedEdges);
+		}
+		return count;
+	}
 	  
 } // end of 'CombDCEL'
 

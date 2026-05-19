@@ -8,6 +8,7 @@ import dcel.PackDCEL;
 import exceptions.DataException;
 import exceptions.LayoutException;
 import exceptions.MobException;
+import exceptions.ParserException;
 import math.Mobius;
 import math.Point3D;
 import packing.PackData;
@@ -1073,7 +1074,11 @@ public class HyperbolicMath{
 		}
 		map=Mobius.standard_mob(z0, z1);
 		remap=(Mobius)map.inverse();
-		Mobius.mobius_of_circle(remap, -1, csIn, csOut, true);
+		try {
+			Mobius.mobius_of_circle(remap, -1, csIn, csOut, true);
+		} catch(Exception ex) {
+			throw new ParserException("mobius_of_circle failed.");
+		}
 		return csOut;
 	}
 	

@@ -3147,6 +3147,26 @@ script and append it to 'ClosedPath'.</instance>
 </description>
 </command>
 
+<command cmd="reflect" flags="[[v1 ..],[b(v,w)]] [-c x y r]">
+<description>
+	Reflect the active packing through a segment 
+	of boundary	vertices or across one or more 
+	(default to all) full bdry components. Reflection
+	means a reverse-oriented copy is attached, bdry 
+	circle to corresponding bdry circle, with ball
+	bearings in the resulting quad interstices. If 
+	the active packing is spherical, then the new
+	circles are positioned via reflection, either in
+	the unit circle (default), or in circle specified
+	by optional flag "-c x y r" specifying euclidean
+	circle. Resulting packing will be spherical.
+</description>
+<seealso>
+<see>double</see>
+</seealso>
+</command>
+
+
 <command cmd="renumber">
 <description> If the active packing has a DCEL structure, this
 	carries our a renumbering. Namely, vertices will be indexed
@@ -3162,6 +3182,12 @@ script and append it to 'ClosedPath'.</instance>
 	pasting together surfaces, as done in doubling across a part of
 	boundary.
 </description>
+<options>
+<opt flag="v1 ..."> reflect on full bdry components containing
+	the given vertices</opt>
+<opt flag="b(v,w)"> reflect on a single bdry segment</opt>
+<opt flag="-c z r"> reflect in eucl circle</opt>
+</options>
 <seealso>
 <see>double</see>
 </seealso>
@@ -3964,18 +3990,22 @@ the existing 'Hlist'</instance>
 <description>
 	CirclePack maintains a current Mobius transformation. It defaults
 	to the identity, but can be set to any other, whether orientation
-	preserving (default) or orientation reversing ('-f' flag). If
-	there are no flags, then default is to read in 8 real numbers, real 
+	preserving (default) or orientation reversing ('-f' flag). This 
+	Mobius is applied to the active packing with call to "Mobius".
+	If there are no flags, then default is to read in 8 real numbers, real 
 	and imaginary parts for the standard four complex entries a, b, c, 
-	and d. Alternatives are based on halfedge chains defining closed
-	face chains: flags are passed to creating the halfedge chain, as
+	and d. 	face chains: flags are passed to creating the halfedge chain, as
 	in 'set_hlist'. 
 </description>
 <options>
+	<opt flag="-f"> Mobius should be orientation reversing.</opt>
     <opt flag="-xyzXYZ x y z X Y Z"> Mobius mapping one triple of 
     complex numbers to another</opt>
-    <opt flag="-[]"> holonomy along halfedge chain built using these flags;
-    e.g., '-R 3' for redchain side 3.</opt>
+    <opt flag="-N v"> (Spherical only) rigid motion centers v at the origin.<\opt>
+    <opt flag="-c v"> (Spherical only) map circle v to unit circle,
+    preserving center</opt>
+    <opt flag="-h[flags]"> (Must be lastholonomy along halfedge chain built using these flags;
+    e.g., '-f[-R 3]' for redchain side 3.</opt>
 	<opt flag="{a.re a.im b.re b.im c.re c.im d.re d.im flip}"> create explicitly</opt>
 </options> 
 <examples>

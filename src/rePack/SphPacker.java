@@ -12,7 +12,7 @@ import packing.PackData;
  * As of 3/2023, changing from using euclidean packing 
  * to hyperbolic due to layout error with the former: 
  * We "puncture" a vertex, max_pack in the hyp plane, 
- * and project to the sphere, which also normalizes.
+ * and project to the sphere, while also normalizing.
  * 
  * @author kens 1/2021 and 3/2023
  *
@@ -93,8 +93,9 @@ public class SphPacker extends RePacker {
 	}
 	
 	/**
-	 * Here we add the missing vertex back in, project to the sphere
-	 * and normalize, and swap if needed
+	 * Here we add the missing vertex back in, 
+	 * project to the sphere and normalize, 
+	 * and swap to get original indices, if needed.
 	 */
 	public void reapResults() {
 		if (CommandStrParser.jexecute(p,"proj")==0) {

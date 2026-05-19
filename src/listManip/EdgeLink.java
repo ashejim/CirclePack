@@ -525,7 +525,7 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 					first=a;
 					last=b;
 					
-					if (!packData.onSameBdryComp(first, last))
+					if (!CombDCEL.onSameBdryComp(packData.packDCEL,first, last))
 						return count;
 							
 					// on same component, so take all edges from first, ending at last
@@ -1119,8 +1119,8 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 	
 	/**
-	 * Given v, return w if this list contains (v,w) (use first occurrence).
-	 * Return -1 if not found.
+	 * Given v, return w if this list contains (v,w) 
+	 * (use first occurrence). Return -1 if not found.
 	 * @param v
 	 * @return w or -1
 	 */
@@ -1129,14 +1129,15 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 		EdgeSimple edge=null;
 		while (ed.hasNext()) {
 			edge=(EdgeSimple)ed.next();
-			if (edge.v==v) return edge.w;
+			if (edge.v==v) 
+				return edge.w;
 		}
 		return -1;
 	}
 	
 	/**
-	 * Given w, return v if this list contains (v,w) (use first occurrence).
-	 * Return -1 if not found.
+	 * Given w, return v if this list contains (v,w) 
+	 * (use first occurrence). Return -1 if not found.
 	 * @param w
 	 * @return v or -1
 	 */
@@ -1145,14 +1146,64 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 		EdgeSimple edge=null;
 		while (ed.hasNext()) {
 			edge=(EdgeSimple)ed.next();
-			if (edge.w==w) return edge.v;
+			if (edge.w==w) 
+				return edge.v;
 		}
 		return -1;
 	}
 	
 	/**
-	 * Given NodeLink and EdgeLink, return NodeLink of entries v so (v,w)
-	 * is in EdgeLink for some w in NodeLink (without repeats)
+	 * In list, swap v and w in any *.w entry 
+	 * where one occurs.
+	 * @param v int
+	 * @param w int
+	 * @return int count
+	 */
+	public int swapW(int v,int w) {
+		int count=0;
+		Iterator<EdgeSimple> ed=this.iterator();
+		while (ed.hasNext()) {
+			EdgeSimple edge=(EdgeSimple)ed.next();
+			if (edge.w==v) {
+				edge.w=w;
+				count++;
+			}
+			else if (edge.w==w) {
+				edge.w=v;
+				count++;
+			}
+		}
+		return count;
+	}
+	
+	/**
+	 * In list, swap v and w in any *.v entry 
+	 * where one occurs.
+	 * @param v int
+	 * @param w int
+	 * @return int count
+	 */
+	public int swapV(int v,int w) {
+		int count=0;
+		Iterator<EdgeSimple> ed=this.iterator();
+		while (ed.hasNext()) {
+			EdgeSimple edge=(EdgeSimple)ed.next();
+			if (edge.v==v) {
+				edge.v=w;
+				count++;
+			}
+			else if (edge.v==w) {
+				edge.v=v;
+				count++;
+			}
+		}
+		return count;
+	}
+	
+	/**
+	 * Given NodeLink and EdgeLink, return NodeLink 
+	 * of entries v so (v,w) is in EdgeLink for some 
+	 * w in NodeLink (without repeats)
 	 * @param el, EdgeLink
 	 * @param nl, NodeLink
 	 * @return NodeLink or null if no instances found
@@ -1177,8 +1228,9 @@ public class EdgeLink extends LinkedList<EdgeSimple> {
 	}
 
 	/**
-	 * Given NodeLink and EdgeLink, return NodeLink of entries w so (v,w)
-	 * is in EdgeLink for some v in NodeLink (without repeats)
+	 * Given NodeLink and EdgeLink, return NodeLink 
+	 * of entries w so (v,w) is in EdgeLink for 
+	 * some v in NodeLink (without repeats)
 	 * @param el, EdgeLink
 	 * @param nl, NodeLink 
 	 * @return NodeLink or null if no instances found

@@ -497,20 +497,6 @@ public class PackData{
 	}
 	
 	/**
-	 * Are v, w bdry and on same bdry component?
-	 * @param v int
-	 * @param w int
-	 * @return boolean
-	 */
-	public boolean onSameBdryComp(int v,int w) {
-		if (!isBdry(v) || !isBdry(w))
-			return false;
-		if (v==w)
-			return true;
-		return CombDCEL.onSameBdryComp(packDCEL,v,w);
-	}
-	
-	/**
 	 * Get array of vertices for face 'f'
 	 */
 	public int[] getFaceVerts(int f) {
@@ -2015,11 +2001,13 @@ public class PackData{
 	} 
 	
 	/** 
-	 * Computes radius at vert v that gives anglesum closer to aim; use 
-	 * secant method, r = first guess, N is a limit on the number of iterations.
-	 * New radius will not increase or decrease beyond what 'factor' allows. 
-	 * (Thus, may need repeated calls to this routine.)
-	 * Return true if everything seems okay. Calling routine responsible for
+	 * Computes radius at vert v that gives anglesum 
+	 * closer to aim; use secant method, r = first guess, 
+	 * N is a limit on the number of iterations.
+	 * New radius will not increase or decrease beyond 
+	 * what 'factor' allows. (Thus, may need repeated 
+	 * calls to this routine.) Return true if everything 
+	 * seems okay. Calling routine responsible for
 	 * actually changing the radius of v, given uP.value.
 	 * @param v int
 	 * @param r double, guess
@@ -2029,13 +2017,18 @@ public class PackData{
 	 * @return boolean 
 	 * 
 	*/
-	public boolean h_radcalc(int v,double r,double aim,int N,UtilPacket uP) {
-	  double bestcurv,lower=0.5,upper=0.5,upcurv,lowcurv,factor=0.5;
+	public boolean h_radcalc(int v,double r,
+			double aim,int N,UtilPacket uP) {
+	  double lower=0.5;
+	  double upper=0.5;
+	  double upcurv;
+	  double lowcurv;
+	  double factor=0.5;
 	  UtilPacket curveUp=new UtilPacket();
 
 	  if (!h_anglesum_overlap(v,r,curveUp)) 
 		  return false;
-	  bestcurv=lowcurv=upcurv=curveUp.value;
+	  double bestcurv=lowcurv=upcurv=curveUp.value;
 	  
 	  // may hit upper/lower bounds on radius change
 	  if (bestcurv>(aim+OKERR)) {
@@ -2413,7 +2406,7 @@ public class PackData{
 					ans=e_packer.genericRePack(passes);
 				}
 				else
-					ans=e_packer.d_oldReliable(passes); // TODO: specify in call
+					ans=e_packer.oldReliable(passes); // TODO: specify in call
 				if (ans>0) {
 					e_packer.reapResults();
 					return ans;
@@ -2754,11 +2747,16 @@ public class PackData{
 	  /**
 	   * Find total absolute err (sum |aim-curv|) for vertices
 	   * with aim>=0, and the average (for these same vertices).
-	   * @return, double[0]=total abs error; double[1]=average
+	   * @return, double[0]=total abs error; double[1]=average,
+	   *    null on error.
 	   */
-	  public double []packCurvError() {
-		  double []ans=new double[2];
-		  fillcurves();
+	  public double[] packCurvError() {
+		  double[] ans=new double[2];
+		  try {
+			  fillcurves();
+		  } catch (Exception ex) {
+			  return null;
+		  }
 		  int count=0;
 		  for (int v=1;v<=nodeCount;v++) {
 			  if (getAim(v)>=0.0) {

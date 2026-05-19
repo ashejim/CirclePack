@@ -11,8 +11,9 @@ import complex.Complex;
 import complex.MathComplex;
 
 /**
- * This is a geometry utility class. It uses a simple matix propogation
- * method to generate 2D points forming a circle or arc of circle. 
+ * This is a geometric utility class. It uses a 
+ * simple matrix propagation method to generate 
+ * 2D points forming a circle or arc of a circle. 
  * @author kens
  *
  */
@@ -29,13 +30,16 @@ public class CircleList {
 	static double ua22=ua11;
 	
 	/**
-	 * Compute vector of points forming an oriented arc of a circle
-	 * with given radius, center, given start angle (radians) and
-	 * angle extend (positive or negative radians) and number of 
-	 * divisions (with possibly additional point for clean finish). 
+	 * Compute vector of points forming an oriented 
+	 * arc of a circle with given radius, center, 
+	 * given start angle (radians) and angle extent 
+	 * (positive or negative radians) and number of 
+	 * divisions (with possibly additional point for 
+	 * clean finish). 
 	 * Return a vector with at least two points.
-	 * If N=1, this gives endpoints of eucl line segment (e.g., when an
-	 * arc is so small that there's no value in plotting more points).
+	 * If N=1, this gives endpoints of eucl line 
+	 * segment (e.g., when an arc is so small that 
+	 * there's no value in plotting more points).
 	 * @param center, Complex
 	 * @param rad
 	 * @param startAng, double, radians

@@ -81,7 +81,7 @@ public class Schwarzian {
 			new Mobius(CPBase.omega3[2].times(-1.0),CPBase.omega3[2].times(2.0),
 					new Complex(0.0),new Complex(1.0));
 	final static double oosq3=1/Math.sqrt(3);
-	final static CirMatrix fourthCircle=new CirMatrix(new CircleSimple(new Complex(4.0),Math.sqrt(3.0)));
+	final static CircleSimple fourthCircle=new CircleSimple(new Complex(4.0),Math.sqrt(3.0));
 		
 	/**
 	 * Compute and set intrinsic schwarzians for 
@@ -500,23 +500,23 @@ public class Schwarzian {
 		Mobius M=(Mobius)dMob_inv.lmultby(pre_f).lmultby(bm_f);
 
 		// apply M to 'fourthCircle' to get the target circle
-		CirMatrix outCM=CirMatrix.applyTransform(M,fourthCircle,true);
+		CircleSimple tmpcs=Mobius.applyTransform(M,fourthCircle,0,true);
 		
 		boolean debug=false; // debug=true;
 		if (debug) {// debug=true;
 			Mobius tmpm=(Mobius)pre_f.rmultby(dMob_inv);
 			deBugging.DebugHelp.mob4matlab("pre_f(dMob_inv)",tmpm);
-			CirMatrix tmpcm=CirMatrix.applyTransform(tmpm,fourthCircle,true);
-			CircleSimple cS=CirMatrix.cirMatrix_to_geom(tmpcm, 0);
-			System.out.println("tmpcm eucl  z/r: "+cS.center+" "+cS.rad);
+			System.out.println("tmpcs eucl  z/r: "+tmpcs.center+" "+tmpcs.rad);
 //			deBugging.DebugHelp.mob4matlab("dMob_inv",dMob_inv);
 //			deBugging.DebugHelp.mob4matlab("pre_f", pre_f);
 			deBugging.DebugHelp.mob4matlab("M", M);
-			cS=CirMatrix.cirMatrix_to_geom(outCM,0);
-			System.out.println("outCM eucl z/r: "+cS.center+" "+cS.rad);
 		}
 
-		return CirMatrix.cirMatrix_to_geom(outCM, hes);
+		if (hes>0)
+			tmpcs=SphericalMath.e_to_s_data(tmpcs);
+		else if (hes<0)
+			tmpcs=HyperbolicMath.e_to_h_data(tmpcs);
+		return tmpcs;
 	}
 	
 	/**

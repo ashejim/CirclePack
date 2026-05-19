@@ -10,6 +10,7 @@ import complex.MathComplex;
 import exceptions.DataException;
 import exceptions.MobException;
 import geometry.CircleSimple;
+import geometry.CommonMath;
 import geometry.HyperbolicMath;
 import geometry.SphericalMath;
 import math.group.ComplexTransformation;
@@ -19,14 +20,18 @@ import schwarzWork.SchwarzMap;
 import schwarzWork.Schwarzian;
 
 /**
- * Mobius transformations of the sphere are represented by 
- * 2x2 complex matrices [a b; c d]. They form a group under composition, 
- * hence this class extends @see GroupElement. Image of z
- * if 'oriented' is (az+b)/(cz+d); if not oriented, then replace
- * z by conj(z).  
+ * Mobius transformations of the sphere are 
+ * represented by 2x2 complex matrices [a b; c d]. 
+ * They form a group under composition, hence this 
+ * class extends @see GroupElement. Image of z
+ * if 'oriented' is (az+b)/(cz+d); if not oriented, 
+ * then replace z by conj(z).
  * 
- * Orientation preserving and standard normalization on creation 
- * is ad-bc=1. TODO: =-1 or non-oriented?? 
+ * Rigid motions of the sphere (rotations about some axis)
+ * have form [a b; -conj(b) conj(a)].
+ * 
+ * Orientation preserving and standard normalization 
+ * on creation is ad-bc=1. TODO: =-1 or non-oriented?? 
  * 
  * ???? old ????? The norm of Mobius m is 
  * 
@@ -110,14 +115,16 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	 * Return new Complex by applying this Mobius 
 	 * transformation to z = x + iy
 	 * @param z Complex, x+iy
-	 * @return Complex
+	 * @return Complex, or essential infinity
 	 */
 	public Complex apply(Complex z) {
-		if (!oriented) {
-			Complex w = z.conj();
-			return ((a.times(w)).plus(b)).divide((c.times(w)).plus(d));
-		}
-		return (a.times(z)).plus(b).divide((c.times(z)).plus(d));
+		if (!oriented) 
+			z = new Complex(z.conj());
+		Complex num=a.times(z).plus(b);
+		Complex denom=c.times(z).plus(d);
+		if (Complex.isNaN(num) || Complex.isNaN(denom) || denom.abs()<MOB_TOLER)
+			return new Complex(10000000.0);
+		return (num.divide(denom));
 	}
 	
 	/**
@@ -156,7 +163,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 		Mobius Minv = (Mobius) this.inverse();
 		return Minv.apply(z);
 	}
-
+	
 	/**
 	 * Return new Complex giving determinant of this Mobius.
 	 */
@@ -582,8 +589,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Find Mobius that maps centers of 3 circles of eucl packing p to 
-	 * the centers of 3 other circles.
+	 * Find Mobius that maps centers of 3 circles of 
+	 * eucl packing p to the centers of 3 other circles.
 	 * @param p PackData, eucl only for now
 	 * @param v
 	 * @param u
@@ -812,8 +819,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * Given (theta,phi) point on the sphere, find rigid motion of sphere
-	 * moving it to the north pole. Compute angle and then cross product to
+	 * Given (theta,phi) point on the sphere, find 
+	 * rigid motion of sphere moving it to the north 
+	 * pole. Compute angle and then cross product to
 	 * get axis of rotation.
 	 * @param sph_z Complex (theta,phi)
 	 * @return Mobius (normalized)
@@ -827,44 +835,78 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 		// is it almost south? return inversion z->1/z
 		if (Math.abs(sph_z.y-Math.PI)<.001)
 			return new Mobius(0.0,1.0,1.0,0.0);
-		
-		double []vec=SphericalMath.s_pt_to_vec(sph_z);
-		Point3D pt=new Point3D(vec[0],vec[1],vec[2]);
-		Point3D np=new Point3D(0,0,1.0);
-		double theta=Math.acos(Point3D.DotProduct(pt,np));
-		Point3D axis=Point3D.CrossProduct(pt,np);
-		Complex axis_z=SphericalMath.proj_vec_to_sph(axis);
-		Mobius mob=sphRotation(theta,axis_z);
-		// debug
-		boolean debug=false;
-		if (debug) { // debug=true;
-			Complex sph_w=mob.apply_2_s_pt(sph_z);
-			System.out.println("rotated to (theta,phi) = ("+sph_w.x+","+sph_w.y+")");
-		}
+
+		// multiply by exp{-i*theta} to center on x-axis.
+		Complex ith=new Complex(0,-sph_z.x);
+		Mobius mob2x=new Mobius(
+			ith.exp(),new Complex(0.0),new Complex(0.0),new Complex(1.0));
+			// mob2x.apply(SphericalMath.s_pt_to_plane(sph_z));
+		// rotate by -phi about the y-axis
+		Complex ccos=new Complex(Math.cos(-sph_z.y/2.0));
+		Complex csin=new Complex(Math.sin(-sph_z.y/2.0));
+		Mobius roty=new Mobius(ccos,csin,csin.times(-1.0),ccos);
+		Mobius mob=(Mobius)roty.rmultby(mob2x);
 		return mob;
 	}
 	
 	/**
-	 * Create Mobius representing rigid rotation of the sphere (in SU(2)).
-	 * Rigid motions mobius has form [a,b,-conj(b),conj(a)].
-	 * Described by ccw angle as viewed toward origin from direction of 
-	 * 'axis', given in (theta,phi) form. 
+	 * create a Mobius transformation of the 
+	 * sphere which maps the given circle to
+	 * the unit circle, preserving center.
+	 * First, rigid motion putting sph_z at the
+	 * north pole, then scale to get correct
+	 * radius.
+	 * @param sph_z Complex, (theta,phi)
+	 * @param rad double, sph radius
+	 * @return
+	 */
+	public static Mobius mob_cir2unitcir(Complex sph_z,double rad) {
+		Mobius toNorth=(Mobius)rotate2North(sph_z);
+		double phi=rad;
+		// u is stereographic proj of a point on the circle
+		//   having x-coord 0.
+		double u=Math.sin(phi)/(1.0+Math.cos(phi)); // u==1.0;
+		// scale by 1/u
+		Mobius scale=new Mobius();
+		scale.a=new Complex(1/u); // scale.normalize();
+		Mobius mob=(Mobius)scale.rmultby(toNorth);
+		// mob.apply_2_s_pt(sph_z);
+		return mob;
+	}
+	
+	/**
+	 * Create Mobius representing rigid rotation of the 
+	 * sphere (in SU(2)). Rigid motion mobius has form 
+	 * [a,b,-conj(b),conj(a)]. Described by ccw angle 
+	 * as viewed toward origin from direction of 
+	 * 'axis', which is given in (theta,phi) form. 
 	 * @param ang double, theta=ang/2 is the half-angle
 	 * @param axis Complex, spherical point, (theta,phi) 
 	 * @return Mobius (normalized)
 	 */
 	public static Mobius sphRotation(double ang,Complex axis) {
-		double theta=ang/2.0;
+		boolean debug=false;
+		double theta=-ang/2.0;
 		double []sphpt=SphericalMath.s_pt_to_vec(axis); // SphericalMath.proj_pt_to_sph(axis));
 		double s=Math.sin(theta);
 		double c=Math.cos(theta);
-		Complex z=new Complex(c,sphpt[0]*s);
-		Complex w=new Complex(sphpt[1]*s,sphpt[2]*s);
-		return new Mobius(z,w,w.conj().times(-1.0),z.conj());
+		Complex z=new Complex(c,sphpt[2]*s); // ??question??
+		Complex w=new Complex(sphpt[1]*s,sphpt[0]*s);
+		Mobius mob=new Mobius(z,w,w.conj().times(-1.0),z.conj());
+		mob.normalize();
+		if (debug) { // debug=true;
+			Complex zpt=SphericalMath.s_pt_to_plane(axis);
+			Complex num=mob.a.times(zpt).add(mob.b);
+			Complex denom=mob.c.times(zpt).add(mob.d);
+			Complex imgpt=num.divide(denom);
+			System.out.println("projected axis = "+zpt+" and image ="+imgpt);
+		}
+		return mob;
 	}
 	
 	/**
-	 * Create Mobius (det=1) for rotation by angle ang*Pi, fixing 0, infty.
+	 * Create Mobius (det=1) for rotation by angle ang*Pi, 
+	 * fixing 0, infty.
 	 * @param ang double; multiply by Pi to get radians
 	 * @return Mobius (normalized)
 	 */
@@ -1208,66 +1250,51 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	 */
 	public static int mobius_of_circle(Mobius mob, int hes, 
 			CircleSimple csIn,CircleSimple csOut, boolean oriented) {
-		
-		Complex z=csIn.center;
-		double r=csIn.rad;
-		double tmpr;
-		Complex tmpz;
-		CircleSimple sc;
 
+		CircleSimple sc=new CircleSimple(
+				new Complex(csIn.center),csIn.rad);
+		CircleSimple n_sc=new CircleSimple();
 		if (hes < 0) { // hyperbolic
-			sc = HyperbolicMath.h_to_e_data(z,r);
-			tmpz = new Complex(sc.center);
-			tmpr = sc.rad;
-			
-			CirMatrix C=new CirMatrix(new CircleSimple(tmpz,tmpr));
-			CirMatrix CC=CirMatrix.applyTransform(mob,C,oriented);
-
-			sc=CirMatrix.cirMatrix_to_geom(CC,0);
-			if (sc==null)
+			sc = HyperbolicMath.h_to_e_data(sc.center,sc.rad);
+			n_sc=applyTransform(mob,sc,0,oriented);
+			if (n_sc==null)
 				return 0;
-			
-			sc = HyperbolicMath.e_to_h_data(sc.center, sc.rad);
-			csOut.center = new Complex(sc.center);
-			csOut.rad = sc.rad;
+			n_sc = HyperbolicMath.e_to_h_data(n_sc.center, n_sc.rad);
+			csOut.center = new Complex(n_sc.center);
+			csOut.rad = n_sc.rad;
 			return 1;
 		}
 		if (hes > 0) { // spherical
 			// check for nan situations
-			if (Double.isNaN(z.x) || Double.isNaN(z.y))
+			if (Double.isNaN(sc.center.x) || Double.isNaN(sc.center.y))
 				return 0;
-			// for NaN problem with r, just move center
-			if (Double.isNaN(r)) { // just move center (without adjusting as
-									// usual)
-				csOut.center = mob.apply_2_s_pt(z);
+			// for NaN problem with r, just move 
+			//    center without adjusting as usual
+			if (Double.isNaN(sc.rad)) { 
+				csOut.center = mob.apply_2_s_pt(sc.center);
 				/* fixup: for Nan problem, should get better estimate of r 
 				 * using, e.g., derivative of Mob.*/
-				csOut.rad = r;
+				csOut.rad = sc.rad;
 				return 1;
 			}
-			CirMatrix C =CirMatrix.sph2CirMatrix(z, r);
-			CirMatrix CC = CirMatrix.applyTransform(mob, C, oriented);
-			sc=CirMatrix.cirMatrix_to_geom(CC,1);
-			if (Double.isNaN(csOut.center.x) || Double.isNaN(csOut.center.y)) {
-				sc.center = mob.apply(z);
+			n_sc=applyTransform(mob,sc,1, oriented);
+			if (Double.isNaN(n_sc.center.x) || Double.isNaN(n_sc.center.y)) {
+				n_sc.center = mob.apply(n_sc.center);
 				/* fixup: see above */
 				/*
 				 * fixup: problem is sometimes that imaginary part comes out
 				 * negative. Have to check why? is this (or could it be) okay?
 				 */
-				sc.rad = r;
+				n_sc.rad = sc.rad;
 			}
-			csOut.center=new Complex(sc.center);
-			csOut.rad=sc.rad;
+			csOut.center=new Complex(n_sc.center);
+			csOut.rad=n_sc.rad;
 			return 1;
 		} 
 		else { // euclidean
-			CirMatrix C=new CirMatrix(csIn);
-			CirMatrix CC=CirMatrix.applyTransform(mob,C,oriented);
-
-			CircleSimple scl=CirMatrix.cirMatrix_to_geom(CC,0);
-			csOut.center=new Complex(scl.center);
-			csOut.rad=scl.rad;
+			n_sc=applyTransform(mob,sc,0,oriented);
+			csOut.center=new Complex(n_sc.center);
+			csOut.rad=n_sc.rad;
 			return 1;
 		}
 	}
@@ -1338,11 +1365,11 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 				MM.oriented = true;
 			} else { // zN to origin, zS to infinity
 				denom = 1 / Math.sin(zN.y);
-				Nctr = new Complex(Math.cos(zN.x) * denom, Math.sin(zN.x)
-						* denom);
+				Nctr = new Complex(Math.cos(zN.x)*denom,
+						Math.sin(zN.x)*denom);
 				denom = 1 / Math.sin(zS.y);
-				Sctr = new Complex(Math.cos(zS.x) * denom, Math.sin(zS.x)
-						* denom);
+				Sctr = new Complex(Math.cos(zS.x)*denom,
+						Math.sin(zS.x)*denom);
 
 				MM.a = new Complex(1.0);
 				MM.b = new Complex(-Nctr.x, -Nctr.y);
@@ -1562,19 +1589,19 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 		}
 
 		/*
-		 * Case 2: first scale by t to get N/S circles the same size; then
-		 * dilate by factor.
+		 * Case 2: first scale by t to get N/S circles 
+		 * the same size; then dilate by factor.
 		 */
 		else {
-			a = Math.sin(rrN) / (1.0 + Math.cos(rrN));
-			double phi = Math.PI - rrS;
-			b = Math.sin(phi) / (1.0 + Math.cos(phi));
-			t = Math.sqrt(1 / Math.abs(a * b)); /*
+			a = Math.sin(rrN)/(1.0+Math.cos(rrN));
+			double phi = Math.PI-rrS;
+			b = Math.sin(phi)/(1.0+Math.cos(phi));
+			t = Math.sqrt(1/Math.abs(a*b)); /*
 												 * ab should be positive, but
 												 * fabs() is cautionary
 												 */
 
-			M1.a = new Complex(t * factor);
+			M1.a = new Complex(t*factor);
 			M1.b = new Complex(0.0);
 		}
 		M1.c = new Complex(0.0);
@@ -1728,6 +1755,121 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 		}
 		return newgp;
 	}
+	
+	/** 
+	 * For 'cs' a circle in geometry 'hes', returns
+	 * its image under M (oriented=true) or M^{-1} 
+	 * (oriented=false). Returns a 'CircleSimple';
+	 * 'flag' set to -1 if we want to image the 
+	 * outside disc. Follow the original center 
+	 * under 'M' and check to make sure it's inside
+	 * (or outside) the resulting circle.
+	 *
+	 * Convert the circle to 'CirMatrix', then
+	 * the computation is: result = G^{t}*C*conj(G), 
+	 * where G = M^{-1}*det(M) Note: If M = [a b;c d], 
+	 * then G=[d -b;-c a] and G^{t}=[d -c;-b a] (i.e.,
+	 * NOT the hermitian transpose).
+	 * 
+	 * @param M Mobius
+	 * @param cs CircleSimple
+	 * @param hes int
+	 * @param oriented boolean, false ==> use Mob^{-1}
+	 * @return CircleSimple,
+	 */
+	public static CircleSimple applyTransform(Mobius M,CircleSimple cs,int hes,boolean oriented) {
+		Mobius MM=M.cloneMe(); // set working Mobius 
+		if (!oriented) // want M^{-1}?
+			MM=(Mobius)MM.inverse();
+
+		// Convert to euclidean, convert back at end
+		CirMatrix C=new CirMatrix(cs); // eucl
+		Complex pt=new Complex(cs.center);
+		if (hes>0) { // sph
+			C=CirMatrix.sph2CirMatrix(cs.center, cs.rad);
+			pt=SphericalMath.s_pt_to_plane(cs.center);
+		}
+		else if (hes<0) { // hyp
+			cs=HyperbolicMath.h_to_e_data(cs);
+			C=new CirMatrix(cs);
+			pt=cs.center;
+		}
+
+		// get working CirMatrix CC as normal circle 
+		//   (or straight line) and find "inside" pt.
+		CirMatrix CC=new CirMatrix();
+		CC.a=new Complex(C.a);
+		CC.b=new Complex(C.b);
+		CC.c=new Complex(C.c);
+		CC.d=new Complex(C.d);
+		// if outside, convert to normal circle
+		if (C.a.x==-1) { 
+			CC.a=CC.a.times(-1.0);
+			CC.b=CC.b.times(-1.0);
+			CC.c=CC.c.times(-1.0);
+			CC.d=CC.d.times(-1.0);
+		}
+		if (C.a.x==0) { // C is a line, pt is in normal direction
+			pt=C.c.times(Math.abs(C.d.x)*20); 
+		}
+
+		// define G=MM^(-1) * det(MM)
+		Mobius G = new Mobius(); 
+		G.a = new Complex(MM.d);  
+		G.b = MM.b.times(-1.0);
+		G.c = MM.c.times(-1.0);
+		G.d = new Complex(MM.a);
+
+		// compute G^{t}*C: do NOT use usual matrix 'rmult/lmult': 
+		//    then normalize
+		CirMatrix tmpC=new CirMatrix();
+		tmpC.a=(G.a.times(CC.a)).plus(G.c.times(CC.c));
+		tmpC.b=(G.a.times(CC.b)).plus(G.c.times(CC.d));
+		tmpC.c=(G.b.times(CC.a)).plus(G.d.times(CC.c));
+		tmpC.d=(G.b.times(CC.b)).plus(G.d.times(CC.d));
+		
+		// compute tmpC*conj(G)
+		G.conj();
+		CirMatrix outC = new CirMatrix();
+		outC.a=(tmpC.a.times(G.a)).plus(tmpC.b.times(G.c));
+		outC.b=(tmpC.a.times(G.b)).plus(tmpC.b.times(G.d));
+		outC.c=(tmpC.c.times(G.a)).plus(tmpC.d.times(G.c));
+		outC.d=(tmpC.c.times(G.b)).plus(tmpC.d.times(G.d));
+		
+		// watch for round off error and normalize:
+		if (outC.a.abs()<.0001) { // straight line
+			outC.a=new Complex(0.0);
+			double divisor=outC.c.abs();
+			outC.b=outC.b.divide(divisor);
+			outC.c=outC.c.divide(divisor);
+			outC.d=new Complex(outC.d.divide(divisor).x); // should be real
+		}
+		// else regular circle.
+		else {
+			Complex scalar=outC.a.reciprocal();
+			outC.a=new Complex(1.0);
+			outC.b=outC.b.times(scalar);
+			outC.c=outC.c.times(scalar);
+			outC.d=outC.d.times(scalar);
+		}
+		CircleSimple sc=CirMatrix.cirMatrix_to_geom(outC,hes);
+		
+		// Is image of center inside?
+		Complex MMpt=MM.apply(pt); // outC.getCenter();
+		boolean in=CommonMath.pt_in_circle(MMpt,sc,hes);
+		if (in)
+			return sc;
+		if (hes>0) {
+			sc.center=SphericalMath.getAntipodal(sc.center);
+			sc.rad=Math.PI-sc.rad;
+			return sc;
+		}
+		
+		// otherwise, indicate outside
+		sc.flag=-1;
+		return sc;
+	}
+
 
 	/**
 	 * Create a new Mobius object which is identical to 'this'.
