@@ -353,9 +353,6 @@ public class HyperbolicMath{
 		double e1;
 		double e2;
 
-		double s1 = x_to_s_rad(x1);
-		double s2 = x_to_s_rad(x2);
-
 		// Now find the eucl radii for the two petals. 
 		
 		// second is horocycle?

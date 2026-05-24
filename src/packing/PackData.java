@@ -1870,11 +1870,11 @@ public class PackData{
 		  return 1.0; 
 	  // note: tangency is default 
 	  if (hes>0) { // spherical
-		  double []xyz_v=SphericalMath.s_pt_to_vec(getCenter(v));
-		  double []xyz_w=SphericalMath.s_pt_to_vec(getCenter(w));
+		  Point3D pv=SphericalMath.s_pt_to_p3D(getCenter(v));
+		  Point3D pw=SphericalMath.s_pt_to_p3D(getCenter(w));
 		  // formula: (cos(r_v)*cos(r_w)-cos(dist(v,w))/(sin(r_v)*sin(r_w));
 		  double I=1.0/(Math.tan(getRadius(v))*Math.tan(getRadius(w)))-
-		  	(xyz_v[0]*xyz_w[0]+xyz_v[1]*xyz_w[1]+xyz_v[2]*xyz_w[2])/
+				  Point3D.DotProduct(pv,pw)/
 		  	(Math.sin(getRadius(v))*Math.sin(getRadius(w)));
 		  return I;
 	  }
@@ -5484,9 +5484,9 @@ public class PackData{
 	 } 
 
 	 /**
-	  * If hyperbolic, apply a Mobius trans of disc putting ctr 
-	  * at origin. If euclidean, translate. If sphere, rigid 
-	  * Mobius moves ctr to north pole.
+	  * If hyperbolic, apply a Mobius trans of disc 
+	  * putting ctr at origin. If euclidean, translate. 
+	  * If sphere, rigid Mobius moves ctr to north pole.
 	  * @param ctr Complex
 	  * @return int
 	  */

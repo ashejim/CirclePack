@@ -2012,16 +2012,17 @@ public class AffinePack extends PackExtender {
 	}
 	
 	/**
-	 * Run trials over a grid and put the results in a buffer.
-	 * Output lines: A B t T c a.x a.y b.x b.y z's
-	 *   inputs A,B, modulus t, Teichmuller T, affine coefficient c,
-	 *   complex a b, corner points, complex z[0], z[1], z[2], z[3]
+	 * Run trials over a grid and put the results 
+	 * in a buffer. Output lines: A B t T c a.x a.y 
+	 * b.x b.y z's inputs A,B, modulus t, Teichmuller T, 
+	 * affine coefficient c, complex a b, corner 
+	 * points, complex z[0], z[1], z[2], z[3]
 	 * 
-	 * @param N
-	 * @param grid doubles lx ly ux uy
+	 * @param N int
+	 * @param grid doubles[] lx ly ux uy
 	 * @return 
 	 */
-	public StringBuilder runGridData(int N,double []grid) {
+	public StringBuilder runGridData(int N,double[] grid) {
 		
 		StringBuilder output=new StringBuilder("%%Affine packing data from CirclePack run: \n" +
 				"%% nodeCount="+extenderPD.nodeCount+";"+
@@ -2062,8 +2063,10 @@ public class AffinePack extends PackExtender {
 				}
 				
 				// gather torus data
-				TorusData torusData=new TorusData(extenderPD);
-				if (torusData==null) {
+				TorusData torusData=null;
+				try {
+					torusData=new TorusData(extenderPD);
+				} catch (Exception ex) {
 					msg("failed to get torus data");
 					okay=false;
 					break;
@@ -2216,7 +2219,7 @@ public class AffinePack extends PackExtender {
 			while (fl.hasNext()) {
 				double diff=rmax-rmin;
 				int f=fl.next();
-				double []newlabels=new double[3];
+				double[] newlabels=new double[3];
 				newlabels[0]=rand.nextDouble()*diff+rmin;
 				newlabels[1]=rand.nextDouble()*diff+rmin;
 				newlabels[2]=rand.nextDouble()*diff+rmin;
@@ -2350,9 +2353,12 @@ public class AffinePack extends PackExtender {
 //					ProjStruct.treeLayout(packData,dTree,aspects);
 					
 					// compute data
-					TorusData tD=new TorusData(extenderPD);
-					if (tD==null) 
+					TorusData tD=null;
+					try {
+						tD=new TorusData(extenderPD);
+					} catch (Exception ex) {
 						Oops("failed to compute 'TorusData' in 'matdat'");
+					}
 					
 					// store data in matrices
 					tau[a][b]=new Complex(tD.tau);

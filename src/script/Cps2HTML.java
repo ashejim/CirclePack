@@ -22,6 +22,7 @@ public class Cps2HTML {
 			scanner=new Scanner(file);
 		} catch (Exception iox) {
 			System.err.println("Failed to open cps file "+file.getPath()+" for precessing or to start a file 'scanner'");
+			scanner.close();
 			return contents;
 		}
 		

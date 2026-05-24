@@ -14,6 +14,7 @@ import komplex.EdgeSimple;
 import listManip.EdgeLink;
 import listManip.FaceLink;
 import listManip.HalfLink;
+import math.Point3D;
 import util.UtilPacket;
 
 /**
@@ -262,12 +263,12 @@ public class QualMeasures {
 				Complex uz=p.getCenter(vert[1]);
 				Complex wz=p.getCenter(vert[2]);
 				if (p.hes>0) { // sphere case
-					double []vu_tan=SphericalMath.sph_tangent(vz, uz);
-					double []vw_tan=SphericalMath.sph_tangent(vz, wz);
-					double []cross=SphericalMath.crossProduct(vu_tan,vw_tan);
-					double []vdir=SphericalMath.s_pt_to_vec(vz);
-					double dp=SphericalMath.dot_prod(cross, vdir);
-					if (dp<.000000001) // points opposite to vz?
+					Point3D pvu=SphericalMath.sph_tang_p3D(vz,uz);
+					Point3D pvw=SphericalMath.sph_tang_p3D(vz,wz);
+					Point3D pcross=Point3D.CrossProduct(pvu,pvw);
+					Point3D pvdir=SphericalMath.s_pt_to_p3D(vz);
+					double pdp=Point3D.DotProduct(pcross,pvdir);
+					if (pdp<.000000001) // points opposite to vz?
 						return f;
 				}
 				else { // eucl or hyp cases

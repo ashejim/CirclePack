@@ -495,28 +495,24 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 			  return 1;
 		  }
 		  if (code==dataCode.VERT_XYZ) {
-			  double []xyz;
+			  Point3D pxyz=new Point3D();
 			  
 			  // have xyz data stored?
 			  if (p.xyzpoint!=null) {
-				  Point3D pd=p.xyzpoint[v];
-				  xyz=new double[3];
-				  xyz[0]=pd.x;
-				  xyz[1]=pd.y;
-				  xyz[2]=pd.z;
+				  pxyz=p.xyzpoint[v];
 			  }
 			  
 			  else  if (p.hes>0) {
-				  xyz=SphericalMath.s_pt_to_vec(p.getCenter(v));
+				  pxyz=SphericalMath.s_pt_to_p3D(p.getCenter(v));
 			  }
 			  else { // eucl/hyp, just store flat data
-				  xyz=new double[3];
-				  xyz[0]=p.getCenter(v).x;
-				  xyz[1]=p.getCenter(v).y;
-				  xyz[2]=0.0;
+				  pxyz=new Point3D(
+				  	  p.getCenter(v).x,
+				  	  p.getCenter(v).y,
+				  	  0.0);
 			  }
 			  
-			  fp.write(xyz[0]+" "+xyz[1]+" "+xyz[2]+" ");
+			  fp.write(pxyz.x+" "+pxyz.y+" "+pxyz.z+" ");
 			  return 1;
 		  }
 		  if (code==dataCode.PAVER_CORNERS) { // a 'paver' is polygon 

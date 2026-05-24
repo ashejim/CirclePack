@@ -456,7 +456,7 @@ public class HypPacker extends RePacker {
      * @return int count, -1 on error
      */
     public int d_oldReliable(int passes) {
-    	double toler=RP_TOLER;
+      double toler=RP_TOLER;
       int count = 0;
       double accum=0.0;
       int N=5; // iterations in each radius comp
@@ -482,7 +482,7 @@ public class HypPacker extends RePacker {
       double recip=.333333/aimnum;
       double cut=accum*recip;
 
-      while ((cut > RP_TOLER && count<passes)) {
+      while ((cut > toler && count<passes)) {
     	  double r=.5; // to help with debugging
     	  double rr=.5;
     	  for (int j=0;j<aimnum;j++) {

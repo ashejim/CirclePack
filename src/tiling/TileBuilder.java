@@ -205,9 +205,7 @@ public class TileBuilder {
 
 					// we work with clones
 					PackDCEL pdc1=CombDCEL.cloneDCEL(masterDCEL);
-					int vertCount1=pdc1.vertCount;
 					PackDCEL pdc2=CombDCEL.cloneDCEL(tileDCELs[nghbT.tileIndex]);
-					int vertCount2=pdc2.vertCount;
 					// for adjoining, need far end of side of currT
 					v=currT.vert[(c+1)%currT.vertCount];
 					w=nghbT.vert[side];
@@ -235,7 +233,6 @@ public class TileBuilder {
 					newPack.attachDCEL(masterDCEL);
 					newPack.tileData=origTD;
 					newPack.tileData.packData=newPack;
-					PackDCEL pdcel=newPack.packDCEL;
 					newPack.vertexMap=masterDCEL.oldNew;
 					newPack.status=true;
 					

@@ -4,6 +4,7 @@ import allMains.CPBase;
 import complex.Complex;
 import geometry.EuclMath;
 import geometry.HyperbolicMath;
+import geometry.SphericalMath;
 import math.Point3D;
 import packing.PackData;
 
@@ -35,11 +36,11 @@ public class BaryPoint {
 	public BaryPoint(double a,double b) {
 		b0=a;
 		if (Math.abs(b0)<THRESHOLD) b0=0.0;
-		b1=b;
+			b1=b;
 		if (Math.abs(b1)<THRESHOLD) b1=0.0;
-		b2=1-a-b;
+			b2=1-a-b;
 		if (Math.abs(b2)<THRESHOLD) b2=0.0;
-		face=-1;
+			face=-1;
 	}
 	
 	public BaryPoint(double a,double b,double c) {
@@ -59,7 +60,8 @@ public class BaryPoint {
 	}
 	
 	/**
-	 * Return the corresponding eucl point in eucl triangle {z1,z2,z3}. 
+	 * Return the corresponding eucl point in eucl 
+	 * triangle {z1,z2,z3}. 
 	 * @param z1 Complex
 	 * @param z2 Complex
 	 * @param z3 Complex
@@ -158,8 +160,8 @@ public class BaryPoint {
 	}
 	
 	/**
-	 * Given triangle corners, point z, and the geometry, return the barycentric
-	 * coordinates of z
+	 * Given triangle corners, point z, and the geometry, 
+	 * return the barycentric coordinates of z.
 	 * @param hes int, geometry
 	 * @param z Complex
 	 * @param z1 Complex
@@ -174,15 +176,15 @@ public class BaryPoint {
 		if (hes<0) { // hyp
 			return HyperbolicMath.h_pt_to_bary(z, z1, z2, z3);
 		}
-		if (hes>0) { // TODO: sph case
-			return null;
+		if (hes>0) { // sph
+			return SphericalMath.s_pt_to_bary(z, z1, z2, z3);
 		}
 		return null;
 	}
 	
 	/**
-	 * Convert the barycentric coords of 'this' to a point in the given
-	 * triangle, depending on geometry.
+	 * Convert the barycentric coords of 'this' to a point 
+	 * in the given triangle, depending on geometry.
 	 * @param hes int, geometry
 	 * @param z1 Complex
 	 * @param z2 Complex

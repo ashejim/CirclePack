@@ -22,13 +22,13 @@ import geometry.CommonMath;
 import geometry.SphericalMath;
 import input.CommandStrParser.Energy;
 import komplex.EdgeSimple;
-import listManip.EdgeLink;
 import listManip.FaceLink;
 import listManip.HalfLink;
 import listManip.NodeLink;
 import listManip.TileLink;
 import math.Matrix3D;
 import math.Mobius;
+import math.Point3D;
 import packing.PackData;
 import util.CallPacket;
 import util.StringUtil;
@@ -509,9 +509,9 @@ public class QueryParser {
 								ang=z2.minus(z0).divide(z1.minus(z0)).arg();
 							}
 							else { // sph -- may be ambiguous, not checked
-								double[] tanvec1=SphericalMath.sph_tangent(z0,z1);
-								double[] tanvec2=SphericalMath.sph_tangent(z0,z2);
-								ang=Math.acos(SphericalMath.dot_prod(tanvec1, tanvec2));
+								Point3D tanv1=SphericalMath.sph_tang_p3D(z0,z1);
+								Point3D tanv2=SphericalMath.sph_tang_p3D(z0,z2);
+								ang=Math.acos(Point3D.DotProduct(tanv1,tanv2));
 							}
 							angsum+=ang;
 							

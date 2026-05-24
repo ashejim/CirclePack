@@ -11,7 +11,6 @@ import listManip.GraphLink;
 import listManip.NodeLink;
 import listManip.VertexMap;
 import packing.PackData;
-import packing.RData;
 import util.TriData;
 import util.UtilPacket;
 

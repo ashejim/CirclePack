@@ -113,7 +113,7 @@ public class ChapBrModPt extends GenBrModPt {
 		chapEdge=new HalfEdge[3];
 
 		// set overlaps
-		cos_overs=new double[3];
+		cos_overs=new double[3]; // Note: want indexes 1 and 2
 		cos_overs[1]=Math.cos(o1*Math.PI);
 		cos_overs[2]=Math.cos(o2*Math.PI);
 

@@ -24,11 +24,17 @@ import util.CmdStruct;
 import util.ColorUtil;
 
 /**
- * Alternate procedure for laying out spherical circle packings:
- * Identify 4 'beacons', combinatorially well-distributed vertices. 
- * For each, puncture and max pack, then record the inv distances of other
- * points to that beacon. Now quadrangulate circles with respect
- * to the beacons.
+ * OBE: Note that as of Spring 2026 I have introduced the 
+ * 'DeSitter' class, but there the inner product signature
+ * is (3,-1) instead of (1,-3) as it is here. Should 
+ * update the methods here.
+ * 
+ * The methods here provide and alternate procedure for 
+ * laying out spherical circle packings: Identify 4 
+ * 'beacons', combinatorially well-distributed vertices. 
+ * For each, puncture and max pack, then record the inv 
+ * distances of other points to that beacon. Now 
+ * quadrangulate circles with respect to the beacons.
  * 
  * Points of H^3 (hyp 3D) are represented points on one hyperboloid
  * sheet:  
@@ -57,6 +63,9 @@ import util.ColorUtil;
  * (s,a,b,c) is st-ax-by-cz.
  * 
  * TODO: must resolve ambiguity about orientation
+ * 
+ * TODO: it appears that roundoff errors are a
+ * real problem in applications.
  *
  * @author kstephe2 based on ideas of Edward Crane
  *

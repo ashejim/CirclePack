@@ -102,10 +102,8 @@ public class DelaunayData {
 		}
 		tri.nodes=new Point3D[tri.nodeCount+1];
 		for (int v=1;v<=tri.nodeCount;v++) {
-			if (geometry>0) { // 3D point
-				double []svec=SphericalMath.s_pt_to_vec(new Complex(ptX[v],ptY[v]));
-				tri.nodes[v]=new Point3D(svec[0],svec[1],svec[2]);
-			}
+			if (geometry>0) // 3D point
+				tri.nodes[v]=SphericalMath.s_pt_to_p3D(new Complex(ptX[v],ptY[v]));
 			else // 2D point
 				tri.nodes[v]=new Point3D(ptX[v],ptY[v],0.0);
 		}

@@ -312,9 +312,6 @@ public class MeanMove extends PackExtender {
 			return null;
 		double t2=p.getCurv(v)/2.0;
 		double tant2=Math.tan(t2);
-		double cost2=Math.cos(t2);
-		double sect22=1.0/(cost2*cost2);
-		
 		double R=tant2*r;
 		double dtdr=0.0;
 		

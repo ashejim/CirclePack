@@ -53,9 +53,10 @@ public class DebugHelp {
 			if (tile!=null) {
 				int[][] tflower=tile.tileFlower;
 				for (int i=0;i<tile.vertCount;i++) {
-					if (tflower[i][0]!=0 && tflower[i][1]<0)
+					if (tflower[i][0]!=0 && tflower[i][1]<0) {
 						System.err.println("bad flower: tile "+t+" and side "+i);
-					return 1;
+						return 1;
+					}
 				}
 			}
 		}

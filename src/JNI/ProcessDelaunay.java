@@ -9,10 +9,11 @@ import java.util.StringTokenizer;
 
 import allMains.CPBase;
 import allMains.CirclePack;
+import complex.Complex;
 import exceptions.InOutException;
 import exceptions.JNIException;
-import geometry.SphericalMath;
 import input.CPFileManager;
+import math.Point3D;
 import util.StringUtil;
 
 /**
@@ -61,10 +62,11 @@ public class ProcessDelaunay {
 		try {
 			fpw.write("3\n" + deldata.pointCount + "\n");
 			for (int j = 1; j <= deldata.pointCount; j++) {
-				double[] xyz = SphericalMath.s_pt_to_vec(deldata.ptX[j], deldata.ptY[j]);
-				fpw.write(String.format("%.8e", xyz[0]) + " " + 
-				String.format("%.8e", xyz[1]) + " "
-						+ String.format("%.8e", xyz[2]) + "\n");
+				Complex sph_z=new Complex(deldata.ptX[j], deldata.ptY[j]);
+				Point3D p3D=Point3D.sph_2_p3D(sph_z);
+				fpw.write(String.format("%.8e",p3D.x) + " " + 
+				String.format("%.8e",p3D.y) + " "
+						+ String.format("%.8e",p3D.z) + "\n");
 			}
 			fpw.flush();
 			fpw.close();
@@ -126,12 +128,12 @@ public class ProcessDelaunay {
 	}
 
 	/**
-	 * For the plane, the data has points and possibly segments 
-	 * defining a planar straight line graph; that is, a *.node file
-	 * or a *.poly file.
+	 * For the plane, the data has points and possibly 
+	 * segments defining a planar straight line graph; 
+	 * that is, a *.node file or a *.poly file.
 	 * 
-	 * If bdryCount==0, create "plane_*.node" file in data directory 
-	 * with format:
+	 * If bdryCount==0, create "plane_*.node" file in 
+	 * data directory with this format:
 	 * 
 	 * #nodes
 	 * N 2 0 0
@@ -140,8 +142,8 @@ public class ProcessDelaunay {
 	 * ...
 	 * N xN yN
 	 * 
-	 * If bdryCount>0, create "plane_*.poly" file in data directory
-	 * with format:
+	 * If bdryCount>0, create "plane_*.poly" file in 
+	 * data directory with this format:
 	 * 
 	 * #nodes
 	 * N 2 0 0
@@ -156,11 +158,11 @@ public class ProcessDelaunay {
 	 * ...
 	 * M vM wM
 	 * 
-	 * The bdry segmenst must be contiguous and closed; there could be 
-	 * more than one bdry component.
+	 * The bdry segmenst must be contiguous and closed; 
+	 * there could be more than one bdry component.
 	 * 
-	 * The call is ".\triangle plane_*.node (or .poly) and the output 
-	 * triangulation is in plane_*.1.ele.
+	 * The call is ".\triangle plane_*.node (or .poly) 
+	 * and the output triangulation is in plane_*.1.ele.
 	 *
 	 * @author kstephe2, 3/2022
 	 *

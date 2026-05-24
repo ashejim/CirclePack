@@ -4,9 +4,10 @@ import complex.Complex;
 import math.Matrix3D;
 import math.Point3D;
 /**
- * Spherical geodesic for use in plotting. Set up data for the visual
- * portion of the geodesic only. CAUTION: positions are relevant to the
- * 'apparent' sphere (depends on 'spherical view'). 
+ * Spherical geodesic for use in plotting. Set up 
+ * data for the visual portion of the geodesic only. 
+ * CAUTION: positions are relevant to the 'apparent' 
+ * sphere (depends on 'spherical view'). 
  * Geodesic considered 'visible' iff:
  *    * at least one end is ON_FRONT
  *    * it follows horizon counterclockwise
@@ -163,7 +164,8 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * Return true if geodesic is visible and crosses front to back
+	 * Return true if geodesic is visible and crosses 
+	 * front to back
 	 * @return boolean
 	 */
 	public boolean cross2Back() {
@@ -173,7 +175,8 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * Return true if geodesic is visible and crosses back to front
+	 * Return true if geodesic is visible and crosses 
+	 * back to front
 	 * @return boolean
 	 */
 	public boolean cross2Front() {
@@ -183,9 +186,10 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * Check if geodesic follows horizon; return value gives direction. 
-	 * NOTE: if this is edge-on great circle, the 'lineFlag' should 
-	 * be set and 0 is returned.
+	 * Check if geodesic follows horizon; return value 
+	 * gives direction.
+	 * NOTE: if this is edge-on great circle, the 
+	 * 'lineFlag' should be set and 0 is returned.
 	 * @return 0 if not; +-1 if counterclockwise/clockwise
 	 * 
 	 */
@@ -199,8 +203,10 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * @return oriented visible arc as string to concatenate for postscript.
-	 * NOTE: PostFactory.sphEdgePath is already available and better.
+	 * @return oriented visible arc as string to 
+	 * concatenate for postscript.
+	 * NOTE: PostFactory.sphEdgePath is already 
+	 * available and better.
 	 * Note: calling routine must provide, 'n', 'gs', 's gr', etc.
 	 */
 	public String arc4Posting() {
@@ -222,15 +228,16 @@ public class SphGeodesic{
 			return strbuf.toString();
 		}
 
-		// straight line cases? antipodal horizon points or containing plane is xz-plane.
+		// straight line cases? antipodal horizon points 
+		//   or containing plane is xz-plane.
 		if (lineFlag || Math.abs(center.x-CPBase.piby2)<.00001 || Math.abs(center.x+CPBase.piby2)<.00001) {
 			strbuf.append(String.format("%.6e", xy1.x)+" "+String.format("%.6e", xy1.y)+" l ");
 			strbuf.append(String.format("%.6e", xy2.x)+" "+String.format("%.6e", xy2.y)+" l ");
 			return strbuf.toString();
 		}
 		
-		// generic cases: transform to o.n. basis u, v, w, where u=center,
-		//   v=z1, and w = uXv.
+		// generic cases: transform to o.n. basis 
+		//   {u,v,w}, where u=center, v=z1, and w = uXv.
 		Point3D u=new Point3D(center.x,center.y);
 		Point3D v=new Point3D(z1.x,z1.y);
 		Point3D w=Point3D.CrossProduct(u, v);

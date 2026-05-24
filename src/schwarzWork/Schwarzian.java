@@ -27,7 +27,6 @@ import komplex.DualTri;
 import listManip.EdgeLink;
 import listManip.HalfLink;
 import listManip.NodeLink;
-import math.CirMatrix;
 import math.Mobius;
 import packing.PackData;
 import util.ColorUtil;

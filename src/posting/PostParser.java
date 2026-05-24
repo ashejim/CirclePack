@@ -23,6 +23,7 @@ import listManip.GraphLink;
 import listManip.HalfLink;
 import listManip.NodeLink;
 import listManip.TileLink;
+import math.Point3D;
 import packing.CPdrawing;
 import packing.PackData;
 import tiling.Tile;
@@ -842,22 +843,16 @@ public class PostParser {
 									for (int jj=0;jj<tile.vertCount;jj++) 
 										cz.add(p.getCenter(tile.vert[jj]));
 									
-									// for sphere, compute via vectors --- may end up at antipodal point 
+									// for sphere, compute via vectors --- may end up 
+									//    at antipodal point. 
 									if (p.hes>0) {
-										double xc=0.0;
-										double yc=0.0;
-										double zc=0.0;
+										Point3D pxyz=new Point3D();
 										Iterator<Complex> czit=cz.iterator();
 										while (czit.hasNext()) {
-											double []xyz=SphericalMath.s_pt_to_vec(czit.next());
-											xc+=xyz[0];
-											yc+=xyz[1];
-											zc+=xyz[2];
+											pxyz=pxyz.add(SphericalMath.s_pt_to_p3D(czit.next()));
 										}
-										xc /=tile.vertCount;
-										yc /=tile.vertCount;
-										zc /=tile.vertCount;
-										wc=SphericalMath.proj_vec_to_sph(xc,yc,zc);
+										pxyz=pxyz.divide(tile.vertCount);
+										wc=SphericalMath.proj_vec_to_sph(pxyz);
 									}
 									else {
 										Iterator<Complex> zpts=cz.iterator();

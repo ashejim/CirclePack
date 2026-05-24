@@ -1,10 +1,10 @@
 package ftnTheory;
 
+import complex.Complex;
 import geometry.SphericalMath;
 import input.CommandStrParser;
+import math.Point3D;
 import packing.PackData;
-
-import complex.Complex;
 
 /**
  * A class for computing various energies of point distributions, 
@@ -23,19 +23,14 @@ public class PointEnergies {
 		if (eng==CommandStrParser.Energy.COULOMB) pwr=-1;
 		if (eng==CommandStrParser.Energy.L2) pwr=-2;
 		if (packData.hes>0) { 
-			double []Z=new double[3];
-			double []W=new double[3];
-			double []D=new double[3];
 			for(int i=1;i<packData.nodeCount;i++) {
-				Z=SphericalMath.s_pt_to_vec(packData.getCenter(i)); // load Z
+				Point3D pZ=SphericalMath.s_pt_to_p3D(packData.getCenter(i));
 		  		for(int j=i+1;j<=packData.nodeCount;j++) {
-					W=SphericalMath.s_pt_to_vec(packData.getCenter(j)); // load W
-					D[0]=Z[0]-W[0];
-					D[1]=Z[1]-W[1];
-					D[2]=Z[2]-W[2];
+					Point3D pW=SphericalMath.s_pt_to_p3D(packData.getCenter(j)); // load W
+					Point3D pD=Point3D.displacement(pW,pZ);
 					if (eng==CommandStrParser.Energy.LOG) 
-						sum += Math.log(1/SphericalMath.vec_norm(D));
-					else sum += Math.pow(SphericalMath.vec_norm(D),pwr);
+						sum += Math.log(1/pD.norm());
+					else sum += Math.pow(pD.norm(),pwr);
 			    }
 			}
 			return sum;

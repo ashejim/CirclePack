@@ -37,11 +37,11 @@ import util.StringUtil;
 public class Triangulation {
 	public int faceCount;
 	public int maxIndex; // largest index among the nodes;not always set
-	public Face []faces; // mainly need vert[3] data of 'Face' object
-	public Color []vertColors; // array of colors 
-	public Color []faceColors; // array of colors
+	public Face[] faces; // mainly need vert[3] data of 'Face' object
+	public Color[] vertColors; // array of colors 
+	public Color[] faceColors; // array of colors
 	public int nodeCount;
-	public Point3D []nodes;  // may want these as locations (e.g., from point sets)
+	public Point3D[] nodes;  // may want these as locations (e.g., from point sets)
 	public GraphLink dualGraph; // Optional: may need graph of which faces 
 	    // are neighbors. Example: when multiple edges connect same vertices; 
 	    // Note: may be more than one edge shared by two triangles.

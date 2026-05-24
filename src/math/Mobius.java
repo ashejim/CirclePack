@@ -11,6 +11,7 @@ import exceptions.DataException;
 import exceptions.MobException;
 import geometry.CircleSimple;
 import geometry.CommonMath;
+import geometry.DeSitter;
 import geometry.HyperbolicMath;
 import geometry.SphericalMath;
 import math.group.ComplexTransformation;
@@ -811,7 +812,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 			Complex anspt=ans.apply(s_pt);
 			Complex ns_pt=SphericalMath.proj_pt_to_sph(anspt);
 			@SuppressWarnings("unused")
-			double []vec=SphericalMath.s_pt_to_vec(ns_pt);
+			Point3D vec=SphericalMath.s_pt_to_p3D(ns_pt);
 		}
 		
 		return ans;
@@ -822,7 +823,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	 * Given (theta,phi) point on the sphere, find 
 	 * rigid motion of sphere moving it to the north 
 	 * pole. Compute angle and then cross product to
-	 * get axis of rotation.
+	 * get axis of rotation. See 'Matrix3D.rigid2North'
+	 * for 3x3 rotation of 3-space.
 	 * @param sph_z Complex (theta,phi)
 	 * @return Mobius (normalized)
 	 */
@@ -871,36 +873,6 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 		scale.a=new Complex(1/u); // scale.normalize();
 		Mobius mob=(Mobius)scale.rmultby(toNorth);
 		// mob.apply_2_s_pt(sph_z);
-		return mob;
-	}
-	
-	/**
-	 * Create Mobius representing rigid rotation of the 
-	 * sphere (in SU(2)). Rigid motion mobius has form 
-	 * [a,b,-conj(b),conj(a)]. Described by ccw angle 
-	 * as viewed toward origin from direction of 
-	 * 'axis', which is given in (theta,phi) form. 
-	 * @param ang double, theta=ang/2 is the half-angle
-	 * @param axis Complex, spherical point, (theta,phi) 
-	 * @return Mobius (normalized)
-	 */
-	public static Mobius sphRotation(double ang,Complex axis) {
-		boolean debug=false;
-		double theta=-ang/2.0;
-		double []sphpt=SphericalMath.s_pt_to_vec(axis); // SphericalMath.proj_pt_to_sph(axis));
-		double s=Math.sin(theta);
-		double c=Math.cos(theta);
-		Complex z=new Complex(c,sphpt[2]*s); // ??question??
-		Complex w=new Complex(sphpt[1]*s,sphpt[0]*s);
-		Mobius mob=new Mobius(z,w,w.conj().times(-1.0),z.conj());
-		mob.normalize();
-		if (debug) { // debug=true;
-			Complex zpt=SphericalMath.s_pt_to_plane(axis);
-			Complex num=mob.a.times(zpt).add(mob.b);
-			Complex denom=mob.c.times(zpt).add(mob.d);
-			Complex imgpt=num.divide(denom);
-			System.out.println("projected axis = "+zpt+" and image ="+imgpt);
-		}
 		return mob;
 	}
 	
@@ -1053,6 +1025,20 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 		}
 		// the result we want: inv(M2)*M1
 		mob = (Mobius) M2.inverse().rmultby(M1);
+		mob.normalize();
+		return mob;
+	}
+	
+	/**
+	 * Given a circle (spherical only), this creates
+	 * the normalized Mobius form of the associated 
+	 * point in de Sitter space. See 'DeSitter.java'.
+	 * @param cs CircleSimple 
+	 * @return new Mobius
+	 */
+	public static Mobius sph_circle_2_mob(CircleSimple cs) {
+		DeSitter dS=new DeSitter(cs);
+		Mobius mob=DeSitter.matrixForm(dS);
 		mob.normalize();
 		return mob;
 	}
@@ -1324,35 +1310,33 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	public static Mobius NS_mobius(Complex zN, Complex zS, Complex zE,
 			double rN, double rS, double rE, double factor) {
 
-		boolean dilation_flag = false;
-		Complex tmp, s, T_ez2, ew1, ez1, ez2, coef;
-		Complex Sctr, Nctr, NS, ES, EN;
-		double Srad, Nrad, Nmod, Smod;
-		Mobius MM = new Mobius();
 		Mobius M1 = new Mobius();
 		Mobius M2 = new Mobius();
-		double t, a, b, argz, argw, lam, dist, denom;
-		double[] V = new double[3];
-		double[] T = new double[3];
-		double[] C = new double[3];
 
+		boolean dilation_flag = false;
 		if (Math.abs(rE) < MOB_TOLER)
-			dilation_flag = true; /* No 'east' circle given */
+			dilation_flag = true; // No 'east' circle given 
 		if (dilation_flag && factor <= 0.0)
 			factor = 1.0;
 
-		/* check for data problems */
-		NS = zN.minus(zS);
-		ES = zE.minus(zS);
-		EN = zE.minus(zN);
+		// check for data problems 
+		Complex NS = zN.minus(zS);
+		Complex ES = zE.minus(zS);
+		Complex EN = zE.minus(zN);
 
 		if ((!dilation_flag && (ES.abs() < MOB_TOLER || EN.abs() < MOB_TOLER))
 				|| NS.abs() < MOB_TOLER) {
 			return new Mobius(); // identity
 		}
-		dist = SphericalMath.s_dist(zN, zS);
+		double dist = SphericalMath.s_dist(zN, zS);
 
 		// N/S essentially antipodal already -- just need rotations
+		Mobius MM = new Mobius();
+		Complex Sctr;
+		Complex Nctr;
+		double argz;
+		double argw;
+		double denom;
 		if (Math.abs(dist - Math.PI) < MOB_TOLER) {
 			if (Math.abs(zN.y) < MOB_TOLER) // don't need anything
 				MM = new Mobius(); // identity
@@ -1380,11 +1364,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 			}
 		}
 
-		/*
-		 * Non-antipodal: involves interesting geometry due to fact that sph
+		/* Non-antipodal: involves interesting geometry due to fact that sph
 		 * circle centers are not preserved under Mobious.
-		 */
-		/*
+		*
 		 * Consider the plane containing the origin, zN, and zS. Intersection
 		 * with sphere gives disc bounded by great circle thru zN and zS; we
 		 * treat this as the unit disc and locate points via angular arguments
@@ -1412,25 +1394,25 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 			 * locate points by putting w2 at 1, progress through ew1, ez1, ez2
 			 * counterclockwise using distances radii info.
 			 */
-			ew1 = new Complex(0.0, 2 * rS).exp();
-			ez1 = new Complex(0.0, dist + rS - rN).exp();
-			ez2 = new Complex(0.0, dist + rS + rN).exp();
+			Complex ew1 = new Complex(0.0, 2 * rS).exp();
+			Complex ez1 = new Complex(0.0, dist + rS - rN).exp();
+			Complex ez2 = new Complex(0.0, dist + rS + rN).exp();
 			/*
 			 * trans to upper half-plane is
 			 * T(z)=coef*fac=[(ez1-1.0)/(ez1-ew1)]*[(z-ew1)/(z-1.0)], and we
 			 * only need T(ez2), which should be positive.
 			 */
-			coef = ez1.minus(MathComplex.ID).divide(ez1.minus(ew1));
-			tmp = ez2.minus(ew1).divide(ez2.minus(MathComplex.ID));
-			T_ez2 = coef.times(tmp);
-			lam = Math.sqrt(T_ez2.x);
+			Complex coef = ez1.minus(MathComplex.ID).divide(ez1.minus(ew1));
+			Complex tmp = ez2.minus(ew1).divide(ez2.minus(MathComplex.ID));
+			Complex T_ez2 = coef.times(tmp);
+			double lam = Math.sqrt(T_ez2.x);
 			/*
 			 * pts corresp to ends of g on real line are lam and -lam. Have to
 			 * map these back to unit circle under inverse of T, up to factor
 			 * this is TT(z)=(-z+ew1*coef)/(-z+coef), and then find their
 			 * arguments.
 			 */
-			s = new Complex(-lam);
+			Complex s = new Complex(-lam);
 			tmp = s.add(ew1.times(coef)).divide(s.add(coef));
 			if ((argz = (tmp.arg() - rS)) < -Math.PI)
 				argz += 2.0 * Math.PI;
@@ -1438,48 +1420,43 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 			tmp = s.add(ew1.times(coef)).divide(s.add(coef));
 			if ((argw = (tmp.arg() - rS)) < 0)
 				argw += 2.0 * Math.PI;
-			/*
-			 * argw and argz are the sph distance from zS on circle to desired
+
+			/* argw and argz are the sph distance from zS on circle to desired
 			 * pts between w1 and w2 and between z1 and z2, resp.
 			 */
-			V = SphericalMath.s_pt_to_vec(zS); // vector pointing to zS
-			T = SphericalMath.sph_tangent(zS, zN); // tangent vector at zS in
-												// direction zN
-
-			/*
-			 * here's the point, first in vec form, then projected to eucl
-			 * plane, which should go to the South pole. (only need a radius for
-			 * its sign -- tell if we want the outside.)
+			Point3D pV=SphericalMath.s_pt_to_p3D(zS); // vector pointing to zS
+			Point3D pT=SphericalMath.sph_tang_p3D(zS, zN); // tangent at zS in
+														   // direction zN
+			/* here's the point, first in vec form, then 
+			 * projected to eucl plane, which should go to 
+			 * the South pole. (only need a radius for its 
+			 * sign -- tell if we want the outside.)
 			 */
-			C[0] = V[0] * Math.cos(argw) + T[0] * Math.sin(argw);
-			C[1] = V[1] * Math.cos(argw) + T[1] * Math.sin(argw);
-			C[2] = Srad = V[2] * Math.cos(argw) + T[2] * Math.sin(argw);
-			denom = Math.sqrt(C[0] * C[0] + C[1] * C[1]);
+			Point3D pC=pV.times(Math.cos(argw)).add(pT.times(Math.sin(argw)));
+			double Srad=pC.z;
+			denom = pC.norm();
+			double Smod=0.0;
 			if (denom < MOB_TOLER) { // at one of the poles?
 				Sctr = new Complex(0.0);
-				Smod = 0.0;
 			} else {
-				Smod = denom / (1.0 + C[2]); // modulus of eucl center
-				Sctr = new Complex(C[0] * Smod / denom, C[1] * Smod / denom);
+				Smod = denom / (1.0 + pC.z); // modulus of eucl center
+				Sctr = new Complex(pC.x * Smod / denom, pC.y * Smod / denom);
 			}
 
 			// now the point intended to go to the North pole
-			C[0] = V[0] * Math.cos(argz) + T[0] * Math.sin(argz);
-			C[1] = V[1] * Math.cos(argz) + T[1] * Math.sin(argz);
-			C[2] = Nrad = V[2] * Math.cos(argz) + T[2] * Math.sin(argz);
-			denom = Math.sqrt(C[0] * C[0] + C[1] * C[1]);
+			pC=pV.times(Math.cos(argz)).add(pT.times(Math.sin(argz)));
+			double Nrad=pC.z;
+			double Nmod=0.0;
+			denom=pC.norm();
 			if (denom < MOB_TOLER) { // at one of the poles
 				Nctr = new Complex(0.0);
-				Nmod = 0.0;
 			} else {
-				Nmod = denom / (1.0 + C[2]); // modulus of eucl center
-				Nctr = new Complex(C[0] * Nmod / denom, C[1] * Nmod / denom);
+				Nmod = denom / (1.0 + pC.z); // modulus of eucl center
+				Nctr = new Complex(pC.x * Nmod / denom, pC.y * Nmod / denom);
 			}
 
 			// Now build appropriate mobius
-
-			if (Nmod < MOB_TOLER || Smod < MOB_TOLER) { // at least one at a
-														// pole
+			if (Nmod < MOB_TOLER || Smod < MOB_TOLER) { // at least one a pole
 				if (Nmod < MOB_TOLER) {
 					if (Smod < MOB_TOLER) { // Sctr is at other
 						if (Nrad < 0) { // simply have to invert
@@ -1492,9 +1469,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 						} else
 							MM = new Mobius(); // identity
 					} else {
-						if (Nrad < 0) { /*
-										 * Nctr at south pole, need to invert
-										 * first, get new Sctr
+						if (Nrad < 0) { /* Nctr at south pole, 
+										 * need to invert first, 
+										 * get new Sctr
 										 */
 							M1.a = new Complex(0.0);
 							M1.b = new Complex(1.0);
@@ -1507,6 +1484,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 							Sctr = new Complex(Sctr.x / denom, -Sctr.y / denom);
 						} else
 							M1 = new Mobius(); // identity
+						
 						// move Sctr to infinity
 						M2.a = new Complex(0.0);
 						M2.b = new Complex(1.0);
@@ -1532,6 +1510,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 						Nctr = new Complex(Nctr.x / denom, -Nctr.y / denom);
 					} else
 						M1 = new Mobius(); // identity
+					
 					// move Nctr to origin
 					M2.a = new Complex(1.0);
 					M2.b = new Complex(-Nctr.x, Nctr.y);
@@ -1566,41 +1545,32 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 		}
 		/* Have two choices for normalization */
 
-		/*
-		 * Case 1: Place circle 1 at one (when on sphere).
+		/* Case 1: Place circle 1 at one (when on sphere).
 		 * 
-		 * Project pts of E closest to N and to S to the positive numbers a and
-		 * b. Necessary dilation is t where t^2=1/(ab).
+		 * Project pts of E closest to N and to S to the 
+		 * positive numbers a and b. Necessary dilation 
+		 * is t where t^2=1/(ab).
 		 */
 
 		if (!dilation_flag) {
 			double phi = zzE.y - rrE;
-			a = Math.sin(phi) / (1.0 + Math.cos(phi));
+			double a = Math.sin(phi) / (1.0 + Math.cos(phi));
 			phi = zzE.y + rrE;
-			b = Math.sin(phi) / (1.0 + Math.cos(phi));
-			t = Math.sqrt(1 / Math.abs(a * b)); /*
-												 * ab should be positive, but
-												 * fabs() is cautionary
-												 */
-
+			double b = Math.sin(phi) / (1.0 + Math.cos(phi));
+			double t = Math.sqrt(1 / Math.abs(a * b)); // fabs() is cautionary
 			M1.a = new Complex(0.0, -zzE.x);
 			M1.a = M1.a.exp().times(t);
 			M1.b = new Complex(0.0);
 		}
 
-		/*
-		 * Case 2: first scale by t to get N/S circles 
+		/* Case 2: first scale by t to get N/S circles 
 		 * the same size; then dilate by factor.
 		 */
 		else {
-			a = Math.sin(rrN)/(1.0+Math.cos(rrN));
+			double a = Math.sin(rrN)/(1.0+Math.cos(rrN));
 			double phi = Math.PI-rrS;
-			b = Math.sin(phi)/(1.0+Math.cos(phi));
-			t = Math.sqrt(1/Math.abs(a*b)); /*
-												 * ab should be positive, but
-												 * fabs() is cautionary
-												 */
-
+			double b = Math.sin(phi)/(1.0+Math.cos(phi));
+			double t = Math.sqrt(1/Math.abs(a*b)); // fabs() is cautionary
 			M1.a = new Complex(t*factor);
 			M1.b = new Complex(0.0);
 		}
@@ -1873,7 +1843,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 
 	/**
 	 * Create a new Mobius object which is identical to 'this'.
-	 * @return Mobius
+	 * @return new Mobius
 	 */
 	public Mobius cloneMe() {
 		Mobius mob = new Mobius();
@@ -1888,7 +1858,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * Generate a string giving a, b, b, d (and orientation) for use in output.
+	 * Generate a string giving a, b, b, d (and orientation) 
+	 * for use in output.
 	 * TODO: should I just override "toString"?
 	 * @return StringBuilder
 	 */

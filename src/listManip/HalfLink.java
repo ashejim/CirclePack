@@ -143,7 +143,6 @@ public class HalfLink extends LinkedList<HalfEdge> {
 //		deBugging.DCELdebug.augVerts2Vlist(tile);
 		int aindx=-1;
 		int v=tile.vert[vertindx]; // starting vertex
-		int[] newlist=new int[tile.augVertCount];
 		for (int j=0;(j<tile.augVertCount && aindx<0);j++) 
 			if (tile.augVert[j]==v)
 				aindx=j;

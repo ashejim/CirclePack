@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -279,7 +278,6 @@ public class ReadWrite {
 					} else if (mainTok.equals("ALPHA/BETA/GAMMA:")) { // old version
 						try {
 							newAlpha = Integer.parseInt(tok.nextToken());
-							int deadbeta=Integer.parseInt(tok.nextToken());
 							newGamma = Integer.parseInt(tok.nextToken());
 						} catch (Exception ex) {
 							continue;

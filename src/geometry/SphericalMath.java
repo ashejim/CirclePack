@@ -49,7 +49,7 @@ public class SphericalMath{
    * Finding average of spherical (theta,phi) centers
    * can be tricky because of the 2pi periodicity of
    * theta: eg. (3.14,y) and (-3.14,y) are very close,
-   * but the average is (0,y). 
+   * but the average is (0,y) is far away.
    * Convert to (x,y,z), average, and project. This
    * can also cause problems, but should work if
    * points are restricted, e.g., to a hemisphere.
@@ -58,17 +58,13 @@ public class SphericalMath{
    * @return Complex
    */
   public static Complex average_s_pts(Complex[] pts) {
-	  double xd=0;
-	  double yd=0;
-	  double zd=0;
 	  int n=pts.length;
+	  Point3D sum=new Point3D();
 	  for (int j=0;j<n;j++) {
-		  double[] xyz=s_pt_to_vec(pts[j]);
-		  xd+=xyz[0];
-		  yd+=xyz[1];
-		  zd+=xyz[2];
+		  sum=sum.add(s_pt_to_p3D(pts[j]));
 	  }
-	  return proj_vec_to_sph(xd/n,yd/n,zd/n);
+	  sum=sum.divide((double)n);
+	  return proj_vec_to_sph(sum);
   }
   
   /**
@@ -426,15 +422,13 @@ public class SphericalMath{
    * @return double
    */
   public static double s_dist(Complex z, Complex w){
-    double[] v1, v2;
-    double dotprod;
 
     if((Math.abs(z.x-w.x) < S_TOLER) && (Math.abs(z.y-w.y) < S_TOLER))
       return (0.0);
 
-    v1 = s_pt_to_vec(z);
-    v2 = s_pt_to_vec(w);
-    dotprod = dot_prod(v1, v2);
+    Point3D p1=s_pt_to_p3D(z);
+    Point3D p2=s_pt_to_p3D(w);
+    double dotprod=Point3D.DotProduct(p1, p2);
     if(Math.abs(dotprod) < S_TOLER)
       return Math.PI/2.0;
 
@@ -442,8 +436,9 @@ public class SphericalMath{
   }
   
   /** 
-   * Stereographic projection of complex number to complex spherical 
-   * point, form (theta,phi). IMPORTANT: note that we project so zero 
+   * Stereographic projection of complex number to 
+   * complex spherical point, form (theta,phi). 
+   * IMPORTANT: note that we project so zero 
    * goes to North pole, infinity to South.
    * @param z Complex
    * @return new Complex, (theta,phi)
@@ -461,48 +456,26 @@ public class SphericalMath{
    */
   public static double s_dist_pt_to_line(Complex z,
 		  Complex end1,Complex end2) {
-  	double []A;
-  	double []B;
-  	double []C;
-  	double []AxB;
-  	double []CxAxB;
-  	A=s_pt_to_vec(end1);
-  	B=s_pt_to_vec(end2);
-  	C=s_pt_to_vec(z);
-  	AxB=crossProduct(A,B); 
-  	CxAxB=crossProduct(C,AxB);
-  	double p=(AxB[0]*AxB[0]+AxB[1]*AxB[1]+AxB[2]*AxB[2]);
-  	double d=(CxAxB[0]*CxAxB[0]+CxAxB[1]*CxAxB[1]+CxAxB[2]*CxAxB[2]);
+  	Point3D pA=s_pt_to_p3D(end1);
+  	Point3D pB=s_pt_to_p3D(end2);
+  	Point3D pC=s_pt_to_p3D(z);
+  	Point3D pAxB=Point3D.CrossProduct(pA,pB); 
+  	Point3D pCxAxB=Point3D.CrossProduct(pC,pAxB);
+  	double pp=pAxB.norm();
+  	double pd=pCxAxB.norm();
   	// d=p*Math.sin(theta)
-  	return CPBase.piby2-Math.asin(Math.sqrt(d/p)); // distance is Pi/2-theta.
+  	return CPBase.piby2-Math.asin(Math.sqrt(pd/pp)); // distance is Pi/2-theta.
   }
 
-  /**
-   * Converts a (theta,phi) point on sphere to unit vector (x,y,z) 
-   * of doubles. If phi=0.0, then get (0,0,1); if phi=Pi, get (0,0,-1);
-   * @param sph_z Complex, spherical coords (theta,phi)
-   * @return double[3]
-   */
-  public static double[] s_pt_to_vec(Complex sph_z) {
-	    double[] V = new double[3];
-	    double s=Math.sin(sph_z.y);
-	    V[0] = s * Math.cos(sph_z.x);
-	    V[1] = s * Math.sin(sph_z.x);
-	    V[2] = Math.cos(sph_z.y);
-
-	    return V;
+  public static Point3D s_pt_to_p3D(Complex sph_z) {
+	  double s=Math.sin(sph_z.y);
+	  Point3D ans=new Point3D(
+		s * Math.cos(sph_z.x),
+	    s * Math.sin(sph_z.x),
+	    Math.cos(sph_z.y));
+	  return ans;
   }
-  
-  public static double[] s_pt_to_vec(double x,double y) {
-	    double[] V = new double[3];
-	    double s=Math.sin(y);
-	    V[0] = s * Math.cos(x);
-	    V[1] = s * Math.sin(x);
-	    V[2] = Math.cos(y);
-
-	    return V;
-  }
-  
+    
   /**
    * compute the eucl distance in 3D between to (theta,phi)
    * points on the sphere.
@@ -511,16 +484,16 @@ public class SphericalMath{
    * @return double
    */
   public static double eucl_dist3D(Complex z,Complex w) {
-	  double []pt0=SphericalMath.s_pt_to_vec(z);
-	  double []pt1=SphericalMath.s_pt_to_vec(w);
-	  return (Math.sqrt((pt1[0]-pt0[0])*(pt1[0]-pt0[0]) +
-			  (pt1[1]-pt0[1])*(pt1[1]-pt0[1]) +
-			  (pt1[2]-pt0[2])*(pt1[2]-pt0[2])));
+	  Point3D p0=SphericalMath.s_pt_to_p3D(z);
+	  Point3D p1=SphericalMath.s_pt_to_p3D(w);
+	  Point3D diff=Point3D.displacement(p0, p1);
+	  return diff.norm();
   }
   
   /**
-   * Return new Complex (theta,phi) representing projection of given Point3D
-   * to the unit sphere; recall, origin goes to NORTH pole.
+   * Return new Complex (theta,phi) representing projection 
+   * of given Point3D to the unit sphere; recall, origin 
+   * goes to NORTH pole.
    * @param p3d Point3D
    * @return sph coords (theta,phi) 
    */
@@ -643,7 +616,7 @@ public static double vec_norm(double X[]){
 		  double r1,double r2) {
 	  double dratio=(s_dist(z1,z2))*r1/(r1+r2);
 	  // try first direction
-	  Point3D T3=new Point3D(sph_tangent(z1,z2));
+	  Point3D T3=sph_tang_p3D(z1,z2);
 	  Complex tp1=sph_shoot(z1,T3,dratio);
 	  double err1=Math.abs(s_dist(z1,tp1)-r1);
 	  if (err1<S_TOLER) // looks good 
@@ -679,31 +652,29 @@ public static double vec_norm(double X[]){
   */ 
   public static CircleSimple s_compcenter(Complex z0,Complex z1,
   		double r0,double r1,double r2,double ivd0,double ivd1,double ivd2) {
-    double[] vec0=s_pt_to_vec(z0);
+    Point3D v0=s_pt_to_p3D(z0);
+    
     // side lengths
     double s0=s_ivd_length(r0,r1,ivd0);
     double s1=s_ivd_length(r1,r2,ivd1);
     double s2=s_ivd_length(r2,r0,ivd2);
-    // angle is how far around from TV we will rotate 
+    
+    // pT is a tangent vector at z0
+    Point3D pT=sph_tang_p3D(z0,z1);
+    // angle is how far around from pT we will rotate 
     double angle=Math.acos(( Math.cos(s1)-Math.cos(s2)*Math.cos(s0) )/
   	     ( Math.sin(s2)*Math.sin(s0) ));
-    // TV is a tangent vector at z0
-    double[] TV=sph_tangent(z0,z1);
-    // N = z0 x T
-    double[] N=crossProduct(vec0,TV);
-    // P will point toward the new center 
-    double []P=new double[3];
-    P[0]=Math.cos(angle)*TV[0]+Math.sin(angle)*N[0];
-    P[1]=Math.cos(angle)*TV[1]+Math.sin(angle)*N[1];
-    P[2]=Math.cos(angle)*TV[2]+Math.sin(angle)*N[2];
+
+    // pN = v0 x pT
+    Point3D pN=Point3D.CrossProduct(v0, pT);
+
+    // pP will point toward the new center
+    Point3D pP=pT.times(Math.cos(angle)).add(pN.times(Math.sin(angle)));
     
-    double []mtan=new double[3];
-    mtan[0]=Math.cos(r0+r2)*vec0[0]+Math.sin(r0+r2)*P[0];
-    mtan[1]=Math.cos(r0+r2)*vec0[1]+Math.sin(r0+r2)*P[1];
-    mtan[2]=Math.cos(r0+r2)*vec0[2]+Math.sin(r0+r2)*P[2];
+    Point3D pmt=v0.times(Math.cos(r0+r2)).add(pP.times(Math.sin(r0+r2)));
     Complex z=new Complex(0.0);
-    if(mtan[2]<=(1.0-S_TOLER)) {
-    	z=new Complex(Math.atan2(mtan[1],mtan[0]),Math.acos(mtan[2]));
+    if (pmt.z<=(1.0-S_TOLER)) {
+    	z=new Complex(Math.atan2(pmt.y, pmt.x),Math.acos(pmt.z));
     }
     return new CircleSimple(z,r2,1);
   }
@@ -738,19 +709,19 @@ public static double vec_norm(double X[]){
 		  return new Complex(z);
 	  
 	  // adjust mod 2*pi until dist lies in [0,2*pi]
-	  double pi2=2.0*Math.PI;
-	  while (dist<0) dist+=pi2;
-	  while (dist>pi2) dist -=pi2;
-	  
-	  double[] T=sph_tangent(z,w);
-	  double[] V=s_pt_to_vec(z);
-	  double[] A=new double[3];
+	  while (dist<0) 
+		  dist+=CPBase.pi2;
+	  while (dist>CPBase.pi2) 
+		  dist -=CPBase.pi2;
 	  double cosd=Math.cos(dist);
 	  double sind=Math.sin(dist);
-	  A[0]=cosd*V[0]+sind*T[0];
-	  A[1]=cosd*V[1]+sind*T[1];
-	  A[2]=cosd*V[2]+sind*T[2];
-	  return proj_vec_to_sph(A[0],A[1],A[2]);
+	  
+	  Point3D pT=sph_tang_p3D(z,w);
+	  Point3D pV=s_pt_to_p3D(z);
+	  pV=pV.times(cosd);
+	  pT=pT.times(sind);
+	  Point3D pA=pV.add(pT);
+	  return proj_vec_to_sph(pA);
   }
 
   /**
@@ -763,16 +734,13 @@ public static double vec_norm(double X[]){
    * @return new Complex (theta,phi)
    */
   public static Complex sph_shoot(Complex z,Point3D T,double dist) {
-	  double[] V=s_pt_to_vec(z);
-	  double[] A=new double[3];
 	  double cosd=Math.cos(dist);
 	  double sind=Math.sin(dist);
-	  A[0]=cosd*V[0]+sind*T.x;
-	  A[1]=cosd*V[1]+sind*T.y;
-	  A[2]=cosd*V[2]+sind*T.z;
-	  return proj_vec_to_sph(A[0],A[1],A[2]);
+	  Point3D pV=s_pt_to_p3D(z);
+	  Point3D pA=pV.times(cosd).add(T.times(sind));
+	  return proj_vec_to_sph(pA);
   }
-
+  
   /** 
    * Given 2 points on sphere, return unit length 3-vector in 
    * tangent space of first pt, pointing toward second. Result is
@@ -787,40 +755,34 @@ public static double vec_norm(double X[]){
    * @param ctr2 (theta,phi)
    * @return double[3] unit vector
    */
-  public static double[] sph_tangent(Complex ctr1,Complex ctr2) {
-    double d,vn;
-    double[] A;
-    double[] B;
-    double[] P=new double[3];
-    double[] T=new double[3];
+  public static Point3D sph_tang_p3D(Complex ctr1,Complex ctr2) {
+    Point3D pT=new Point3D();
 
-    A=s_pt_to_vec(ctr1);
-    B=s_pt_to_vec(ctr2);
-    d=dot_prod(A,B);
-    // Find projection of B on plane normal to A
-    P[0]=B[0]-d*A[0];  P[1]=B[1]-d*A[1];  P[2]=B[2]-d*A[2];
+    Point3D pA=s_pt_to_p3D(ctr1);
+    Point3D pB=s_pt_to_p3D(ctr2);
+    double pd=Point3D.DotProduct(pA,pB);
+    Point3D pdA=pA.times(pd);
+    Point3D pP=Point3D.displacement(pdA,pB);
 
-    // A and B essentially parallel? 
-    if ((vn=vec_norm(P))<S_TOLER)
+    // pA and pB essentially parallel?
+    double vn=pP.norm();
+    if (vn<S_TOLER)
     {
-    	// if A is not N or S, point in horizontal direction
-    	double pn=Math.sqrt(A[0]*A[0]+A[1]*A[1]);
+    	// if pA is not N or S, point in horizontal direction
+    	double pn=Math.sqrt(pA.x*pA.x+pA.y*pA.y);
     	if (pn>.0000001) {
     		// get orthogonal, X coord 0
-    		T[0]=A[1]/pn;
-    		T[1]=-A[0]/pn;
-    		T[2]=0;
+    		pT.x=pA.x/pn;
+    		pT.y=-pA.x/pn;
+    		pT.z=0;
     	}
     	// otherwise, point toward (0,1,0)
-    	else {
-    		T[0]=0.0;
-    		T[1]=1.0;
-    		T[2]=0.0;
-    	}
-        return T;
+    	else 
+    		pT=new Point3D(0.0,1.0,0.0);
+        return pT;
     }
-    T[0]=P[0]/vn;T[1]=P[1]/vn;T[2]=P[2]/vn;
-    return T;
+    pT=pP.divide((double)vn);
+    return pT;
   } 
 
   /**
@@ -876,11 +838,8 @@ public static double vec_norm(double X[]){
   */
   public static CircleSimple s_to_e_data(Complex z,double r) {
     int flipflag=1; // set to -1 if south pole enclosed
-    double er; // new radius
-    Complex e; // new center
+    Point3D pV=s_pt_to_p3D(z);
 
-    double[] V=s_pt_to_vec(z); // unit 3-vector
-    
     // essentially passes through infinity? 
     if (Math.abs(z.y+r-Math.PI)<S_TOLER) // increment r slightly, proceed
     	r += 2.5*S_TOLER;
@@ -888,10 +847,8 @@ public static double vec_norm(double X[]){
     // encloses infinity?
     if ((z.y+r)>=(Math.PI+S_TOLER)) {
         r=Math.PI-r; // fake radius
-        V[0] *= (-1.0);
-        V[1] *= (-1.0);
-        V[2] *= (-1.0);
-        z=proj_vec_to_sph(V[0],V[1],V[2]); // fake center
+        pV=pV.times(-1.0);
+        z=proj_vec_to_sph(pV); // fake center
         flipflag=-1;
     }
     
@@ -900,6 +857,8 @@ public static double vec_norm(double X[]){
     double down=z.y-r; // above
     
     // essentially centered at np 
+    double er; // new radius
+    Complex e; // new center
     if (Math.abs(z.y)<S_TOLER) {
         er=Math.sin(up)/(1.0+Math.cos(up));
         e=new Complex(0.0);
@@ -917,9 +876,8 @@ public static double vec_norm(double X[]){
     }
     
     // essentially passes through infinity, so decrease 'up'.
-    if (Math.abs(up-Math.PI)< .00001) {
+    if (Math.abs(up-Math.PI)< .00001)
         up -= .000015;
-    }
     
     // proceed
     double RR=Math.sin(up)/(1.0+Math.cos(up));
@@ -927,7 +885,7 @@ public static double vec_norm(double X[]){
     er=Math.abs(RR-rr)/2.0;
     double m=(RR+rr)/2.0;
     double sny=Math.sin(z.y);
-    e=new Complex(V[0]*m/sny,V[1]*m/sny);
+    e=new Complex(pV.x*m/sny,pV.y*m/sny);
     
     return new CircleSimple(e,er,flipflag);
   }
@@ -1010,46 +968,31 @@ public static double vec_norm(double X[]){
    */
   public static boolean pt_in_sph_tri(Complex sph_pt,
 		  Complex z1,Complex z2,Complex z3) {
-  	    double[] X;
-	    double[] Y;
-	    double[] Z;
-	    double[] P;
-	    double[] C;
-	    P=s_pt_to_vec(sph_pt);
-	    X=s_pt_to_vec(z1);
-	    Y=s_pt_to_vec(z2);
-	    Z=s_pt_to_vec(z3);
+	    Point3D pP=s_pt_to_p3D(sph_pt);
+	    Point3D pX=s_pt_to_p3D(z1);
+	    Point3D pY=s_pt_to_p3D(z2);
+	    Point3D pZ=s_pt_to_p3D(z3);
 	    
 	    // is it on wrong side of plane through X,Y,Z?
-	    double []XY=new double[3];
-	    XY[0]=Y[0]-X[0];
-	    XY[1]=Y[1]-X[1];
-	    XY[2]=Y[2]-X[2];
-	    double []XZ=new double[3];
-	    XZ[0]=Z[0]-X[0];
-	    XZ[1]=Z[1]-X[1];
-	    XZ[2]=Z[2]-X[2];
-	    double []XP=new double[3];
-	    XP[0]=P[0]-X[0];
-	    XP[1]=P[1]-X[1];
-	    XP[2]=P[2]-X[2];
-	    C=crossProduct(XY,XZ);
+	    Point3D pXY=Point3D.displacement(pX,pY);
+	    Point3D pXZ=Point3D.displacement(pX,pZ);
+	    Point3D pXP=Point3D.displacement(pX,pP);
+	    Point3D pC=Point3D.CrossProduct(pXY,pXZ);
 	    // wrong direction? can't be in triangle
-	    if (dot_prod(C,XP)<0.0)
+	    if (Point3D.DotProduct(pC,pXP)<0.0)
 	    	return false;
 
 	    // on wrong side of one of planes through origin?
-	    C=crossProduct(Y,X);
-	    if (dot_prod(P,C)>0) 
+	    pC=Point3D.CrossProduct(pY, pX);
+	    if (Point3D.DotProduct(pP,pC)>0) 
 	    	return false;
-	    C=crossProduct(Z,Y);
-	    if (dot_prod(P,C)>0) 
+	    pC=Point3D.CrossProduct(pZ, pY);
+	    if (Point3D.DotProduct(pP,pC)>0) 
 	    	return false;
-	    C=crossProduct(X,Z);
-	    if (dot_prod(P,C)>0) 
+	    pC=Point3D.CrossProduct(pX, pZ);
+	    if (Point3D.DotProduct(pP,pC)>0) 
 	    	return false;
 	    return true;
-	    
   }
       
   /** 
@@ -1074,58 +1017,112 @@ public static double vec_norm(double X[]){
   }
   
   /** 
-   * Given points on sphere, return new Complex barycenter (theta,phi)
-   * of triangle they form; inside determined by orientation.
+   * Given points on sphere, return new Complex 
+   * barycenter (theta,phi) of triangle they form; 
+   * inside determined by orientation.
    * @param z1 (theta,phi)
    * @param z2 (theta,phi)
    * @param z3 (theta,phi)
    * @return new Complex barycenter (theta,phi)
   */
   public static Complex sph_tri_center(Complex z1,Complex z2,Complex z3) {
-    double[] X,Y,Z,M,C,D;
-
-    X=s_pt_to_vec(z1);
-    Y=s_pt_to_vec(z2);
-    Z=s_pt_to_vec(z3);
+    Point3D pX=s_pt_to_p3D(z1);
+    Point3D pY=s_pt_to_p3D(z2);
+    Point3D pZ=s_pt_to_p3D(z3);
     
     // centroid
-    M=new double[3];
-    M[0]=(X[0]+Y[0]+Z[0])/3.0;
-    M[1]=(X[1]+Y[1]+Z[1])/3.0;
-    M[2]=(X[2]+Y[2]+Z[2])/3.0;
+    Point3D pM=pX.add(pY).add(pZ).divide(3.0);
     
-    // C= YxX, vn = |C| 
-    C=crossProduct(Y,X);
-    double vn=Math.sqrt(C[0]*C[0]+C[1]*C[1]+C[2]*C[2]); 
-    if (vn<S_TOLER) { // almost parallel 
-        D=crossProduct(Z,Y);
-        vn=Math.sqrt(D[0]*D[0]+D[1]*D[1]+D[2]*D[2]);
-        if (vn<S_TOLER || dot_prod(D,X)<0) // M should be good. 
-        	return (proj_vec_to_sph(M[0],M[1],M[2]));
-        return (proj_vec_to_sph((-1.0)*M[0],(-1.0)*M[1],(-1.0)*M[2]));
+    // pC= pYxpX, pvn = |C| 
+    Point3D pC=Point3D.CrossProduct(pY,pX);
+    double pvn=pC.norm();
+    if (pvn<S_TOLER) { // almost parallel
+    	Point3D pD=Point3D.CrossProduct(pZ,pY);
+        pvn=pD.norm();
+        if (pvn<S_TOLER || Point3D.DotProduct(pD,pX)<0) // M should be good. 
+        	return proj_vec_to_sph(pM);
+        return proj_vec_to_sph(pM.times(-1.0));
     }
-    if (vec_norm(M)<S_TOLER) // almost coplanar 
-      return (proj_vec_to_sph(-C[0],-C[1],-C[2]));
-    if (dot_prod(C,Z)<0) {
-  	 Complex ans=proj_vec_to_sph(M[0],M[1],M[2]);
-    	 return (ans);
+    if (pM.norm()<S_TOLER) // almost coplanar 
+      return proj_vec_to_sph(pC.times(-1.0));
+    if (Point3D.DotProduct(pC,pZ)<0) {
+    	Complex ans=proj_vec_to_sph(pM);
+    	return ans;
     }
-    return (proj_vec_to_sph((-1.0)*M[0],(-1.0)*M[1],(-1.0)*M[2]));
+    return proj_vec_to_sph(pM.times(-1.0));
   } 
   
   /**
-	 * Given points z1,z2,z3 and z on the sphere (theta,phi), find barycentric 
-	 * coords of z relative to spherical triangle {z1,z2,z3}. For conversion the
-	 * other way, see BaryPoint.bp2Complex.
-	 * @param z Complex, (theta,phi)
-	 * @param z1 (theta,phi)
-	 * @param z2 (theta,phi)
-	 * @param z3 (theta,phi)
-	 * @return BaryPoint
+	 * Given points z1,z2,z3 and z on the sphere (theta,phi), 
+	 * find barycentric coords of z relative to spherical 
+	 * triangle {z1,z2,z3}. This applies only to triangles
+	 * of limited size due to the difficulty of defining 
+	 * them in general and the difficulty in converting back
+	 * in BaryPoint.bp2Complex. 
+	 * 
+	 * Stick to triangles lying in plane far enough from
+	 * the origin. If triangle is too close to the origin
+	 * (too "large") or p is outside the triangle, return 
+	 * null. 
+	 * 
+	 * In planar oriented triangle <a,b,c> and point p,
+	 * coords are area<b,c,p>/A, area<a,c,p>/A, and 
+	 * area<a,b,p>/A, where A=area<a,b,c>. 
+	 * 
+	 * Note: I've tried the formula from "Spherical 
+	 * Barycentric Coordinates", (2006) by Langer, 
+	 * Belyaev, and Seidel, but is too hard to compute 
+	 * and hard to reverse.
+	 * 
+	 * @param p Complex, (theta,phi)
+	 * @param a (theta,phi)
+	 * @param b (theta,phi)
+	 * @param c (theta,phi)
+	 * @return BaryPoint, null
 	 */
-	public static BaryPoint s_pt_to_bary(Complex z,Complex z1, Complex z2, Complex z3) {
-		// TODO: not finished
-		return null;
+	public static BaryPoint s_pt_to_bary(Complex p,
+			Complex a, Complex b, Complex c) {
+		
+		Point3D pa=Point3D.sph_2_p3D(a);
+		
+		// three edges
+		Point3D ab=Point3D.displacement(
+				Point3D.sph_2_p3D(b),pa);
+		Point3D bc=Point3D.displacement(
+				Point3D.sph_2_p3D(c),Point3D.sph_2_p3D(b));
+		Point3D ca=Point3D.displacement(
+				pa,Point3D.sph_2_p3D(c));
+		
+		// intersection pip of line through p with plane
+		//    defined by a, b, c
+		Point3D pp = Point3D.sph_2_p3D(p); 
+		Point3D n = Point3D.CrossProduct(ab,bc); // normal to plane
+		// signed distance of origin to plane
+		double t=Point3D.DotProduct(n,pa);
+		if (t<.1) // plane too close to origin
+			return null;
+		
+		t /= Point3D.DotProduct(n,pp);
+		Point3D pip=pp.times(t); // point on plane
+		
+		// vectors to pip
+		Point3D ap=Point3D.displacement(pip,pa);
+		Point3D bp=Point3D.displacement(
+				pip,Point3D.sph_2_p3D(b));
+		Point3D cp=Point3D.displacement(
+				pip,Point3D.sph_2_p3D(c));
+		
+		BaryPoint bpt = new BaryPoint();
+		double A=n.norm();
+		bpt.b0=Point3D.CrossProduct(bc,bp).norm()/A;
+		bpt.b1=Point3D.CrossProduct(ca,cp).norm()/A;
+		bpt.b2=Point3D.CrossProduct(ab,ap).norm()/A;
+		
+		// if pip is outside the triangle, it is outside
+		//    the face, return null;
+		if (bpt.b0<0 || bpt.b1<0 || bpt.b2<0)
+			return null;
+		return bpt;
 	}
 	
 	/**
@@ -1185,34 +1182,29 @@ public static double vec_norm(double X[]){
 	}
 			
 	/**
-	 * Given a list of sph points, (theta,phi), find their 3-space 
-	 * centroid
+	 * Given a list of sph points, (theta,phi), find 
+	 * their 3-space centroid
 	 * @param pts Complex[] (theta,phi) form
 	 * @return Point3D, null on error
 	 */
-	public static Point3D getCentroid(Complex []pts) {
+	public static Point3D getCentroid(Complex[] pts) {
 		
 		// find the centroid
 		int sz=pts.length-1;
-		double xcoord=0.0;
-		double ycoord=0.0;
-		double zcoord=0.0;
+		Point3D sum=new Point3D();
 		for (int j=1;j<=sz;j++) {
-			double []xyz=s_pt_to_vec(pts[j]);
-			xcoord +=xyz[0];
-			ycoord +=xyz[1];
-			zcoord +=xyz[2];
+			sum=sum.add(s_pt_to_p3D(pts[j]));
 		}
-
-		return new Point3D(xcoord/sz,ycoord/sz,zcoord/sz);
+		sum=sum.divide((double)sz);
+		return sum;
 	}
 	
 	/**
 	 * Stereographic projection: (u,v) --> (x,y,z) 
 	 * on unit sphere
-	 *     z=(1-(u*u+v*v))/(1+(u*u=v*v));
-	 *     x=u(1+z);
-	 *     y=v(1+z).
+	 *     z=(1-(u*u+v*v))/(1+(u*u+v*v));
+	 *     x=u*(1+z);
+	 *     y=v*(1+z).
 	 * @param ez Complex
 	 * @return Point3D
 	 */

@@ -97,8 +97,9 @@ public abstract class CPBase {
 	// ------------- debug: commands to strerr
 	public static boolean cmdDebug=false;
 
-	// TODO: various 'toler' and 'okerr' terms are a mess. interim value
-	//   (see also 'PackData.OKERR' and 'PackData.TOLER'.)
+	// TODO: various 'toler' and 'okerr' terms are a mess. 
+	//   interim value (see also 'PackData.OKERR' and 
+	//   'PackData.TOLER'.)
 	public static final double GENERIC_TOLER=.0000000001;   
 	public static int NUM_PACKS;
 	public static int activePackNum; // commands applied to this packing
@@ -260,10 +261,11 @@ public abstract class CPBase {
 		activePackNum=0;
 	}
 	
-	/* Extracts files in Resources/executables to the TempDirectory. 
-     * E.g. qhull.exe and triangle.exe used for Delaunay triangulations.
-     * TODO: have to generate and load executables for other operating
-     * systems, e.g., mac.
+	/* Extracts files in Resources/executables to 
+	 * the TempDirectory. E.g. qhull.exe and 
+	 * triangle.exe used for Delaunay triangulations.
+     * TODO: have to generate and load executables 
+     * for other operating systems, e.g., mac.
      * @param destDir destination directory.
      * @param execName filename
      * @return boolean
@@ -352,8 +354,8 @@ public abstract class CPBase {
 
     /**
      * The parser treats 'z' as denoting a complex variable. 
-     * This tells parser to set z to a specific value and evaluate 
-     * the function.
+     * This tells parser to set z to a specific value and 
+     * evaluate the function.
      * @param z, Complex
      * @return Complex
      */
@@ -368,7 +370,8 @@ public abstract class CPBase {
     }
     
     /**
-     * TODO: have to figure out how to designate variable character 't'
+     * TODO: have to figure out how to designate variable 
+     * character 't'
      * 
      * The parser treats 't' as denoting a double variable. 
      * This tells parser to set t to a specific value and evaluate 

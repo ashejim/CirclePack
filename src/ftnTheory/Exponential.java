@@ -162,8 +162,8 @@ public class Exponential {
 			Complex z0,Complex z1,Complex z2,double []ans) {
 		if (ans == null) 
 			throw new DataException("must create 'ans[4]'");
-		double []rad=new double[3];
-		Complex []cent=new Complex[3];
+		double[] rad=new double[3];
+		Complex[] cent=new Complex[3];
 		rad[0]=r0;
 		cent[0]=new Complex(z0);
 		rad[1]=r1;

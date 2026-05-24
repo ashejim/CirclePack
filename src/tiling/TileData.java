@@ -247,7 +247,6 @@ public class TileData {
 		for (int t=1;t<=td.tileCount && !special;t++) {
 			Tile tile=td.myTiles[t];
 			for (int j=0;(j<tile.vertCount && !special);j++) {
-				int v=tile.vert[j];
 				if (tile.vertCount==1 || tile.vertCount==2) // uni/digon?
 					special=true;
 			}

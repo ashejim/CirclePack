@@ -10,7 +10,6 @@ import combinatorics.komplex.RedEdge;
 import dcel.CombDCEL;
 import dcel.PackDCEL;
 import dcel.RawManip;
-import deBugging.DebugHelp;
 import exceptions.CombException;
 import exceptions.DataException;
 import komplex.EdgeSimple;

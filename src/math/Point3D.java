@@ -5,8 +5,9 @@ import packing.PackData;
 import complex.Complex;
 
 /**
- * Represents 3D point (x,y,z). Has conversions between (theta,phi) 
- * and (x,y,z) vector for points on the Riemann sphere.
+ * Represents 3D point (x,y,z) of doubles. Has 
+ * conversions between (theta,phi) and (x,y,z) 
+ * vector for points on the Riemann sphere.
  * @author Ken Stephenson
  */
 public class Point3D {
@@ -68,25 +69,7 @@ public class Point3D {
     return Math.acos(z/dist);
   }
   
-  /**
-   * Return displacement p2-p1; i.e., from p1 to p2.
-   * @param p1 Point3D
-   * @param p2 Point3D
-   * @return new Point3D
-   */
-  public static Point3D displacement(Point3D p1,Point3D p2) {
-	  return new Point3D(p2.x-p1.x,p2.y-p1.y,p2.z-p1.z);
-  }
-  
-  /** 
-   * subtract Point3D
-   * @param p2
-   * @return new Point3D, this-p2
-   */
-  public Point3D sub(Point3D p2) {
-	  return displacement(p2,this);
-  }
-
+ 
   /**
    * Cross product uXv
    * @param u Point3D
@@ -202,6 +185,34 @@ public class Point3D {
   }
   
   /**
+   * Add another Point3D
+   * @param p3D Point3D
+   * @return new Point3D
+   */
+  public Point3D add(Point3D p3D) {
+	  return new Point3D(x+p3D.x,y+p3D.y,z+p3D.z);
+  }
+  
+  /**
+   * Return displacement p2-p1; i.e., from p1 to p2.
+   * @param p1 Point3D
+   * @param p2 Point3D
+   * @return new Point3D
+   */
+  public static Point3D displacement(Point3D p1,Point3D p2) {
+	  return new Point3D(p2.x-p1.x,p2.y-p1.y,p2.z-p1.z);
+  }
+  
+  /** 
+   * subtract Point3D
+   * @param p2
+   * @return new Point3D, this-p2
+   */
+  public Point3D sub(Point3D p2) {
+	  return displacement(p2,this);
+  }
+
+  /**
    * multiple by scalar d
    * @param d double
    * @return new Point3D
@@ -304,19 +315,22 @@ public class Point3D {
   }
   
   /**
-   * Converts a (theta,phi) point on sphere to Point3D
+   * Converts a (theta,phi) point on sphere to unit
+   * length Point3D.
    * @param z Complex, spherical coords
    * @return Point3D
    */
   public static Point3D sph_2_p3D(Complex sph_z){
-	  return new Point3D(Math.sin(sph_z.y) * Math.cos(sph_z.x),
-			  Math.sin(sph_z.y) * Math.sin(sph_z.x),
+	  double s=Math.sin(sph_z.y);
+	  return new Point3D( s*Math.cos(sph_z.x),
+			  s*Math.sin(sph_z.x),
 			  Math.cos(sph_z.y));
   }
 
   /**
-   * Return new Complex (theta,phi) representing projection of Point3D 
-   * to the unit sphere; points close to origin in 3D go to NORTH pole.
+   * Return new Complex (theta,phi) representing projection 
+   * of Point3D to the unit sphere; points close to origin 
+   * in 3D go to NORTH pole.
    * @param pt Point3D
    * @return Complex, sph coords (theta,phi) 
    */

@@ -15,7 +15,6 @@ import combinatorics.komplex.HalfEdge;
 import complex.Complex;
 import dcel.PackDCEL;
 import dcel.SideData;
-import deBugging.DCELdebug;
 import exceptions.ParserException;
 import geometry.CircleSimple;
 import geometry.CommonMath;
@@ -32,6 +31,7 @@ import listManip.HalfLink;
 import listManip.NodeLink;
 import listManip.PointLink;
 import listManip.TileLink;
+import math.Point3D;
 import packing.CPdrawing;
 import packing.PackData;
 import tiling.Tile;
@@ -1029,20 +1029,14 @@ public class DisplayParser {
 									
 									// for sph, via vectors (may hit antipodal point) 
 									if (p.hes>0) {
-										double xc=0.0;
-										double yc=0.0;
-										double zc=0.0;
+										Point3D p3D=new Point3D();
 										Iterator<Complex> czit=cz.iterator();
 										while (czit.hasNext()) {
-											double []xyz=SphericalMath.s_pt_to_vec(czit.next());
-											xc+=xyz[0];
-											yc+=xyz[1];
-											zc+=xyz[2];
+											Point3D t3D=Point3D.sph_2_p3D(czit.next());
+											p3D.add(t3D);
 										}
-										xc /=tile.vertCount;
-										yc /=tile.vertCount;
-										zc /=tile.vertCount;
-										wc=SphericalMath.proj_vec_to_sph(xc,yc,zc);
+										p3D.divide(tile.vertCount);
+										wc=Point3D.p3D_2_sph(p3D);
 									}
 									else {
 										Iterator<Complex> zpts=cz.iterator();

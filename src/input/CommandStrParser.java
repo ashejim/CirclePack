@@ -97,7 +97,6 @@ import listManip.NodeLink;
 import listManip.PointLink;
 import listManip.TileLink;
 import listManip.VertexMap;
-import math.CirMatrix;
 import math.Matrix3D;
 import math.Mobius;
 import microLattice.MicroGrid;
@@ -4058,6 +4057,17 @@ public class CommandStrParser {
     					  } catch(Exception ex) {
     						  throw new ParserException(
     							"set_Mobius failed: usage -c {v}");
+    					  }
+    				  }
+    				  else if (str.equals("-dS")) {
+    					  try {
+    						  int v=Integer.parseInt(items.get(0));
+    						  Vertex vert=packData.packDCEL.vertices[v];
+    						  mob=(Mobius)Mobius.sph_circle_2_mob(new CircleSimple(vert.center,vert.rad));
+    						  count++;
+    					  } catch(Exception ex) {
+    						  throw new ParserException(
+    							"set_Mobius failed: usage -dS {v}");
     					  }
     				  }
     				  else if (str.equals("-f")) {
@@ -9069,7 +9079,6 @@ public class CommandStrParser {
     		  // for new circles (last origVC indices),
     		  //   reflect in circle 
     		  if (packData.vertexMap!=null) {
-    			  int nc=packData.packDCEL.vertCount-origVC+1;
     			  for (int v=1;v<=origVC;v++) {
     				  int new_v=packData.vertexMap.findW(v);
     				  if (new_v>0) {
