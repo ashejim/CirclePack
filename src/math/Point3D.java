@@ -222,7 +222,8 @@ public class Point3D {
   }
   
   /**
-   * Return this vector minus projection in direction of vector v.
+   * Return this vector minus projection in 
+   * direction of vector v.
    * @param v Point3D
    * @return new Point3D
    */

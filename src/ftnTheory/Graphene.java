@@ -1462,9 +1462,9 @@ public class Graphene extends PackExtender {
 	class CarbonEnergy {
 		combinatorics.komplex.DcelFace face;  //  
 		int faceIndx; // associated face index
-		int []verts=new int[3]; 
-		double []rad=new double[3]; // eucl
-		double []invdist=new double[3]; 
+		int[] verts=new int[3]; 
+		double[] rad=new double[3]; // eucl
+		double[] invdist=new double[3]; 
 		public Color atomColor;
 		public Color []bondColors;
 		public double []bondLengths; 

@@ -1030,14 +1030,15 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * Given a circle (spherical only), this creates
-	 * the normalized Mobius form of the associated 
-	 * point in de Sitter space. See 'DeSitter.java'.
-	 * @param cs CircleSimple 
+	 * Given a circle, create the normalized Mobius 
+	 * form of the associated point in de Sitter space. 
+	 * See 'DeSitter.java'.
+	 * @param cs CircleSimple
+	 * @param hes int 
 	 * @return new Mobius
 	 */
-	public static Mobius sph_circle_2_mob(CircleSimple cs) {
-		DeSitter dS=new DeSitter(cs);
+	public static Mobius circle_2_mob(CircleSimple cs,int hes) {
+		DeSitter dS=new DeSitter(cs,hes);
 		Mobius mob=DeSitter.matrixForm(dS);
 		mob.normalize();
 		return mob;

@@ -212,13 +212,15 @@ public class RiemHilbert extends PackExtender {
 			return rhc.rad-rhc.center.minus(cent).abs();
 		}
 		double dist=PathUtil.gpDistance(rhc.restCurve,cent);
-		if (rhc.restCurve.contains(cent.x,cent.y)) return dist;
+		if (rhc.restCurve.contains(cent.x,cent.y)) 
+			return dist;
 		return -dist;
 	}
 	
 	/**
-	 * Signed distance from circle to its curve. Plus: lies inside curve,
-	 * minimum distance. Negative: negative of (roughly) max distance to
+	 * Signed distance from circle to its curve. 
+	 *   Plus: lies inside curve, minimum distance. 
+	 *   Negative: negative of (roughly) max distance to curve
 	 * @param v int
 	 * @return signed distance
 	 */

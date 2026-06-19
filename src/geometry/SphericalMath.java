@@ -491,33 +491,20 @@ public class SphericalMath{
   }
   
   /**
-   * Return new Complex (theta,phi) representing projection 
-   * of given Point3D to the unit sphere; recall, origin 
-   * goes to NORTH pole.
-   * @param p3d Point3D
-   * @return sph coords (theta,phi) 
-   */
-  public static Complex proj_vec_to_sph(Point3D p3d) {
-	  return proj_vec_to_sph(p3d.x,p3d.y,p3d.z);
-  } 
-  
-  /**
    * Return new Complex (theta,phi) representing projection of 
-   * given 3D vector (x,y,z) to the unit sphere; recall, origin 
+   * given 3D vector to the unit sphere; recall, origin 
    * goes to NORTH pole.
-   * @param x double
-   * @param y double
-   * @param z double
+   * @param p3D Point3D
    * @return sph coords (theta,phi), default to N if vector norm is too small.
    */
-  public static Complex proj_vec_to_sph(double x,double y,double z) {
+  public static Complex proj_vec_to_sph(Point3D p3D) {
 	  double dist;
 
 	  // default for things near origin 
-	  if ((dist=Math.sqrt(x*x+y*y+z*z))< S_TOLER) {
+	  if ((dist=p3D.norm())< S_TOLER) {
 		  return new Complex(0.0);
 	  }
-	  return new Complex(Math.atan2(y,x),Math.acos(z/dist));	
+	  return new Complex(Math.atan2(p3D.y,p3D.x),Math.acos(p3D.z/dist));	
   } 
   
 /**
@@ -540,30 +527,6 @@ public static Complex sphToVisualPlane(double theta,double phi) {
 	return new Complex(Math.sin(phi)*Math.sin(theta),Math.cos(phi)); 
 }
 
-/**
- * Dot product of 3-vectors
- * @param V double[3]
- * @param W double[3]
- * @return double
- */
-public static double dot_prod(double V[], double W[]){
-    return (V[0] * W[0] + V[1] * W[1] + V[2] * W[2]);
-  }
-
-/**
- * Length of real 3-vector.
- * @param X double[]
- * @return double
- */
-public static double vec_norm(double X[]){
-    return(Math.sqrt(X[0] * X[0] + X[1] * X[1] + X[2] * X[2]));
-  }
-
-//class Vector2D {
-//    double y;
-//    double z;
-//  }
-
   // (OBE) Note: simple computation for control point for
   // drawing arc of great circle between two points.
   // 
@@ -581,20 +544,6 @@ public static double vec_norm(double X[]){
 		  return new Point3D(0.0,0.0,0.0);
 	  }
 	  return Point3D.vectorSum(A,B).times(1/(1+AdotB));
-  }
-  
-  /**
-   * Cross product of 2 3-vectors, XxY
-   * @param X double[3]
-   * @param Y double[3]
-   * @return double[3]
-   */
-  public static double[] crossProduct(double X[], double Y[]) {
-    double[] Z = new double[3];
-    Z[0] = X[1] * Y[2] - X[2] * Y[1];
-    Z[1] = X[2] * Y[0] - X[0] * Y[2];
-    Z[2] = X[0] * Y[1] - X[1] * Y[0];
-    return (Z);
   }
   
   /**
@@ -753,7 +702,7 @@ public static double vec_norm(double X[]){
    *    or using its negative.
    * @param ctr1 (theta,phi)
    * @param ctr2 (theta,phi)
-   * @return double[3] unit vector
+   * @return unit Point3D
    */
   public static Point3D sph_tang_p3D(Complex ctr1,Complex ctr2) {
     Point3D pT=new Point3D();
@@ -907,27 +856,24 @@ public static double vec_norm(double X[]){
   public static CircleSimple e_to_s_data(Complex ez,double er) {
 	  
       Complex sz=new Complex(0.0); // will be sph center
-      double[] P3=new double[3]; // 3D point on sphere
-
       double rr=Math.abs(er); // note, r negative handled later
       
       // if er too small, project center, set sr=er unchanged.
       if (rr<S_TOLER) {
     	  double denom=ez.absSq()+1.0;
-    	  P3[0]=(2*ez.x)/denom;
-    	  P3[1]=(2*ez.y)/denom;
-    	  P3[2]=(2.0-denom)/denom;
-    	  if(P3[2]>(1.0-S_TOLER)) { // near N pole
+    	  Point3D p3D=new Point3D(2.0*ez.x,2.0*ez.y,(2.0-denom));
+    	  p3D=p3D.divide(denom);
+    	  if(p3D.z>(1.0-S_TOLER)) { // near N pole
     		  ez.x=ez.y=0.0;
     		  return new CircleSimple(sz,er,0);
     	  }
-    	  if (P3[2]<(S_TOLER-1.0)) { // near S pole
+    	  if (p3D.z<(S_TOLER-1.0)) { // near S pole
     		  sz.x=0.0;
     		  sz.y=Math.PI;
     		  return new CircleSimple(sz,er,0);
     	  }
-    	  sz.y=Math.acos(P3[2]);
-    	  sz.x=Math.atan2(P3[1],P3[0]);
+    	  sz.y=Math.acos(p3D.z);
+    	  sz.x=Math.atan2(p3D.y,p3D.z);
     	  return new CircleSimple(sz,er,1); 
       }
       
@@ -952,18 +898,18 @@ public static double vec_norm(double X[]){
       
       // find the circle through the 3 spherical points
       CircleSimple cS=circle_3_sph(spts[0],spts[1],spts[2]);
-
       return cS;
   }
   
   /** 
-   * True if sph_pt (i.e., (theta,phi)) lies in triangle with 
-   * given spherical points as corners for a CONVEX triangle. 
+   * True if sph_pt (i.e., (theta,phi)) lies in 
+   * triangle with given spherical points as 
+   * corners for a CONVEX triangle. 
    * TODO: handle non-convex triangles
-   * @param sph_pt (theta,phi)
-   * @param z1 (theta,phi)
-   * @param z2 (theta,phi)
-   * @param z3 (theta,phi)
+   * @param sph_pt Complex (theta,phi)
+   * @param z1 Complex (theta,phi)
+   * @param z2 Complex (theta,phi)
+   * @param z3 Complex (theta,phi)
    * @return boolean
    */
   public static boolean pt_in_sph_tri(Complex sph_pt,
@@ -1008,11 +954,8 @@ public static double vec_norm(double X[]){
     if (xx<0) {
         return new UtilPacket(0,0.0,0.0);
     }
-    double[] V=new double[3];
-    V[0]=xx;
-    V[1]=pt.x;
-    V[2]=pt.y;
-    Complex z=proj_vec_to_sph(V[0],V[1],V[2]);
+    Point3D p3D=new Point3D(xx,pt.x,pt.y);
+    Complex z=proj_vec_to_sph(p3D);
     return new UtilPacket(1,z.x,z.y);
   }
   
@@ -1086,12 +1029,12 @@ public static double vec_norm(double X[]){
 		Point3D pa=Point3D.sph_2_p3D(a);
 		
 		// three edges
-		Point3D ab=Point3D.displacement(
-				Point3D.sph_2_p3D(b),pa);
-		Point3D bc=Point3D.displacement(
-				Point3D.sph_2_p3D(c),Point3D.sph_2_p3D(b));
+		Point3D ab=Point3D.displacement(pa,
+				Point3D.sph_2_p3D(b));
+		Point3D bc=Point3D.displacement(Point3D.sph_2_p3D(b),
+				Point3D.sph_2_p3D(c));
 		Point3D ca=Point3D.displacement(
-				pa,Point3D.sph_2_p3D(c));
+				Point3D.sph_2_p3D(c),pa);
 		
 		// intersection pip of line through p with plane
 		//    defined by a, b, c
@@ -1106,11 +1049,11 @@ public static double vec_norm(double X[]){
 		Point3D pip=pp.times(t); // point on plane
 		
 		// vectors to pip
-		Point3D ap=Point3D.displacement(pip,pa);
+		Point3D ap=Point3D.displacement(pa,pip);
 		Point3D bp=Point3D.displacement(
-				pip,Point3D.sph_2_p3D(b));
+				Point3D.sph_2_p3D(b),pip);
 		Point3D cp=Point3D.displacement(
-				pip,Point3D.sph_2_p3D(c));
+				Point3D.sph_2_p3D(c),pip);
 		
 		BaryPoint bpt = new BaryPoint();
 		double A=n.norm();
@@ -1152,33 +1095,32 @@ public static double vec_norm(double X[]){
 	 * of a transformation z --> a*z+b+c*i. If 'sPole' 
 	 * is true, assume one more point located at infinity.
 	 * @param P Complex[], points in the plane (indexed from 1)
-	 * @param trans double[3], {a,b,c} coeff for transfomation
+	 * @param trans Point3D, {a,b,c} coeff for transfomation
 	 * @param sPole boolean: include south pole (pt at infinity)?
 	 * @return Point3D, centroid location
 	 */
-	public static Point3D transCentroid(Complex []P,
-			double []trans,boolean sPole) {
+	public static Point3D transCentroid(Complex[] P,
+			Point3D trans,boolean sPole) {
 		int N=P.length-1;
-		double X=0;
-		double Y=0;
-		double Z=0;
+		Point3D pt=new Point3D();
 		if (sPole)
-			Z=-1;
+			pt.z=-1.0;
 		
 		for (int n=1;n<=N;n++) {
-			double u=trans[0]*P[n].x+trans[1];
-			double v=trans[0]*P[n].y+trans[2];
+			double u=trans.x*P[n].x+trans.y;
+			double v=trans.x*P[n].y+trans.z;
 			double sq=u*u+v*v;
 			double denom=1.0+sq;
-			X += 2.0*u/denom;
-			Y += 2.0*v/denom;
-			Z +=(1.0-sq)/denom;
+			pt.x+=2.0*u/denom;
+			pt.y+=2.0*v/denom;
+			pt.z+=(1.0-sq)/denom;
 		}
 
 		double dn=(double)N;
 		if (sPole)
 			dn+=1.0;
-		return new Point3D(X/dn,Y/dn,Z/dn);
+		pt=pt.divide(dn);
+		return pt;
 	}
 			
 	/**

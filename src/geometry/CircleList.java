@@ -148,8 +148,9 @@ public class CircleList {
 	}
 		
 	/**
-	 * Using static variables, convert 2D list to 3D and then project
-	 * and put in the static 'vec'. First spot in vec already occupied.
+	 * Using static variables, convert 2D list to 3D and 
+	 * then project and put in the static 'vec'. First 
+	 * spot in vec already occupied.
 	 * @param twoD
 	 */
 	public static void convertToVec(Vector<Point2D.Double> twoD) {

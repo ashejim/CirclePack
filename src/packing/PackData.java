@@ -35,6 +35,7 @@ import exceptions.PackingException;
 import exceptions.ParserException;
 import geometry.CircleSimple;
 import geometry.CommonMath;
+import geometry.DeSitter;
 import geometry.EuclMath;
 import geometry.HyperbolicMath;
 import geometry.SphericalMath;
@@ -1847,12 +1848,14 @@ public class PackData{
 	}
 
 	/** 
-	 * Return inversive distance between circles for v and w,
-	 * not necessarily neighbors. InvDist rho goes from -1 to infinity. 
-	 * rho is in [-1,1] for overlap situation, then rho=cos(overlap angle); 
-	 * rho=0 for orthogonal circles; rho=1 for tangency; rho>1 for
-	 * separated circles, where invDist is cosh of the hyperbolic distance
-	 * between the circles (bubbled into hyperbolic upper half space).
+	 * Return inversive distance between circles for 
+	 * v and w, not necessarily neighbors. InvDist rho 
+	 * goes from -1 to infinity. rho is in [-1,1] for 
+	 * overlap situation, then rho=cos(overlap angle); 
+	 * rho=0 for orthogonal circles; rho=1 for tangency;
+	 * rho>1 for separated circles, where invDist is 
+	 * cosh of the hyperbolic distance between the 
+	 * circles (bubbled into hyperbolic upper half space).
 	 *  
 	 * TODO: routines not very robust
 	 * 
@@ -1862,38 +1865,11 @@ public class PackData{
 	 */
 	public double comp_inv_dist(int v,int w)
 	{
-	  double erad1,erad2;
-	  Complex ectr1,ectr2;
-	  CircleSimple sc;
-
-	  if (v<1 || w<1 || v>nodeCount || w>nodeCount) 
-		  return 1.0; 
-	  // note: tangency is default 
-	  if (hes>0) { // spherical
-		  Point3D pv=SphericalMath.s_pt_to_p3D(getCenter(v));
-		  Point3D pw=SphericalMath.s_pt_to_p3D(getCenter(w));
-		  // formula: (cos(r_v)*cos(r_w)-cos(dist(v,w))/(sin(r_v)*sin(r_w));
-		  double I=1.0/(Math.tan(getRadius(v))*Math.tan(getRadius(w)))-
-				  Point3D.DotProduct(pv,pw)/
-		  	(Math.sin(getRadius(v))*Math.sin(getRadius(w)));
-		  return I;
-	  }
-	  if (hes<0) { // hyperbolic: use euclidean data 
-	      sc=HyperbolicMath.h_to_e_data(getCenter(v),getRadius(v));
-	      ectr1=new Complex(sc.center);
-	      erad1=sc.rad;
-	      sc =HyperbolicMath.h_to_e_data(getCenter(w),getRadius(w));
-	      ectr2=new Complex(sc.center);
-	      erad2=sc.rad;
-	  }
-	  else
-	  {
-	      ectr1=getCenter(v);
-	      erad1=getRadius(v);
-	      ectr2=getCenter(w);
-	      erad2=getRadius(w);
-	  }
-	  return (EuclMath.inv_dist(ectr1,ectr2,Math.abs(erad1),Math.abs(erad2)));
+		CircleSimple cv=new CircleSimple(getCenter(v),getRadius(v));
+		CircleSimple cw=new CircleSimple(getCenter(w),getRadius(w));
+		DeSitter dSv=new DeSitter(cv,hes); 
+		DeSitter dSw=new DeSitter(cw,hes); 
+		return DeSitter.invDistance(dSv,dSw);
 	}
 	
 	/** 

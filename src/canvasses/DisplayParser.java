@@ -12,12 +12,14 @@ import baryStuff.BaryPoint;
 import circlePack.PackControl;
 import combinatorics.komplex.DcelFace;
 import combinatorics.komplex.HalfEdge;
+import combinatorics.komplex.Vertex;
 import complex.Complex;
 import dcel.PackDCEL;
 import dcel.SideData;
 import exceptions.ParserException;
 import geometry.CircleSimple;
 import geometry.CommonMath;
+import geometry.DeSitter;
 import geometry.EuclMath;
 import geometry.HyperbolicMath;
 import geometry.SphericalMath;
@@ -441,6 +443,36 @@ public class DisplayParser {
 								dispFlags.setLabel(Integer.toString(f));
 							cpDrawing.drawCircle(theCircle.center,theCircle.rad, dispFlags);
 							count++;
+						}
+						break;
+					}
+					case 'o': // orthonormal dual circle
+					{
+						FaceLink faceLink = new FaceLink(p, items);
+						if (faceLink != null && faceLink.size() <= 0) // nothing in list
+							break;
+						Iterator<Integer> flist = faceLink.iterator();
+						while (flist.hasNext()) {
+							int f=flist.next();
+							DcelFace face=p.packDCEL.faces[f];
+							HalfEdge he=face.edge;
+							Vertex vert=he.origin;
+							CircleSimple c0=vert.getCircleSimple();
+							he=he.next;
+							vert=he.origin;
+							CircleSimple c1=vert.getCircleSimple();
+							he=he.next;
+							vert=he.origin;
+							CircleSimple c2=vert.getCircleSimple();
+							CircleSimple theCircle=DeSitter.orthoCircle(c0, c1, c2,p.hes);
+							if (theCircle!=null) {
+								if (!dispFlags.colorIsSet && (dispFlags.fill || dispFlags.colBorder))
+									dispFlags.setColor(p.getFaceColor(f));
+								if (dispFlags.label)
+									dispFlags.setLabel(Integer.toString(f));
+								cpDrawing.drawCircle(theCircle.center,theCircle.rad, dispFlags);
+								count++;
+							}
 						}
 						break;
 					}

@@ -4063,7 +4063,7 @@ public class CommandStrParser {
     					  try {
     						  int v=Integer.parseInt(items.get(0));
     						  Vertex vert=packData.packDCEL.vertices[v];
-    						  mob=(Mobius)Mobius.sph_circle_2_mob(new CircleSimple(vert.center,vert.rad));
+    						  mob=(Mobius)Mobius.circle_2_mob(new CircleSimple(vert.center,vert.rad),packData.hes);
     						  count++;
     					  } catch(Exception ex) {
     						  throw new ParserException(
@@ -6150,7 +6150,8 @@ public class CommandStrParser {
 				return ans;
 			}
 			
-/* TODO: OBE have to redo this without a dual graph of the old style.
+/* TODO: OBE have to redo this without a dual graph 
+ * of the old style.
  * 		  
 			// =============== dual_layout (replaced 'sch_layout')
 			if (cmd.startsWith("dual_lay")) {

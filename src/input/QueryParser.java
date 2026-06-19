@@ -30,6 +30,7 @@ import math.Matrix3D;
 import math.Mobius;
 import math.Point3D;
 import packing.PackData;
+import schwarzWork.Schwarzian;
 import util.CallPacket;
 import util.StringUtil;
 import util.ViewBox;
@@ -1068,8 +1069,23 @@ public class QueryParser {
 					while (tick<10 && his.hasNext()) {
 						HalfEdge edge=his.next();
 						if (edge!=null) {
+							double[] rad = Schwarzian.ordinary_radii(p,edge);
+							double schn;
 							try {
-								ans.append(String.format(" %.6f ",edge.getSchwarzian()));
+								// for sphere: routine lay out new circles
+								if (p.hes>0)  
+									schn=Schwarzian.rad_to_schwarzian(rad,p.hes);
+
+								// for hyperbolic, convert radii to eucl
+								else 
+									schn=Schwarzian.rad_to_schwarzian(rad,0);
+							} catch (DataException dex) {
+								throw new DataException(dex.getMessage());
+							}
+
+							
+							try {
+								ans.append(String.format(" %.6f ",schn));
 							} catch (Exception ex) {
 								throw new DataException("");
 							}

@@ -62,8 +62,8 @@ public class DualTri {
 	 * illegal. 
 	 * (Note: see 'PackDCEL.getTriIncircle', but this needs
 	 * radii in the hyperbolic case.)
-	 * Caution: In the sph case, can get the wrong distance between
-	 * 'corners'.
+	 * Caution: In the sph case, can get the wrong distance 
+	 * between 'corners'.
 	 */
 	public void setInCirclePts() {
 		double []len=new double[3];

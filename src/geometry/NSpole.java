@@ -304,12 +304,14 @@ public class NSpole {
 	}
 
 	/**
-	 * Given vector of points in the plane, return a Mobius 
-	 * transformation that puts the centroid of their stereo 
-	 * projections to the sphere close to the origin in 3-space. 
-	 * Return null on error. Note that the resulting Mobius
-	 * is linear (fixes infinity). If 'sPole' is true, then 
-	 * we include a point located at infinity.
+	 * Given vector of points in the plane, 
+	 * return a Mobius transformation that puts 
+	 * the centroid of their stereo projections 
+	 * to the sphere close to the origin in 3-space. 
+	 * Return null on error. Note that the resulting 
+	 * Mobius is linear (fixes infinity). If 'sPole' 
+	 * is true, then we include a point located 
+	 * at infinity.
 	 * 		
 	 * @param pts Complex[], plane points
 	 * @param cycles int, iterative cycles
@@ -325,7 +327,7 @@ public class NSpole {
 		double []accP = new double[3];
 		p0[0]=accP[0]=1.0;
 		double bestsq = SphericalMath.transCentroid(
-				pts,p0,sPole).normSq();
+				pts,new Point3D(p0[0],p0[1],p0[2]),sPole).normSq();
 		if (debug)
 			System.out.println("starting 'bestsq' = "+
 					String.format("%.6f",bestsq));
@@ -338,7 +340,7 @@ public class NSpole {
 			if (debug)
 				System.out.println("outercount "+outercount);
 			double delt = 2.0;
-			p0[0]=1;
+			p0[0]=1.0;
 			p0[1]=0.0;
 			p0[2]=0.0;
 
@@ -349,7 +351,7 @@ public class NSpole {
 				for (int i = 0; i < 3; i++) {
 					double holdp0 = p0[i];
 					p0[i] = p0[i] + delt;
-					double newnorm = SphericalMath.transCentroid(pts, p0,sPole).normSq();
+					double newnorm = SphericalMath.transCentroid(pts,new Point3D(p0[0],p0[1],p0[2]),sPole).normSq();
 					p0[i] = holdp0; // reset for continued tries
 					if (newnorm < bestsq) { // improved
 						bestsq = newnorm;
@@ -357,7 +359,7 @@ public class NSpole {
 					} 
 					else {
 						p0[i] = p0[i] - delt;
-						newnorm = SphericalMath.transCentroid(pts, p0,sPole).normSq();
+						newnorm = SphericalMath.transCentroid(pts,new Point3D(p0[0],p0[1],p0[2]),sPole).normSq();
 						p0[i] = holdp0;
 						if (newnorm < bestsq) {
 							bestsq = newnorm;

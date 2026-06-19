@@ -733,7 +733,7 @@ public class RandomTriangulation {
 				double d=Math.sqrt(x*x+y*y+z*z);
 				if (d<.000001)
 					throw new DataException("origin not a valid point");
-				uP.z_vec.add(SphericalMath.proj_vec_to_sph(x,y,z)); // 3D, (theta,phi) form
+				uP.z_vec.add(SphericalMath.proj_vec_to_sph(new Point3D(x,y,z))); // 3D, (theta,phi) form
 				uP.rtnFlag=3;
 			}
 
@@ -750,7 +750,7 @@ public class RandomTriangulation {
     				double d=Math.sqrt(x*x+y*y+z*z);
     				if (d<.000001)
     					throw new DataException("origin not a valid point");
-    				uP.z_vec.add(SphericalMath.proj_vec_to_sph(x,y,z)); // 3D point
+    				uP.z_vec.add(SphericalMath.proj_vec_to_sph(new Point3D(x,y,z))); // 3D point
     			}
     		}
     		return;

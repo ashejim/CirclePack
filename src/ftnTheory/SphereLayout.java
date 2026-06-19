@@ -369,9 +369,12 @@ public class SphereLayout extends PackExtender {
 			if (Math.abs(M[3][1])<.00000001)
 				CirclePack.cpb.msg("Note: M matrix in 'SphereLayout' may lead to ambiguous placements");
 			
-			// Otherwise, sign of M[3][1] affects global orientation. Find oriented triple {b3,v,w},
-			//   locate circle centers (should be in one hemisphere since b0,b1,b2 are on y-axis). 
-			//   Find b3, v, w centers, compute a X b, a = vector b3 to v,  b = vector of b3 w.
+			// Otherwise, sign of M[3][1] affects global orientation. 
+			//   Find oriented triple {b3,v,w},
+			//   locate circle centers (should be in one 
+			//   hemisphere since b0,b1,b2 are on y-axis). 
+			//   Find b3, v, w centers, compute a X b, 
+			//     a = vector b3 to v,  b = vector b3 to w.
 			//   Dot product of b3 with a X b should be positive.
 			else {
 				int b3=beacons.get(3);
@@ -450,7 +453,7 @@ public class SphereLayout extends PackExtender {
 				
 				// store spherical centers, radii in layoutPack
 				double R=Math.sqrt(x*x+y*y+z*z);
-				layoutPack.setCenter(v,SphericalMath.proj_vec_to_sph(x,y,z));
+				layoutPack.setCenter(v,SphericalMath.proj_vec_to_sph(new Point3D(x,y,z)));
 				double rho=Math.acos(t/R);
 				if (Double.isNaN(rho)) {
 					CirclePack.cpb.errMsg("vertex "+v+": t is "+t+" and R is "+R);
