@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# runCP - launch CirclePack from a terminal (Git Bash / WSL / Unix)
+#
+#   ./runCP                 run CirclePack
+#   ./runCP myscript.cps    run, auto-loading a script
+#   ./runCP -b              recompile src -> bin first, then run
+#
+# Runs from the compiled classes in 'bin' plus the libraries in 'jars'.
+
+set -e
+cd "$(dirname "${BASH_SOURCE[0]}")"
+CP="bin;jars/*"   # Windows Java uses ';' as the classpath separator
+
+if [ "$1" = "-b" ] || [ "$1" = "build" ]; then
+    shift
+    echo "Compiling src -> bin ..."
+    find src -name '*.java' > /tmp/cp_srcs.txt
+    javac -encoding UTF-8 -cp "$CP" -d bin @/tmp/cp_srcs.txt
+fi
+
+exec java -cp "$CP" allMains.SplashMain "$@"

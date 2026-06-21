@@ -11512,10 +11512,10 @@ public static CallPacket valueExecute(PackData packData,
 } // end of 'CommandStrParser' class
 
 
-/** =================== local utility classes ========================
+/** =================== local utility classes ======================== */
 /**
- * @brief /** for use with 'adjoin' */
- * for use with 'adjoin' */
+ * for use with 'adjoin'
+ */
 class Overlap {
   int v,w;
   double angle;

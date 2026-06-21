@@ -42,19 +42,39 @@ public class ShellManager {
 	static BufferedWriter bufWriter; 
 	
 	// command strings are kept in 'cmdHistory' for shell up/down action
-	public static List<String> cmdHistory = new ArrayList<String>(); 
+	public static List<String> cmdHistory = new ArrayList<String>();
 	public static int cmdHistoryIndex;
+
+	// every command shown in the shell/terminal, in execution order; used to
+	// export the terminal session as a '.cps' script. (Unlike 'cmdHistory',
+	// which is gated for up/down recall, this mirrors the visible transcript.)
+	public static List<String> scriptCmds = new ArrayList<String>();
 
 	// Constructors
 	public ShellManager() {
+		resetRunHistory();
+		cmdHistoryIndex=-1;
+	}
+
+	/**
+	 * @brief (Re)initialize 'runHistory' to its empty header/body state.
+	 */
+	private void resetRunHistory() {
 		runHistory=new StringBuffer("<html><head><style>{ font-family: courier; font-size: 8px; }CirclePack run, ID "+
 				Integer.toString(CPBase.debugID)+"</style></head>\n");
 		runHistory.append("<body>\n");
 		runHistory.append("History of commands and messages will be displayed here.\n");
 		runHistory.append("<!--HEAD BDRY-->\n"); // top anchor string, may be needed to find head
 		histHeadEnd=runHistory.length()+1;
-		
-		cmdHistoryIndex=-1;
+	}
+
+	/**
+	 * @brief Clear the shell/terminal transcript and the saved command
+	 * list. (Keyboard up/down recall in 'cmdHistory' is left intact.)
+	 */
+	public void clearHistory() {
+		resetRunHistory();
+		scriptCmds.clear();
 	}
 	
 	/**
@@ -85,6 +105,10 @@ public class ShellManager {
 		myconsole.showCmdCount(retCount);
 
 		MessageHover.updateShellPane();
+
+		// also refresh the standalone terminal window, if it exists
+		if (PackControl.terminalFrame!=null)
+			PackControl.terminalFrame.refreshTranscript();
 	}
 	
 	/**
@@ -96,6 +120,7 @@ public class ShellManager {
 	public void recordCmd(String cmd,Integer count) {
 		if (cmd==null || cmd.length()==0)
 			return;
+		scriptCmds.add(cmd); // remember for '.cps' export
 		checkLength();
 		if (count!=null) {
 			int n=count.intValue();
