@@ -19,6 +19,10 @@ Requirements: Python 3.8+. The converters use only the standard library.
 The magic additionally needs IPython/Jupyter (`pip install jupyterlab`) and a
 **running CirclePack** (see below).
 
+> **New here? Open [`demo_circlepack.ipynb`](demo_circlepack.ipynb)** — a guided,
+> runnable notebook that walks through setup and shows Markdown + Python +
+> `%%circlepack` cells working together.
+
 ---
 
 ## 1 & 2. Converting between `.cps` and `.ipynb`

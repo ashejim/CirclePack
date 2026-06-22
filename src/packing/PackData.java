@@ -2275,28 +2275,55 @@ public class PackData{
 			vlist=new NodeLink(this,items);
 		}
 		
-		double minx,miny,maxx,maxy;
+		// Convert each circle to its euclidean drawing form. The stored
+		// center/radius are in the ambient geometry (x-radii/horocycles in
+		// hyperbolic, sphere coords in spherical), so plotting them raw is
+		// wrong for non-euclidean packings. Use the same conversions the
+		// screen drawing uses.
+		java.util.ArrayList<CircleSimple> ecirc=new java.util.ArrayList<CircleSimple>();
+		java.util.ArrayList<Color> ecol=new java.util.ArrayList<Color>();
 		Iterator<Integer> vlst=vlist.iterator();
-		int v=vlst.next();
-		Complex vz=getCenter(v);
-		double vr=getRadius(v);
-		minx=vz.x-vr;
-		maxx=vz.x+vr;
-		miny=vz.y-vr;
-		maxy=vz.y+vr;
 		while (vlst.hasNext()) {
-			v=vlst.next();
+			int v=vlst.next();
+			Complex z=getCenter(v);
 			double r=getRadius(v);
-			double m=getCenter(v).x-r;
+			CircleSimple cs;
+			if (hes<0)
+				cs=HyperbolicMath.h_to_e_data(z,r);
+			else if (hes>0)
+				cs=SphericalMath.s_to_e_data(z,r);
+			else
+				cs=new CircleSimple(z,r);
+			ecirc.add(cs);
+			ecol.add(getCircleColor(v)); // stored color (defaults to black)
+		}
+
+		// for hyperbolic packings also show the ambient unit-disc boundary
+		boolean discBdry=(hes<0);
+
+		double minx,miny,maxx,maxy;
+		CircleSimple c0=ecirc.get(0);
+		minx=c0.center.x-c0.rad;
+		maxx=c0.center.x+c0.rad;
+		miny=c0.center.y-c0.rad;
+		maxy=c0.center.y+c0.rad;
+		for (CircleSimple cs:ecirc) {
+			double m=cs.center.x-cs.rad;
 			if (m<minx) minx=m;
-			m +=2*r;
+			m=cs.center.x+cs.rad;
 			if (m>maxx) maxx=m;
-			m=getCenter(v).y-r;
+			m=cs.center.y-cs.rad;
 			if (m<miny) miny=m;
-			m +=2*r;
+			m=cs.center.y+cs.rad;
 			if (m>maxy) maxy=m;
 		}
-		
+		if (discBdry) { // include the unit circle (center 0, radius 1)
+			if (-1.0<minx) minx=-1.0;
+			if (1.0>maxx) maxx=1.0;
+			if (-1.0<miny) miny=-1.0;
+			if (1.0>maxy) maxy=1.0;
+		}
+
 		double sz=1.1*(maxy-miny);
 		double wdt=1.1*(maxx-minx);
 		if (wdt>sz)
@@ -2304,17 +2331,25 @@ public class PackData{
 		double thick=1;
 		if (circFlags.thickness>0)
 			thick=circFlags.thickness;
+		double sw=(sz/300.0)*thick; // reasonable line width relative to image
 
 		try {
 			file.write("<!DOCTYPE html>\n<html>\n<body>\n");
 			file.write("<svg height=\""+sz+"\" width=\""+sz+"\">\n");
-			
-			vlst=vlist.iterator();
-			while (vlst.hasNext()) {
-				v=vlst.next();
-				file.write("<circle cx=\""+(getCenter(v).x-minx+.05*sz)+"\" cy=\""+
-				(maxy-getCenter(v).y+.05*sz)+"\" r=\""+getRadius(v)+
-				"\" stroke=\"black\" stroke-width=\""+.5*thick+"\" fill=\"white\"/>\n");
+
+			if (discBdry) // unit-disc boundary, in black
+				file.write("<circle cx=\""+(0.0-minx+.05*sz)+"\" cy=\""+
+				(maxy-0.0+.05*sz)+"\" r=\""+1.0+
+				"\" stroke=\"black\" stroke-width=\""+sw+"\" fill=\"none\"/>\n");
+
+			for (int i=0;i<ecirc.size();i++) {
+				CircleSimple cs=ecirc.get(i);
+				Color c=ecol.get(i);
+				String col=(c==null) ? "black" :
+					("rgb("+c.getRed()+","+c.getGreen()+","+c.getBlue()+")");
+				file.write("<circle cx=\""+(cs.center.x-minx+.05*sz)+"\" cy=\""+
+				(maxy-cs.center.y+.05*sz)+"\" r=\""+cs.rad+
+				"\" stroke=\""+col+"\" stroke-width=\""+sw+"\" fill=\"none\"/>\n");
 				count++;
 			}
 			file.write("</svg>\n</body>\n</html>\n");

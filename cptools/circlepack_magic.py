@@ -42,17 +42,14 @@ import time
 from circlepack_client import CirclePackClient, CirclePackError
 
 try:
-    from IPython.core.magic import (Magics, magics_class, line_magic,
-                                    cell_magic)
+    from IPython.core.magic import Magics, magics_class, line_cell_magic
     from IPython.display import SVG, display
     _HAVE_IPYTHON = True
 except Exception:  # allow import without IPython (e.g. for unit tests)
     _HAVE_IPYTHON = False
     def magics_class(c):
         return c
-    def line_magic(f):
-        return f
-    def cell_magic(f):
+    def line_cell_magic(f):
         return f
     Magics = object
 
@@ -102,6 +99,11 @@ def _prep_svg(html, px=420):
     w = w if w > 0 else 1.0
     h = h if h > 0 else 1.0
     ph = int(px * h / w)
+    # CirclePack writes stroke-width in packing units (~0.5), which becomes a
+    # huge line once the ~w-unit drawing is scaled to px pixels. Rescale every
+    # stroke to ~1.2 device pixels, expressed in user units (1 px = w/px units).
+    sw = 1.2 * w / px
+    svg = re.sub(r'stroke-width="[^"]*"', 'stroke-width="%.5f"' % sw, svg)
     new_open = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %g %g" '
                 'width="%d" height="%d">' % (w, h, px, ph))
     return re.sub(r"<svg\b[^>]*>", new_open, svg, count=1, flags=re.S | re.I)
@@ -132,8 +134,13 @@ def _show_svg_file(path):
 @magics_class
 class CirclePackMagics(Magics):
 
-    @line_magic
-    def circlepack(self, line):
+    @line_cell_magic
+    def circlepack(self, line, cell=None):
+        # cell magic ( %%circlepack ): run the cell body as commands
+        if cell is not None:
+            return self._run(cell)
+
+        # line magic ( %circlepack ... ): sub-commands or a one-off command
         args = line.split()
         if not args:
             return self._status()
@@ -168,10 +175,6 @@ class CirclePackMagics(Magics):
 
         # otherwise: run the whole line as a one-off command
         return self._run(line)
-
-    @cell_magic
-    def circlepack(self, line, cell):  # noqa: F811  (name reused for cell magic)
-        return self._run(cell)
 
     def _status(self):
         print("CirclePack magic:")
