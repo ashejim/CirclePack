@@ -25,6 +25,34 @@ The magic additionally needs IPython/Jupyter (`pip install jupyterlab`) and a
 
 ---
 
+## Quick start (Windows, no git needed)
+
+Grab two files from the
+[latest release](https://github.com/ashejim/CirclePack/releases): the app jar
+`CirclePack-J5.2-jupyter.jar` and the demo bundle `circlepack-jupyter-demo.zip`.
+**Unzip the bundle and drop the jar into the unzipped folder** (so the jar sits
+next to the notebook and the `packings/` folder). Then, in that folder:
+
+```powershell
+# one-time tools (signed installers; Smart App Control friendly)
+winget install Microsoft.OpenJDK.17
+winget install astral-sh.uv
+
+# terminal 1 — start CirclePack
+java -jar CirclePack-J5.2-jupyter.jar
+
+# terminal 2 — start JupyterLab (launched via signed python -m to avoid Smart App Control)
+uv run --python 3.12 --with jupyterlab --with ipykernel python -m jupyterlab
+```
+
+Open `demo_circlepack.ipynb` and run the cells. Because CirclePack and Jupyter
+share the folder, `packdir` **auto-detects** `./packings` — no path to edit.
+
+(pip users instead of uv: `pip install -r requirements.txt`, then
+`python -m jupyterlab`.)
+
+---
+
 ## 1 & 2. Converting between `.cps` and `.ipynb`
 
 ```bash
@@ -76,12 +104,13 @@ cells, and `%%circlepack` cells**.
    ```python
    %load_ext circlepack_magic
    %circlepack connect
-   %circlepack packdir D:/CirclePack_code/CirclePack/packings   # your CP packings dir
+   %circlepack status     # shows the auto-detected packdir
    ```
 
-   `packdir` is the directory CirclePack writes files to (its **packings**
-   directory). The magic has CirclePack export an SVG there and displays it;
-   without `packdir` you still get the command's result code, just no picture.
+   `packdir` (the directory CirclePack writes files to, its **packings**
+   directory) is **auto-detected** as `./packings` or `../packings`. Override
+   only if needed: `%circlepack packdir <path>`. Without a valid `packdir` you
+   still get each command's result code, just no inline picture.
 
 ### Use
 

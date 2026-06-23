@@ -62,8 +62,18 @@ class _State:
         self.host = "127.0.0.1"
         self.port = 3736
         self.name = "jupyter"
-        self.packdir = os.environ.get("CIRCLEPACK_PACKDIR")
+        self.packdir = os.environ.get("CIRCLEPACK_PACKDIR") or self._auto_packdir()
         self.client = None
+
+    @staticmethod
+    def _auto_packdir():
+        """Best-effort guess at CirclePack's packings directory: env var, then
+        ./packings (CP + Jupyter share a folder), then ../packings (notebook in
+        cptools/, CP launched from the repo root). Returns an abs path or None."""
+        for cand in ("packings", os.path.join("..", "packings")):
+            if os.path.isdir(cand):
+                return os.path.abspath(cand)
+        return None
 
     def ensure_client(self):
         if self.client is None:
