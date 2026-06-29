@@ -43,7 +43,8 @@ public class SplashFrame extends JFrame {
 		ImageComponent(BufferedImage image){
 			this.image = image;
 
-			if (image == null) return;
+			if (image == null) 
+				return;
 			// set preferred size just large enough to contain the image.
 			int w = image.getWidth();
 			int h = image.getHeight();
@@ -52,7 +53,8 @@ public class SplashFrame extends JFrame {
 
 		// called when the component needs to be drawn
 		public void paintComponent(Graphics g){
-			if (image == null) return;
+			if (image == null) 
+				return;
 			g.drawImage(image, 0, 0, null);
 		}
 	}

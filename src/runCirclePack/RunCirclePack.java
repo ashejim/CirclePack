@@ -205,17 +205,19 @@ class RunCirclePack
 			}
 		};
 		
-		// Start the threads, then wait for them to complete. They will complete when CirclePack closes
-		// its standard output and error, such as on program termination. They will also complete on
-		// IO failure, which must be handled.
+		// Start the threads, then wait for them to complete. 
+		// They will complete when CirclePack closes its 
+		// standard output and error, such as on program 
+		// termination. They will also complete on IO failure, 
+		// which must be handled.
 		outputForwarder.start();
 		errorForwarder.start();
 		outputForwarder.join();
 		errorForwarder.join();
 		
-		// The threads may have finished due to IO failure rather than 
-		// program termination. Just in case, we'll wait on the 
-		// CirclePack process to complete.
+		// The threads may have finished due to IO failure 
+		// rather than program termination. Just in case, 
+		// we'll wait on the CirclePack process to complete.
 		p.waitFor();
         //<<<AF//
 	}
