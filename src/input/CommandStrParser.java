@@ -34,7 +34,6 @@ import combinatorics.komplex.RedEdge;
 import combinatorics.komplex.Vertex;
 import complex.Complex;
 import complex.MathComplex;
-import cpContributed.BoundaryValueProblems;
 import cpContributed.CurvFlow;
 import dcel.CombDCEL;
 import dcel.PackDCEL;
@@ -1676,7 +1675,10 @@ public class CommandStrParser {
 	    		  
 	    	  // ************ hard coded abbreviations ***********
 	    	  if (str!=null) {
-	    	  if (str.equalsIgnoreCase("bvp")) {
+/*	OBE: This was created by Frank Martin (Freiberg) and
+ *       needs his MatLab code "PackCircle", which I am
+ *       no longer using.
+     	  if (str.equalsIgnoreCase("bvp")) {
 			   	  if (!packData.status || packData.nodeCount==0) 
 			   		  return 0;
 			   	  BoundaryValueProblems px=new BoundaryValueProblems(packData);
@@ -1687,7 +1689,8 @@ public class CommandStrParser {
 			    	  returnVal=1;
 				     }
 			  }
-	    	  else if (str.equalsIgnoreCase("bf")) {
+*/			  
+	    	  if (str.equalsIgnoreCase("bf")) {
 	    		  if (!packData.status || packData.nodeCount==0) 
 	    			  return 0;
 	    		  BeurlingFlow px=new BeurlingFlow(packData);
