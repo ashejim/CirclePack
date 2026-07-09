@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.geom.Path2D;
 import java.io.File;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.Random;
@@ -197,11 +198,12 @@ public abstract class CPBase {
 
 
 	/**
-	 * For finding correct path to 'Resources' directory in jar file
+	 * For finding correct path to 'Resources' directory 
+	 * in jar file
 	 * @param path, String
 	 * @return URL
 	 */
-	public static URL getResourceURL(String path) {
+/*	public static URL getResourceURL(String path) {
 		try {
 			ClassLoader cll = CPBase.sharedinstance.getClass().getClassLoader();
 			
@@ -221,6 +223,31 @@ public abstract class CPBase {
 			ex.printStackTrace();
 		}
 		return null;
+	}
+*/	
+	public static URL getResourceURL(String path) {
+	    if (!path.startsWith("/")) path = "/" + path;
+	    String resPath = "Resources" + path; // e.g. "Resources/icons/foo.png"
+
+	    ClassLoader cll = CPBase.class.getClassLoader();
+	    if (cll == null) 
+	    	cll = Thread.currentThread().getContextClassLoader();
+
+	    URL url = (cll != null) ? cll.getResource(resPath) : null;
+	    if (url != null) 
+	    	return url;
+
+	    // Fallback: look relative to working directory (dev/IDE run)
+	    File file = new File(System.getProperty("user.dir") + File.separator
+	            + "Resources" + path.replace('/', File.separatorChar));
+	    if (file.exists()) {
+	        try {
+	            return file.toURI().toURL();
+	        } catch (MalformedURLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+	    return null;
 	}
 	
 	// Constructor

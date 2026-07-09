@@ -17,10 +17,12 @@ import mytools.MyToolHandler;
 import util.GlobResources;
 
 /**
- * CmdToolFrame is a popup frame to allow the user to create
- * tools to add to MyTools. Each tool involves a string of
- * commands for CirclePack, an icon, and a tooltip. These can be
- * saved in XML format and are read into 'hashedTools' on startup,
+ * CmdToolFrame is a popup frame to allow the user 
+ * to create tools to add to MyTools. Each tool 
+ * involves a string of commands for CirclePack, 
+ * an icon, and a tooltip. These can be saved in 
+ * XML format and are read into 'hashedTools' on 
+ * startup,
  * @author kens
  */
 public class CmdToolEditor extends MyToolEditor {

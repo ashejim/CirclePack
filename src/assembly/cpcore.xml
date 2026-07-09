@@ -1,0 +1,54 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0
+              http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+
+    <id>cpcore</id>
+    <formats><format>jar</format></formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <!-- Merge all dependency JARs in, stripping signature files -->
+    <dependencySets>
+        <dependencySet>
+            <unpack>true</unpack>
+            <scope>runtime</scope>
+            <unpackOptions>
+                <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
+    </dependencySets>
+
+    <fileSets>
+        <!-- All compiled classes EXCEPT the runCirclePack launcher -->
+        <fileSet>
+            <directory>${project.build.outputDirectory}</directory>
+            <outputDirectory>/</outputDirectory>
+            <excludes>
+                <exclude>runCirclePack/**</exclude>
+            </excludes>
+        </fileSet>
+
+        <!-- Native libraries from cdeps/ -->
+        <fileSet>
+            <directory>${project.basedir}/cdeps</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>**/*.dll</include>
+                <include>**/*.so</include>
+                <include>**/*.jnilib</include>
+                <include>**/*.dylib</include>
+            </includes>
+        </fileSet>
+
+        <!-- Resources folder -->
+        <fileSet>
+            <directory>${project.basedir}/src/Resources</directory>
+            <outputDirectory>Resources/</outputDirectory>
+        </fileSet>
+    </fileSets>
+
+</assembly>

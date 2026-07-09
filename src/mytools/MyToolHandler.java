@@ -68,7 +68,8 @@ public abstract class MyToolHandler implements MouseListener {
 		toolListener=null;
 		toolIndx=0;
 		toolType=new String(tool_type);
-		if (toolType==null || toolType.length()==0) toolType="MISC:";
+		if (toolType==null || toolType.length()==0) 
+			toolType="MISC:";
 		int k=tool_type.indexOf(':'); 
 		if (k>0)
 			toolPrefix=tool_type.substring(0,k+1);

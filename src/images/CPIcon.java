@@ -212,8 +212,9 @@ public class CPIcon {
 
 	
 	/**
-	 * Circle packing version of 'ImageIcon'; need to look in right place for icons
-	 * so that we can 'jar' up the code.
+	 * Circle packing version of 'ImageIcon'; need 
+	 * to look in right place for icons so that we 
+	 * can 'jar' up the code.
 	 * @param iconname should start without a leading '/'
 	 * @return ImageIcon, null on error
 	 * 
