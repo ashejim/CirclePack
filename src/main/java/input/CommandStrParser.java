@@ -34,7 +34,6 @@ import combinatorics.komplex.RedEdge;
 import combinatorics.komplex.Vertex;
 import complex.Complex;
 import complex.MathComplex;
-import cpContributed.BoundaryValueProblems;
 import cpContributed.CurvFlow;
 import dcel.CombDCEL;
 import dcel.PackDCEL;
@@ -1676,18 +1675,7 @@ public class CommandStrParser {
 	    		  
 	    	  // ************ hard coded abbreviations ***********
 	    	  if (str!=null) {
-	    	  if (str.equalsIgnoreCase("bvp")) {
-			   	  if (!packData.status || packData.nodeCount==0) 
-			   		  return 0;
-			   	  BoundaryValueProblems px=new BoundaryValueProblems(packData);
-			   	  if (px.running) {
-				   	  CirclePack.cpb.msg("Pack "+packData.packNum+
-				   			  ": started "+px.extensionAbbrev+" extender");
-			    	  px.StartUpMsg();
-			    	  returnVal=1;
-				     }
-			  }
-	    	  else if (str.equalsIgnoreCase("bf")) {
+	    	  if (str.equalsIgnoreCase("bf")) {
 	    		  if (!packData.status || packData.nodeCount==0) 
 	    			  return 0;
 	    		  BeurlingFlow px=new BeurlingFlow(packData);

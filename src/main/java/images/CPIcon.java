@@ -222,10 +222,10 @@ public class CPIcon {
 	 * already have a subdirectory name.
 	 */
 	public static ImageIcon CPImageIcon(String iconname) {
-		URL url=CPBase.getResourceURL("/Icons/"+iconname);
+		URL url=CPBase.getResourceURL("Icons/"+iconname);
 		if (url==null) 
 			CirclePack.cpb.errMsg("failed to find icon: '"+iconname+"'");
-		ImageIcon ii= new ImageIcon(CPBase.getResourceURL("/Icons/"+iconname));
+		ImageIcon ii= new ImageIcon(CPBase.getResourceURL("Icons/"+iconname));
 		return ii;
 	}
 	

@@ -8,7 +8,7 @@
 
     <groupId>kensmath</groupId>    <!-- change to your actual group -->
     <artifactId>CirclePack</artifactId>
-    <version>6.0</version>           <!-- overridden at build time via -Drevision= if needed -->
+    <version>6.0.0</version>           <!-- overridden at build time via -Drevision= if needed -->
     <packaging>jar</packaging>
 
     <name>CirclePack</name>
@@ -63,15 +63,27 @@
             <artifactId>xercesImpl</artifactId>
             <version>1.0</version>
         </dependency>
+	<!-- 
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>PackCircle</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>la4j</artifactId>
+            <version>0.4.9</version>
+        </dependency>
+	-->
     </dependencies>
 
     <build>
-        <!-- Sources would be in src/main/java if I migrated-->
-        <sourceDirectory>src</sourceDirectory>
+        <!-- Sources are in src/main/java after migration -->
+        <sourceDirectory>src/main/java</sourceDirectory>
         <resources>
             <resource>
                 <!-- Bundles src/Resources/ and native libs into the JAR -->
-                <directory>src/Resources</directory>
+                <directory>src/main/resources</directory>
             </resource>
         </resources>
 
@@ -95,15 +107,16 @@
                  2. PRE-BUILD CODE GENERATOR
                     Mirrors the "cpjar" target's: java classname="infoProcessing.Info2HTML" dir=".."
                     Runs before compile, from the parent directory.
-                 ============================================================ -->
-            <!-- <plugin>
+                    ============================================================ -->
+	    <!--
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>run-Info2HTML</id>
-                        <phase>generate-sources</phase>  
+                        <phase>generate-sources</phase>
                         <goals><goal>java</goal></goals>
                         <configuration>
                             <mainClass>infoProcessing.Info2HTML</mainClass>
@@ -112,8 +125,8 @@
                     </execution>
                 </executions>
             </plugin>
-			-->
-			
+	    -->
+
             <!-- ============================================================
                  3. THREE JARS via maven-assembly-plugin
 
@@ -122,13 +135,12 @@
                                     native libs (dll/so/jnilib/dylib),
                                     src/Resources/**, and all dependency JARs merged in.
 
-                JAR 2 — ScriptLister.jar  Main-Class: allMains.ScriptLister
-                          Contains: only allMains/** classes.
-
-                JAR 3 — CirclePack-{version}.jar  Main-Class: runCirclePack.RunCirclePack
+                 JAR 2 — CirclePack-{version}.jar  Main-Class: runCirclePack.RunCirclePack
                           Contains: only runCirclePack/** classes + cpcore.jar.
 
- 
+                 JAR 3 — ScriptLister.jar  Main-Class: allMains.ScriptLister
+                          Contains: only allMains/** classes.
+
                  Each assembly descriptor lives in src/assembly/.
                  ============================================================ -->
             <plugin>
@@ -160,30 +172,7 @@
                         </configuration>
                     </execution>
 
-                    <!-- JAR 2: ScriptLister.jar -->
-                    <execution>
-                        <id>scriptlister</id>
-                        <phase>package</phase>
-                        <goals><goal>single</goal></goals>
-                        <configuration>
-                            <finalName>ScriptLister</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <archive>
-                                <manifest>
-                                    <mainClass>allMains.ScriptLister</mainClass>
-                                </manifest>
-                                <manifestEntries>
-                                    <Built-By>${user.name}</Built-By>
-                                    <Class-Path>.</Class-Path>
-                                </manifestEntries>
-                            </archive>
-                            <descriptors>
-                                <descriptor>src/assembly/scriptlister.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
-                    
-                    <!-- JAR 3: CirclePack-{version}.jar -->
+                    <!-- JAR 2: CirclePack-{version}.jar -->
                     <execution>
                         <id>circlepack</id>
                         <phase>package</phase>
@@ -206,32 +195,32 @@
                         </configuration>
                     </execution>
 
+                    <!-- JAR 3: ScriptLister.jar -->
+                    <execution>
+                        <id>scriptlister</id>
+                        <phase>package</phase>
+                        <goals><goal>single</goal></goals>
+                        <configuration>
+                            <finalName>ScriptLister</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <archive>
+                                <manifest>
+                                    <mainClass>allMains.ScriptLister</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Built-By>${user.name}</Built-By>
+                                    <Class-Path>.</Class-Path>
+                                </manifestEntries>
+                            </archive>
+                            <descriptors>
+                                <descriptor>src/assembly/scriptlister.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
 
                 </executions>
             </plugin>
-            
-			<!-- ============================================================
-     			4. COPY CirclePack jar to project root directory
-     		============================================================ -->
-			<plugin>
-    			<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-    			<version>3.1.0</version>
-    			<executions>
-        			<execution>
-            			<id>copy-circlepack-jar</id>
-            			<phase>package</phase>
-            			<goals><goal>run</goal></goals>
-            			<configuration>
-                			<target>
-                    			<copy file="${project.build.directory}/CirclePack-${project.version}.jar"
-                          			todir="${project.basedir}"/>
-                			</target>
-            			</configuration>
-        			</execution>
-    			</executions>
-			</plugin>
-			
+
         </plugins>
     </build>
 

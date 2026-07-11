@@ -610,7 +610,7 @@ public class CPFileManager {
 			}
 			if (file==null) {
 				try {
-					if ((file=new File(CPBase.getResourceURL("/mytools/"+mytName).toString()))!=null)
+					if ((file=new File(CPBase.getResourceURL("mytools/"+mytName).toString()))!=null)
 						return file;
 				} catch (Exception e) {
 					e.printStackTrace();

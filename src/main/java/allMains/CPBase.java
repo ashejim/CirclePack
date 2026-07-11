@@ -198,13 +198,14 @@ public abstract class CPBase {
 
 	/**
 	 * For finding correct path to 'Resources' directory in jar file
-	 * @param path, String
+	 * @param path, String 
 	 * @return URL
 	 */
 	public static URL getResourceURL(String path) {
 		try {
 			ClassLoader cll = CPBase.sharedinstance.getClass().getClassLoader();
-			
+			if (path.charAt(0)!='/')
+					path="/"+path;
 			// null ClassLoader? look in user directory
 			if( cll==null || cll.getResource("Resources"+path)==null ) {
 				File file=new File(System.getProperty("user.dir")
@@ -214,7 +215,7 @@ public abstract class CPBase {
 			
 			// got ClassLoader? look there
 			else { 
-				return cll.getResource("Resources"+path);
+				return cll.getResource("Resources/"+path);
 			}
 			
 		} catch(Exception ex) {
