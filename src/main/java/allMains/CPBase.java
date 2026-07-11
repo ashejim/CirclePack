@@ -202,10 +202,13 @@ public abstract class CPBase {
 	 * @return URL
 	 */
 	public static URL getResourceURL(String path) {
+		
+	    if (!path.startsWith("/")) 
+	    	path = "/" + path;
+
 		try {
 			ClassLoader cll = CPBase.sharedinstance.getClass().getClassLoader();
-			if (path.charAt(0)!='/')
-					path="/"+path;
+
 			// null ClassLoader? look in user directory
 			if( cll==null || cll.getResource("Resources"+path)==null ) {
 				File file=new File(System.getProperty("user.dir")
