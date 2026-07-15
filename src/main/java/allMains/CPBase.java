@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.geom.Path2D;
 import java.io.File;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.Random;
@@ -227,7 +226,8 @@ public abstract class CPBase {
 		}
 		return null;
 	}
-*/	
+
+/* version suggested by Claude, 7/26	
 	public static URL getResourceURL(String path) {
 	    if (!path.startsWith("/")) path = "/" + path;
 	    String resPath = "Resources" + path; // e.g. "Resources/icons/foo.png"
@@ -252,6 +252,7 @@ public abstract class CPBase {
 	    }
 	    return null;
 	}
+*/
 	
 	// Constructor
 	public CPBase() {
