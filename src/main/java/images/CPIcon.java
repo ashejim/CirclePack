@@ -44,7 +44,7 @@ public class CPIcon {
 		name=iconname;
 		baseIcon = CPIcon.CPImageIcon(iconname);
 		if (baseIcon==null) {
-			CirclePack.cpb.errMsg("Couldn't load icon "+iconname);
+			System.err.println("Couldn't load icon "+iconname);
 			baseIcon=defaultIcon;
 		}
 		imageIcon=baseIcon;
@@ -225,7 +225,7 @@ public class CPIcon {
 	public static ImageIcon CPImageIcon(String iconname) {
 		URL url=CPBase.getResourceURL("Icons/"+iconname);
 		if (url==null) 
-			CirclePack.cpb.errMsg("failed to find icon: '"+iconname+"'");
+			System.err.println("failed to find icon: '"+iconname+"'");
 		ImageIcon ii= new ImageIcon(CPBase.getResourceURL("Icons/"+iconname));
 		return ii;
 	}

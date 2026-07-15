@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.geom.Path2D;
 import java.io.File;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.Random;
@@ -195,13 +196,12 @@ public abstract class CPBase {
 	public static String[] tooltypes = 
 		{"MAIN:","BASIC:","MYTOOL:","SCRIPT:","MOBIUS:","SIDEPAIR:"};
 
-
 	/**
 	 * For finding correct path to 'Resources' directory in jar file
 	 * @param path, String 
 	 * @return URL
 	 */
-	public static URL getResourceURL(String path) {
+/*	public static URL getResourceURL(String path) {
 		
 	    if (!path.startsWith("/")) 
 	    	path = "/" + path;
@@ -226,8 +226,9 @@ public abstract class CPBase {
 		}
 		return null;
 	}
+*/
 
-/* version suggested by Claude, 7/26	
+// version suggested by Claude, 7/26	
 	public static URL getResourceURL(String path) {
 	    if (!path.startsWith("/")) path = "/" + path;
 	    String resPath = "Resources" + path; // e.g. "Resources/icons/foo.png"
@@ -252,7 +253,7 @@ public abstract class CPBase {
 	    }
 	    return null;
 	}
-*/
+
 	
 	// Constructor
 	public CPBase() {
