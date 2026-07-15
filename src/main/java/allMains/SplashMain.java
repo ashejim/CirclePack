@@ -54,7 +54,7 @@ public class SplashMain {
 		}
 		else {
 			String imageFilename=
-				new String("src"+splashImageFilename);
+				new String("src/main/resources"+splashImageFilename);
 			try {
 				image =  ImageIO.read(new File(imageFilename));
 			} catch (Exception iio) {  // javax.imageio.IIOException
