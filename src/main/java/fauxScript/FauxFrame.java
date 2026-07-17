@@ -26,7 +26,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 /**
- * try to understand how to format CirclePack's 'script' frame.
+ * try to understand how to format CirclePack's 
+ * 'script' frame.
  * @author kens
  */
 public class FauxFrame extends JFrame implements KeyListener, MouseListener {
@@ -193,9 +194,10 @@ public class FauxFrame extends JFrame implements KeyListener, MouseListener {
 		compVector.add(1, fScriptPanel);
 	
 		//fStackArea
-		/* FWSJPanel is a simple custom JPanel I wrote that will size itself
-		 * correctly given the containing JScrollPane width. Check out the class
-		 * file for more information.
+		/* FWSJPanel is a simple custom JPanel I wrote 
+		 * that will size itself correctly given the 
+		 * containing JScrollPane width. Check out the 
+		 * class file for more information.
 		 */
 		fStackArea = new FWSJPanel(); //2
 		fStackArea.setLayout(new BoxLayout(fStackArea, BoxLayout.PAGE_AXIS));

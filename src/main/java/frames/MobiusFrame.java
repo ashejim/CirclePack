@@ -47,14 +47,18 @@ public class MobiusFrame extends JFrame implements ActionListener {
 		super();
 		this.addWindowListener(new WAdapter());
 		try {
-			File mobLoc=CPFileManager.getMyTFile(".mobiustools.myt");
-			if (mobLoc.exists()) mobiusHandler = new MOBIUSHandler(mobLoc);
-			else mobiusHandler = new MOBIUSHandler(null);
+			// as yet, no ".mobiustools.myt"
+//			File mobLoc=CPFileManager.getMyTFile(".mobiustools.myt");
+//			if (mobLoc!=null && mobLoc.exists()) 
+//				mobiusHandler = new MOBIUSHandler(mobLoc);
+			mobiusHandler = new MOBIUSHandler(null);
 		} catch (Exception ex){}
 		try {
-			File mobLoc=CPFileManager.getMyTFile(".sidepairtools.myt");
-			if (mobLoc.exists()) sidePairHandler = new PACKMOBHandler(mobLoc);
-			else sidePairHandler = new PACKMOBHandler(null);
+			// as yet, no ".sidepairtools.myt"
+//			File mobLoc=CPFileManager.getMyTFile(".sidepairtools.myt");
+//			if (mobLoc!=null && mobLoc.exists()) 
+//				sidePairHandler = new PACKMOBHandler(mobLoc);
+			sidePairHandler = new PACKMOBHandler(null);
 		} catch (Exception ex){}
 		initGUI();
 	}

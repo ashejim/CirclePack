@@ -63,8 +63,8 @@ public class CPTreeNode extends DefaultMutableTreeNode {
   public static final int EDIT_FILE=14;
   
   // static default icons
-  protected static ImageIcon rootIcon=CPIcon.CPImageIcon("script/rootIcon.png");
-  protected static ImageIcon scriptIcon=CPIcon.CPImageIcon("script/scriptIcon.png");
+  protected static ImageIcon rootIcon=CPIcon.CPImageIcon("script/netbeans.png");
+  protected static ImageIcon scriptIcon=CPIcon.CPImageIcon("script/amarok.png");
   protected static ImageIcon  dataIcon=CPIcon.CPImageIcon("script/dataIcon.png");
   protected static ImageIcon  sectionIcon=CPIcon.CPImageIcon("script/sectionIcon.png");
   protected static ImageIcon  commandIcon=CPIcon.CPImageIcon("script/commandIcon.png");

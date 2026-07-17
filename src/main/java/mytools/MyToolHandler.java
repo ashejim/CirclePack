@@ -359,7 +359,8 @@ public abstract class MyToolHandler implements MouseListener {
 	}
 
 	/**
-	 * Empty 'toolBar', then add all 'toolVector' 'MyTools' into toolBar.
+	 * Empty 'toolBar', then add all 'toolVector' 
+	 * 'MyTools' into toolBar.
 	 */
 	public void repopulateTools() {
 		boolean debug=false;

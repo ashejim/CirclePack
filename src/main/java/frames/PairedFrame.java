@@ -79,11 +79,11 @@ public class PairedFrame extends JFrame implements ActionListener {
 	private JComboBox<String> rangeCB;
 	private JButton progressBar;
 	
-	static MyTool teleToolYES;
-	static MyTool teleToolNO;
-	static CPIcon teleNO=new CPIcon("/GUI/teleNO.png");
-	static CPIcon teleYES=new CPIcon("/GUI/teleYES.png");
-
+	public static MyTool teleToolYES;
+	public static MyTool teleToolNO;
+//	static CPIcon teleNO=new CPIcon("/GUI/teleNO.png");
+//	static CPIcon teleYES=new CPIcon("/GUI/teleYES.png");
+	
 	static String[] pstrs={"P0","P1","P2"};
 	
 	// Constructor

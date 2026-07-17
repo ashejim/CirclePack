@@ -613,7 +613,8 @@ public class CPFileManager {
 					if ((file=new File(CPBase.getResourceURL("mytools/"+mytName).toString()))!=null)
 						return file;
 				} catch (Exception e) {
-					e.printStackTrace();
+//					e.printStackTrace();
+					System.err.println("failed to find '/mytools/"+mytName+"'");
 					return null;
 				}
 			}

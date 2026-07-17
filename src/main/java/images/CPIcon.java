@@ -13,7 +13,6 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 
 import allMains.CPBase;
-import allMains.CirclePack;
 import exceptions.ParserException;
 
 /**

@@ -29,7 +29,8 @@ public class PACKMOBHandler extends MyToolHandler {
 	public PACKMOBHandler(File toolFile) {
 		super(toolFile,"MOBIUS:");
 		toolListener=new PACKMOBListener(this);
-		if (toolFile!=null) appendFromFile(toolFile);
+		if (toolFile!=null) 
+			appendFromFile(toolFile);
 		packTools=new Vector[CPBase.NUM_PACKS];
 		for (int ii=0;ii<CPBase.NUM_PACKS;ii++) {
 			packTools[ii]=new Vector<MyTool>();

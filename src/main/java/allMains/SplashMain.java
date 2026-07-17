@@ -46,7 +46,7 @@ public class SplashMain {
 		BufferedImage image = null;
 		
 		if(inJar) {
-			System.out.println("inJar is true in SplashMain");
+//			System.out.println("inJar is true in SplashMain");
 			image = ImageIO.read(getClass().
 					getResourceAsStream(splashImageFilename)
 				);

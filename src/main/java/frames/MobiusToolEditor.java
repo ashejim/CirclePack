@@ -63,9 +63,9 @@ public class MobiusToolEditor extends MyToolEditor {
 //	ComplexField d_entry;
 	// use lila-kde-white icons for mobius transformations
 	private static String mobiusIcons[]={"default_icon.jpg","back.png","build.png","connect_no.png",
-		"down.png","filefind.png","fork.png","forward.png","hold","properties.png",
+		"down.png","filefind.png","fork.png","forward.png","properties.png",
 		"reload.png","up.png","viewmag-.png","viewmag+.png","window_fullscreen.png",
-		"cp_drop.png","rad_minus.png"};
+		"cp_drop.png"};
 	public boolean oriented;
 	
 	// Constructor
