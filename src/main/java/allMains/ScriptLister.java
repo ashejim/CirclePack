@@ -3,7 +3,6 @@ package allMains;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,7 +11,6 @@ import java.util.Scanner;
 import org.apache.commons.codec.binary.Base64;
 
 import util.Base64InOut;
-import util.FileUtil;
 
 /**
  * This can be standalone or called from Circlepack.
@@ -22,6 +20,9 @@ import util.FileUtil;
  * is stored in the parent directory if it is local
  * or in the java.io.tmpdir if on a web site. 
  * The code operates in one of two modes:
+ * 
+ * NOTE: due to programming difficulties, this does
+ * not work with URL's, hence only with local files.
  * 
  * (1) Can be run standalone with a given URL and file
  * name (optional). (For standalone, 
@@ -53,7 +54,6 @@ import util.FileUtil;
  */
 public class ScriptLister {
 
-	public URL theURL;
 	public File theDirectory;
 	public String theFilename;
 	public String protocol;
@@ -62,7 +62,7 @@ public class ScriptLister {
 	int mode; 
 
 	// get directory's files and their contents
-	ArrayList<URL> cpsFiles;
+	ArrayList<File> cpsFiles;
 	ArrayList<StringBuilder> scriptnames;
 	ArrayList<StringBuilder> descriptions;
 	ArrayList<StringBuilder> aboutImages;
@@ -72,28 +72,27 @@ public class ScriptLister {
 		this(null,0,null);
 	}
 	
-	public ScriptLister(URL dirURL) {
-		this(dirURL,0,null);
+	public ScriptLister(File dir) {
+		this(dir,0,null);
 	}
 	
-	public ScriptLister(URL dirURL,String outname) {
-		this(dirURL,0,outname);
+	public ScriptLister(File dir,String outname) {
+		this(dir,0,outname);
 	}
 	
-	public ScriptLister(URL dirURL, int m, String outname) {
+	public ScriptLister(File dir, int m, String outname) {
 
-		if (dirURL==null) {
-			if ((dirURL=FileUtil.tryURL("file:///"+System.getProperty("user.dir")))==null)
-				System.err.println("failed to creat URL for ScriptLister");
+		theDirectory=dir;
+		if (theDirectory==null) {
+			if ((theDirectory=new File(System.getProperty("user.dir")))==null)
+				System.err.println("failed to creat directory for ScriptLister");
 		}
 
 		// figure out whether it is a directory 
-		if (!(new File(dirURL.getFile())).isDirectory()) {
-			System.err.println("'dir_name' is not a directory");
+		if (!theDirectory.isDirectory()) {
+			System.err.println(theDirectory.toString()+" is not a directory");
 			System.exit(0);
 		}
-
-		theDirectory=new File(dirURL.getFile());
 		
 		// set name for the html file
 		if (outname!=null && outname.length()>0)
@@ -115,16 +114,13 @@ public class ScriptLister {
 		File[] paths=theDirectory.listFiles();
 		int n=paths.length;
 		if (n>0) {
-			cpsFiles=new ArrayList<URL>();
+			cpsFiles=new ArrayList<File>();
 			for (int j=0;j<n;j++) {
 				File file=paths[j];
 				String pname=file.getAbsolutePath();
 				if (pname.endsWith(".cps") || pname.endsWith(".xmd") || 
 						pname.endsWith(".cmd")) {
-					URL dummy=FileUtil.tryURL(protocol+":"+file.getPath());
-					if (dummy==null)
-						System.err.println("malformed URL for "+pname);
-					else this.cpsFiles.add(dummy);
+					this.cpsFiles.add(file);
 				}
 			}
 		}
@@ -138,7 +134,7 @@ public class ScriptLister {
 		scriptnames=new ArrayList<StringBuilder>();
 		descriptions=new ArrayList<StringBuilder>();
 		aboutImages=new ArrayList<StringBuilder>();
-		Iterator<URL> flst=cpsFiles.iterator();
+		Iterator<File> flst=cpsFiles.iterator();
 		while (flst.hasNext()) {
 			getContent(flst.next());
 		}
@@ -154,9 +150,7 @@ public class ScriptLister {
 	 * @param file
 	 * @return true on success
 	 */
-	public boolean getContent(URL url) {
-		
-		File file=new File(url.getFile().replace("%20", " "));
+	public boolean getContent(File file) {
 		
 		// open the cps file for reading
 		Scanner scanner=null;
@@ -170,7 +164,7 @@ public class ScriptLister {
 
 		// get the title code
 		StringBuilder title=new StringBuilder("\n<!--"+file.getName()+"-->\n");
-		title.append("<a href="+url.toString()+">"
+		title.append("<a href="+file.toString()+">"
 				+"<b>"+file.getName()+"</b></a>");
 		
 		// find line nums, first/last lines of data targets.
@@ -296,9 +290,9 @@ public class ScriptLister {
 	 */
 	public File fillHTML() {
 		
-		if (!protocol.startsWith("file"))
-			theDirectory=
-			new File(System.getProperty("java.io.tmpdir"));
+//		if (!protocol.startsWith("file"))
+//			theDirectory=
+//			new File(System.getProperty("java.io.tmpdir"));
 		
 		// if file already exists, delete it
 		File outfile=new File(theDirectory,theFilename);
@@ -431,8 +425,8 @@ public class ScriptLister {
 	public static void main(String[] args) {
 		
 		// default directory to get files from
-		URL myDirectory=null;
-		if ((myDirectory=FileUtil.tryURL("file:///"+System.getProperty("user.dir")))==null)
+		File myDirectory=new File(System.getProperty("user.dir"));
+		if (myDirectory==null)
 			System.err.println("Failed default 'myDirectory'");
 		
 		
@@ -465,7 +459,7 @@ public class ScriptLister {
 			} 
 			
 			else {
-				if ((myDirectory=FileUtil.tryURL("file:///"+arg))==null)
+				if ((myDirectory=new File(arg))==null)
 					System.err.println("Failed to set 'myDirectory'");
 			}
 
