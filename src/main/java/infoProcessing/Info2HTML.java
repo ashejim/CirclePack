@@ -320,7 +320,7 @@ public class Info2HTML {
 			
 			// save 'CmdDetails.html'
 			File detailFile=new File( System.getProperty("user.dir")+
-					"/CirclePack/src/main/resources/Resources/doc/CmdDetails.html");
+					"/src/main/resources/Resources/doc/CmdDetails.html");
 			BufferedWriter fw = new BufferedWriter(
 					new FileWriter(detailFile,false));
 	    	fw.write(fp.toString());
@@ -334,7 +334,7 @@ public class Info2HTML {
 
 			// save 'CmdIndex.html'
 			File indexFile=new File( System.getProperty("user.dir")+
-					"/CirclePack/src/main/resources/Resources/doc/CmdIndex.html");					
+					"/src/main/resources/Resources/doc/CmdIndex.html");					
 	    	fw = new BufferedWriter(new FileWriter(indexFile, false));
 	    	fw.write(indxfp.toString());
 	    	fw.flush();
@@ -347,7 +347,7 @@ public class Info2HTML {
 
 			// save "CmdCompletion.txt'
 			File completionFile=new File( System.getProperty("user.dir")+
-					"/CirclePack/src/main/resources/Resources/doc/CmdCompletion.txt");
+					"/src/main/resources/Resources/doc/CmdCompletion.txt");
 	    	fw = new BufferedWriter(new FileWriter(completionFile, false));
 	    	fw.write(compfp.toString());
 	    	fw.flush();
@@ -388,7 +388,7 @@ public class Info2HTML {
 		System.out.println("Info2HTML: user.dir is "+System.getProperty("user.dir"));
 		
 		// create new file
-		infofile=new File(System.getProperty("user.dir")+"/CirclePack/src/main/resources/Resources/doc/CmdDetails.txt");
+		infofile=new File(System.getProperty("user.dir")+"/src/main/resources/Resources/doc/CmdDetails.txt");
 		if (!infofile.exists())
 			System.err.println("'"+infofile.toString()+"' doesn't seem to exist");
 			

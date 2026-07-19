@@ -92,58 +92,13 @@
             </plugin>
 
             <!-- ============================================================
-                 2. PRE-PACKAGE CODE GENERATOR
+                 2. PRE-BUILD CODE GENERATOR
                     Mirrors the "cpjar" target's: java classname="infoProcessing.Info2HTML" dir=".."
-
-                    Bound to "process-classes" (not "generate-sources"): Info2HTML is a class
-                    in this project, so it can only run once it has been compiled, and
-                    "compile" happens after "generate-sources". "process-classes" is the first
-                    phase after "compile", and it still runs well before "package", where the
-                    assembly-plugin jars (below) get built.
-
-                    workingDirectory is the project root (matches how it behaves when run from
-                    the IDE) so it writes to src/main/resources/Resources/doc/ as expected.
-
-                    Because "process-resources" (which copies src/main/resources into
-                    target/classes) runs BEFORE "compile", it has already finished by the time
-                    Info2HTML writes its new files. The second execution below — a
-                    maven-resources-plugin run bound to the same "process-classes" phase,
-                    declared right after this plugin so it runs second — re-copies
-                    src/main/resources into target/classes so the freshly generated doc files
-                    are present before "package" builds cpcore.jar.
+                    Runs before compile, from the parent directory.
                     ============================================================ -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>run-Info2HTML</id>
-                        <phase>process-classes</phase>
-                        <goals><goal>java</goal></goals>
-                        <configuration>
-                            <mainClass>infoProcessing.Info2HTML</mainClass>
-                            <workingDirectory>${project.basedir}</workingDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <id>recopy-generated-info-html</id>
-                        <phase>process-classes</phase>
-                        <goals><goal>resources</goal></goals>
-                    </execution>
-                </executions>
-            </plugin>
 
             <!-- ============================================================
-                 3. FOUR JARS via maven-assembly-plugin
+                 3. THREE JARS via maven-assembly-plugin
 
                  JAR 1 — cpcore.jar        Main-Class: allMains.SplashMain
                           Contains: all compiled classes except runCirclePack/**,
@@ -154,9 +109,9 @@
                           Contains: only runCirclePack/** classes + cpcore.jar.
 
                  JAR 3 — ScriptLister.jar  Main-Class: allMains.ScriptLister
-
+                                                    
                  JAR 4 - Info2HTML.jar Main-Class: infoProcessing.Info2HTML
-
+                 		  
                  Each assembly descriptor lives in src/assembly/.
                  ============================================================ -->
             <plugin>
@@ -233,7 +188,7 @@
                             </descriptors>
                         </configuration>
                     </execution>
-
+                    
                     <!-- JAR 4: Info2HTML.jar -->
                     <execution>
                         <id>Info2HTML</id>
@@ -256,7 +211,7 @@
                             </descriptors>
                         </configuration>
                     </execution>
-
+                    
 
                 </executions>
             </plugin>
