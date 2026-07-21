@@ -1,4 +1,4 @@
-function z = s_pt_to_plane(sz)
+rhfunction z = s_pt_to_plane(sz)
 %z = s_pt_to_plane(sz) Stereo project spherical pt sz to plane
 %   sz is complex of form (theta,phi). Recall stereographic
 %   projection is from the SOUTH pole.

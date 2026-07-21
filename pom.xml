@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>kensmath</groupId>    <!-- change to your actual group -->
+    <artifactId>CirclePack</artifactId>
+    <version>6.0.0</version>           <!-- overridden at build time via -Drevision= if needed -->
+    <packaging>jar</packaging>
+
+    <name>CirclePack</name>
+
+    <properties>
+        <!-- Bumped from 1.8 (the original Ant build's javac source/target) to
+             17, a modern LTS release, so the codebase can use records, var,
+             switch expressions, and diamond-on-anonymous-classes (all of
+             which -source 8 rejects) instead of working around their
+             absence. Requires JDK 17+ to build and a JRE 17+ to run the
+             resulting jars. -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!-- ================================================================
+         Dependencies — all installed to local repo via install:install-file
+         ================================================================ -->
+    <dependencies>
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>Complex</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>Convert</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>DJEP</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>FunctionChoiceBox</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>FunctionField</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>FunctionParser</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>local</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- Sources are in src/main/java after migration -->
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <resources>
+            <resource>
+                <!-- Bundles src/Resources/ and native libs into the JAR -->
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+
+        <pluginManagement>
+            <plugins>
+                <!-- ========================================================
+                     Tells m2e NOT to run exec-maven-plugin's "java" goal as
+                     part of Eclipse's own automatic project builds. Eclipse's
+                     embedded Maven runs inside the Eclipse JVM, whose working
+                     directory is wherever Eclipse itself was launched from —
+                     not the project root — so Info2HTML (which depends on
+                     being run from the project root) can fail there even
+                     though it works fine from a real "mvn" invocation. This
+                     only affects Eclipse's internal auto-build; running
+                     "mvn package" from the command line, or "Run As > Maven
+                     Build" against an external Maven install, still executes
+                     it for real.
+                     ======================================================== -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.codehaus.mojo</groupId>
+                                        <artifactId>exec-maven-plugin</artifactId>
+                                        <versionRange>[3.1.0,)</versionRange>
+                                        <goals>
+                                            <goal>java</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore/>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+
+            <!-- ============================================================
+                 1. COMPILER — javac source/target=17 (see maven.compiler.source/
+                    target above), -Xlint:unchecked
+                 ============================================================ -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <compilerArgs>
+                        <arg>-Xlint:unchecked</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <!-- ============================================================
+                 2. PRE-PACKAGE CODE GENERATOR
+                    Mirrors the "cpjar" target's: java classname="infoProcessing.Info2HTML" dir=".."
+
+                    Bound to "process-classes" (not "generate-sources"): Info2HTML is a class
+                    in this project, so it can only run once it has been compiled, and
+                    "compile" happens after "generate-sources". "process-classes" is the first
+                    phase after "compile", and it still runs well before "package", where the
+                    assembly-plugin jars (below) get built.
+
+                    No workingDirectory is set (it is not a valid parameter for the "java" goal
+                    anyway — that only applies to "exec:exec", which forks a separate process).
+                    exec:java runs in-process inside Maven's own JVM, so it simply inherits
+                    Maven's own working directory, which is the project root since that's where
+                    you invoke mvn from — matching how it behaves when run from the IDE, so it
+                    writes to src/main/resources/Resources/doc/ as expected.
+
+                    Because "process-resources" (which copies src/main/resources into
+                    target/classes) runs BEFORE "compile", it has already finished by the time
+                    Info2HTML writes its new files. The second execution below — a
+                    maven-resources-plugin run bound to the same "process-classes" phase,
+                    declared right after this plugin so it runs second — re-copies
+                    src/main/resources into target/classes so the freshly generated doc files
+                    are present before "package" builds CirclePack-{version}.jar.
+                    ============================================================ -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>run-Info2HTML</id>
+                        <phase>process-classes</phase>
+                        <goals><goal>java</goal></goals>
+                        <configuration>
+                            <mainClass>infoProcessing.Info2HTML</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>recopy-generated-info-html</id>
+                        <phase>process-classes</phase>
+                        <goals><goal>resources</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- ============================================================
+                 3. THREE JARS via maven-assembly-plugin
+
+                 JAR 1 — CirclePack-{version}.jar  Main-Class: allMains.CirclePackMain
+                          Contains: all compiled classes except runCirclePack/**
+                                    (the old, retired launcher), native libs
+                                    (dll/so/jnilib/dylib), and all dependency
+                                    JARs merged in - a single, fully
+                                    self-contained jar.
+
+                          Main-Class is allMains.CirclePackMain: a single,
+                          self-contained process that shows OwlSplashScreen,
+                          builds PackControl/CirclePack in the background, and
+                          only tears down the splash once populateDisplay()
+                          finishes. This replaced the old runCirclePack.RunCirclePack
+                          launcher, which used to extract a nested cpcore.jar to a
+                          fresh temp directory and relaunch a second JVM from
+                          there on every run, and the old cpcore.jar/allMains.SplashMain
+                          jar this file used to be embedded in - neither is built
+                          any more; cpcore.jar had no remaining consumer once
+                          circlepack.xml became self-contained, and cpcore.xml
+                          has been removed.
+
+                 JAR 2 — ScriptLister.jar  Main-Class: allMains.ScriptLister
+
+                 JAR 3 - Info2HTML.jar Main-Class: infoProcessing.Info2HTML
+
+                 Each assembly descriptor lives in src/assembly/.
+                 ============================================================ -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+
+                    <!-- JAR 1: CirclePack-{version}.jar -->
+                    <execution>
+                        <id>circlepack</id>
+                        <phase>package</phase>
+                        <goals><goal>single</goal></goals>
+                        <configuration>
+                            <finalName>CirclePack-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <archive>
+                                <manifest>
+                                    <mainClass>allMains.CirclePackMain</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Built-By>${user.name}</Built-By>
+                                    <Class-Path>.</Class-Path>
+                                </manifestEntries>
+                            </archive>
+                            <descriptors>
+                                <descriptor>src/assembly/circlepack.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+
+                    <!-- JAR 2: ScriptLister.jar -->
+                    <execution>
+                        <id>scriptlister</id>
+                        <phase>package</phase>
+                        <goals><goal>single</goal></goals>
+                        <configuration>
+                            <finalName>ScriptLister</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <archive>
+                                <manifest>
+                                    <mainClass>allMains.ScriptLister</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Built-By>${user.name}</Built-By>
+                                    <Class-Path>.</Class-Path>
+                                </manifestEntries>
+                            </archive>
+                            <descriptors>
+                                <descriptor>src/assembly/scriptlister.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+
+                    <!-- JAR 3: Info2HTML.jar -->
+                    <execution>
+                        <id>Info2HTML</id>
+                        <phase>package</phase>
+                        <goals><goal>single</goal></goals>
+                        <configuration>
+                            <finalName>Info2HTML</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <archive>
+                                <manifest>
+                                    <mainClass>infoProcessing.Info2HTML</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Built-By>${user.name}</Built-By>
+                                    <Class-Path>.</Class-Path>
+                                </manifestEntries>
+                            </archive>
+                            <descriptors>
+                                <descriptor>src/assembly/Info2HTML.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+
+
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>

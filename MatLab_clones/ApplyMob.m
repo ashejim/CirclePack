@@ -1,4 +1,4 @@
-function [w] = ApplyMob(M,z);
+function w = ApplyMob(M,z);
 % [w] = ApplyMob(M,z) Apply Mobius to z
 
 Z=[z;1];
