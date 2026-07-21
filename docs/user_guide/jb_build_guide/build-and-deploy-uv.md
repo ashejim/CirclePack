@@ -12,7 +12,7 @@ This guide walks you through turning the MyST Markdown source files in the
 CirclePack user guide project into a published HTML website using **uv**
 for environment management. The workflow has three stages:
 
-1. Install **uv** and use it to set up a reproducible Python environment.
+1. [Install **uv**](https://docs.astral.sh/uv/getting-started/installation/) and use it to set up a reproducible Python environment.
 2. Build the HTML with **Jupyter Book 2** (which uses the MyST Document
    Engine under the hood).
 3. Deploy the built site to **GitHub Pages** via an automated **GitHub
@@ -29,22 +29,21 @@ separately. It's the recommended choice for new projects.
 :::{note}
 This guide targets **Jupyter Book 2** (the MyST-based line, `jupyter-book
 >= 2.0`). Jupyter Book 1 (the Sphinx-based line) is now in maintenance
-mode and lives on the `v1` branch of the upstream repository. Since the
-CirclePack guide is already authored in MyST, v2 is the right target.
+mode and lives on the `v1` branch of the upstream repository.
 :::
 
 :::{tip} Prerequisites
 Before starting, make sure you have:
-- A **GitHub account** and the CirclePack user guide source in a GitHub
+- A [**GitHub account**](https://github.com/) and the [CirclePack user guide source](add_link) in a GitHub
   repository (or ready to be pushed to one).
-- **Git** installed locally. Verify with `git --version`.
+- [**Git** installed](https://git-scm.com/install/) locally. Verify with `git --version`.
 :::
 
 ## Part 1 — Install uv and set up the environment
 
 uv is a single self-contained binary. It can install and manage Python
 for you, so in most cases this is the only tool you need to install
-manually.
+manually. For instructions using pip, pipx, mamba etc., see [here](https://jupyterbook.org/stable/get-started/install/).
 
 ### 1.1 Install uv
 
@@ -112,7 +111,7 @@ because they don't depend on an existing Python install.
 ### 1.2 Install Python (optional — uv can do this)
 
 Unlike pipenv, uv can install and manage Python itself. You don't need
-Homebrew, the python.org installer, or apt for Python. Just run:
+Homebrew, the python.org installer, or apt for Python. Python >3.9 is requried. Versions 3.11 or 3.12 are recommended (4/21/26). Just run:
 
 ```bash
 uv python install 3.12
@@ -134,7 +133,7 @@ From the root of your CirclePack user guide repository (the folder that
 contains your `.md` source files):
 
 ```bash
-cd path/to/circlepack-user-guide
+cd path/to/CirclePack/docs/user_guide
 uv init --no-workspace
 ```
 
@@ -203,7 +202,7 @@ With uv, you don't activate the environment — you prefix commands with
 uv run jupyter-book --version
 uv run myst --version
 ```
-
+Jupyter-Book and Myst both require Node.js. An option to install it should appear when first running JB.
 `uv run` automatically uses the project's virtual environment and
 ensures it's synced with `uv.lock` first. If you prefer a traditional
 activation workflow, you can still do it:
@@ -422,23 +421,22 @@ repository and add a file named `deploy.yml` with the following
 contents:
 
 ```yaml
-# .github/workflows/deploy.yml
-name: deploy-book
+# .github/workflows/deploy-docs.yml
+name: deploy-docs
 
-# Rebuild and deploy whenever main is updated.
-# Also allow manual triggering from the Actions tab.
 on:
   push:
     branches: [main]
+    paths:
+      - 'docs/**'                      # only rebuild when docs change
+      - '.github/workflows/deploy-docs.yml'
   workflow_dispatch:
 
-# Required permissions for the deploy-pages action.
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Only allow one concurrent deployment.
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -446,33 +444,23 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs       # run every step inside docs/
     steps:
-      - name: Check out the repository
-        uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
         with:
           enable-cache: true
-
-      - name: Set up Python
-        run: uv python install 3.12
-
-      - name: Set up Node.js (for the MyST engine)
-        uses: actions/setup-node@v4
+      - run: uv python install 3.12
+      - uses: actions/setup-node@v4
         with:
           node-version: "20"
-
-      - name: Install dependencies
-        run: uv sync --frozen
-
-      - name: Build the Jupyter Book
-        run: uv run jupyter-book build --html
-
-      - name: Upload built site as Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - run: uv sync --frozen
+      - run: uv run jupyter-book build --html
+      - uses: actions/upload-pages-artifact@v3
         with:
-          path: _build/html
+          path: docs/_build/html      # full path from repo root
 
   deploy:
     needs: build
@@ -481,8 +469,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4
 ```
 

@@ -173,3 +173,9 @@ call-site comments, etc.
 - **Some user-facing vocabulary is hidden in method bodies** not
   exposed by Doxygen. When in doubt, find the source listing in the
   back half of `refman.pdf` and read the actual Java.
+
+
+## Dependenices
+
+Recommend using uv. Dependencies are managed using `pyproject.toml` and `uv.lock`. Commit any changes to git. Together these files
+guarantee that you, your collaborators, and your CI server all install the same versions.
