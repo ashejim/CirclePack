@@ -14,14 +14,8 @@
     <name>CirclePack</name>
 
     <properties>
-        <!-- Bumped from 1.8 (the original Ant build's javac source/target) to
-             17, a modern LTS release, so the codebase can use records, var,
-             switch expressions, and diamond-on-anonymous-classes (all of
-             which -source 8 rejects) instead of working around their
-             absence. Requires JDK 17+ to build and a JRE 17+ to run the
-             resulting jars. -->
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>   <!-- matches javac source="1.8" -->
+        <maven.compiler.target>1.8</maven.compiler.target>   <!-- matches javac target="1.8" -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -81,53 +75,10 @@
             </resource>
         </resources>
 
-        <pluginManagement>
-            <plugins>
-                <!-- ========================================================
-                     Tells m2e NOT to run exec-maven-plugin's "java" goal as
-                     part of Eclipse's own automatic project builds. Eclipse's
-                     embedded Maven runs inside the Eclipse JVM, whose working
-                     directory is wherever Eclipse itself was launched from —
-                     not the project root — so Info2HTML (which depends on
-                     being run from the project root) can fail there even
-                     though it works fine from a real "mvn" invocation. This
-                     only affects Eclipse's internal auto-build; running
-                     "mvn package" from the command line, or "Run As > Maven
-                     Build" against an external Maven install, still executes
-                     it for real.
-                     ======================================================== -->
-                <plugin>
-                    <groupId>org.eclipse.m2e</groupId>
-                    <artifactId>lifecycle-mapping</artifactId>
-                    <version>1.0.0</version>
-                    <configuration>
-                        <lifecycleMappingMetadata>
-                            <pluginExecutions>
-                                <pluginExecution>
-                                    <pluginExecutionFilter>
-                                        <groupId>org.codehaus.mojo</groupId>
-                                        <artifactId>exec-maven-plugin</artifactId>
-                                        <versionRange>[3.1.0,)</versionRange>
-                                        <goals>
-                                            <goal>java</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <ignore/>
-                                    </action>
-                                </pluginExecution>
-                            </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
         <plugins>
 
             <!-- ============================================================
-                 1. COMPILER — javac source/target=17 (see maven.compiler.source/
-                    target above), -Xlint:unchecked
+                 1. COMPILER — mirrors: javac source/target=1.8 -Xlint:unchecked
                  ============================================================ -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -163,7 +114,7 @@
                     maven-resources-plugin run bound to the same "process-classes" phase,
                     declared right after this plugin so it runs second — re-copies
                     src/main/resources into target/classes so the freshly generated doc files
-                    are present before "package" builds CirclePack-{version}.jar.
+                    are present before "package" builds cpcore.jar.
                     ============================================================ -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -195,31 +146,19 @@
             </plugin>
 
             <!-- ============================================================
-                 3. THREE JARS via maven-assembly-plugin
+                 3. FOUR JARS via maven-assembly-plugin
 
-                 JAR 1 — CirclePack-{version}.jar  Main-Class: allMains.CirclePackMain
-                          Contains: all compiled classes except runCirclePack/**
-                                    (the old, retired launcher), native libs
-                                    (dll/so/jnilib/dylib), and all dependency
-                                    JARs merged in - a single, fully
-                                    self-contained jar.
+                 JAR 1 — cpcore.jar        Main-Class: allMains.SplashMain
+                          Contains: all compiled classes except runCirclePack/**,
+                                    native libs (dll/so/jnilib/dylib),
+                                    src/Resources/**, and all dependency JARs merged in.
 
-                          Main-Class is allMains.CirclePackMain: a single,
-                          self-contained process that shows OwlSplashScreen,
-                          builds PackControl/CirclePack in the background, and
-                          only tears down the splash once populateDisplay()
-                          finishes. This replaced the old runCirclePack.RunCirclePack
-                          launcher, which used to extract a nested cpcore.jar to a
-                          fresh temp directory and relaunch a second JVM from
-                          there on every run, and the old cpcore.jar/allMains.SplashMain
-                          jar this file used to be embedded in - neither is built
-                          any more; cpcore.jar had no remaining consumer once
-                          circlepack.xml became self-contained, and cpcore.xml
-                          has been removed.
+                 JAR 2 — CirclePack-{version}.jar  Main-Class: runCirclePack.RunCirclePack
+                          Contains: only runCirclePack/** classes + cpcore.jar.
 
-                 JAR 2 — ScriptLister.jar  Main-Class: allMains.ScriptLister
+                 JAR 3 — ScriptLister.jar  Main-Class: allMains.ScriptLister
 
-                 JAR 3 - Info2HTML.jar Main-Class: infoProcessing.Info2HTML
+                 JAR 4 - Info2HTML.jar Main-Class: infoProcessing.Info2HTML
 
                  Each assembly descriptor lives in src/assembly/.
                  ============================================================ -->
@@ -229,7 +168,30 @@
                 <version>3.6.0</version>
                 <executions>
 
-                    <!-- JAR 1: CirclePack-{version}.jar -->
+                    <!-- JAR 1: cpcore.jar -->
+                    <execution>
+                        <id>cpcore</id>
+                        <phase>package</phase>
+                        <goals><goal>single</goal></goals>
+                        <configuration>
+                            <finalName>cpcore</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <archive>
+                                <manifest>
+                                    <mainClass>allMains.SplashMain</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Built-By>${user.name}</Built-By>
+                                    <Class-Path>.</Class-Path>
+                                </manifestEntries>
+                            </archive>
+                            <descriptors>
+                                <descriptor>src/assembly/cpcore.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+
+                    <!-- JAR 2: CirclePack-{version}.jar -->
                     <execution>
                         <id>circlepack</id>
                         <phase>package</phase>
@@ -239,7 +201,7 @@
                             <appendAssemblyId>false</appendAssemblyId>
                             <archive>
                                 <manifest>
-                                    <mainClass>allMains.CirclePackMain</mainClass>
+                                    <mainClass>runCirclePack.RunCirclePack</mainClass>
                                 </manifest>
                                 <manifestEntries>
                                     <Built-By>${user.name}</Built-By>
@@ -252,7 +214,7 @@
                         </configuration>
                     </execution>
 
-                    <!-- JAR 2: ScriptLister.jar -->
+                    <!-- JAR 3: ScriptLister.jar -->
                     <execution>
                         <id>scriptlister</id>
                         <phase>package</phase>
@@ -275,7 +237,7 @@
                         </configuration>
                     </execution>
 
-                    <!-- JAR 3: Info2HTML.jar -->
+                    <!-- JAR 4: Info2HTML.jar -->
                     <execution>
                         <id>Info2HTML</id>
                         <phase>package</phase>

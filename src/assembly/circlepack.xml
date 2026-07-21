@@ -4,24 +4,55 @@
     <formats><format>jar</format></formats>
     <includeBaseDirectory>false</includeBaseDirectory>
 
+    <!-- Merge all dependency JARs in, stripping signature files. This used
+         to be unnecessary here because RunCirclePack only needed its own
+         classes plus a nested (not unpacked) cpcore.jar it would extract
+         and relaunch as a second JVM. Now that allMains.CirclePackMain runs
+         everything in a single process, this jar needs to be fully
+         self-contained, same as cpcore.jar. -->
+    <dependencySets>
+        <dependencySet>
+            <unpack>true</unpack>
+            <scope>runtime</scope>
+            <unpackOptions>
+                <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
+    </dependencySets>
+
     <fileSets>
-        <!-- Only the runCirclePack launcher classes -->
+        <!-- All compiled classes. runCirclePack/** (the old RunCirclePack
+             double-JVM launcher) is excluded - it's dead code now that
+             allMains.CirclePackMain is the Main-Class. -->
         <fileSet>
             <directory>${project.build.outputDirectory}</directory>
             <outputDirectory>/</outputDirectory>
-            <includes>
-                <include>runCirclePack/**</include>
-            </includes>
+            <excludes>
+                <exclude>runCirclePack/**</exclude>
+            </excludes>
         </fileSet>
 
-        <!-- Bundle the cpcore.jar built earlier in the same mvn package run -->
+        <!-- Native libraries from cdeps/ -->
         <fileSet>
-            <directory>${project.build.directory}</directory>
+            <directory>${project.basedir}/cdeps</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
-                <include>cpcore.jar</include>
+                <include>**/*.dll</include>
+                <include>**/*.so</include>
+                <include>**/*.jnilib</include>
+                <include>**/*.dylib</include>
             </includes>
         </fileSet>
     </fileSets>
+
+    <!-- No separate "src/Resources" fileSet here (unlike cpcore.xml) -
+         that path no longer exists after the Maven migration (resources
+         now live under src/main/resources/Resources/, which the first
+         fileSet above already picks up via target/classes, since the
+         standard maven-resources-plugin copy already put them there). -->
 
 </assembly>
