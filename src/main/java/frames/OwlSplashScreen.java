@@ -6,13 +6,13 @@ import java.net.URL;
 
 /**
  * Borderless splash window.
- * Top area  : Owl.png scaled to fit.
+ * Top area  : Owl_Splash.png scaled to fit.
  * Bottom strip: status label + progress bar.
  */
 public class OwlSplashScreen extends JWindow {
 
-    private static final int W     = 420;
-    private static final int IMG_H = 200;
+    private static final int W     = 620;
+    private static final int IMG_H = 285;
     private static final int BAR_H =  54;
 
     private final JProgressBar progressBar;
@@ -20,18 +20,19 @@ public class OwlSplashScreen extends JWindow {
 
     public OwlSplashScreen() {
         JPanel content = new JPanel(new BorderLayout());
-        content.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 180), 2));
+//      content.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 180), 2));
         content.setBackground(Color.WHITE);
 
         content.add(buildImagePanel(), BorderLayout.CENTER);
 
         // --- bottom status strip ---
         JPanel statusPanel = new JPanel(new BorderLayout(0, 4));
-        statusPanel.setBorder(BorderFactory.createEmptyBorder(6, 12, 8, 12));
+        statusPanel.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 180), 2));
+//        statusPanel.setBorder(BorderFactory.createEmptyBorder(6, 12, 8, 12));
         statusPanel.setBackground(Color.WHITE);
 
         statusLabel = new JLabel("Starting...");
-        statusLabel.setFont(statusLabel.getFont().deriveFont(11f));
+        statusLabel.setFont(statusLabel.getFont().deriveFont(15f));
 
         progressBar = new JProgressBar(0, 100);
         progressBar.setForeground(new Color(0, 0, 200));
@@ -56,7 +57,7 @@ public class OwlSplashScreen extends JWindow {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                URL url = getClass().getResource("/Owl.png");
+                URL url = getClass().getResource("/Owl_Splash.png");
                 if (url == null) {
                     g.setFont(g.getFont().deriveFont(Font.BOLD, 22f));
                     g.setColor(new Color(30, 30, 40));
