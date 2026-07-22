@@ -247,6 +247,9 @@ public class FtnFrame extends JFrame {
     	}
     }
 	
+	/**
+	 * @brief Window listener that hides the function frame on close.
+	 */
 	class WAdapter extends WindowAdapter {
 		public void windowClosing(WindowEvent wevt) {
 			if (wevt.getID()==WindowEvent.WINDOW_CLOSING)
@@ -273,6 +276,9 @@ public class FtnFrame extends JFrame {
      
 }
 	
+/**
+ * @brief Action adapter forwarding events to the function field.
+ */
 class FtnPanel_actionAdapter implements java.awt.event.ActionListener {
 	FtnFrame adaptee;
 
@@ -284,6 +290,9 @@ class FtnPanel_actionAdapter implements java.awt.event.ActionListener {
 	}
 }
 
+/**
+ * @brief Action adapter forwarding events to the parameter path field.
+ */
 class ParamPanel_actionAdapter implements java.awt.event.ActionListener {
 	  FtnFrame adaptee;
 	  public ParamPanel_actionAdapter(FtnFrame adaptee) {

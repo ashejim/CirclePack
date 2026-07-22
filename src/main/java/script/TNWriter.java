@@ -197,6 +197,9 @@ public class TNWriter {
 		} // end of switch
 	}
 	
+	/**
+	 * @brief Write the included data files into the CPdata section.
+	 */
 	// handle list of files
 	public void writeDataFiles() throws IOException {
 		String s;

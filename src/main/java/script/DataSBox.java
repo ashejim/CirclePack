@@ -59,6 +59,9 @@ public class DataSBox extends StackBox {
 		buildSB();
 	}
 	
+	/**
+	 * @brief Build the header panel and borders for the CPdata box.
+	 */
 	public void buildComponents() {
 		Border outer=new EmptyBorder(2,2,2,2);
 		Border inner=new LineBorder(Color.LIGHT_GRAY);
@@ -102,6 +105,10 @@ public class DataSBox extends StackBox {
 		this.add(headerPanel);
 	}
 	
+	/**
+	 * @brief Rebuild and lay out the CPdata box, adding child file boxes when open.
+	 * @param wide
+	 */
 	public void redisplaySB(int wide) {
 		myWidth=wide;
 		this.removeAll();
@@ -124,6 +131,9 @@ public class DataSBox extends StackBox {
 		revalidate();
 	}
 	
+	/**
+	 * @brief Open the CPdata box to show its included files.
+	 */
 	public void open() {
 		if (isOpen) return;
 		isOpen=true;
@@ -131,6 +141,8 @@ public class DataSBox extends StackBox {
 	}
 	
 	/**
+	 * @brief Update the header text with the current included-file count.
+	 *
 	 * Displaying number of included CPdata files in script panel
 	 */
 	public void updateCount() {
@@ -146,6 +158,8 @@ public class DataSBox extends StackBox {
 	public void acceptEdit() {}
 	
 	/**
+	 * @brief Delete all included FILE children and redisplay.
+	 *
 	 * Delete all FILE's.
 	 */
 	public void deleteNode() {
@@ -154,6 +168,8 @@ public class DataSBox extends StackBox {
 	}
 	
 	/**
+	 * @brief Remove all child file nodes, leaving the CPDATA node itself.
+	 *
 	 * Remove all the contents, but leave CPDATA itself
 	 */
 	public void deleteChildNodes() {

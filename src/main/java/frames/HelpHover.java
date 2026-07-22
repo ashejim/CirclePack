@@ -86,6 +86,9 @@ public class HelpHover extends HoverPanel implements HyperlinkListener {
 		super(700,600,"CirclePack Help Information");
 	}
 
+	/**
+	 * @brief Build all the help tabs, left index panel, and search box.
+	 */
 	public void initComponents() {
 		this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
 
@@ -334,6 +337,9 @@ public class HelpHover extends HoverPanel implements HyperlinkListener {
 		leftPanel.setPreferredSize(new Dimension(180,-1));
 	}
 
+	/**
+	 * @brief Add a scrollable text-area tab loaded from a help resource file.
+	 */
 	void addScrollArea(String title,String filename) {
 		JTextArea textArea=new JTextArea();
 		textArea.setLineWrap(true);
@@ -347,12 +353,18 @@ public class HelpHover extends HoverPanel implements HyperlinkListener {
 		helpTabbedPane.add(textScroll,title);
 	}
 
+	/**
+	 * @brief Load just the tabbed pane for the hovering (undecorated) frame.
+	 */
 	public void loadHover() {
 		this.removeAll();
 		helpTabbedPane.setPreferredSize(new Dimension(myWidth,myHeight));
 		this.add(helpTabbedPane);
 	}
 
+	/**
+	 * @brief Load the left index panel plus tabbed pane for the locked frame.
+	 */
 	public void loadLocked() {
 		this.removeAll();
 		helpTabbedPane.setPreferredSize(new Dimension((int)(myWidth*0.75),myHeight));
@@ -607,6 +619,9 @@ public class HelpHover extends HoverPanel implements HyperlinkListener {
 		return null;
 	}
 
+	/**
+	 * @brief Hyperlink listener that jumps to the clicked command in Command Details.
+	 */
 	class IndexHyperlinkListener implements HyperlinkListener
 	{
 		public void hyperlinkUpdate(HyperlinkEvent e) {

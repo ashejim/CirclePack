@@ -66,8 +66,10 @@ public class LineSBox extends StackBox {
 		return count;
 	}
 
-	/** 
-	 * set 'myDim' based on 'myWidth' and 'myCompHeight'; height 
+	/**
+	 * @brief Compute 'myDim' to fit all child boxes within 'myWidth'.
+	 *
+	 * set 'myDim' based on 'myWidth' and 'myCompHeight'; height
 	 * is that needed to display all child nodes.
 	 */
 	public void computeDim() {
@@ -93,6 +95,9 @@ public class LineSBox extends StackBox {
 		revalidate();
 	}
 	
+	/**
+	 * @brief Set up the flow layout and border for this LineSBox.
+	 */
 	public void buildComponents() {
 		// STACK
 		this.setLayout(new FlowLayout(FlowLayout.LEADING,0,0));
@@ -105,6 +110,10 @@ public class LineSBox extends StackBox {
 //		this.setBorder(new LineBorder(Color.orange));
 	}
 	
+	/**
+	 * @brief Rebuild the LineSBox by adding its child command/file boxes.
+	 * @param wide
+	 */
 	public void redisplaySB(int wide) { // rebuild each time
 		myWidth=wide;
 		this.removeAll();
@@ -141,6 +150,10 @@ public class LineSBox extends StackBox {
 //		this.setBorder(new LineBorder(Color.orange));
 	}
 	
+	/**
+	 * @brief Recompute size before painting the LineSBox.
+	 * @param g
+	 */
 	public void paintComponent(Graphics g) {
 		computeDim();
 		setFixedSizes(this,myDim.width+2,myDim.height);
@@ -161,6 +174,8 @@ public class LineSBox extends StackBox {
 	}
 	
 	/**
+	 * @brief Destroy this LineSBox, leaving its contents in its place.
+	 *
 	 * destroy this 'LineSBox', puts its contents in its place
 	 */
 	public void discardThisBox() {
@@ -168,6 +183,8 @@ public class LineSBox extends StackBox {
 	}
 	
 	/**
+	 * @brief Dissolve this LineSBox, reinserting its children into the parent.
+	 *
 	 * destroy this 'LineSBox', puts its contents in its place
 	 */
 	public void open() {
@@ -185,9 +202,11 @@ public class LineSBox extends StackBox {
 	}
 	
 	/**
+	 * @brief Delete this LineSBox and all its children.
+	 *
 	 * Delete this 'LineSBox' AND all its children. This should only
 	 * be called when LineSBox is empty or if directed by some ancestor
-	 * SECTION node which is being deleted in its entirety. 
+	 * SECTION node which is being deleted in its entirety.
 	 */
 	public void deleteNode() {
 		//AF>>>//
@@ -230,6 +249,8 @@ public class LineSBox extends StackBox {
 	}
 	
 	/**
+	 * @brief Delete all child nodes, leaving an empty LINEUP.
+	 *
 	 * Destroy all the contents, leaving empty LINEUP, which
 	 * should then itself be deleted
 	 */

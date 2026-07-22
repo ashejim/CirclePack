@@ -45,6 +45,9 @@ public class MobiusFrame extends JFrame implements ActionListener {
 
 	private JPanel genMobPanel;
 
+	/**
+	 * @brief Create the Mobius frame with side-pair and general Mobius tool handlers.
+	 */
 	public MobiusFrame() {
 		super();
 		this.addWindowListener(new WAdapter());
@@ -146,10 +149,13 @@ public class MobiusFrame extends JFrame implements ActionListener {
 		return count;
 	}
 	
+	/**
+	 * @brief Handle button actions: update side-pairings, optionally re-layout first.
+	 */
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
 		try {
-			if (command.equals("reset")) 
+			if (command.equals("reset"))
 				loadSidePairs();
 			else if (command.equals("layout_reset")) {
 				PackData p=CirclePack.cpb.getActivePackData();
@@ -162,6 +168,9 @@ public class MobiusFrame extends JFrame implements ActionListener {
 		}
 	}
 	
+    /**
+     * @brief Window adapter that hides the Mobius frame on close.
+     */
     class WAdapter extends WindowAdapter {
     	public void windowClosing(WindowEvent wevt) {
     		if (wevt.getID()==WindowEvent.WINDOW_CLOSING)

@@ -39,12 +39,18 @@ public class LockableJViewport extends JViewport {
 		}
 	}
 	
+	/**
+	 * @brief Scroll to make a rectangle visible, unless the viewport is locked.
+	 */
 	@Override
 	public void scrollRectToVisible(Rectangle contentRect) {
 		if (locked) return;
 		super.scrollRectToVisible(contentRect);
 	}
 	
+	/**
+	 * @brief Set the view position, unless the viewport is locked.
+	 */
 	@Override
 	public void setViewPosition(Point p) {
 		if (locked) return;

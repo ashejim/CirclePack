@@ -145,8 +145,10 @@ public class ScriptManager implements ActionListener {
 	}
 
 	/**
-	 * Used only when new script is loaded; this 
-	 * is 'repopulateRecurse' from the top nodes, 
+	 * @brief Repopulate the whole display from the top script and data nodes.
+	 *
+	 * Used only when new script is loaded; this
+	 * is 'repopulateRecurse' from the top nodes,
 	 * 'cpScriptNode' and 'cpDataNode'.
 	 */
 	public void populateDisplay() {
@@ -172,6 +174,8 @@ public class ScriptManager implements ActionListener {
 	//	    }};
 
 	/**
+	 * @brief Recursively rebuild the StackBox display under a tree node.
+	 *
 	 * Recursively repopulate the script 'StackBox's
 	 */
 	public void repopulateRecurse(CPTreeNode treeNode) {
@@ -213,11 +217,13 @@ public class ScriptManager implements ActionListener {
 	}
 
 	/**
+	 * @brief Rebuild the script toolbar and modes from named/XY commands and modes.
+	 *
 	 * Clear the script 'toolVector', 'toolBar', and vector of
-	 * 'scriptMode's. Refill toolBar with clones of the script 
+	 * 'scriptMode's. Refill toolBar with clones of the script
 	 * with 'MyTool's that are named or contain #XY command and
 	 * with 'MyCanvasMode's. Refill 'scriptMode' vector with
-	 * clones of 'MyCanvasMode's. Command/modes currently being 
+	 * clones of 'MyCanvasMode's. Command/modes currently being
 	 * edited will show only after edit is accepted or canceled.
 	 */
 	public void repopulateBar() {
@@ -947,6 +953,8 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
+	  * @brief Reset the 'next' command node, clearing the former one first.
+	  *
 	  * Need to cancel former nextCmdNode??
 	  */
 	 public void resetNextCmdNode() {
@@ -1037,8 +1045,10 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * When saving, need to first resolve all open 
-	  * edit decisions; for now, accept them all. 
+	  * @brief Accept all pending edits across the tree (used before saving).
+	  *
+	  * When saving, need to first resolve all open
+	  * edit decisions; for now, accept them all.
 	  * May want to rethink this later.
 	  */
 	 public void acceptAllEdits() {
@@ -1302,6 +1312,8 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
+	  * @brief Get the command string for a named command in the script.
+	  *
 	  * Get command string for a named command in script:
 	  * mode=0, first character of name matches first char of key
 	  * mode=1, name matches key.
@@ -1393,6 +1405,8 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
+	  * @brief Execute the inline command in nextCmdNode, then advance 'next'.
+	  *
 	  * Execute the (inline) command given in nextCmdNode and then
 	  * reset nextCmdNode.
 	  */
@@ -1430,6 +1444,9 @@ public class ScriptManager implements ActionListener {
 		 return null;
 	 }
 
+	 /**
+	  * @brief Notify tree model listeners that the structure at a path changed.
+	  */
 	 protected void fireTreeStructureChanged(TreePath path) {
 		 int length = treeModelListeners.size();
 		 TreeModelEvent evt = new TreeModelEvent(this, path);
@@ -1440,7 +1457,9 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Notify listeners that a new object exists at the given path. 
+	  * @brief Notify tree model listeners that a node was inserted at the path.
+	  *
+	  * Notify listeners that a new object exists at the given path.
 	  * path is the TreePath to the node inserted
 	  */
 	 protected void fireTreeNodesInserted(TreePath path) {
@@ -1461,6 +1480,8 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
+	  * @brief Notify tree model listeners that a child was removed from the path.
+	  *
 	  * Notify listeners that the path given has had a child deleted. path is the
 	  * TreePath to the Parent of the deleted node
 	  */
@@ -1509,6 +1530,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
+	  * @brief True if a script working file has been loaded.
 	  * @return boolean
 	  */
 	 public boolean isScriptLoaded() {
@@ -1519,7 +1541,9 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * Actions initiated in the 'scriptAction' panel 
+	  * @brief Dispatch script toolbar/button actions (load, new, next, save, etc.).
+	  *
+	  * Actions initiated in the 'scriptAction' panel
 	  * and button presses come through this method.
 	  */
 	 public void actionPerformed(ActionEvent e) {
@@ -1705,13 +1729,17 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
+	  * @brief Return the root CPTreeNode.
+	  *
 	  * Use: Returns the root CPTreeNode.
 	  */
 	 public Object getRoot() {
 		 return rootNode;
 	 }
 	 /**
-	  * Toggle 'cmdOpenMode' (whether all command boxes are open or closed) 
+	  * @brief Toggle whether all command boxes are open or closed.
+	  *
+	  * Toggle 'cmdOpenMode' (whether all command boxes are open or closed)
 	  */
 	 public void toggleCmdOpenMode() {
 		 if (cmdOpenMode) {

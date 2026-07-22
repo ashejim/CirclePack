@@ -113,7 +113,8 @@ public class PairedFrame extends JFrame implements ActionListener {
 		setResizable(false);
 	}
 	
-	/** 
+	/**
+	 * @brief Create the domain/range panels, canvasses, and teleTools (added in layMeOut).
 	 * GUI initiation called only during 'CirclePack' startup:
 	 * create the panels, etc. here, but add them in 'layMeOut'.
 	 */
@@ -248,9 +249,10 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
+	 * @brief Create or recreate the frame layout (domain, mid, range boxes).
 	 * This is where the layout is created or recreated (as after a
 	 * size change).
-	 * 
+	 *
 	 * Overall, its a horizontal Box layout: domBox, midBox, ranBox.
 	 * 
 	 * domBox is a vertical Box layout, with domTopPanel, domCanvas,
@@ -371,6 +373,9 @@ public class PairedFrame extends JFrame implements ActionListener {
 		pack();
 	}
 
+	/**
+	 * @brief Color canvas borders green for the active pack, gray otherwise.
+	 */
 	public void colorBorders() {
 //System.err.println("colorBorders");
 		int pnum=CirclePack.cpb.getActivePackNum();
@@ -434,6 +439,9 @@ public class PairedFrame extends JFrame implements ActionListener {
 		return canvasDim;
 	}
 	
+	/**
+	 * @brief Replace the progress/owl button in the mid box with a fresh one.
+	 */
 	public void swapProgBar() {
 		progressBar=((OwlSpinner)CPBase.runSpinner).getPairProgButton();
 //		int width=progressBar.getIcon().getIconWidth();
@@ -516,6 +524,9 @@ public class PairedFrame extends JFrame implements ActionListener {
 		rangeScreen.repaint();
 	}
 	
+	/**
+	 * @brief Remove all script tools from the vertical script bar.
+	 */
 	public void removeScriptTools() {
 		PackControl.vertScriptBar.scriptTools.removeAll();
 	}
@@ -562,8 +573,11 @@ public class PairedFrame extends JFrame implements ActionListener {
 	  	telePanel.repaint();
 	}
 	
+	/**
+	 * @brief Handle pack combo-box changes, screendump, and teleTool toggle.
+	 */
 	public void actionPerformed(ActionEvent e){
-		
+
 		// one of combo boxes??
 		if (e.getSource() instanceof JComboBox<?>) {
 			JComboBox<?> cb = (JComboBox<?>)e.getSource();

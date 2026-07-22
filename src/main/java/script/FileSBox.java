@@ -83,6 +83,9 @@ public class FileSBox extends StackBox {
 		buildSB();
 	}
 
+	/**
+	 * @brief Build the header panel, file button, and name field for this box.
+	 */
 	public void buildComponents() {
 		emptyBorder=new EmptyBorder(0,0,0,0);
 		Border inner=new LineBorder(Color.green);
@@ -129,6 +132,10 @@ public class FileSBox extends StackBox {
 		headGlue=Box.createHorizontalGlue();
 	}
 
+	/**
+	 * @brief Rebuild and lay out this file box for display or edit mode.
+	 * @param wide
+	 */
 	public void redisplaySB(int wide) {
 		myWidth=wide;
 		this.removeAll();
@@ -162,6 +169,9 @@ public class FileSBox extends StackBox {
 		revalidate();
 	}
 
+	/**
+	 * @brief Populate the header panel with controls for the current mode.
+	 */
 	public void buildSB() {
 		if (currentMode==DISPLAY) {
 			headPanel.add(fileButton);
@@ -183,6 +193,9 @@ public class FileSBox extends StackBox {
 		headPanel.setBorder(emptyBorder);
 	}
 
+	/**
+	 * @brief Build the scrollable editor pane showing the file contents (edit mode).
+	 */
 	public void buildFileEditor() {
 		if (currentMode==DISPLAY)
 			return;  // file edit window not used in DISPLAY mode
@@ -214,6 +227,9 @@ public class FileSBox extends StackBox {
 		contentPanel.setPreferredSize(new Dimension(DataSBox.EDITWIDTH,200));
 	}
 
+	/**
+	 * @brief Enter edit mode for this file (disallowed for 'AboutImage').
+	 */
 	public void startEdit() {
 		if (currentMode!=DISPLAY) return;
 		if (includedFile.origName.startsWith("AboutImage")) {
@@ -247,6 +263,9 @@ public class FileSBox extends StackBox {
 		//<<<AF//
 	}
 
+	/**
+	 * @brief Cancel editing, reverting to display mode (or deleting a NEW node).
+	 */
 	public void cancelEdit() {
 		if (currentMode==DISPLAY) return;
 
@@ -280,6 +299,8 @@ public class FileSBox extends StackBox {
 	}
 
 	/**
+	 * @brief Accept edits: save file contents/name and return to display mode.
+	 *
 	 * Note, avoid name conflicts. Type of file does not change (even if a new
 	 * extension type is given).
 	 */
@@ -344,6 +365,8 @@ public class FileSBox extends StackBox {
 	}
 
 	/**
+	 * @brief Delete this file: remove its CPTreeNode, StackBox, and includedFiles entry.
+	 *
 	 * Delete this FILE: get rid of CPTreeNode and StackBox
 	 */
 	public void deleteNode() {
@@ -435,7 +458,8 @@ public class FileSBox extends StackBox {
 	}
 	
 	/**
-	 * 
+	 * @brief Return the URL of this file's temporary copy.
+	 *
 	 * @return URL
 	 */
 	public URL getFileURL() {

@@ -37,6 +37,9 @@ public class ScriptToolEditor extends MyToolEditor {
 		"editdelete.png","bookmark_add.png"};
 	
 	// Constructor
+	/**
+	 * @brief Create the editor, loading the script icon set.
+	 */
 	public ScriptToolEditor(String tool_type,MyToolHandler par) {
 		super(tool_type,par);
 		iconDir=("script");
@@ -46,6 +49,9 @@ public class ScriptToolEditor extends MyToolEditor {
 		resetIconList();
 	}
 
+	/**
+	 * @brief Build the top panel with a command text area and inline checkbox.
+	 */
 	public JPanel topPanel() { // used 'prototypePanel' to create this
 		JPanel panel=new JPanel();
 		try {
@@ -78,36 +84,53 @@ public class ScriptToolEditor extends MyToolEditor {
 		return panel;
 	}
 	
-	/** 
+	/**
+	 * @brief Default dropability for tools (false for script tools).
 	 * default dropability for tools
 	 */
 	public boolean setDropDefault() {
 		return false;
 	}
-	
+
+	/**
+	 * @brief Description of the substance this tool produces.
+	 */
 	public String substanceText() {
 		return new String("a legitimate Mobius transform.");
 	}
-	
+
+	/**
+	 * @brief Return the command string from the command text area.
+	 */
 	public String formulateCmd() {
 		return cmdArea.getText();
 	}
-	
+
+	/**
+	 * @brief Enable the dropability checkbox and set its default mode.
+	 */
 	public void dropableCheckBox() { // set 'dropBox' and 'dropMode'
 		wantDropBox=true;
 		dropMode=setDropDefault();
 	}
-	
+
+	/**
+	 * @brief Clear the command area and reset the drop mode default.
+	 */
 	public void resetMoreFields() {
 		cmdArea.setText("");
 		dropMode=setDropDefault();
 	}
-	
+
+	/**
+	 * @brief Populate the command area from an existing tool's command.
+	 */
 	public void initMoreFields(MyTool theTool) {
 		cmdArea.setText(theTool.getCommand());
 	}
-	
+
 	/**
+	 * @brief GUI-builder constructor that skips GUI initialization.
 	 * This constructor is used by the getGUIBuilderInstance method to
 	 * provide an instance of this class which has not had it's GUI elements
 	 * initialized (ie, initGUI is not called in this constructor).

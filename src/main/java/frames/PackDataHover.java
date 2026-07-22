@@ -90,6 +90,9 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 		
 	}
 	
+	/**
+	 * @brief Build the vertex, edge, face, tile, and pack-data-tree panels.
+	 */
 	public void initComponents() {
 		this.setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
 		
@@ -334,15 +337,24 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 		totalhigh=vhigh+ehigh+fhigh+treehigh+20; // 20 is trial/error
 	}
 	
+	/**
+	 * @brief Load just the vertex panel for the hovering frame.
+	 */
 	public void loadHover() {
 		this.removeAll();
 		this.add(vertContainer);
 	}
-	
+
+	/**
+	 * @brief Refresh vertex data for the active pack before hovering.
+	 */
 	public void hoverCall() {
 		update_vert(CirclePack.cpb.getActivePackData(),true);
 	}
-	
+
+	/**
+	 * @brief Load all data panels and the data tree for the locked frame.
+	 */
 	public void loadLocked() {
 		this.removeAll();
 		updateData(CirclePack.cpb.getActivePackData());
@@ -370,7 +382,7 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 	}
 
 	/**
-	 * 
+	 * @brief Update the vertex data fields for the chosen or active vertex.
 	 * @param p
 	 * @param useActiveVert, boolean: true, use packings active vert
 	 */
@@ -424,8 +436,11 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 		colorFieldV.setField(ColorUtil.col_to_table(p.getCircleColor(v)));
 	}
 	
+	/**
+	 * @brief Update the face data fields for the chosen face.
+	 */
 	public void update_face(PackData p) {
-		if (p==null || !p.status) 
+		if (p==null || !p.status)
 			return;
 		int f=FaceLink.grab_one_face(p,faceChoice.getText());
 		if (f<=0) 
@@ -465,10 +480,13 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 		} catch (Exception ex) {}
 	}
 	
+	/**
+	 * @brief Dispatch update actions from the data panels' buttons/fields.
+	 */
 	public void actionPerformed(ActionEvent evt) {
 		String cmd=evt.getActionCommand();
 		PackData p=CirclePack.cpb.getActivePackData();
-		if (cmd.equals("updateData")) 
+		if (cmd.equals("updateData"))
 			updateData(p);
 		else if (cmd.equals("edge_update"))
 			update_edge(p);

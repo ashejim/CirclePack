@@ -39,6 +39,9 @@ public class VertScriptBar extends JPanel {
 	public JPanel scriptTools;
 	public NextBundle nextBundle;
 	
+	/**
+	 * @brief Build the vertical script bar with Script button and tools.
+	 */
 	public VertScriptBar() {
 		setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
 		setBorder(new LineBorder(Color.blue,1,false));
@@ -75,10 +78,12 @@ public class VertScriptBar extends JPanel {
 	}
 	
 	/**
+	 * @brief Move the script bar between 'MainFrame' and 'PairedFrame'.
+	 *
 	 * A single 'VertScriptBar' is created in PackControl but used
 	 * both in 'PairedFrame' and 'MainFrame'. Move from one to
 	 * the other when 'MapCanvasMode' has changed (and perhaps adjust
-	 * length). 
+	 * length).
 	 */
 	public void swapVertScriptBar() {
 		if (PackControl.MapCanvasMode) { // into 'PairedFrame' mode

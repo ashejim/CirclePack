@@ -21,6 +21,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * @brief Serializes a DOM tree to a file or output stream (used when saving scripts).
+ */
 public class DOMSerializer {
   private String indent;
   private String lineSeparator;
@@ -64,6 +67,8 @@ public class DOMSerializer {
   }
 
   /**
+   * @brief Write a single DOM node to the writer, recursing on children.
+   *
    *  Use:  Writes the node content to the writer, recurses on any
    *    child nodes.
    */

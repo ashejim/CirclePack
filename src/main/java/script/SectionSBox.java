@@ -260,7 +260,9 @@ public class SectionSBox extends StackBox {
 
 
 	/**
-	 * Delete SECTION and all its children; should have moved children 
+	 * @brief Delete this SECTION and all its children.
+	 *
+	 * Delete SECTION and all its children; should have moved children
 	 * already if they were to be saved -- see StackBox code.
 	 * I think redisplaySB is called elsewhere.
 	 */
@@ -291,6 +293,8 @@ public class SectionSBox extends StackBox {
 	}
 
 	/**
+	 * @brief Remove all the contents, leaving empty SECTION.
+	 *
 	 * Remove all the contents, leaving empty SECTION
 	 */
 	public void deleteChildNodes() {
@@ -369,6 +373,9 @@ public class SectionSBox extends StackBox {
 		return editpop;
 	}
 
+	/**
+	 * @brief Return the headerPanel height, or 10 on error.
+	 */
 	public int getHeaderHeight() {
 		try {
 			return headerPanel.getHeight();

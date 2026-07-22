@@ -40,8 +40,11 @@ public class ScriptHover extends HoverPanel {
 		lockedFrame.addComponentListener(new ResizeAdapter());
 	}
 
+	/**
+	 * @brief Build the script frame's panels and the lockable scroll area.
+	 */
 	public void initComponents() {
-		
+
 		// Layout is a big, big problem. See 'fauxScript' for design
 		//   attempts. I've saved the old 'fauxScript/' and 'script/'
 		//   directories in '~/holdScriptStuff.tgz'.
@@ -90,11 +93,17 @@ public class ScriptHover extends HoverPanel {
 		initScriptArea();
 	}
 	
+	/**
+	 * @brief Add the stack scroll area to this panel at startup.
+	 */
 	public void setInitPanel() {
 		// TODO: have to figure out how to choose size.
 		this.add(stackScroll);
 	}
-	
+
+	/**
+	 * @brief Reload the script display in hover (unlocked) mode.
+	 */
 	public void loadHover() {
 		this.removeAll();
 		lockedFrame.setVisible(false);
@@ -102,6 +111,9 @@ public class ScriptHover extends HoverPanel {
 		this.add(stackScroll);
 	}
 	
+	/**
+	 * @brief Reload the script display in locked-frame mode with the edit bar.
+	 */
 	public void loadLocked() {
 		this.removeAll();
 		this.add(scriptPanel);
@@ -125,7 +137,9 @@ public class ScriptHover extends HoverPanel {
 		}
 	}
 	
-	/** 
+	/**
+	 * @brief Initialize the script area with the default width.
+	 *
 	 * At startup, this initiates scriptArea with default width.
 	 */
 	public void initScriptArea() {
@@ -133,9 +147,11 @@ public class ScriptHover extends HoverPanel {
 	}
 	
 	/**
-	 * This initiates persistent 'rootNode', 'cpScriptNode', 
+	 * @brief Create the persistent root/script/data nodes and place their boxes.
+	 *
+	 * This initiates persistent 'rootNode', 'cpScriptNode',
 	 * and 'cpDataNode' nodes: these stay until closing the
-	 * application. It puts their 'stackBox's in the 
+	 * application. It puts their 'stackBox's in the
 	 * 'StackArea' for the script window.
 	 */
 	public void initScriptArea(int initWidth) {
@@ -174,6 +190,9 @@ public class ScriptHover extends HoverPanel {
 	 * @param wide
 	 */
 	class ResizeAdapter extends ComponentAdapter {
+		  /**
+		   * @brief On resize, reset StackBox widths and repopulate the display.
+		   */
 		  public void componentResized(ComponentEvent e) {
 			  lockedFrame.setPreferredSize(new Dimension(lockedFrame.getWidth(),lockedFrame.getHeight()));
 

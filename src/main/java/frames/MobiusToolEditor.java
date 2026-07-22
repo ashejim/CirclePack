@@ -71,6 +71,9 @@ public class MobiusToolEditor extends MyToolEditor {
 	public boolean oriented;
 	
 	// Constructor
+	/**
+	 * @brief Create the editor, loading the Mobius icon set and default orientation.
+	 */
 	public MobiusToolEditor(String tool_type,MyToolHandler par) {
 		super(tool_type,par);
 		iconDir=new String("mobius");
@@ -81,6 +84,9 @@ public class MobiusToolEditor extends MyToolEditor {
 		resetIconList();
 	}
 	
+	/**
+	 * @brief Build the editor's top panel with SO(3), Unit Disc, and General tabs.
+	 */
 	public JPanel topPanel() {
 		JPanel panel=new JPanel();
 		try {
@@ -191,17 +197,24 @@ public class MobiusToolEditor extends MyToolEditor {
 		topSize=panel.getHeight();
 		return panel;
 	}
-	/** 
+	/**
+	 * @brief Default dropability for tools (true for Mobius tools).
 	 * default dropability for tools
 	 */
 	public boolean setDropDefault() {
 		return true;
 	}
 
+	/**
+	 * @brief Description of the substance this tool produces.
+	 */
 	public String substanceText() {
 		return new String("a legitimate Mobius transform.");
 	}
 
+	/**
+	 * @brief Reset the a,b,c,d entry fields to the identity transform.
+	 */
 	public void reset_abcd() {
 		aField.setValue(new Complex(1.0));
 		bField.setValue(new Complex(0.0));
@@ -209,6 +222,9 @@ public class MobiusToolEditor extends MyToolEditor {
 		dField.setValue(new Complex(1.0));
 	}
 	
+	/**
+	 * @brief Build the 'appMob' command string from the a,b,c,d fields and orientation.
+	 */
 	public String formulateCmd() {
 		Complex a=new Complex(1.0);
 		Complex b=new Complex(0.0);
@@ -239,18 +255,25 @@ public class MobiusToolEditor extends MyToolEditor {
 	}
 	
 	/**
+	 * @brief Enable the dropability checkbox and set its default mode.
 	 * Want a checkbox? set default
 	 */
 	public void dropableCheckBox() {
-		wantDropBox=true; 
+		wantDropBox=true;
 		dropMode=setDropDefault();
 	}
 
+	/**
+	 * @brief Reset the a,b,c,d fields and pick a random icon.
+	 */
 	public void resetMoreFields() {
 		reset_abcd();
 		iconCombo.iconBox.setSelectedIndex(randomCPIcon()); // indx<0 means no selection
 	}
 
+	/**
+	 * @brief Populate icon and a,b,c,d fields by parsing an existing tool's command.
+	 */
 	public void initMoreFields(MyTool theTool) {
 		reset_abcd();
 		int indx=getCPIconIndx(theTool.getCPIcon());

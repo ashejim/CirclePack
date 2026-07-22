@@ -17,11 +17,13 @@ import mytools.MyToolHandler;
 import util.GlobResources;
 
 /**
- * CmdToolFrame is a popup frame to allow the user 
- * to create tools to add to MyTools. Each tool 
- * involves a string of commands for CirclePack, 
- * an icon, and a tooltip. These can be saved in 
- * XML format and are read into 'hashedTools' on 
+ * @brief Popup editor for creating command tools (command, icon, tooltip).
+ *
+ * CmdToolFrame is a popup frame to allow the user
+ * to create tools to add to MyTools. Each tool
+ * involves a string of commands for CirclePack,
+ * an icon, and a tooltip. These can be saved in
+ * XML format and are read into 'hashedTools' on
  * startup,
  * @author kens
  */
@@ -68,6 +70,9 @@ public class CmdToolEditor extends MyToolEditor {
 		resetIconList();
 	}
 
+	/**
+	 * @brief Build the top panel holding the command text area.
+	 */
 	public JPanel topPanel() { // based on 'prototypePanel'
 		JPanel panel=new JPanel();
 		try {
@@ -93,22 +98,32 @@ public class CmdToolEditor extends MyToolEditor {
 		}
 		return panel;
 	}
-	/** 
+	/**
+	 * @brief Default dropability for tools (true).
+	 *
 	 * default dropability for tools
 	 */
 	public boolean setDropDefault() {
 		return true;
 	}
 	
+	/**
+	 * @brief Description of the tool's substance ("a command string.").
+	 */
 	public String substanceText() {
 		return new String("a command string.");
 	}
 	
+	/**
+	 * @brief Return the command string from the text area.
+	 */
 	public String formulateCmd() {
 		return cmdArea.getText();
 	}
 	
 	/**
+	 * @brief Enable the dropable checkbox and set its default.
+	 *
 	 * Want a checkbox? set default
 	 */
 	public void dropableCheckBox() {
@@ -116,10 +131,16 @@ public class CmdToolEditor extends MyToolEditor {
 		dropMode=setDropDefault();
 	}
 	
+	/**
+	 * @brief Clear the command text area.
+	 */
 	public void resetMoreFields() {
 		cmdArea.setText("");
 	}
 	
+	/**
+	 * @brief Populate the command text area from an existing tool.
+	 */
 	public void initMoreFields(MyTool theTool) {
 		cmdArea.setText(theTool.getCommand());
 	}

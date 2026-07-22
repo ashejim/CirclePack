@@ -58,6 +58,9 @@ public class ActiveOwl implements Runnable {
 		tr.start();
     }
     
+    /**
+     * @brief Cycle the owl cursor frames on the glass pane while visible.
+     */
     public void run() {
     	int click=0;
     	while (glass!=null) {

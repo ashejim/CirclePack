@@ -56,6 +56,9 @@ public class TextSBox extends StackBox {
 		//		displayIcon=null;
 	}
 
+	/**
+	 * @brief Build the edit/display panes, borders, and accept/cancel cluster.
+	 */
 	public void buildComponents() {
 
 		// borders
@@ -104,6 +107,9 @@ public class TextSBox extends StackBox {
 		textPane.setAlignmentY(0);
 	}
 
+	/**
+	 * @brief Redo layout, showing text pane or edit pane per mode.
+	 */
 	public void redisplaySB(int wide) {
 		myWidth=wide;
 		this.removeAll();
@@ -136,6 +142,8 @@ public class TextSBox extends StackBox {
 	}
 
 	/**
+	 * @brief Switch to edit mode; 'editPane' gets text from 'textPane'.
+	 *
 	 * 'editPane' gets text from 'textPane'
 	 */
 	public void startEdit() {
@@ -163,6 +171,8 @@ public class TextSBox extends StackBox {
 	}
 
 	/**
+	 * @brief Cancel edit, discarding changes (delete node if NEW).
+	 *
 	 * 'textPane' contents should not have changed until
 	 * 'acceptEdit'
 	 */
@@ -196,6 +206,8 @@ public class TextSBox extends StackBox {
 	}
 
 	/**
+	 * @brief Accept edit: copy 'editPane' text to 'textPane' (discard if empty).
+	 *
 	 * Here 'textPane' is reset to 'editPane's contents. During
 	 * edit, new content is only in 'editPane'. Note that if the
 	 * text is all whitespace, the node is discarded.
@@ -242,6 +254,8 @@ public class TextSBox extends StackBox {
 	}
 
 	/**
+	 * @brief Delete this node: get rid of CPTreeNode and StackBox.
+	 *
 	 * Delete this node: get rid of CPTreeNode and StackBox
 	 */
 	public void deleteNode() {

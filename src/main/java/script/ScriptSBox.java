@@ -76,6 +76,8 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
+	 * @brief Build the panels, borders, and fields for the script box.
+	 *
 	 * 'leftPanel' is empty or has accept/cancel info
 	 */
 	public void buildComponents() {
@@ -190,6 +192,8 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
+	 * @brief Repopulate 'mainPanel' for display or edit mode.
+	 *
 	 * repopulate 'mainPanel'
 	 */
 	public void buildSB() {
@@ -248,6 +252,9 @@ public class ScriptSBox extends StackBox implements ItemListener {
 		this.add(mainPanel);
 	}
 	
+	/**
+	 * @brief Rebuild the script box and re-add child boxes if open.
+	 */
 	public void redisplaySB(int wide) { // rebuild headerPanel each time
 		myWidth=wide;
 		this.removeAll(); // remove all stackBox's
@@ -263,7 +270,9 @@ public class ScriptSBox extends StackBox implements ItemListener {
 		revalidate();
 	}
 
-	/** 
+	/**
+	 * @brief Set description and tag fields when a new script is loaded.
+	 *
 	 * Since script node is only created once, script loader calls
 	 * this to set 'scriptDescription' and 'scriptTagname' when a
 	 * new script is loaded.
@@ -277,11 +286,17 @@ public class ScriptSBox extends StackBox implements ItemListener {
 		} catch(Exception ex) {}
 	}
 	
-	public void openSB() { 
+	/**
+	 * @brief Open this script box and redisplay it.
+	 */
+	public void openSB() {
 		isOpen=true;
 		redisplaySB(myWidth);
 	}
 	
+	/**
+	 * @brief Switch the script box into edit mode.
+	 */
 	public void startEdit() {
 		if (currentMode==EDIT) return;
 		
@@ -306,6 +321,9 @@ public class ScriptSBox extends StackBox implements ItemListener {
 		//<<<AF//
 	}
 	
+	/**
+	 * @brief Cancel edits and return the script box to display mode.
+	 */
 	public void cancelEdit() {
 		if (currentMode!=EDIT) return;
 		
@@ -327,6 +345,9 @@ public class ScriptSBox extends StackBox implements ItemListener {
 		//<<<AF//
 	}
 		
+	/**
+	 * @brief Accept edits to title/description/tag and return to display mode.
+	 */
 	public void acceptEdit() {
 		if (currentMode!=EDIT) return;
 		
@@ -363,6 +384,8 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
+	 * @brief Delete all the children nodes and repopulate.
+	 *
 	 * Delete all the children nodes.
 	 */
 	public void deleteNode() {
@@ -386,6 +409,8 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
+	 * @brief Remove all the contents, leaving empty CPSCRIPT.
+	 *
 	 * Remove all the contents, leaving empty CPSCRIPT
 	 */
 	public void deleteChildNodes() {
@@ -411,8 +436,10 @@ public class ScriptSBox extends StackBox implements ItemListener {
 		mapModeBox.setSelected(bool);
 	}
 	
-	/** 
-	 * Listens to various checkbox and sets 'inline' status 
+	/**
+	 * @brief Handle level and map-mode checkbox changes.
+	 *
+	 * Listens to various checkbox and sets 'inline' status
 	 * */
     public void itemStateChanged(ItemEvent e) {
         Object source = e.getItemSelectable();
@@ -488,6 +515,9 @@ public class ScriptSBox extends StackBox implements ItemListener {
 		return editpop;
 	}	
 	
+	/**
+	 * @brief Return the header (upperPanel) height, or 10 on error.
+	 */
 	public int getHeaderHeight() {
 		try {
 			return upperPanel.getHeight();

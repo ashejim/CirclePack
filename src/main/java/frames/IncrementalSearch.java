@@ -15,6 +15,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
+/**
+ * @brief Incremental search that highlights matches in a text component as the query changes.
+ */
 public class IncrementalSearch implements DocumentListener, ActionListener, ChangeListener {
     protected JTextComponent content;
     protected Matcher matcher;
@@ -30,6 +33,10 @@ public class IncrementalSearch implements DocumentListener, ActionListener, Chan
     }
     
     /* DocumentListener implementation */
+    /**
+     * @brief Re-run the search when text is inserted into the query field.
+     * @param evt
+     */
     public void insertUpdate(DocumentEvent evt) {
         runNewSearch(evt.getDocument());
     }
@@ -49,6 +56,10 @@ public class IncrementalSearch implements DocumentListener, ActionListener, Chan
     }
     
     /* ActionListener implementation */
+    /**
+     * @brief On ENTER, advance to the next match of the current query.
+     * @param evt
+     */
     public void actionPerformed(ActionEvent evt) {
     	conductSearch();
     }

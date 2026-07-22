@@ -66,10 +66,12 @@ public class AboutFrame extends JFrame {
 	}
 	
 	/**
+	 * @brief Build 'infoPane' with owl image and copyright info (unused).
+	 *
 	 * This is not currently in use: it creates 'infoPane' with
 	 * image and copyright info.
 	 */
-	public void makeInfo() {	
+	public void makeInfo() {
 		infoPane=new JTextPane();
 		infoPane.setContentType("text/html");
 		infoPane.setBorder(new EmptyBorder(new Insets(2,2,2,2)));
@@ -101,10 +103,16 @@ public class AboutFrame extends JFrame {
 		infoPane.setText(infoStuff.toString());
 	}
 	
+	/**
+	 * @brief Open the About frame at the default location.
+	 */
 	public void openAbout() {
 		openAbout(50,50); // (50,50);
 	}
 	
+	/**
+	 * @brief Build and show the About frame with script description and image.
+	 */
 	public void openAbout(int X,int Y) {
 		Container pane=this.getContentPane();
 		pane.removeAll();

@@ -91,11 +91,13 @@ public class HoverPanel extends JPanel implements MouseListener {
 	
 	// ==================== methods to override =================
 	/**
+	 * @brief Create the components for both frames (override point).
 	 * Create the components for both frames
 	 */
 	public void initComponents() {}
-	
+
 	/**
+	 * @brief Perform initial formatting of this panel on creation.
 	 * Call for initial formating of 'this' panel (may depend on locked state)
 	 */
 	public void setInitPanel() {
@@ -104,16 +106,19 @@ public class HoverPanel extends JPanel implements MouseListener {
 	}
 	
 	/**
+	 * @brief Reformat this panel for the hover frame (override point).
 	 * Reformat 'this' panel (if necessary)
 	 */
 	public void loadHover() {}
-	
+
 	/**
+	 * @brief Hook for any action to take before hovering (override point).
 	 * if there's some action to take before hovering
 	 */
 	public void hoverCall() {}
-	
+
 	/**
+	 * @brief Reformat this panel for the locked frame (override point).
 	 * Reformat 'this' panel (if necessary)
 	 */
 	public void loadLocked() {}
@@ -125,6 +130,7 @@ public class HoverPanel extends JPanel implements MouseListener {
 	}
 	
 	/**
+	 * @brief Lock the frame with decorations and make it visible.
 	 * Locks frame with decorations and makes visible
 	 */
 	public void lockframe() {

@@ -321,7 +321,9 @@ public class ScriptModel {
 	}
 
 	/**
-	 * Creates the default "starter" script file and 
+	 * @brief Creates the default "starter" script file and returns its path.
+	 *
+	 * Creates the default "starter" script file and
 	 * returns a string giving its path.
 	 */
 	public String createDefaultScript() {

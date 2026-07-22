@@ -249,12 +249,18 @@ public class TerminalFrame extends JFrame {
 		bw.newLine();
 	}
 
-	/** minimal XML escaping for attribute/element content */
+	/**
+	 * @brief Minimal XML escaping for attribute/element content.
+	 * minimal XML escaping for attribute/element content
+	 */
 	private static String xml(String s) {
 		return s.replace("&", "&amp;").replace("<", "&lt;")
 				.replace(">", "&gt;").replace("\"", "&quot;");
 	}
 
+	/**
+	 * @brief Window adapter that hides the terminal frame on close.
+	 */
 	class WAdapter extends WindowAdapter {
 		public void windowClosing(WindowEvent wevt) {
 			if (wevt.getID() == WindowEvent.WINDOW_CLOSING)

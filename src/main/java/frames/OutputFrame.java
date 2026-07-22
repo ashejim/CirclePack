@@ -10,6 +10,9 @@ import panels.OutPanel;
 import panels.PostPanel;
 import panels.WritePackPanel;
 
+/**
+ * @brief Frame with tabbed panels for saving pack data, tailored data, and images.
+ */
 public class OutputFrame extends javax.swing.JFrame {
 
 	private static final long 
@@ -53,12 +56,18 @@ public class OutputFrame extends javax.swing.JFrame {
 		}
 	}
 
+	/**
+	 * @brief Select the given output tab by index (bounds checked).
+	 */
 	public void setTab(int tab) {
-		if (tab<0 || tab>OutputTabbing.getComponentCount()) 
+		if (tab<0 || tab>OutputTabbing.getComponentCount())
 			return;
 		OutputTabbing.setSelectedIndex(tab);
 	}
 	
+	/**
+	 * @brief Window adapter that hides the output frame on close.
+	 */
 	class WAdapter extends WindowAdapter {
 	   	/**
 	   	 * @brief TODO: Document windowClosing.
