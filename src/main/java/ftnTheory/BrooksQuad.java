@@ -17,7 +17,9 @@ import util.CmdStruct;
 import util.ColorUtil;
 import util.StringUtil;
 
-/** 
+/**
+ * @brief Extender that builds 'Brooks' packings of circles in quad interstices
+ *
  * "Brooks" packings are patterns of circles inside quadrilateral interstices.
  * A "quad" interstice is one formed by 4 successively tangent circles with
  * mutually disjoint interiors, labeled T,L,B,R for 'top', 'left', 'bottom',
@@ -80,7 +82,9 @@ public class BrooksQuad extends PackExtender {
 	}
 	
 	/**
-	 * This creates an initial 4-flower as the basis for later 
+	 * @brief Build the initial 4-flower quad seed with the 'plug' at max index
+	 *
+	 * This creates an initial 4-flower as the basis for later
 	 * changes, swap so the center is the largest index, it's 
 	 * the 'plug'.
 	 */
@@ -104,7 +108,9 @@ public class BrooksQuad extends PackExtender {
 	}
 	
 	/**
-	 * A new 'vertical' circle is one which is tangent to T and B (and L or R, 
+	 * @brief Add a new 'vertical' circle tangent to T and B into the interstice
+	 *
+	 * A new 'vertical' circle is one which is tangent to T and B (and L or R,
 	 * depending). We do various interchanges of T/B and L/R depending on the
 	 * mode and on the sequence of preceding additions.
 	 * Vertical circles are colored red, but code is 149 if added on the
@@ -164,7 +170,9 @@ public class BrooksQuad extends PackExtender {
 	}
 	
 	/**
-	 * A new 'horizontal' circle is one which is tangent to L and R (and T or B, 
+	 * @brief Add a new 'horizontal' circle tangent to L and R into the interstice
+	 *
+	 * A new 'horizontal' circle is one which is tangent to L and R (and T or B,
 	 * depending). We do various interchanges of T/B and L/R depending on the
 	 * mode and on the sequence of preceding additions.
 	 * Horizontal circles are colored blue, but code is 49 if added on the
@@ -220,6 +228,9 @@ public class BrooksQuad extends PackExtender {
 		hvList.append("h");
 	}
 
+	/**
+	 * @brief Parse extender commands (HV/VH, cfrac, addV/addH, norm, toggle, rematch)
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 
@@ -308,6 +319,9 @@ public class BrooksQuad extends PackExtender {
 		return super.cmdParser(cmd, flagSegs);
 	}
 
+	/**
+	 * @brief Repack and lay out the packing in standard normalized position
+	 */
 	public void normalize() {
 		cpCommand("repack");
 		cpCommand("layout");
@@ -315,6 +329,9 @@ public class BrooksQuad extends PackExtender {
 		cpCommand("norm_scale -u 1");
 	}
 	
+	/**
+	 * @brief Display the Brooks packing circles with fill and margins
+	 */
 	public void draw() {
 		try {
 			String str=new String("disp -w -cf a(1,"+(extenderPD.nodeCount-1)+") -c M");
@@ -324,7 +341,9 @@ public class BrooksQuad extends PackExtender {
 		}
 	}
 	
-	/** 
+	/**
+	 * @brief Register this extender's command structures for help/catalog
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {

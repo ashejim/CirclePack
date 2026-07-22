@@ -112,6 +112,9 @@ public class CylinderSpheres extends PackExtender {
 		}
 	}
 	
+	/**
+	 * @brief Parse and execute extender commands: param, comp, data, output.
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 		int count=0;
@@ -769,7 +772,9 @@ public class CylinderSpheres extends PackExtender {
 	}
 
 	/**
-	 *  Compute square of distance of S2 to S1 as 
+	 * @brief Compute square of distance of S2 to S1 as function of S2 height x.
+	 *
+	 *  Compute square of distance of S2 to S1 as
 	 *  function of height x of S2. We use intermediate 
 	 *  quantities c=cos(t/R) and s=sin(t/R).
 	 *  For spheres tangent to S_0, c and z are related by
@@ -842,10 +847,16 @@ public class CylinderSpheres extends PackExtender {
 		return z_out;
 	}
 	
+	/**
+	 * @brief Compute arclength t of a sphere center at height z1 on Cyl(R).
+	 */
 	public double what_is_t(double R,double z1) {
 		return R*Math.acos(1.0+(z1*z1-1.0)/(2.0*R*R));
 	}
 	
+	/**
+	 * @brief Compute the maximal sphere-center height Z_R on Cyl(R).
+	 */
 	public double what_is_Z_R(double R) {
 		return Math.sqrt(1.0+2.0*R*R*(Math.sqrt(1.0-1.0/(4.0*R*R))-1.0));
 	}
@@ -862,6 +873,9 @@ public class CylinderSpheres extends PackExtender {
 		return new Point3D(R*Math.cos(t/R),R*Math.sin(t/R),pt.y);
 	}
 
+	/**
+	 * @brief Register this extender's command structures for help/usage.
+	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();
 		cmdStruct.add(new CmdStruct("parameters","p q [n]",null,

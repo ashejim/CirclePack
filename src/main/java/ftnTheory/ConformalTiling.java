@@ -217,6 +217,9 @@ public class ConformalTiling extends PackExtender {
 		mode=3; // default standard: an n tile is 2n barycentrically subdivided triangles
 	}
 	
+	/**
+	 * @brief Parse and dispatch this extender's tiling commands (subtile, build_sub, disp, etc.).
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 		
@@ -2617,6 +2620,9 @@ public class ConformalTiling extends PackExtender {
 		return packData;
 	}
 		
+	/**
+	 * @brief Register this extender's commands and their help/usage strings.
+	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();
 		cmdStruct.add(new CmdStruct("set_mode","[mode]",null,

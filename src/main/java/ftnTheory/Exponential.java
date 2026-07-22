@@ -9,9 +9,14 @@ import geometry.EuclMath;
 import geometry.HyperbolicMath;
 import packing.PackData;
 
+/**
+ * @brief Static methods for building Doyle spiral packings and finding spiral parameters.
+ */
 public class Exponential {
 
-	/** 
+	/**
+	 * @brief Compute radii/centers of a hexagonal Doyle spiral pack with parameters a,b>0.
+	 *
 	 * Compute radii of spiral pack with parameters a,b > 0. Unit circle 
 	 * at 0, tangent circle, radius a, on x-axis, circle, rad b, in first 
 	 * quad. Underlying Rule: product of radii at ends of edge equals product 
@@ -141,7 +146,9 @@ public class Exponential {
 		return 1;
 	}
 
-	/** 
+	/**
+	 * @brief Compute the Doyle spiral point and parameters a,b from three tangent circles.
+	 *
 	 * A circle C=C(r,z) whose disc is in the puncture plane has aspect 
 	 * ratio AR(C)= r/|z|. Any triple of eucl circles generates a Doyle 
 	 * spiral which winds around some point p in the plane. This computes 

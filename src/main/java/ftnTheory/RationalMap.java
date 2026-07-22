@@ -182,6 +182,9 @@ public class RationalMap extends PackExtender {
 		extenderPD.packExtensions.add(this);
 	}
 	
+	/**
+	 * @brief Parse and dispatch this extender's user commands
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 
@@ -633,8 +636,10 @@ public class RationalMap extends PackExtender {
 		return 1;
 	}
 	
-	/** 
-	 * In domainPack, self-adjoin the two given segments, remove them 
+	/**
+	 * @brief Self-adjoin two edge segments in domainPack and reindex the rest
+	 *
+	 * In domainPack, self-adjoin the two given segments, remove them
 	 * from 'masterESlist', and adjust indices in remaining edge segments.
 	 */
 	public int pasteEm(EdgeSeg es1,EdgeSeg es2) {
@@ -1066,7 +1071,9 @@ public class RationalMap extends PackExtender {
 		else return null;
 	}
 	
-	/** 
+	/**
+	 * @brief Override method for cataloging command structures
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {
@@ -1094,6 +1101,9 @@ public class RationalMap extends PackExtender {
 	
 }
 
+/**
+ * @brief Holds one sheet/edge pasting instruction (source and target)
+ */
 class PasteCode {
 	public int sourceSheet;
 	public int sourceEdge;

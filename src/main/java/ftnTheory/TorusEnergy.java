@@ -62,9 +62,12 @@ public class TorusEnergy extends PackExtender {
 		cutoff=.95;
 	}
 	  
+	/**
+	 * @brief Parse and dispatch this extender's user commands
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 //		Vector<String> items=null;
-		
+
 		if (cmd.startsWith("status")) {
 			reset(false);
 			StringBuilder stbld=new StringBuilder("TE status, p"+extenderPD.packNum+":\n");
@@ -176,6 +179,9 @@ public class TorusEnergy extends PackExtender {
 		return 0;
 	}
 		
+	/**
+	 * @brief Override method for cataloging command structures
+	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();
 		cmdStruct.add(new CmdStruct("norm",null,null,
@@ -199,7 +205,8 @@ public class TorusEnergy extends PackExtender {
 	}
 
 	/**
-	 * 
+	 * @brief Repack, normalize, recolor by degree, and optionally redisplay
+	 *
 	 * @param flag boolean; true means force redisplay
 	 * @return 1
 	 */

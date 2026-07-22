@@ -18,6 +18,8 @@ import packing.PackData;
 import util.StringUtil;
 
 /**
+ * @brief Experimental routines (e.g. holonomy sweep) for the |GB| branching extension.
+ *
  * Experimental routines for the |GB| extension. Separated from
  * GenModBranching for clarity. All methods take a reference to
  * the owning GenModBranching instance so they can access
@@ -35,6 +37,8 @@ public class GBExperiments {
 	GenModBranching gmb;
 
 	/**
+	 * @brief Construct experiments helper holding the owning |GB| extension.
+	 *
 	 * Constructor — holds reference to the |GB| extension.
 	 * @param gmb GenModBranching instance
 	 */
@@ -43,6 +47,8 @@ public class GBExperiments {
 	}
 
 	/**
+	 * @brief Sweep a grid of (x,y) second-BP positions, logging holonomy error to CSV.
+	 *
 	 * Sweep a grid of (x,y) positions for a second branch point,
 	 * measuring holonomy error at each. A fixed branch point
 	 * (traditional, at a specified vertex) is placed first, then
@@ -204,6 +210,8 @@ public class GBExperiments {
 	}
 
 	/**
+	 * @brief Place fixed and sweep branch points at (x,y), return holonomy Frobenius norm.
+	 *
 	 * Evaluate holonomy error for a single (x,y) position
 	 * of the second branch point.
 	 *
@@ -302,6 +310,8 @@ public class GBExperiments {
 	}
 
 	/**
+	 * @brief Repack and lay out the current packing via the command parser.
+	 *
 	 * Repack and layout the current packing.
 	 * Uses the command parser for layout since
 	 * that is how CirclePack handles it internally.

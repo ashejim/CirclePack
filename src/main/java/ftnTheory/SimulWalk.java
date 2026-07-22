@@ -51,6 +51,8 @@ public class SimulWalk extends PackExtender {
 	}
 	
 	/**
+	 * @brief Parse and dispatch this extender's user commands
+	 *
 	 * This is were the user's commands are "parsed"
 	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs) {
@@ -59,7 +61,9 @@ public class SimulWalk extends PackExtender {
 		return super.cmdParser(cmd, flagSegs);
 	}
 	
-	/** 
+	/**
+	 * @brief Override method for cataloging command structures
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {

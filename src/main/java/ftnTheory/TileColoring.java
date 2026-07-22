@@ -16,6 +16,9 @@ import packing.PackExtender;
 import util.DispFlags;
 import util.StringUtil;
 
+/**
+ * @brief PackExtender that color-codes CFP subdivision tilings by history
+ */
 public class TileColoring extends PackExtender {
 
 	// tile 'types'; may want to add or change
@@ -60,6 +63,9 @@ public class TileColoring extends PackExtender {
 		postFile=packData.cpDrawing.customPS;
 	}
 	
+	/**
+	 * @brief Parse and dispatch this extender's user commands
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 
@@ -263,6 +269,9 @@ public class TileColoring extends PackExtender {
 		return super.cmdParser(cmd, flagSegs);
 	}
 
+	/**
+	 * @brief Print help text listing this extender's commands
+	 */
 	public void helpInfo() {
 		helpMsg("Commands for PackExtender "+extensionType+"(TileColoring)\n"+
 				"mode <n>:        set mode:\n"+

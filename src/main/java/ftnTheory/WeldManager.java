@@ -35,7 +35,9 @@ import util.CmdStruct;
 import util.RandPaths;
 import util.StringUtil;
 
-/** 
+/**
+ * @brief PackExtender for conformal welding of packings along boundaries
+ *
  * Extender for managing "conformal welding" manipulations.
  * 
  * TODO: currently converting to DCEL while also generalizing
@@ -152,8 +154,10 @@ public class WeldManager extends PackExtender {
 		p1=extenderPD.copyPackTo(); // local copy
 	}
 	
-	/** 
-	 * Record corresponding arguments in weldmapDomain/Range 
+	/**
+	 * @brief Build the welding map arguments matching bdry verts of p1, p2
+	 *
+	 * Record corresponding arguments in weldmapDomain/Range
 	 * associated with welding between maximal packings p1 and p2 
 	 * determined by matching their bdry vertices. Note: for 
 	 * "closed" welding (full boundaries), p1, p2 must have the 
@@ -275,7 +279,9 @@ public class WeldManager extends PackExtender {
 	}
 	
 	/**
-	 * Output weld map, stored as arguments in weldmapDomain/Range, 
+	 * @brief Write the weld map to a file (matlab, map/PATH, or postscript)
+	 *
+	 * Output weld map, stored as arguments in weldmapDomain/Range,
 	 * to 'filename'. The output file is matlab or 'map' form. 
 	 * The 'map' form is suitable for reading as a welding map, 
 	 * e.g. in 'weld', and is homeomorphism h normalized to go from 
@@ -387,6 +393,8 @@ public class WeldManager extends PackExtender {
 	} 
 
 	/**
+	 * @brief Split p along a closed edgepath; return the complex to its left
+	 *
 	 * Goal is to create new packing by splitting p along a
 	 * given closed oriented edgepath --- this path plays 
 	 * the role of a "welding" curve to be analyzed. If the
@@ -472,6 +480,8 @@ public class WeldManager extends PackExtender {
 	}		
 
 	/**
+	 * @brief Read weld map and write vertex match/add instructions to weld list
+	 *
 	 * Reads 'weldmapfile' and writes "weld list" information
 	 * in temp file 'weldListFileName'. This list gives 
 	 * instructions for matching/adding vertices to p and q
@@ -837,7 +847,9 @@ public class WeldManager extends PackExtender {
 	} 
 
 	/**
-	 * Go counterclockwise around p, clockwise around q, 
+	 * @brief Walk both boundaries matching/adding verts per the weld list
+	 *
+	 * Go counterclockwise around p, clockwise around q,
 	 * starting at v and w, resp, until pasting directions 
 	 * in '/tmp/weldListFileName' are all completed.
 	 * @param p,q
@@ -950,7 +962,9 @@ public class WeldManager extends PackExtender {
 	} 
 
 	/**
-	 * Adds a new vert on boundary between v and v_next. 
+	 * @brief Add a new boundary vertex between v and v_next
+	 *
+	 * Adds a new vert on boundary between v and v_next.
 	 * Assumes both v, v_next are on boundary and 
 	 * v_next=p.getFirstPetal(v). If v or v_next lies in 
 	 * just one face, must add interior vert on opposite
@@ -998,6 +1012,8 @@ public class WeldManager extends PackExtender {
 	}
 
 	/**
+	 * @brief Full welding pipeline: build weld list, weld, and optionally adjoin
+	 *
 	 * Most comprehensive of procedures: does all steps.
 	 * 
 	 * TODO; Currently, weld list is assumed to be in
@@ -1046,10 +1062,13 @@ public class WeldManager extends PackExtender {
 		return ans;
 	} 
 
+	/**
+	 * @brief Parse and dispatch this extender's user commands
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 		String str=null;
-		
+
 		// ----- findWM ------------
 		if (cmd.startsWith("findW")) {
 			int domV=0;
@@ -1260,7 +1279,9 @@ public class WeldManager extends PackExtender {
 		return super.cmdParser(cmd, flagSegs);
 	}
 	
-	/** 
+	/**
+	 * @brief Override method for cataloging command structures
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {

@@ -32,6 +32,9 @@ import util.StringUtil;
  */
 public class RiemHilbert extends PackExtender {
 
+	/**
+	 * @brief Parser states while reading a Riemann-Hilbert curve file
+	 */
 	enum ReadState {OPEN,FIND_CURVE,PATH,CIRCLE,READ_XY,READ_CR,NULL};
 	
 	public static final int THICKNESS=3;
@@ -168,6 +171,9 @@ public class RiemHilbert extends PackExtender {
 		return null;
 	}
 	
+	/**
+	 * @brief Draw the restriction curves for the listed boundary vertices
+	 */
 	public int drawRestCurves(NodeLink vertlist) {
 		int count=0;
 		if (vertCurve==null || vertlist==null || vertlist.size()==0) return count;
@@ -221,7 +227,9 @@ public class RiemHilbert extends PackExtender {
 	}
 	
 	/**
-	 * Signed distance from circle to its curve. 
+	 * @brief Signed distance from circle 'v' to its restriction curve
+	 *
+	 * Signed distance from circle to its curve.
 	 *   Plus: lies inside curve, minimum distance. 
 	 *   Negative: negative of (roughly) max distance to curve
 	 * @param v int
@@ -253,6 +261,9 @@ public class RiemHilbert extends PackExtender {
 		return dist-radius;
 	}
 	
+	/**
+	 * @brief Link packing boundary to curves starting at first boundary vertex
+	 */
 	public int linkPackCurves() {
 		return linkPackCurves(extenderPD.bdryStarts[1]);
 	}
@@ -414,6 +425,8 @@ public class RiemHilbert extends PackExtender {
 	}
 
 	/**
+	 * @brief Parse and dispatch this extender's user commands
+	 *
 	 * Parsing commands sent here from 'CommandStrParser'
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
@@ -499,7 +512,9 @@ public class RiemHilbert extends PackExtender {
 		return super.cmdParser(cmd, flagSegs);
 	}
 	
-	/** 
+	/**
+	 * @brief Override method for cataloging command structures
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {

@@ -67,8 +67,10 @@ public class MeanMove extends PackExtender {
 	/* ======================================================================
 	 *         here is the place to put radii adjustment strategies
 	 * ================================================================= */
-	/** 
-	 * This routine is called in an adjustment cycle; and applies 
+	/**
+	 * @brief Adjust boundary radii one step down the curvature gradient per 'mode'.
+	 *
+	 * This routine is called in an adjustment cycle; and applies
 	 * the strategy specified in "mode" string.
 	 */
 	public int moveIt(String mode) {
@@ -135,9 +137,12 @@ public class MeanMove extends PackExtender {
 		return N;
 	}
 	
+	/**
+	 * @brief Parse and execute user commands for mean-curvature motion.
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
-		
+
 		if (cmd.startsWith("test")) {
 			cpCommand("disp -w -ff");
 			return 1;
@@ -389,6 +394,9 @@ public class MeanMove extends PackExtender {
 			extenderPD.packDCEL.vertices[bdryVerts[i]].setColor(ColorUtil.coLor(curvIndx.get(i)));
 	}
 	
+	/**
+	 * @brief Register this extender's command structures for help/catalog.
+	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();
 		cmdStruct.add(new CmdStruct("move","{strategy}",null,"Adjust boundary radii using named strategy"));

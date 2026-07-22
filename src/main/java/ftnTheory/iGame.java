@@ -59,7 +59,9 @@ public class iGame extends PackExtender {
 		targets=null;
 	}
 	
-	/** 
+	/**
+	 * @brief Set up the data for default mode
+	 *
 	 * Set up the data for default mode
 	 */
 	public void initMode() {
@@ -75,8 +77,10 @@ public class iGame extends PackExtender {
 	}
 	
 	/**
+	 * @brief Scale height to GameAspect and recenter corners on the origin
+	 *
 	 * Assume vertical normalization already applied, so
-	 * bottom left is corner[0]. Scale height so 
+	 * bottom left is corner[0]. Scale height so
 	 * width/height = GameAspect and translate to center
 	 * on the origin.
 	 */
@@ -223,6 +227,9 @@ public class iGame extends PackExtender {
 		}
 	}
 	
+	/**
+	 * @brief Parse and dispatch this extender's user commands
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 		if (cmd.startsWith("help")) {
@@ -417,7 +424,9 @@ public class iGame extends PackExtender {
 		return 0;
 	}
 	
-	/** 
+	/**
+	 * @brief Override method for cataloging command structures
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {
@@ -438,6 +447,9 @@ public class iGame extends PackExtender {
 	}
 	
 	
+	/**
+	 * @brief Print help text including the current game mode
+	 */
 	public void helpInfo() {
 		super.helpInfo();
 		helpMsg("Current mode is: "+gameStr[gameMode]);

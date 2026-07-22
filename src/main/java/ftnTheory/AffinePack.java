@@ -57,6 +57,9 @@ public class AffinePack extends PackExtender {
 	public static double OKERR=.0000000001; 
 	public static int PASSES=10000;
 	
+	/**
+	 * @brief Construct the AffinePack extender; requires a euclidean torus.
+	 */
 	// Constructor
 	public AffinePack(PackData p) {
 		super(p);
@@ -87,7 +90,9 @@ public class AffinePack extends PackExtender {
 	}
 	
 	/**
-	 * Create a new 'aspects' array of 'TriAspect's. May need to do 
+	 * @brief Create a new 'aspects' array of 'TriAspect's, one per face.
+	 *
+	 * Create a new 'aspects' array of 'TriAspect's. May need to do
 	 * this if the packing or its drawing order is changed.
 	 */
 	public void resetAspects() {
@@ -114,6 +119,9 @@ public class AffinePack extends PackExtender {
 	
 	/*
 	 *    EDGE12
+	 */
+	/**
+	 * @brief Sum combinatorial and effective lengths along boundary edge 1-2.
 	 */
 	public static double [] Edge12(PackData p, TriAspect[] asp){
 		
@@ -174,6 +182,9 @@ public class AffinePack extends PackExtender {
 	/*
 	 *    EDGE34
 	 */
+	/**
+	 * @brief Sum combinatorial and effective lengths along boundary edge 3-4.
+	 */
 	public static double [] Edge34(PackData p, TriAspect[] asp){
 		
 		double EL=0.0;
@@ -231,6 +242,9 @@ public class AffinePack extends PackExtender {
 	
 	/*
 	 *    EDGE23
+	 */
+	/**
+	 * @brief Sum combinatorial and effective lengths along boundary edge 2-3.
 	 */
 	public static double [] Edge23(PackData p, TriAspect[] asp){
 		
@@ -290,6 +304,9 @@ public class AffinePack extends PackExtender {
 	/*
 	 *    EDGE41
 	 */
+	/**
+	 * @brief Sum combinatorial and effective lengths along boundary edge 4-1.
+	 */
 	public static double [] Edge41(PackData p, TriAspect[] asp){
 		
 		double EL=0.0;
@@ -347,6 +364,9 @@ public class AffinePack extends PackExtender {
 	
 	/*
 	 *    ADJBD
+	 */
+	/**
+	 * @brief Redistribute boundary vertex centers evenly along all four sides.
 	 */
 	public static int AdjBd(PackData p, TriAspect[] asp){
 		
@@ -850,6 +870,9 @@ public class AffinePack extends PackExtender {
 	 *    and stored in PackData
 	 *    
 	 */
+	/**
+	 * @brief Rescale boundary vertex centers along each side by effective length.
+	 */
 	public static int adjBd(PackData p, TriAspect[] asp){
 		
 		ProjStruct.setEffective(p,asp);
@@ -1199,6 +1222,9 @@ public class AffinePack extends PackExtender {
 	 *    @param v (interior vertex)
 	 *    @return new center nz (Complex)
 	 */
+	/**
+	 * @brief Compute new center for v as average of incident face incircle centers.
+	 */
 	public static Complex NewCenter(PackData p, TriAspect[] asp, int v){
 		
 		CircleSimple sc=new CircleSimple();
@@ -1239,6 +1265,9 @@ public class AffinePack extends PackExtender {
 	/*
 	 *    IncNC (Incremental New Center)
 	 *    
+	 */
+	/**
+	 * @brief Iteratively move random interior centers until error drops by 5%.
 	 */
 	public int IncNC(PackData p, TriAspect[] asp){
 		
@@ -1322,6 +1351,8 @@ public class AffinePack extends PackExtender {
 
 	
 	/**
+	 * @brief Adjust edges toward strong consistency over repeated passes.
+	 *
 	 *   RECTANGLE ADJUST
 	 */
 	public int[] rectAdjust(PackData p, TriAspect[] aspts,int passes){
@@ -1419,6 +1450,8 @@ public class AffinePack extends PackExtender {
 	}
 
 	/**
+	 * @brief Adjust one random edge toward strong consistency (no riffle).
+	 *
 	 *   rectAd1
 	 *   chooses a random side to adjust
 	 *   does not riffle to fix angle sums
@@ -1480,7 +1513,9 @@ public class AffinePack extends PackExtender {
 		
 	}
 	
-	/** 
+	/**
+	 * @brief One pass of riffle adjusting sides toward target angle sums.
+	 *
 	 * riffle
 	 * one pass of riffle
      */
@@ -2014,8 +2049,10 @@ public class AffinePack extends PackExtender {
 	}
 	
 	/**
-	 * Run trials over a grid and put the results 
-	 * in a buffer. Output lines: A B t T c a.x a.y 
+	 * @brief Run affine-packing trials over an (N+1)x(N+1) grid, buffering results.
+	 *
+	 * Run trials over a grid and put the results
+	 * in a buffer. Output lines: A B t T c a.x a.y
 	 * b.x b.y z's inputs A,B, modulus t, Teichmuller T, 
 	 * affine coefficient c, complex a b, corner 
 	 * points, complex z[0], z[1], z[2], z[3]
@@ -2127,6 +2164,8 @@ public class AffinePack extends PackExtender {
 	}
 	
 	/**
+	 * @brief Parse and dispatch this extender's user commands.
+	 *
 	 * This is where the user's commands are "parsed"
 	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs) {
@@ -2985,7 +3024,9 @@ public class AffinePack extends PackExtender {
 		return super.cmdParser(cmd, flagSegs);
 	}
 	
-	/** 
+	/**
+	 * @brief Register this extender's command descriptions for help/parsing.
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {

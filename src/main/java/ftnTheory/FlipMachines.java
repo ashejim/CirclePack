@@ -15,6 +15,9 @@ public class FlipMachines extends PackExtender {
 	Random rand;
 	
 	// Constructor
+	/**
+	 * @brief Set up FlipMachines extender; requires packing with >= 5 vertices.
+	 */
 	public FlipMachines(PackData p) {
 		super(p);
 		rand = new Random(1); // random with seed; remove seed for truly random
@@ -31,6 +34,8 @@ public class FlipMachines extends PackExtender {
 		}	
 	}
 	/**
+	 * @brief Parse and dispatch user commands for this extender.
+	 *
 	 * This is were the user's commands are "parsed"
 	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs) {
@@ -39,7 +44,9 @@ public class FlipMachines extends PackExtender {
 		return super.cmdParser(cmd, flagSegs);
 	}
 	
-	/** 
+	/**
+	 * @brief Register command structures available in this extender.
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {

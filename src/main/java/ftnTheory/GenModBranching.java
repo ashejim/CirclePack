@@ -32,7 +32,9 @@ import util.CmdStruct;
 import util.StringUtil;
 
 /**
- * Generalized branch points are small subcomplexes of 
+ * @brief Extender for placing generalized (traditional/singular/chaperone) branch points.
+ *
+ * Generalized branch points are small subcomplexes of
  * circle packing complexes which are structured to 
  * support local branching-like behavior via various 
  * non-standard constructions and manipulations.
@@ -99,6 +101,8 @@ public class GenModBranching extends PackExtender {
 	}
 
     /**
+	 * @brief Parse and execute user commands for generalized branching.
+	 *
 	 * This is where the user's commands are "parsed"
 	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs) {
@@ -685,6 +689,9 @@ public class GenModBranching extends PackExtender {
 		return count;
 	} // done with cmdParser
 
+	/**
+	 * @brief Rebuild poison edges and excluded vertices from all branch points.
+	 */
 	public void updateExclusions() {
 		poisonHEdges=new HalfLink();
 		exclusions=new ArrayList<Vertex>();
@@ -698,7 +705,9 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * This creates 'layoutOrder' by partially lays out 
+	 * @brief Build the packing's layout order, circumventing branch points then adding their circles.
+	 *
+	 * This creates 'layoutOrder' by partially lays out
 	 * the parent, circumventing the branch points, and then
 	 * appending edges to handle its additional circles.
 	 * @return HalfLink
@@ -735,6 +744,8 @@ public class GenModBranching extends PackExtender {
 	}
 
 	/**
+	 * @brief Lay out parent outer circles then each branch point (currently a stub returning 0).
+	 *
 	 * First, position the parent's outer circles using 'outerLayout'.
 	 * Then layout each branch point as follows: layout 'myHoloBorder'
 	 * whose first edge was positioned by the parent, then 
@@ -752,6 +763,8 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
+	 * @brief Check whether face/vertex j already hosts a branch point of given type.
+	 *
 	 * See if index j (face or vertex, depending) is already a branch
 	 * point with 'myType' type. If yes, return first matching index
 	 * @param j int, face or vertex
@@ -791,6 +804,8 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
+	 * @brief Return true if vertex j is excluded from supporting a new branch point.
+	 *
 	 * Return true if j is one of the "excluded" vertices, not
 	 * eligible for supporting a new branch point.
 	 * @param j int
@@ -807,7 +822,9 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * Given the branch point ID, find its index in current 
+	 * @brief Find the 'branchPts' index for a given branch point ID.
+	 *
+	 * Given the branch point ID, find its index in current
 	 * 'branchPts' vector. ID is assigned on creation, but 
 	 * may get out of line with index in 'branchPts'
 	 * @param bpID int, assigned on creation
@@ -830,6 +847,8 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
+	 * @brief List branch IDs whose branch vertex lies in the given NodeLink.
+	 *
 	 * Return a list of branch ID's for branch points having vert in
 	 * the given list.
 	 * @param nlink NodeLink
@@ -851,6 +870,8 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
+	 * @brief List branch IDs whose branch face lies in the given FaceLink.
+	 *
 	 * Return a list of branch ID's for branch points having a face in
 	 * the given list.
 	 * @param flink FaceLink
@@ -872,6 +893,8 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
+	 * @brief Return the vertices that are branch circles of some branch point.
+	 *
 	 * Find the circles which are branch circles for some branch point
 	 * @return NodeLink, empty if none found
 	 */
@@ -889,6 +912,8 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
+	 * @brief Return the faces that are branch faces of some branch point.
+	 *
 	 * Find the faces which are branch faces for some branch point
 	 * @return FaceLink, empty if none found
 	 */
@@ -906,6 +931,8 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
+	 * @brief Classify a clicked point and return branch type and parameters.
+	 *
 	 * Designed for use in study of generalized branching.
 	 * Given a point 'pt', determine if it determines
 	 * 'singular' (interstice) or 'chaperone' branching 
@@ -1064,7 +1091,9 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * Transform x in [0,pi/2] into return T(x) in [mn,mx], 
+	 * @brief Map a value in [0,pi/2] to click data in [mn,mx] (linear interpolation).
+	 *
+	 * Transform x in [0,pi/2] into return T(x) in [mn,mx],
 	 * with T(0)=mn, T(pi/2)=mx. Note that mn may be less 
 	 * than or greater than mx, so we may have to reverse.
 	 * 
@@ -1092,7 +1121,9 @@ public class GenModBranching extends PackExtender {
 	// OBE: I've remove 'old_getClickData'
 	
 	/**
-	 * Given argument 'spot' and closed list of arguments to petals 
+	 * @brief Locate 'spot' among petal angles, returning petal index plus in-petal fraction.
+	 *
+	 * Given argument 'spot' and closed list of arguments to petals
 	 * {v_1, v_2, ... v_n, v_1}, return double j+f where j is the 
 	 * petal index 'spot' lies in (i.e., spot is between the arguments 
 	 * for v_j and v_{j+1}) and f is the proportion of that petal 
@@ -1116,7 +1147,9 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
-	 * Given 'myang' (adjusted to lie in [0,2pi)) and array of 
+	 * @brief Convert an angle into a pseudoangle relative to a flower's face angles.
+	 *
+	 * Given 'myang' (adjusted to lie in [0,2pi)) and array of
 	 * angles in faces of a flower, return 'pseudoangle', which
 	 * is pi times the number of face angles myang covers completely 
 	 * plus the proportion (of pi) that myang covers in the next
@@ -1151,8 +1184,10 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
+	 * @brief Install a new branch point and recompute the layout.
+	 *
 	 * Install a new branch point
-	 * parameters. 
+	 * parameters.
 	 * @param bpt GenBrModPt
 	 * @return int
 	 */
@@ -1172,6 +1207,8 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
+	 * @brief Dismantle and remove the branch point with the given ID.
+	 *
 	 * Dismantle and then delete a branch point
 	 * @param bpID
 	 * @return 0 on error or not found
@@ -1191,6 +1228,8 @@ public class GenModBranching extends PackExtender {
 	}
 	
 	/**
+	 * @brief Discard all branch points and revert to the original 'refPack'.
+	 *
 	 * Throw out all generalized branch points and revert
 	 * to the original packing held in 'refPack'.
 	 */
@@ -1204,7 +1243,9 @@ public class GenModBranching extends PackExtender {
 		extenderPD.set_invD_default();
 	}
 		
-	/** 
+	/**
+	 * @brief Register this extender's command structures for help/catalog.
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {
@@ -1273,6 +1314,8 @@ public class GenModBranching extends PackExtender {
 }
 
 /**
+ * @brief Utility holding a petal index and cclw fraction of that petal's opening.
+ *
  * Utility class: 'spot' in [0,2pi] has integer part 'petal' (an index
  * to petals of some flower) and 'fraction', the cclw fraction of the
  * petal's opening that spot occupies.

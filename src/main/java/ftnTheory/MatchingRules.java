@@ -53,6 +53,8 @@ public class MatchingRules extends PackExtender {
 	}
 
 	/**
+	 * @brief Parse and execute user commands (currently a stub returning 0).
+	 *
 	 * This is where the user's commands are "parsed"
 	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs) {
@@ -63,6 +65,9 @@ public class MatchingRules extends PackExtender {
 	}
 		
 
+	/**
+	 * @brief A single tile type: a regular n-gon as a barycentrically refined flower.
+	 */
 	class TileType {
 		PackData tile;
 		int ngon;

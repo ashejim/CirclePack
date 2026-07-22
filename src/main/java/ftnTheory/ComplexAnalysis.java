@@ -110,6 +110,9 @@ public class ComplexAnalysis extends PackExtender {
 		return lp;
 	}
 
+	/**
+	 * @brief Compute domain/range tangency points for each face.
+	 */
 	public boolean fillTangPts() {
 		if (!domainData.status || !rangeData.status ||
 				domainData.nodeCount != rangeData.nodeCount) 
@@ -133,6 +136,9 @@ public class ComplexAnalysis extends PackExtender {
 	}
 	
 	// Compute the face Mobius transformations; update tang pts first.
+	/**
+	 * @brief Compute per-face Mobius maps taking domain to range tangency points.
+	 */
 	public boolean compFaceMobs() {
 		if (!domainData.status || !rangeData.status ||
 				domainData.nodeCount != rangeData.nodeCount ||
@@ -155,6 +161,9 @@ public class ComplexAnalysis extends PackExtender {
 		return true;
 	}	
 		
+	/**
+	 * @brief Parse and dispatch this extender's commands (fMo, ddtri, diff, etc.).
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 		
@@ -689,6 +698,9 @@ public class ComplexAnalysis extends PackExtender {
 		return 1;
 	}
 	
+	/**
+	 * @brief Register this extender's commands and their help/usage strings.
+	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();
 		cmdStruct.add(new CmdStruct("getRange","{pnum}",null,

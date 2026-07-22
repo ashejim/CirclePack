@@ -24,7 +24,9 @@ import util.CmdStruct;
 import util.ColorUtil;
 
 /**
- * OBE: Note that as of Spring 2026 I have introduced the 
+ * @brief PackExtender laying out sphere packings via beacon inversive distances
+ *
+ * OBE: Note that as of Spring 2026 I have introduced the
  * 'DeSitter' class, but there the inner product signature
  * is (3,-1) instead of (1,-3) as it is here. Should 
  * update the methods here.
@@ -112,6 +114,9 @@ public class SphereLayout extends PackExtender {
 		debug=true;
 	}
 	
+	/**
+	 * @brief Parse and dispatch this extender's user commands
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 		if (flagSegs!=null)
@@ -510,7 +515,9 @@ public class SphereLayout extends PackExtender {
 		
 	}
 
-	/** 
+	/**
+	 * @brief Override method for cataloging command structures
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {
@@ -529,6 +536,9 @@ public class SphereLayout extends PackExtender {
 	
 }
 
+/**
+ * @brief Per-vertex GPS data: inversive distances to beacons and color
+ */
 class VertGPS {
 	double []coord; 		// coord[j] is inversive distance to beacon[j]
 	double []colIntensity;  // scaled intensities to [0,1] for r,g,b

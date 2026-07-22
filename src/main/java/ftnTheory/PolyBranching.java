@@ -9,6 +9,9 @@ import geometry.HyperbolicMath;
 import packing.PackData;
 import packing.PackExtender;
 
+/**
+ * @brief Pack extender for manipulating discrete polynomials via their branch values.
+ */
 public class PolyBranching extends PackExtender {
 
 	Vector<Integer> branchVerts;
@@ -30,9 +33,12 @@ public class PolyBranching extends PackExtender {
 		extenderPD.packExtensions.add(this);
 	}
 	
+	/**
+	 * @brief Parse and execute user commands for discrete polynomial branching.
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
-		
+
 		if (cmd.startsWith("set_br")) {
 			setBranching();
 		}
@@ -128,8 +134,10 @@ public class PolyBranching extends PackExtender {
 	}
 
 	/**
+	 * @brief Determine branch vertices from the parent packing's aims.
+	 *
 	 * Determine branching from aims of parent 'packData'.
-	 * Normally this is done only on startup, but can be 
+	 * Normally this is done only on startup, but can be
 	 * revisited.
 	 */
 	public void setBranching() {
@@ -155,6 +163,9 @@ public class PolyBranching extends PackExtender {
 		msg(strb.toString());
 	}
 	
+	/**
+	 * @brief Print help information for this extender's commands.
+	 */
 	public void helpInfo() {
 		helpMsg("Info on PackExtender "+extensionAbbrev+" (Poly branching)");
 		helpMsg("Commands:\n"+

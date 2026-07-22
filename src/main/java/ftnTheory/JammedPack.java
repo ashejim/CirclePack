@@ -113,10 +113,13 @@ public class JammedPack extends PackExtender {
 
 	}
 
+	/**
+	 * @brief Parse and execute user commands for jammed-packing manipulation.
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 		int count=0;
-		
+
 		// ========= split =========
 		if (cmd.startsWith("spli")) {
 			if (flagSegs!=null && (items=flagSegs.get(0)).size()>0) {
@@ -455,6 +458,9 @@ public class JammedPack extends PackExtender {
 		return newEdge;
 	}
 
+	/**
+	 * @brief Register this extender's command structures for help/catalog.
+	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();
 		cmdStruct.add(new CmdStruct("add_edge","{v w}",null,"Add an edge between original vertices across a face."));

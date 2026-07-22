@@ -92,6 +92,8 @@ public class FlipStrategy extends PackExtender {
 	}
 	
 	/**
+	 * @brief Parse and execute user commands for edge-flip strategies.
+	 *
 	 * This is were the user's commands are "parsed"
 	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs) {
@@ -514,7 +516,9 @@ public class FlipStrategy extends PackExtender {
 		return null;
 	}
 	
-	/** 
+	/**
+	 * @brief Register this extender's command structures for help/catalog.
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {

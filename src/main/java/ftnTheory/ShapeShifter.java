@@ -55,10 +55,13 @@ public class ShapeShifter extends PackExtender {
 		}
 	}
 	
+	/**
+	 * @brief Parse and dispatch this extender's user commands
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 
-		// ========== copy <pnum> 
+		// ========== copy <pnum>
 		if (cmd.startsWith("copy")) { // copy 'baseData' somewhere (e.g. for inspection)
 			try {
 				items=(Vector<String>)flagSegs.get(0);
@@ -142,6 +145,9 @@ public class ShapeShifter extends PackExtender {
 		return super.cmdParser(cmd, flagSegs);
 	} 
 	
+	/**
+	 * @brief Print help text listing this extender's commands
+	 */
 	public void helpInfo() {
 		helpMsg("Commands for PackExtender "+extensionType+"(ShapeShifter)\n"+
 				"getDomain:   read a packing into baseData, convert it to eucl\n"+

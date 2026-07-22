@@ -126,6 +126,8 @@ public class Percolation extends PackExtender {
 	}
 	
 	/**
+	 * @brief Parse and execute user commands for percolation experiments.
+	 *
 	 * Process commands routed to 'PR'
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
@@ -354,6 +356,9 @@ public class Percolation extends PackExtender {
 		return super.cmdParser(cmd,flagSegs);
 	}
 	
+	/**
+	 * @brief Parse corner vertices, optionally with a fractional 4th corner along an edge.
+	 */
 	public NodeLink getCornerX(String str) {
 		str=str.trim();
 		NodeLink nlink=null;
@@ -773,7 +778,9 @@ public class Percolation extends PackExtender {
 		
 	}
 	
-	/** 
+	/**
+	 * @brief Register this extender's command structures for help/catalog.
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {

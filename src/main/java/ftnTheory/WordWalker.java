@@ -47,10 +47,13 @@ public class WordWalker extends PackExtender {
 		extenderPD.packExtensions.add(this);
 	}
 	
+	/**
+	 * @brief Parse and dispatch this extender's user commands
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		int count=0;
 		Vector<String> items=null;
-		
+
 		// ======== mtrek =========
 		// draw facelist, imprinting first and last
 		
@@ -108,6 +111,9 @@ public class WordWalker extends PackExtender {
 		extenderPD.cpDrawing.drawFace(c[2],c[0],cc,null,null,null,dflags);
 	}
 	
+	/**
+	 * @brief Print help text describing this extender's purpose
+	 */
 	public void helpInfo() {
 		helpMsg("Commands for PackExtender "+extensionAbbrev+" (Word Walking)");
 		helpMsg("To manipulate "+

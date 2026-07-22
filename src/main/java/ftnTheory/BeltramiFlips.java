@@ -81,6 +81,9 @@ public class BeltramiFlips extends PackExtender {
 		edgeData=null;
 	}
 	
+	/**
+	 * @brief Parse and dispatch this extender's commands (color_e, try_flip, go).
+	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs) {
 		Vector<String> items = null;
 		
@@ -394,6 +397,9 @@ public class BeltramiFlips extends PackExtender {
 //		return new Complex(Math.exp(Math.log(2)*Math.cos(Pix2*(z.x))),0.0);
 	}
 	
+	/**
+	 * @brief Register this extender's command descriptions for help/parsing.
+	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();
 		cmdStruct.add(new CmdStruct("gogo","{n}",null,"do n edge flips"));
@@ -404,6 +410,9 @@ public class BeltramiFlips extends PackExtender {
 	
 }
 
+/**
+ * @brief Holds an edge with its computed illegality value and display color.
+ */
 class EdgeData {
 	EdgeSimple edge;
 	double illegality; // if positive, edge should be flipped  
@@ -417,9 +426,15 @@ class EdgeData {
 	
 }
 
+/**
+ * @brief Comparator ordering EdgeData by descending illegality.
+ */
 class EDComparator implements Comparator<EdgeData> {
 
     // Comparator interface requires defining compare method.
+    /**
+     * @brief Compare two EdgeData so higher illegality sorts first.
+     */
     public int compare(EdgeData ed1,EdgeData ed2) {
     	if (ed1.illegality>ed2.illegality)
     		return -1;

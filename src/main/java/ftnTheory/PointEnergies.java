@@ -17,6 +17,9 @@ import packing.PackData;
  */
 public class PointEnergies {
 	
+	/**
+	 * @brief Compute a pairwise point-distribution energy (Coulomb, L2, or log).
+	 */
 	public static double comp_energy(PackData packData,
 			CommandStrParser.Energy eng) {
 		double sum=0.0,pwr=0.0,d;

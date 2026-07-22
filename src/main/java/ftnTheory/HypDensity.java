@@ -53,9 +53,12 @@ public class HypDensity extends PackExtender {
 		maxThin=.25;
 	}	
 	
+	/**
+	 * @brief Parse and execute user commands for hyperbolic-density resampling.
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
-		
+
 		// TODO: have problems in changing underlying packData; so for now,
 		//       experiments should start with desired packing.
 		// ----- init_random 
@@ -124,7 +127,9 @@ public class HypDensity extends PackExtender {
 		return super.cmdParser(cmd, flagSegs);
 	}
 	
-	/** 
+	/**
+	 * @brief Register this extender's command structures for help/catalog.
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {

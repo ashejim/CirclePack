@@ -11,6 +11,9 @@ import packing.ReadWrite;
 import util.CmdStruct;
 import util.StringUtil;
 
+/**
+ * @brief PackExtender for 3D printing on curved surfaces via a hex microgrid
+ */
 public class Surface3D extends PackExtender {
 
 	public PackData basePack; // store for reference; we will be using 'this' for microgrid
