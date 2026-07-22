@@ -46,11 +46,11 @@ public class SocketSource extends CmdSource implements Runnable {
 			 String inputLine, outputLine;
 			 boolean haveName=false;
 			 do {
-				 inputLine = in.readLine().trim();
-				 if (inputLine == null) { // client closed connection; stop listening
-					 outputLine = "bye";
-				 }
-				 
+				 inputLine = in.readLine();
+				 if (inputLine == null) // client closed connection; stop listening
+					 break;
+				 inputLine = inputLine.trim();
+
 				 // demand a name before accepting other info
 				 if (haveName) {
 					 outputLine = cpSP.processInput(inputLine);

@@ -112,7 +112,12 @@ public class CPMenuBar extends JMenuBar implements ActionListener {
 		advAction.setActionCommand("advanced");
 		advAction.addActionListener(this);
 
+		JMenuItem terminalAction=new JMenuItem("Command Terminal");
+		terminalAction.setActionCommand("terminal");
+		terminalAction.addActionListener(this);
+
 		advancedMenu.add(advAction);
+		advancedMenu.add(terminalAction);
 		add(advancedMenu);
 
 	}
@@ -177,6 +182,12 @@ public class CPMenuBar extends JMenuBar implements ActionListener {
 				PackControl.helpHover.lockedFrame.setState(Frame.NORMAL);
 			}
 			PackControl.helpHover.lockframe();
+			return;
+		}
+
+		if (acmd.equals("terminal")) {
+			if (PackControl.terminalFrame!=null)
+				PackControl.terminalFrame.showTerminal();
 			return;
 		}
 

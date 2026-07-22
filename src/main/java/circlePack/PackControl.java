@@ -48,6 +48,7 @@ import frames.OutputFrame;
 import frames.PairedFrame;
 import frames.ScreenCtrlFrame;
 import frames.TabbedPackDataHover;
+import frames.TerminalFrame;
 import handlers.MYTOOLHandler;
 import handlers.SCRIPTHandler;
 import images.CPIcon;
@@ -174,7 +175,8 @@ MouseMotionListener,FocusListener {
 //	public static FXWebBrowser browserFrame;
 	public static FtnFrame newftnFrame;
 	public static OutputFrame outputFrame;
-	public static TabbedPackDataHover packDataHover; 
+	public static TerminalFrame terminalFrame;
+	public static TabbedPackDataHover packDataHover;
 	public static ScreenCtrlFrame screenCtrlFrame;
 	public static ShellManager shellManager;
 	public static MyConsole consoleActive;
@@ -632,6 +634,11 @@ MouseMotionListener,FocusListener {
 		outputFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		outputFrame.setLocation(framesPoint);
 		outputFrame.setVisible(false);
+
+		terminalFrame=new TerminalFrame();
+		terminalFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		terminalFrame.setLocation(framesPoint);
+		terminalFrame.setVisible(false);
 		
 		screenCtrlFrame=new ScreenCtrlFrame();
 		screenCtrlFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
