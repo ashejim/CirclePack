@@ -33,6 +33,9 @@ public class SelectSpec {
 	public char object;           // intended object:
 	// 'c' circles, 'f' faces, 't' tiles, 'e' edges
 	
+	/**
+	 * @brief Encoded comparison conditions: <, <=, >, >=, ==, != or none.
+	 */
 	enum  Condition {LT,LE,GT,GE,EQ,NE,NULL};
 	
 	static final double TOLER=.0000000001;
@@ -51,6 +54,9 @@ public class SelectSpec {
 		object=objt;
 	}
 	
+	/**
+	 * @brief Parse a comparison operator string into the 'condition' field.
+	 */
 	public void setCondition(String str) {
 		str=str.trim();
 		if (str.equals("=") || str.equals("==")) condition=Condition.EQ;
@@ -62,7 +68,10 @@ public class SelectSpec {
 		else condition=Condition.NULL;
 	}
 	
-	/** OBE: interchange inequalities to get target/value order */
+	/**
+	 * @brief Interchange inequalities to get target/value order (OBE).
+	 *
+	 * OBE: interchange inequalities to get target/value order */
 	public void flipCondition() {
 		if (condition==Condition.GT) condition=Condition.LT;
 		else if (condition==Condition.GE) condition=Condition.LE;

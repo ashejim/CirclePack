@@ -36,6 +36,9 @@ public class PlatenParams {
 			ratioQ=Double.valueOf(ratQ);
 	}
 		
+	/**
+	 * @brief set 'minR' (and possibly adjust 'maxR') subject to constraints
+	 */
 	/*
 	 * set 'minR' (and possibly adjust 'maxR') but with constraints
 	 *  * minR>=microRad/200

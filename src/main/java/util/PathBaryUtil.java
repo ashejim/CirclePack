@@ -376,7 +376,8 @@ public class PathBaryUtil {
 	}
 		
     /**
-     * 
+     * @brief Return the next face reached crossing out of face f at the given code location
+     *
      * @param f int, current face index
      * @param code int, where previous pt situated
      * code = 0,1,2 (at vert 0, 1, or 2)
@@ -473,6 +474,8 @@ public class PathBaryUtil {
 	}
 	
 	/**
+	 * @brief Just to carry results back from nextSegment
+	 *
 	 * Just to carry results back from nextSegment
 	 */
 	static class segAnswer {

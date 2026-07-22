@@ -126,6 +126,9 @@ public class PopupBuilder extends JPopupMenu {
 		} // end of loop through menu children
 	}
 	
+	/**
+	 * @brief Execute the CirclePack command associated with the chosen menu item
+	 */
 	public void do_action(ActionEvent e) {
 		int actN=Integer.parseInt(e.getActionCommand());
 		for (int n=0;n<ncVector.size();n++) {
@@ -164,6 +167,9 @@ class Num2Cmd {
 	
 }
 
+/**
+ * @brief ActionListener adapter dispatching menu events to a PopupBuilder
+ */
 class Popup_actionAdapter implements ActionListener {
 	private PopupBuilder adaptee;
 

@@ -808,10 +808,12 @@ public class StringUtil {
 		  return str;
 	  }
 	  
-	  /** 
+	  /**
+	   * @brief Recombine strings split across broken parenthesis pairs (unused).
+	   *
 	   * If parentheses pairs are broken (e.g., whitespace between),
-	   * then may have to recombine some of strings, or on error, 
-	   * throw the rest away. 
+	   * then may have to recombine some of strings, or on error,
+	   * throw the rest away.
 	   * NOTE: not used, see string2vec (which handles curly brackets also)
 	   */
 	  public static Vector<String> ckBrokenBraces(Vector<String> vec) {

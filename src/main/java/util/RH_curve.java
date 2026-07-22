@@ -64,6 +64,8 @@ public class RH_curve {
 	}
 	
 	/**
+	 * @brief Create copy of a restriction curve; color is cloned.
+	 *
 	 * Create copy of a restriction curve; color is cloned.
 	 */
 	public RH_curve clone() {
@@ -74,6 +76,9 @@ public class RH_curve {
 		return rhc;
 	}
 	
+	/**
+	 * @brief Draw this restriction curve (circle or general path) on the drawing
+	 */
 	public void drawMe(CPdrawing cpd) {
 		DispFlags dflags=new DispFlags("cfg");
 		if (isCircle) 

@@ -41,6 +41,9 @@ public class PathInterpolator {
 		N=0;
 	}
 	
+	/**
+	 * @brief Initialize the path from a vector of point locations
+	 */
 	public void pathInit(Vector<Complex> pathZs) {
 		if (pathZs==null || pathZs.size()==0) return;
 		N=pathZs.size();
@@ -55,6 +58,9 @@ public class PathInterpolator {
 		length=domain.lastElement();
 	}
 	
+	/**
+	 * @brief Initialize the path from an array of node locations
+	 */
 	public void pathInit(Complex []nodes) {
 		if (nodes==null || nodes.length==0) return;
 		Vector<Complex> pz=new Vector<Complex>(nodes.length);
@@ -63,6 +69,9 @@ public class PathInterpolator {
 		pathInit(pz);
 	}
 	
+	/**
+	 * @brief Initialize the path from a 'PathLink'
+	 */
 	public void pathInit(PathLink plink) {
 		if (plink==null || plink.size()==0) return;
 		Vector<Complex> pz=new Vector<Complex>(2);
@@ -73,6 +82,9 @@ public class PathInterpolator {
 		pathInit(pz);
 	}
 	
+	/**
+	 * @brief Initialize the path from the first component of a Path2D.Double
+	 */
 	public void pathInit(Path2D.Double gpath) {
 		// Note: we just want the first entry in vector of Vector<Complex>
 		Vector<Complex> pz;
@@ -98,6 +110,9 @@ public class PathInterpolator {
 			return HyperbolicMath.h_dist(z,w);
 	}
 	
+	/**
+	 * @brief Close the path if it is not already closed
+	 */
 	public void closeUp() { // close the path if not already closed
 		if (closed) return;
 		closed=true;

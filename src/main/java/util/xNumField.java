@@ -52,6 +52,8 @@ public class xNumField extends JPanel {
 	}
 	
 	/**
+	 * @brief Build the GUI: optional title label over the real-value text field.
+	 *
 	 * Layout in over/under form
 	 */
 	private void initGUI() {
@@ -110,6 +112,9 @@ public class xNumField extends JPanel {
 			xField.setText(String.format("%."+digits+"e",x));
 	}
 	
+	/**
+	 * @brief Return the field's double value, or 1.0 on parse error.
+	 */
 	public double getValue() {
 		try {
 			return Double.parseDouble(xField.getText());
@@ -119,6 +124,8 @@ public class xNumField extends JPanel {
 	}
 	
 	/**
+	 * @brief Set background to the error color to indicate an improper value.
+	 *
 	 * Set background color, e.g. to indicate improper value
 	 */
 	public void setErrColor() {
@@ -126,6 +133,8 @@ public class xNumField extends JPanel {
 	}
 	
 	/**
+	 * @brief Reset background to the original light grey color.
+	 *
 	 * reset to original light grey
 	 */
 	public void origColor() {
@@ -133,6 +142,8 @@ public class xNumField extends JPanel {
 	}
 	
 	/**
+	 * @brief Set whether the field is editable.
+	 *
 	 * @param ed boolean
 	 */
 	public void setEditable(boolean ed) {

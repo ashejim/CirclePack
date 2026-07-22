@@ -48,6 +48,8 @@ public class zNumField extends JPanel {
 	}
 	
 	/**
+	 * @brief Build the GUI: optional title label over paired real/imaginary fields.
+	 *
 	 * Layout in over/under form
 	 */
 	private void initGUI() {
@@ -116,6 +118,9 @@ public class zNumField extends JPanel {
 			yField.setText(String.format("%."+digits+"e",z.y));
 	}
 	
+	/**
+	 * @brief Return the complex value from the real/imaginary fields, null on error.
+	 */
 	public Complex getValue() {
 		try {
 			return new Complex(Double.parseDouble(xField.getText()),Double.parseDouble(yField.getText()));

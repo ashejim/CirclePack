@@ -29,6 +29,8 @@ public class SphView {
 	}
 	
 	/**
+	 * @brief Set the default spherical view (positive x direction, slight tip).
+	 *
 	 * The default spherical view is from the positive x direction,
 	 * with slight tip towards the viewer and to the left
 	 */

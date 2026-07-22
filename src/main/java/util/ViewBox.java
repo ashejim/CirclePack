@@ -28,6 +28,9 @@ public class ViewBox {
 		parent=cpd;
 	}
 
+	/**
+	 * @brief Reset to the default square view box [-1.1,-1.1] to [1.1,1.1].
+	 */
 	public void reset() {
 		Aspect=1.0;
 		lz=new Complex(-1.1,-1.1);

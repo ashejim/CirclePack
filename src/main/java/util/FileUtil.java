@@ -283,6 +283,8 @@ public class FileUtil {
 	}
 
 	/**
+	 * @brief Return list of files in the given directory.
+	 *
 	 * Return list of files in the given directory.
 	 */
 	public static File[] getFileList(File directory) {
@@ -378,6 +380,9 @@ public class FileUtil {
 		return new SimpleDateFormat("dd-MMM-yyyy HH:mm").format(new Date(time));
 	}
 	
+	/**
+	 * @brief Return true if the file at 'urlString' path exists and is readable.
+	 */
 	public static boolean AddressReadable(String urlString) {
 		return Files.isReadable(Paths.get(urlString));
 	}

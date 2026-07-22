@@ -43,6 +43,9 @@ public class UtilThread extends Thread{
         this.label=label;
     }
     
+    /**
+     * @brief Thread body: update the label with an incrementing counter each second.
+     */
     public void run(){
         
         //put code you want executed in here. What outputs the integers updated every second

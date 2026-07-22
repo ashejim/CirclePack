@@ -41,6 +41,8 @@ import packing.CPdrawing;
 		}
 
 		/**
+		 * @brief Set post options to their defaults
+		 *
 		 * Set post options to their defaults
 		 */
 		public void reset() {
@@ -53,7 +55,8 @@ import packing.CPdrawing;
 		}
 
 		/**
-		 * 
+		 * @brief Set the named boolean post option on or off
+		 *
 		 * @param name
 		 * @param state
 		 */
@@ -162,6 +165,9 @@ import packing.CPdrawing;
 			return flags.toString();
 		}
 		
+		/**
+		 * @brief Set circle and face options from bit-coded flags cf and ff
+		 */
 		public void setOptions(int cf,int ff) {
 			// circle stuff
 			if ((cf & 1)!=1) circles=false;

@@ -16,6 +16,9 @@ import java.util.Random;
 public class DegreeDistribution {
 
 	
+	/**
+	 * @brief Return a random interior vertex degree per the empirical distribution.
+	 */
 	public static int getRandDegree() {
 		Random rand=new Random();
 		int n=rand.nextInt(28844);

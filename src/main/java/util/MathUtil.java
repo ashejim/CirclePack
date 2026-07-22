@@ -16,6 +16,9 @@ public class MathUtil {
 	
 	// ========================== formatting utilities (many not called) =================
 	
+	/**
+	 * @brief Parse a string to double, recording error message on failure
+	 */
 	public static double parseDouble(String s) throws NumberFormatException {
 		try {
 			Double d = Double.parseDouble(s);
@@ -26,6 +29,9 @@ public class MathUtil {
 		}
 	}
 
+	/**
+	 * @brief Format double as string rounded to the given accuracy
+	 */
 	public static String d2String(double d, double accuracy) {
 		// double tol = complex.MathComplex.getTolerance();
 		int nPower = 1;
@@ -42,6 +48,9 @@ public class MathUtil {
 		return t;
 	}
 
+	/**
+	 * @brief Format double as string using the default 'accuracy'
+	 */
 	public static String d2String(double d) {
 		// double tol = complex.MathComplex.getTolerance();
 		int nPower = 1;
@@ -69,6 +78,9 @@ public class MathUtil {
 		return t;
 	}
 
+	/**
+	 * @brief Format double as string, using scientific notation for long results
+	 */
 	public static String d2StringNew(double d) {
 		if (Math.abs(d) < accuracy)
 			return "0";
@@ -87,6 +99,9 @@ public class MathUtil {
 		return mantiss + "E" + Integer.toString(m);
 	}
 
+	/**
+	 * @brief Format double as string with explicit sign, given accuracy
+	 */
 	public static String d2StringSign(double d, double accuracy) {
 		// double tol = complex.MathComplex.getTolerance();
 		if (Math.abs(d) < accuracy)
@@ -107,6 +122,9 @@ public class MathUtil {
 		return t;
 	}
 
+	/**
+	 * @brief Format double as string with explicit sign, default accuracy
+	 */
 	public static String d2StringSign(double d) {
 		// double tol = complex.MathComplex.getTolerance();
 		if (Math.abs(d) < accuracy)
@@ -127,6 +145,9 @@ public class MathUtil {
 		return t;
 	}
 
+	/**
+	 * @brief Interpolate the jth of N colors between c1 and c2
+	 */
 	public static Color interpolateColor(Color c1, Color c2, int j, int N) {
 		int i = j % N;
 		int r1 = c1.getRed();
@@ -170,6 +191,9 @@ public class MathUtil {
 		return new Color(r, g, b);
 	}
 	
+	/**
+	 * @brief Append a coefficient and exponent term to an equation string
+	 */
 	public static String putCoeff(String Eq, String coeff, String exp) {
 		if (exp.equals("")) {
 			if (coeff.equalsIgnoreCase("0") || coeff.equalsIgnoreCase("-0"))
@@ -211,6 +235,7 @@ public class MathUtil {
 	}
 
 	/**
+	 * @brief Convert boolean to int: 1 if true, else 0
 	 * @param b boolean
 	 * @return 1 if b, else 0
 	 */
@@ -222,6 +247,7 @@ public class MathUtil {
 	}
 
 	/**
+	 * @brief Convert int to boolean: true if k!=0, else false
 	 * @param k int
 	 * @return boolean: true if k!=0, else false
 	 */

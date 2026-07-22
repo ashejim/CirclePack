@@ -29,8 +29,10 @@ import allMains.CPBase;
 public class GlobResources {
 
 	/**
-	 * Return a 'Set' with base file names of all 
-	 * resources in given directory that match given 
+	 * @brief Return base file names of resources in a directory matching glob patterns
+	 *
+	 * Return a 'Set' with base file names of all
+	 * resources in given directory that match given
 	 * 'globs' patterns.
 	 * NOTE: The globs patterns used here are very simple.
 	 * Only '*' (match any number of characters) and '?' 
@@ -116,8 +118,10 @@ public class GlobResources {
 	}
 
 	/**
-	 * Return a list of the base file names that match the 
-	 * given patterns and can be found in the directory 
+	 * @brief Return base file names matching patterns in the directory of a jar URL
+	 *
+	 * Return a list of the base file names that match the
+	 * given patterns and can be found in the directory
 	 * indicated by the given jar URL.
 	 * 
 	 * @param url jar protocol URL (e.g. "jar:file:/foo/bar.jar!/baz/boff/")

@@ -42,8 +42,10 @@ public class PathDistance {
 		this(null,.01);
 	}
 	
-	/** 
-	 * initiate 
+	/**
+	 * @brief Build the list of line segments approximating 'myPath'
+	 *
+	 * initiate
 	 */
 	public void initData() {
 		if (myPath==null) {

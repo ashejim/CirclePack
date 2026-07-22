@@ -40,6 +40,8 @@ public class ComplexField extends JPanel {
 	protected boolean titled; // Whether or not this instance has a title.
 	
 	/**
+	 * @brief Create a non-titled instance.
+	 *
 	 * Create a non-titled instance.
 	 */
 	public ComplexField() {
@@ -62,6 +64,8 @@ public class ComplexField extends JPanel {
 	}
 	
 	/**
+	 * @brief Lay out the interface (title label over the text field).
+	 *
 	 * Lay out the interface. The title is displayed as a label over the text
 	 * field below.
 	 */
@@ -92,6 +96,8 @@ public class ComplexField extends JPanel {
 	}
 
 	/**
+	 * @brief Empty the field so it is just blank.
+	 *
 	 * Empty the field so it is just blank
 	 */
 	public void setEmpty() {

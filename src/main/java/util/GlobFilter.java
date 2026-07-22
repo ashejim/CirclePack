@@ -18,6 +18,9 @@ class GlobFilter implements FilenameFilter {
 		patterns = GlobResources.glob2regexList(globs);
 	}
 
+	/**
+	 * @brief Accept a file name if it matches any of the glob patterns
+	 */
 	@Override
 	public boolean accept(File dir, String name) {
 		for (String p : patterns) {
