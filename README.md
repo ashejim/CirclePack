@@ -7,6 +7,7 @@
   - [🛠 Installation](#-installation)
     - [Setup a GitHub repo](#setup-a-github-repo)
     - [Setup as a Java project in your IDE](#setup-as-a-java-project-in-your-ide)
+    - [Build with Maven (command line)](#build-with-maven-command-line)
   - [Contributing](#contributing)
     - [Programming polish](#programming-polish)
 
@@ -58,7 +59,38 @@ For development, the CirclePack source files can be run from an IDE **using Spla
   
       3. IntelliJ automatically downloads the Xerces JAR and adds it to your classpath. Press Apply → OK, then Build → Rebuild Project.
   
-   4. Run CP using SplashMain (./src/allMains/SplashMain).
+   4. Run CP using SplashMain (./src/main/java/allMains/SplashMain).
+
+### Build with Maven (command line)
+
+CirclePack now uses a Maven layout: sources live under `src/main/java`, resources
+under `src/main/resources`, and build output goes to `target/`. You need a JDK
+(17 or newer) and [Apache Maven](https://maven.apache.org/download.cgi).
+
+CirclePack depends on several bundled jars in `./jars` that are **not** on Maven
+Central (declared in `pom.xml` with `groupId=local`). Register them into your
+local Maven repository **once per machine** before the first build:
+
+```powershell
+# Windows (PowerShell)
+./setup-local-jars.ps1
+```
+
+```bash
+# macOS / Linux / Git Bash
+./setup-local-jars.sh
+```
+
+Then build from the repo root:
+
+```bash
+mvn clean compile     # compile the sources
+mvn clean package     # build the runnable artifact into target/
+```
+
+Note: on JDK 23+ Maven's own libraries may print harmless
+`WARNING: ... restricted method` / `sun.misc.Unsafe` messages; they do not
+affect the build.
 
 ## Contributing
 
