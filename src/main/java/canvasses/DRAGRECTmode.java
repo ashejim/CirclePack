@@ -34,7 +34,10 @@ public class DRAGRECTmode extends MyCanvasMode {
 		updateMenuItem();
 	}
 	
-	public void release3(ActiveWrapper aW,MouseEvent e) { 
+	/**
+	 * @brief On release, set the view to the dragged rectangle and restore default mode.
+	 */
+	public void release3(ActiveWrapper aW,MouseEvent e) {
 		CPdrawing cpS=aW.getCPDrawing();
 		ACTIVEHandler mH=aW.activeHandler;
 		if (mH.dragRect.width > 0) {
@@ -52,12 +55,18 @@ public class DRAGRECTmode extends MyCanvasMode {
 		aW.setDefaultMode(); // deactivate when done
 	}
 	
+	/**
+	 * @brief On left release, repaint the canvas.
+	 */
 	public void release1(ActiveWrapper aW,MouseEvent e) {
 		rePaint(aW);
 	}
-	
+
 	public void pressed3(ActiveWrapper aW,MouseEvent e) {}
-	
+
+	/**
+	 * @brief On left press, begin a drag rectangle centered at the click point.
+	 */
 	public void pressed1(ActiveWrapper aW,MouseEvent e) {
 		ACTIVEHandler mH=aW.activeHandler;
 		Point point=e.getPoint();
@@ -66,6 +75,9 @@ public class DRAGRECTmode extends MyCanvasMode {
 		mH.dragStarted=true;
 	}
 	
+	/**
+	 * @brief On drag, resize the square selection rectangle about its center.
+	 */
 	public int dragged(ActiveWrapper aW,MouseEvent e) {
 		ACTIVEHandler mH=aW.activeHandler;
 		if(!mH.dragStarted) return 0;

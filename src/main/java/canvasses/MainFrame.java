@@ -152,12 +152,17 @@ public class MainFrame extends JFrame {
 				canvasDim.height+bottomHeight));
 	}
 
+	/**
+	 * @brief Set the canvas dimension and re-lay out the frame.
+	 */
 	public void layMeOut(Dimension dim) {
 		canvasDim=dim;
 		layMeOut();
 	}
 	
 	/**
+	 * @brief Re-lay out the frame and its canvas using 'canvasDim', after a size change.
+	 *
 	 * Lays out 'MainFrame' with the active canvas anew, as after
 	 * a size change. Adjust 'packImage' size (buffered image).
 	 * Uses 'canvasDim' as canvas size.
@@ -220,6 +225,8 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
+	 * @brief Update the title bar of 'activeFrame' with the active pack number and file.
+	 *
 	 * update title bar of 'activeFrame'
 	 */
 	public void updateTitle() {
@@ -278,6 +285,8 @@ public class MainFrame extends JFrame {
 	}
 		
 	/**
+	 * @brief Build the top toolbar with canvas mytools and the cursor-modes popup button.
+	 *
 	 * Main menu bar for canvas operations, setting modes
 	 * like deletion, zoom, axes, etc., and region for cursor
 	 * icons.
@@ -316,6 +325,8 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
+	 * @brief Create the 'ActiveWrapper' canvas panel and set it up as a drop target.
+	 *
 	 * create the panel containing the canvas itself
 	 */
 	public void createActiveScreen() {
@@ -347,14 +358,18 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * Set/change the 'CPDrawing' associated with this 'ActiveFrame' 
+	 * @brief Set/change the 'CPDrawing' associated with this 'ActiveFrame'.
+	 *
+	 * Set/change the 'CPDrawing' associated with this 'ActiveFrame'
 	 */
 	public void setCPDrawing(CPdrawing cpd) {
 		activeScreen.setCPDrawing(cpd);
 	}
 	
 	/**
-	 * This puts new image in the activeScreen and updates its 
+	 * @brief Repaint the active screen and its small canvas version.
+	 *
+	 * This puts new image in the activeScreen and updates its
 	 * small version.
 	 */
 	public void reDisplay() {
@@ -363,6 +378,8 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
+	 * @brief Swap in the current owl/progress button and reposition it.
+	 *
 	 * update owl/progress button to new state
 	 */
 	public void swapProgBar() {
@@ -374,6 +391,8 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
+	 * @brief Start the component listener for frame size changes.
+	 *
 	 * Start the listener for frame size changes
 	 */
 	public void initComponentListener() {
@@ -406,6 +425,9 @@ public class MainFrame extends JFrame {
 	   	}
 	}
 	 	
+	/**
+	 * @brief Window component listener that re-lays out the frame on resize.
+	 */
 	class ResizeAdapter extends ComponentAdapter {
 		  public void componentResized(ComponentEvent e) {
 			  try { // in case this is first pass

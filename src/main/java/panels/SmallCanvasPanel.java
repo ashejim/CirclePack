@@ -63,6 +63,8 @@ public class SmallCanvasPanel extends JPanel {
 	}
 	
 	/**
+	 * @brief Build one small canvas panel (name/info bar plus screen) for pack i
+	 *
 	 * Each packing has a canvas surmounted by a panel for name and icons,
 	 * also to be colored to indicate active.
 	 */
@@ -110,7 +112,9 @@ public class SmallCanvasPanel extends JPanel {
 		}
 	}
 	
-	/** 
+	/**
+	 * @brief Update the active-packing indicators to mark pack 'n' as active
+	 *
 	 * Change active packing indicators, pack 'n' active.
 	 */
 	public void changeActive(int n) {

@@ -78,6 +78,11 @@ public class CursorCtrl {
 //				new Point(10,10),"MAIN:");
 	}
 	
+	/**
+	 * @brief Build the popup menu of canvas, user, and script cursor modes.
+	 * @param mL ACTIVEListener
+	 * @return JPopupMenu
+	 */
 	public static JPopupMenu cursorMenu(ACTIVEListener mL) {
 		JPopupMenu theMenu=new JPopupMenu();
 		

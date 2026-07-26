@@ -43,7 +43,9 @@ import util.StringUtil;
 import workshops.LayoutShop;
 
 /**
- * This static code parses the vector of display flag segments 
+ * @brief Parses display flag segments and carries out drawing actions on canvasses.
+ *
+ * This static code parses the vector of display flag segments
  * for canvasses and carries out the specified display actions.
  * 
  * Note: the first version is the usual one, but the second
@@ -57,9 +59,11 @@ import workshops.LayoutShop;
 public class DisplayParser {
 	
 	/**
-	 * Display objects from packing p on its own 
-	 * 'CPDrawing' based on flag segments 
-	 * given in 'flagSegs' 
+	 * @brief Display objects from packing p on its own 'CPDrawing' per flag segments.
+	 *
+	 * Display objects from packing p on its own
+	 * 'CPDrawing' based on flag segments
+	 * given in 'flagSegs'
 	 * @param p PackData
 	 * @param flagSegs
 	 * @return int, count of display actions
@@ -69,9 +73,11 @@ public class DisplayParser {
 	}
 	
 	/**
-	 * Display objects from packing p on designated 
-	 * 'CPDrawing' based on flag segments given in 
-	 * 'flagSegs' 
+	 * @brief Display objects from packing p on a designated 'CPDrawing' per flag segments.
+	 *
+	 * Display objects from packing p on designated
+	 * 'CPDrawing' based on flag segments given in
+	 * 'flagSegs'
 	 * @param p PackData
 	 * @param cpDrawing CPDrawing
 	 * @param flagSegs

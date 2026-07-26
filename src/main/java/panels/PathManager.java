@@ -29,6 +29,9 @@ import complex.Complex;
  */
 public class PathManager {
 	
+	/**
+	 * @brief States of the parser while reading 'PATH' data from a file.
+	 */
 	static enum PathReadState {LOOK_FOR_PATH,START_SEG,READ_XY,CLOSE};
 	
 	/**

@@ -259,6 +259,8 @@ public class ScreenPanel extends JPanel implements ChangeListener {
 	}
 	
 	/**
+	 * @brief Sync all sliders to the active packing's CPdrawing values
+	 *
 	 * Values for the sliders are maintained in CPDrawing;
 	 * this sets them, e.g., when active screen is changed.
 	 */

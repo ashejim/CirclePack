@@ -31,6 +31,9 @@ public class PATHmode extends MyCanvasMode {
 		updateMenuItem();
 	}
 	
+	/**
+	 * @brief On left press, start a new polygonal path or add a point to it.
+	 */
 	// start or add to segment
 	public void pressed1(ActiveWrapper aW,MouseEvent e) { // override
 		CPdrawing cpS=aW.getCPDrawing();
@@ -64,7 +67,10 @@ public class PATHmode extends MyCanvasMode {
 	 */
 	public void clicked1(ActiveWrapper aW,MouseEvent e) {} // override
 
-	// close path and display 
+	/**
+	 * @brief On right click, close the path, store it globally, and restore default mode.
+	 */
+	// close path and display
 	public void clicked3(ActiveWrapper aW,MouseEvent e) { // override
 		ACTIVEHandler mH=aW.activeHandler;
 		if (mH.polygonalPath!=null) {
@@ -115,7 +121,9 @@ public class PATHmode extends MyCanvasMode {
 	}
 	
 	/**
-	 * Store clone in the global Path2D.Double 'ClosedPath'. 
+	 * @brief Store a clone of the handler's path in the global 'ClosedPath'.
+	 *
+	 * Store clone in the global Path2D.Double 'ClosedPath'.
 	 */
 	public int storeGlobalPath(ActiveWrapper aW) {
 		if (aW.activeHandler.polygonalPath!=null) 

@@ -35,6 +35,9 @@ public class GetValue {
 		return Double.valueOf(str);
 	}
 	
+	/**
+	 * @brief Find the integer value specified by a string (number or variable)
+	 */
 	public static Integer get1Integer(String str) throws VarException {
 		if (str==null) 
 			throw new VarException("string was null");
@@ -55,6 +58,9 @@ public class GetValue {
 		return Integer.valueOf(str);
 	}
 
+	/**
+	 * @brief Build a Complex from real/imaginary strings (numbers or variables)
+	 */
 	public static Complex get1Complex(String re,String im) throws VarException {
 		Double x=null;
 		Double y=null;

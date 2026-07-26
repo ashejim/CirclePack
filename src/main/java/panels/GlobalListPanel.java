@@ -22,6 +22,9 @@ import allMains.CPBase;
 import circlePack.PackControl;
 import exceptions.ParserException;
 
+/**
+ * @brief Tabbed panel for editing the global Vlist/Elist/Flist and syncing with CirclePack.
+ */
 public class GlobalListPanel extends JPanel implements ActionListener {
 
 	private static final long 

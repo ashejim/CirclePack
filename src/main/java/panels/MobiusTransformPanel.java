@@ -53,6 +53,9 @@ public class MobiusTransformPanel extends JFrame implements ActionListener {
     this.getContentPane().doLayout();
     this.setTitle("Resulting Mobius transform");
   }
+  /**
+   * @brief Parse the entered Mobius transform and show its type.
+   */
   public void actionPerformed(ActionEvent e){
     try {
       ComplexTransformation mob = (ComplexTransformation) group.parse(TransTF.

@@ -178,6 +178,8 @@ public class WritePackPanel extends javax.swing.JPanel {
 	}
 	
 	/**
+	 * @brief Poll the checkboxes and build the write flag string
+	 *
 	 * This polls the checkboxes and returns the string with
 	 * the corresponding flags. See 'write' in 'CmdDetails'
 	 * help file.
@@ -232,6 +234,9 @@ public class WritePackPanel extends javax.swing.JPanel {
 		return writeAction;
 	}
 
+	/**
+	 * @brief Run the write/append/script dialog and issue the write command
+	 */
 	protected int displayWriteDialog(){
 
 	  	String flags=this.formWriteFlags();

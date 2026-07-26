@@ -144,10 +144,16 @@ public class FileDialogs {
 		return null;
 	}
 	
+	/**
+	 * @brief Open a save dialog for the given file type
+	 */
 	public static File saveDialog(int type,boolean swDir) {
 		return saveDialog(type,swDir,null);
 	}
-	
+
+	/**
+	 * @brief Open a save dialog for the given file type with a message string
+	 */
 	public static File saveDialog(int type,boolean swDir,String actStr) {
 		JFileChooser dbox = new JFileChooser();
 		int result;
@@ -263,6 +269,8 @@ public class FileDialogs {
 	// Various filters for reading/writing
 
 	/**
+	 * @brief File filter accepting CirclePack script files (.cmd/.xmd/.cps)
+	 *
 	 * CirclePack script write file filter
 	 */
 	public static class ScriptFilter extends FileFilter {
@@ -279,6 +287,8 @@ public class FileDialogs {
 
 
 	/**
+	 * @brief File filter accepting subdivision rules (.r) files
+	 *
 	 * Subdivision rules file, a la Bill Floyd's software
 	 */
 	public static class SubRulesFilter extends FileFilter {
@@ -293,6 +303,8 @@ public class FileDialogs {
 
 
 	/**
+	 * @brief File filter accepting PostScript (.ps) files
+	 *
 	 * PostScript write file filter
 	 */
 	public static class PostScriptFilter extends FileFilter{
@@ -306,6 +318,8 @@ public class FileDialogs {
 	}
 	
 	/**
+	 * @brief File filter accepting JPG (.jpg) files
+	 *
 	 * jpg write file filter
 	 */
 	public static class JPGFilter extends FileFilter{
@@ -319,6 +333,8 @@ public class FileDialogs {
 	}
 	
 	/**
+	 * @brief File filter accepting packing files (.p/.q/.off/.pl)
+	 *
 	 * Packing read file filter
 	 */
 	public static class PackingFilter extends FileFilter{
@@ -336,6 +352,8 @@ public class FileDialogs {
 	}
 	
 	/**
+	 * @brief File filter accepting all files (data files)
+	 *
 	 * Packing read file filter
 	 */
 	public static class DataFileFilter extends FileFilter{
@@ -349,6 +367,8 @@ public class FileDialogs {
 	}
 	
 	/** 
+	 * @brief File filter accepting ToolBox (.myt) files
+	 *
 	 * File filter for ToolBox files (i.e., MyTool's)
 	 */
 	public static class ToolFilter extends FileFilter{
@@ -361,7 +381,9 @@ public class FileDialogs {
 	    }
 	}
 	
-	/** 
+	/**
+	 * @brief File filter accepting 'PackExtender' .class files
+	 *
 	 * File filter for 'PackExtender' .class files
 	 */
 	public static class ExtenderFilter extends FileFilter{

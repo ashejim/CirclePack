@@ -9,6 +9,9 @@ import javax.swing.JComponent;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneLayout;
 
+/**
+ * @brief A JScrollPane that scrolls vertically only, sizing the view to width.
+ */
 public class JScrollPaneVertical extends JScrollPane {
 
 	private static final long 
@@ -32,6 +35,9 @@ public class JScrollPaneVertical extends JScrollPane {
 	}
 
 
+	/**
+	 * @brief Layout that fixes view width and grows its height to fit contents.
+	 */
 	private class MyScrollLayout extends ScrollPaneLayout {
 
 		private static final long 

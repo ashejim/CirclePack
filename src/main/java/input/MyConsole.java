@@ -234,12 +234,17 @@ public class MyConsole extends CmdSource implements KeyListener { // ActionListe
 	}
 
 	/**
+	 * @brief Attach the message-hover mouse listener to the tip icon
+	 *
 	 * Have to wait for 'ssPanel' to be created to add listener
 	 */
 	public void setMouseLtnr() {
 		tipHover.addMouseListener(PackControl.msgHover);
 	}
 	
+	/**
+	 * @brief Handle key release: run command on ENTER, history on UP/DOWN, completion on TAB
+	 */
 	public void keyReleased(KeyEvent ke) {
 		
 		// hide completion list if a key is hit
@@ -542,6 +547,8 @@ public class MyConsole extends CmdSource implements KeyListener { // ActionListe
 	  }
 		
 	  /**
+	   * @brief request focus for 'cmdline'
+	   *
 	   * request focus for 'cmdline'
 	   */
 	  public void focusToCmdline() {
@@ -557,6 +564,8 @@ public class MyConsole extends CmdSource implements KeyListener { // ActionListe
 	  }
 	  
 	  /** 
+	   * @brief empty border for 'cmdline'
+	   *
 	   * empty border for 'cmdline'
 	   */
 	  public void fixBorder() {

@@ -43,12 +43,17 @@ public class PairWrapper extends ActiveWrapper {
 		return PairedFrame.mapConnection;
 	}
 	
+	/**
+	 * @brief Set 'cpDrawing' to the domain or range packing per this canvas's side.
+	 */
 	private void getSource() {
 		if (callerType==LEFTCANVAS) cpDrawing=PackControl.mapPairFrame.getDomainCPS();
 		else this.cpDrawing=PackControl.mapPairFrame.getRangeCPS();
 	}
 
 	/**
+	 * @brief Paint the source packing's scaled image into this paired canvas.
+	 *
 	 * Throw in correct 'CPDrawing' image
 	 */
 	public void paintComponent(Graphics g) {
@@ -57,6 +62,9 @@ public class PairWrapper extends ActiveWrapper {
 				Image.SCALE_SMOOTH),0,0,getWidth(),getWidth(),null);
 	}
 	
+	/**
+	 * @brief On click, do the paired-map draw call when connected, else default behavior.
+	 */
 	// override mouse 1/2 clicks in case 'mapConnection' is set,
 	//   mode is default, and other packing exists; else default
 	//   to 'ActiveWrapper' behavior.

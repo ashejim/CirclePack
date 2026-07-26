@@ -22,6 +22,9 @@ import input.TrafficCenter;
 import komplex.EdgeSimple;
 import packing.PackData;
 
+/**
+ * @brief Tabbed panel for editing the active packing's vlist/elist/flist.
+ */
 public class LocListPanel extends JPanel implements ActionListener {
 
 	private static final long 

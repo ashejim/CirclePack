@@ -66,6 +66,9 @@ public class CPFileManager {
 			HomeDirectory=CurrentDirectory;
 	}
 	
+	/**
+	 * @brief Set 'CurrentDirectory', resolving empty or leading '~' as home
+	 */
 	public void setCurrentDirectory(String directory) {
 		directory=directory.trim();
 		if (directory.length()==0) {
@@ -442,7 +445,8 @@ public class CPFileManager {
 	}
 	
 	/**
-	 * 
+	 * @brief Open a BufferedReader from the given directory or the script
+	 *
 	 * @param dir File, ignored if reading from script
 	 * @param filename String
 	 * @param script_flag boolean: true look in script

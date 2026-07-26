@@ -328,7 +328,9 @@ public class SetBuilderParser {
 		return specs;
 	}
 	
-	/** Does 'status' indicate success? */
+	/**
+	 * @brief Does 'status' indicate success?
+	 */
 	public boolean isOkay() {
 		return status;
 	}

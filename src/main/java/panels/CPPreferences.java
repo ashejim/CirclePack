@@ -274,7 +274,9 @@ private static final long
   }
 
   /**
-   *  Use:  This class creates a preferences window, adds components, 
+   * @brief Create the preferences window, add components, and display it.
+   *
+   *  Use:  This class creates a preferences window, adds components,
    *    sets itself as a listener and displays the frame on the screen.
    */
   public JFrame displayPreferencesWindow(){
@@ -387,6 +389,8 @@ private static final long
   }
 
   /**
+   * @brief Write the preferences to the preference file.
+   *
    * write the preferences to the preference file
    */
   protected void savePrefs() {
@@ -425,6 +429,8 @@ private static final long
   }
 
   /**
+   * @brief Apply the preferences the user has set to the current session.
+   *
    * This applies the preferences that have been set by
    * the user in '~/myCirclePack/cpprefrc'.
    */
@@ -482,6 +488,8 @@ private static final long
   }
 
   /**
+   * @brief Handle button clicks on the preferences window.
+   *
    * Button clicks on the preferences window are handled here.
    */
   public void actionPerformed(ActionEvent e){

@@ -417,6 +417,9 @@ public class PostPanel extends JPanel implements ActionListener {
 		return bc;
 	}
 	
+	/**
+	 * @brief Handle GO/flag buttons, JPG dumps, and checkbox state changes.
+	 */
 	public void actionPerformed(ActionEvent e){
 	 	String command = e.getActionCommand();
 	 	File aboutFile=null;
@@ -554,7 +557,9 @@ public class PostPanel extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Get postscript options from the active packing's postOptions 
+	 * @brief Save old packing's post options and load the active packing's.
+	 *
+	 * Get postscript options from the active packing's postOptions
 	 */
 	public void update(int old_pnum) {
 		PackControl.cpDrawing[old_pnum].postOptions.storeTailored(flagField.getText());

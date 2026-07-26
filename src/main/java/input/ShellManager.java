@@ -167,6 +167,8 @@ public class ShellManager {
 	}
 	
 	/**
+	 * @brief Prune 'runHistory' to about half its length when it grows too long
+	 *
 	 * If 'runHistory' StringBuffer is too long, prune to about half.
 	 *  (1) maintain top format lines
 	 *  (2) delete to beginning of some command line

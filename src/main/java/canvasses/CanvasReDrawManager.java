@@ -40,6 +40,9 @@ public class CanvasReDrawManager {
 		canvasRegistry[pnum] |= ACTIVECAN; // initially active packing
 	}
 	
+	/**
+	 * @brief Update the registry to mark the given pack number as the active one.
+	 */
 	// reflect a change in which pack is active
 	public void changeActive(int pnum) {
 		for (int i=0;i<CPBase.NUM_PACKS;i++) 
@@ -57,6 +60,9 @@ public class CanvasReDrawManager {
 		changeActive(cpd.getPackData().packNum);
 	}
 	
+	/**
+	 * @brief Register the given pack as the one shown in the pair 'domain' canvas.
+	 */
 	// After initiation, only called through ComboBox action
 	public void changeDomain(int pnum) {
 		for (int i=0;i<CPBase.NUM_PACKS;i++) 
@@ -64,6 +70,9 @@ public class CanvasReDrawManager {
 		canvasRegistry[pnum] |= DOMAINCAN;
 	}
 	
+	/**
+	 * @brief Register the given pack as the one shown in the pair 'range' canvas.
+	 */
 	// After initiation, only called through ComboBox action
 	public void changeRange(int pnum) {
 		for (int i=0;i<CPBase.NUM_PACKS;i++) 

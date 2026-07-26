@@ -63,6 +63,9 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 	private static final long 
 	serialVersionUID = 1L;
 		
+	/**
+	 * @brief Codes identifying the kinds of vertex/face/edge data that can be output.
+	 */
 	public static enum dataCode {VERT_INDEX,VERT_CENTER,VERT_CURV,
 		VERT_AIM,VERT_DEG,VERT_COLOR,VERT_RADII,VERTEX_MAP,VERT_XYZ,VERT_FLOWER,
 		FACE_INDEX,FACE_CORNERS,PAVER_CORNERS,FACE_COLOR,FACE_AREA,FACE_VERTICES,
@@ -203,6 +206,8 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 	}
 	
 	/**
+	 * @brief Save old packing's output fields and load the active packing's.
+	 *
 	 * Get output info from the active packing's DataFormater
 	 */
 	public void update(int old_pnum) {
@@ -408,6 +413,9 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 		return count;
 	}
 
+	/**
+	 * @brief Expand escaped newlines/tabs in the prefix text.
+	 */
 	public static String parsePrefix(PackData p,String prefix) {
 		// TODO: may need more processing for escaped characters.
 		String back=prefix.replaceAll("\\\\n","\n").replaceAll("\\\\t","\t");
@@ -415,6 +423,9 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 		return back;
 	}
 	
+	/**
+	 * @brief Parse the data string into a vector of 'DataObj' output items.
+	 */
 	public static Vector<DataObj> parseData(PackData p,StringBuilder dataBuffer) {
 		Vector<DataObj> dataObjs=new Vector<DataObj>(5);
 		Vfe=0;
@@ -448,6 +459,9 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 		return dataObjs;
 	}
 	
+	/**
+	 * @brief Write the requested data item for vertex v; return 1 if written.
+	 */
 	public static int print_vert_obj(PackData p,BufferedWriter fp,
 			dataCode code,int v) {
 		  int w;
@@ -543,6 +557,9 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 		  return 0;
 		} 
 	
+		/**
+		 * @brief Write the requested data item for face f; return 1 if written.
+		 */
 		public static int print_face_obj(PackData p,
 				BufferedWriter fp,dataCode code,int f) {
 
@@ -584,6 +601,9 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 		  return 0;
 		} 
 									       
+		/**
+		 * @brief Write the requested data item for edge (v,w); return 1 if written.
+		 */
 		public static int print_edge_obj(PackData p,
 				BufferedWriter fp,dataCode code,int v,int w) {
 			HalfEdge he=p.packDCEL.findHalfEdge(new EdgeSimple(v,w));
@@ -751,6 +771,9 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 			return 1;
 		}
 		
+		/**
+		 * @brief Expand escaped newlines in the suffix text.
+		 */
 		public static String parseSuffix(PackData p,String suffix) {
 			// TODO: may need more processing for escaped characters.
 			String back=suffix.replaceAll("\\\\n","\n");
@@ -871,6 +894,9 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 	  return dobj; // no legal code 
 	} 
 	
+	/**
+	 * @brief Prompt for an output file, then run 'outputter' to write the data.
+	 */
 	protected int popupDialog(String cmd){
 	  	boolean append=false;
 	  	BufferedWriter fp;
@@ -888,6 +914,8 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 	}
 	
 	/**
+	 * @brief Build the popup menu of data codes for the 'Codes' button.
+	 *
 	 * Build the object menu
 	 *
 	 */
@@ -1072,6 +1100,9 @@ public class OutPanel extends javax.swing.JPanel implements ActionListener {
 		
 		return jpm;
 }
+	/**
+	 * @brief Handle Write/Append buttons and code-menu selections.
+	 */
 	public void actionPerformed(ActionEvent e){
 	 	String command = e.getActionCommand();
 	  	if (command.equals("Write") || command.equals("Append")) {
