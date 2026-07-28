@@ -6,15 +6,19 @@ import komplex.EdgeSimple;
 import packing.PackData;
 
 /**
- * For searching various lists of vertices/edges/faces, possibly with 
+ * @brief Static utilities for searching/translating vertex, edge, and face lists via vertexMaps.
+ *
+ * For searching various lists of vertices/edges/faces, possibly with
  * translations via vertexMap's.
  * @author kens
  *
  */
 public class Translators {
 	
-	/** 
-	 * Find mates to v in elist (e.g., vertexMap). Return just v if 
+	/**
+	 * @brief Find mates to v in an edge list (vertexMap), forward or reverse pairing.
+	 *
+	 * Find mates to v in elist (e.g., vertexMap). Return just v if
 	 * elist is null or return 0 if v is not there. If 'forward' is true, 
 	 * return w's in pairs (v,w), else w's in pairs (w,v).
 	 * @param elist EdgeLink, (e.g., a 'vertexMap')
@@ -37,7 +41,9 @@ public class Translators {
 	}
 
 	/**
-	 * Idea is to translate face 'f_in' of 'source_p' 
+	 * @brief Translate a face from source packing to target packing via a vertexMap.
+	 *
+	 * Idea is to translate face 'f_in' of 'source_p'
 	 * to 'target_p'. If 'elist' is not null, use it for
 	 * translatation as a 'vertexMap'.
 	 * Trivial case: if elist==null and source_p==target_pp, 
@@ -76,6 +82,8 @@ public class Translators {
 	}
 	
 	/**
+	 * @brief Translate an edge between two packings via a vertexMap, forward or reverse.
+	 *
 	 * Idea is to translate edge 'e_in' of 'p' to edge
 	 * of 'q'. If 'elist' is not null, use it for
 	 * translation as a 'vertexMap'.
@@ -126,6 +134,8 @@ public class Translators {
 
 	// TODO: move this to VertexMap.java
 	/**
+	 * @brief Compose two VertexMaps (either optionally reversed) into vm1-then-vm2.
+	 *
 	 * This 'composes' two VertexMaps (one or both may be inverted), so result
 	 * is vm1 followed by vm2. Return null if either input is null or if there
 	 * are no matches. 

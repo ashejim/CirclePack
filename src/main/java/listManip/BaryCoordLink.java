@@ -54,6 +54,9 @@ public class BaryCoordLink extends LinkedList<BaryPacket> {
 		this((PackData)null);
 	}
 	
+	/**
+	 * @brief Add a 'BaryPacket' if its three vertices are valid.
+	 */
 	public boolean add(BaryPacket bp) {
 		if (bp.vert[0]>0 && bp.vert[1]>0 && bp.vert[2]>0 &&
 				(packData==null || bp.vert[0]<=packData.nodeCount &&

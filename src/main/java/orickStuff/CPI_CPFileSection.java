@@ -55,6 +55,9 @@ public class CPI_CPFileSection {
 		System.out.printf("\n");		
 	}
 	
+	/**
+	 * @brief Test entry: build a sample section with one token and print it.
+	 */
 	public static void main(String[] args){
 		CPI_CPFileSection h = new CPI_CPFileSection("HEADER:");
 		CPI_CPFileToken t = new CPI_CPFileToken();

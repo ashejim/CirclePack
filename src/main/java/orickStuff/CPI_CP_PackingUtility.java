@@ -8,6 +8,9 @@ import packing.PackData;
  */
 public class CPI_CP_PackingUtility extends CPI_PackingUtility{
 	
+	/**
+	 * @brief Normalize a PackData sphere packing via its ball sectors and write back.
+	 */
 	public static int normalize( PackData p) {
 		
 		CPI_Ball3Sector[] BList = new CPI_Ball3Sector[p.nodeCount];

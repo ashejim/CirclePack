@@ -34,6 +34,9 @@ public class PathLink extends LinkedList<Complex> {
 	public int hes; // spherical or euclidean; hes<0 only means have to check in disc.
 	
 	// Constructors
+	/**
+	 * @brief Build path from data string, geometry 'heS'; auto-detects closure.
+	 */
 	public PathLink(int heS,String datastr) {
 		super();
 		hes=heS;
@@ -41,6 +44,9 @@ public class PathLink extends LinkedList<Complex> {
 		autoClosure();
 	}
 
+	/**
+	 * @brief Build single-point path at (x,y) with geometry 'heS'.
+	 */
 	public PathLink(int heS,double x,double y) {
 		super();
 		hes=heS;
@@ -48,6 +54,9 @@ public class PathLink extends LinkedList<Complex> {
 		add(z);
 	}
 
+	/**
+	 * @brief Build path from vector of string tokens, geometry 'heS'; auto-closure.
+	 */
 	public PathLink(int heS,Vector<String> items) {
 		super();
 		hes=heS;
@@ -56,12 +65,17 @@ public class PathLink extends LinkedList<Complex> {
 	}
 
 	/**
+	 * @brief Empty path, geometry defaults to euclidean.
+	 *
 	 * Empty list, geometry defaults to euclidean
 	 */
 	public PathLink() {
 		this(0,(String)null);
 	}
 
+	/**
+	 * @brief Set 'closed' if first and last points coincide within threshold.
+	 */
 	public void autoClosure() {
 		if (this.size()<2) return; // nothing to do
 		if (this.getFirst().minus(this.getLast()).abs()<THRESH)
@@ -76,6 +90,9 @@ public class PathLink extends LinkedList<Complex> {
 		closed=!closed;
 	}
 	
+	/**
+	 * @brief Add a copy of z; in disc mode projects points outside unit circle onto it.
+	 */
 	public boolean add(Complex z) {
 		if (hes<0 && z.abs()>1.0) z.divide(z.abs()); // project to unit circle
 		return super.add(new Complex(z));
@@ -93,6 +110,11 @@ public class PathLink extends LinkedList<Complex> {
 		return addNodeLinks(items);
 	}
 	
+	/**
+	 * @brief Parse x y pairs into complex nodes; empty input falls back to 'ClosedPath'.
+	 * @param items Vector<String>
+	 * @return int count of nodes added
+	 */
 	public int addNodeLinks(Vector<String> items) {
 		int count=0;
 

@@ -77,6 +77,9 @@ public class DoubleLink extends LinkedList<Double> {
 		this((PackData)null,(String)null);
 	}
 	
+	/**
+	 * @brief Add a Double if non-null.
+	 */
 	public boolean add(Double X) {
 		if (X!=null)
 			return super.add((Double)X);

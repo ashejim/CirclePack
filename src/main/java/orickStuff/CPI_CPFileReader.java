@@ -150,6 +150,9 @@ public class CPI_CPFileReader {
     	}
     }
     
+    /**
+     * @brief Entry point: read the named CirclePack file and print its sections.
+     */
     public static void main(String[] args) {
 	System.out.printf("Processing file %s\n", args[0]);
 	//System.out.println(Double.valueOf("1e-2"));

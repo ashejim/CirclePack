@@ -35,7 +35,9 @@ import util.StringUtil;
 import util.UtilPacket;
 
 /**
- * Linked list for vertices associated (generally) with a 
+ * @brief Linked list of vertex indices tied to a circle packing, with rich parsing.
+ *
+ * Linked list for vertices associated (generally) with a
  * particular circle packing.
  * @author kens
  *
@@ -54,6 +56,9 @@ public class NodeLink extends LinkedList<Integer> {
 		packData=null;
 	}
 	
+	/**
+	 * @brief Build a vertex list for packing 'p' by parsing 'datastr'.
+	 */
 	public NodeLink(PackData p,String datastr) {
 		super();
 		packData=p;
@@ -62,6 +67,9 @@ public class NodeLink extends LinkedList<Integer> {
 		if (datastr!=null) addNodeLinks(datastr);
 	}
 	
+	/**
+	 * @brief Build a vertex list for 'p' containing the single legal vertex 'n'.
+	 */
 	public NodeLink(PackData p,int n) {
 		super();
 		packData=p;
@@ -70,6 +78,9 @@ public class NodeLink extends LinkedList<Integer> {
 		if (n>0 && (packData==null || n<=vCount)) add(n);
 	}
 	
+	/**
+	 * @brief Build a vertex list for 'p' from parse items; defaults to all vertices.
+	 */
 	public NodeLink(PackData p,Vector<String> items) {
 		super();
 		packData=p;
@@ -83,6 +94,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Build a vertex list from 'datastr' with no associated packing.
+	 *
 	 * Not associated with any PackData
 	 * @param datastr String
 	 */
@@ -91,7 +104,9 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * vertices of 'HalfLink' in order 
+	 * @brief Build a vertex list from the origin vertices of a 'HalfLink', in order.
+	 *
+	 * vertices of 'HalfLink' in order
 	 * @param hlink
 	 */
 	public NodeLink(HalfLink hlink) {
@@ -102,6 +117,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Create an empty vertex list associated with packing 'p'.
+	 *
 	 * Initiate empty list
 	 * @param p
 	 */
@@ -109,12 +126,18 @@ public class NodeLink extends LinkedList<Integer> {
 		this(p,(String)null);
 	}
 	
+	/**
+	 * @brief Add vertex index 'v', accepting it only if it is a legal vertex for the packing.
+	 */
 	public boolean add(int v) {
 		if ((packData!=null && v>0 && v<=vCount) || packData==null)
 			return add((Integer)v);
 		return false;
 	}
-	
+
+	/**
+	 * @brief Add vertex index 'v', accepting it only if it is a legal vertex for the packing.
+	 */
 	public boolean add(Integer v) {
 		if (v==null) 
 			return false;
@@ -124,25 +147,29 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Add links to this list (if it is associated 
-	 * with PackData). Note that argument should not 
-	 * be empty since 'a" would have been added 
+	 * @brief Parse 'datastr' into vertex specifiers and add the resulting vertices.
+	 *
+	 * Add links to this list (if it is associated
+	 * with PackData). Note that argument should not
+	 * be empty since 'a" would have been added
 	 * as default.
 	 * @param datastr String
 	 * @return int, count
-	 */	
+	 */
 	public int addNodeLinks(String datastr) {
 		Vector<String> items=StringUtil.string2vec(datastr,true);
 		return addNodeLinks(items);
 	}
 	
 	/**
+	 * @brief Parse vertex specifier tokens (a/b/i/I/R/D/z/G/{...}/indices) and add matching verts.
+	 *
 	 * Add links to this list (if it is associated with PackData). Note
 	 * that argument should not be empty since "a" would have been
 	 * added as default.
 	 * @param items Vector<String>
 	 * @return int, count
-	 */	
+	 */
 	public int addNodeLinks(Vector<String> items) {
 		int count=0;
 		int nodecount;
@@ -1211,6 +1238,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Render the vertex entries as a space-separated string.
+	 *
 	 * Create a list of entries as a string
 	 * @return String, null on error
 	 */
@@ -1226,6 +1255,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Return a distinct copy of this vertex list (entries not revalidated).
+	 *
 	 * Make a distinct copy of this linked list; no check
 	 * of validity of the entries.
 	 * @return NodeLink
@@ -1240,7 +1271,9 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Abut a copy of given @see NodeLink to the end of this one. 
+	 * @brief Append the entries of another 'NodeLink' onto the end of this one.
+	 *
+	 * Abut a copy of given @see NodeLink to the end of this one.
 	 * @param moreNL @see NodeLin
 	 * @return count of new vertices (some may be improper, some redundant)
 	 */
@@ -1259,6 +1292,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Append the origin vertices of a 'HalfLink', skipping consecutive repeats.
+	 *
 	 * add end vertices from 'HalfLink'
 	 * @param hlink HalfLink
 	 * @return count
@@ -1282,6 +1317,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Parse 'str' and return the first vertex index, or 0 on failure.
+	 *
 	 * Pick first vertex of list described in string.
 	 * @param p PackData
 	 * @param str String
@@ -1295,8 +1332,10 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Return the first vertex index parsed from the first token segment.
+	 *
 	 * Pick first vertex number off first string of first vector of vector
-	 * of string vectors. 
+	 * of string vectors.
 	 * @param p PackData
 	 * @param flagsegs Vector<Vector<String>>
 	 * @return 0 on failure
@@ -1312,6 +1351,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Return the list index of vertex 'v', or -1 if not present.
+	 *
 	 * Is 'v' an entry?
 	 * @param v
 	 * @return int, index of v or -1 on error or not found
@@ -1324,6 +1365,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Find the first index where successive entries equal <v,w> (wraps at end).
+	 *
 	 * Find first instance successive entries <v,w>
 	 * @param v
 	 * @param w
@@ -1340,6 +1383,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Count distinct vertex indices in 'nl' (ignoring repeats).
+	 *
 	 * Count my elements (without repeats)
 	 * @return int count; -1 on error
 	 */
@@ -1369,8 +1414,10 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Rotate a closed vertex list so it starts/ends at the entry at 'indx'.
+	 *
 	 * If @see NodeLink is a closed vert list and 'indx' points to
-	 * entry v, then rotate, returning a new closed NodeLink starting 
+	 * entry v, then rotate, returning a new closed NodeLink starting
 	 * and ending with v.
 	 * @param link @see NodeLink
 	 * @param indx new starting index
@@ -1395,6 +1442,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 
 	/**
+	 * @brief Return a new 'NodeLink' with the entries in reverse order.
+	 *
 	 * Return a new 'NodeLink' whose order is the reverse of this
 	 * @return new 'NodeLink', null if this is empty.
 	 */
@@ -1409,6 +1458,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Return a new list with all occurrences of indices 'od' and 'nw' swapped.
+	 *
 	 * Create new NodeLink in which 'od's with 'nw's are interchanged;
 	 * order of list is unchanged.
 	 * @param od int, old index
@@ -1434,7 +1485,9 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * Given 'VertexMap' with <old, new>, translate this 
+	 * @brief Translate this list's indices from old to new using a 'VertexMap'.
+	 *
+	 * Given 'VertexMap' with <old, new>, translate this
 	 * 'NodeLink' from old to the new indices.
 	 * @param oldnew VertexMap
 	 * @return new NodeLink (with null PackData)
@@ -1452,6 +1505,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+     * @brief Return a random entry from 'vertlist' (does not account for repeats).
+     *
      * Return random entry from vertlist; caution, does not adjust
      * for repeat entries.
      * @param vertlist VertList
@@ -1465,6 +1520,8 @@ public class NodeLink extends LinkedList<Integer> {
     }
 
 	 /**
+	  * @brief Test whether the given vertices separate the complex into pieces.
+	  *
 	  * Does the given list of vertices separate the complex? If
 	  * the return is 0, then answer is NO.
 	  * 
@@ -1504,7 +1561,9 @@ public class NodeLink extends LinkedList<Integer> {
 		return not_reached;
 	 }
 	 
-	 /** 
+	 /**
+	  * @brief Collect the endpoint vertices of every edge in 'elink'.
+	  *
 	  * find vertices incident to 'EdgeSimple's
 	  * @param elink EdgeLink
 	  * @return new NodeLink
@@ -1520,7 +1579,9 @@ public class NodeLink extends LinkedList<Integer> {
 		 return vlink;
 	 }
 	 
-	 /** 
+	 /**
+	  * @brief Collect the endpoint vertices of every half-edge in 'hlink'.
+	  *
 	  * find vertices incident to 'HalfEdge's
 	  * @param hlink HalfLink
 	  * @return new NodeLink
@@ -1539,6 +1600,8 @@ public class NodeLink extends LinkedList<Integer> {
 	 }
 	 
 	 /**
+	  * @brief Return a new list with duplicate vertex entries removed.
+	  *
 	  * Create a new NodeLink that eliminates duplication.
 	  * @param nl, NodeLink
 	  * @return new NodeLink
@@ -1555,6 +1618,8 @@ public class NodeLink extends LinkedList<Integer> {
 	 }
 	 
 	 /**
+	  * @brief Set the associated 'packData' used to validate entries.
+	  *
 	  * Set 'packData' (which helps determine eligibility of entries)
 	  * @param p PackData
 	  */
@@ -1563,6 +1628,8 @@ public class NodeLink extends LinkedList<Integer> {
 	 }
 	 
 	 /**
+	  * @brief Return a new list with 'nlink' entries translated via 'vmap' (keep index if unmapped).
+	  *
 	  * Return fresh NodeLink with entries translated from 'nlink'
 	  * using 'vmap'.
 	  *  
@@ -1603,8 +1670,10 @@ public class NodeLink extends LinkedList<Integer> {
 	 }
 	 
 	/**
-	 * Make up list by looking through SetBuilder specs 
-	 * (from {..} set-builder notation). Use 'tmpUtil' to 
+	 * @brief Build a vertex list from set-builder ({..}) specification vector.
+	 *
+	 * Make up list by looking through SetBuilder specs
+	 * (from {..} set-builder notation). Use 'tmpUtil' to
 	 * collect information before creating the NodeLink for 
 	 * return.
 	 * @param p PackData
@@ -1682,6 +1751,8 @@ public class NodeLink extends LinkedList<Integer> {
 	}
 	
 	/**
+	 * @brief Print the vertex list to the console for debugging.
+	 *
 	 * print the vertex list for debugging.
 	 * @return int count
 	 */

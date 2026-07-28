@@ -12,6 +12,9 @@ public class CPI_PackingUtility {
 	static int normCycleLimit = 20;
 	static double normAccLimit = 1e-12;
 
+	/**
+	 * @brief Compute the average center of all ball sectors in the list.
+	 */
 	public static CPI_Vector3 centroid(CPI_Ball3Sector[] BList) {
 		int len = BList.length;
 		int i;
@@ -26,6 +29,9 @@ public class CPI_PackingUtility {
 		return xbar;
 	}
 
+	/**
+	 * @brief Iteratively Mobius-center the sectors until the centroid converges.
+	 */
 	public static int normalize(CPI_Ball3Sector[] BList) {
 		int len = BList.length;
 		int i = 0;

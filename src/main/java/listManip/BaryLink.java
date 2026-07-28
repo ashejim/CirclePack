@@ -59,17 +59,26 @@ public class BaryLink extends LinkedList<BaryPoint> {
 		this((PackData)null);
 	}
 	
+	/**
+	 * @brief Add a 'BaryPoint' if non-null.
+	 */
 	public boolean add(BaryPoint bp) {
 		if (bp==null)
 			return false;
 		return super.add(bp);
 	}
-	
+
+	/**
+	 * @brief Parse a data string and add the resulting bary points.
+	 */
 	public int addBaryLinks(String datastr) {
 		Vector<String> items=StringUtil.string2vec(datastr,true);
 		return addBaryLinks(items);
 	}
 
+	/**
+	 * @brief Parse tokens (flags 'f'/'i', Blist, or raw "f b1 b2") into bary points.
+	 */
 	public int addBaryLinks(Vector<String>items) {
 		if (items==null || items.size()==0)
 			return 0;

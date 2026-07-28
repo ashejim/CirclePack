@@ -45,6 +45,9 @@ public class PointLink extends LinkedList<Complex> {
 	PackData packData;  // generally null, but may need geometry or 'zlist'
 	
 	// Constructors
+	/**
+	 * @brief Build list for packing 'p' by parsing points from data string.
+	 */
 	public PointLink(PackData p,String datastr) {
 		super();
 		packData=p;
@@ -55,6 +58,9 @@ public class PointLink extends LinkedList<Complex> {
 		this((PackData)null,datastr);
 	}
 	
+	/**
+	 * @brief Build list for packing 'p' seeded with single complex z (if non-null).
+	 */
 	public PointLink(PackData p,Complex z) {
 		super();
 		packData=p;
@@ -66,6 +72,9 @@ public class PointLink extends LinkedList<Complex> {
 		this((PackData)null,z);
 	}
 	
+	/**
+	 * @brief Build list for packing 'p' by parsing points from string tokens.
+	 */
 	public PointLink(PackData p,Vector<String> items) {
 		super();
 		packData=p;
@@ -387,6 +396,8 @@ public class PointLink extends LinkedList<Complex> {
 	}
 
 	/**
+	 * @brief Pick first complex number off given string.
+	 *
 	 * Pick first complex number off given string
 	 * @param str String
 	 * @return Complex, null on failure

@@ -130,6 +130,9 @@ public class CPI_Complex2Triangle {
 	System.out.printf("%f %f %f %f %f %f\n",  p[0].re, p[0].im, p[1].re, p[1].im, p[2].re, p[2].im);
     }
 
+    /**
+     * @brief Test entry: plot a triangle with its circumcircle and incircle.
+     */
     public static void testIncircleMmain(String[] args) {
 
 	CPI_Complex2Triangle T = new CPI_Complex2Triangle();

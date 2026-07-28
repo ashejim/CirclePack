@@ -35,6 +35,9 @@ public class VertList {
 	}
 	
 	// convert to NodeLink
+	/**
+	 * @brief Convert this linked list of indices to a NodeLink.
+	 */
 	public NodeLink toNodeLink() {
 		NodeLink nlink=new NodeLink();
 		if (v==0)
@@ -49,6 +52,9 @@ public class VertList {
 	}
 
 	// convert to FaceLink
+	/**
+	 * @brief Convert this linked list of indices to a FaceLink.
+	 */
 	public FaceLink toFaceLink() {
 		FaceLink flink=new FaceLink();
 		if (v==0)
