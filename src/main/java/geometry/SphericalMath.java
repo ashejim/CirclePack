@@ -59,6 +59,8 @@ public class SphericalMath{
   public static final int INITIAL_CAPACITY = 100;
   
   /**
+   * @aibrief Average of spherical (theta,phi) centers via 3D projection.
+   *
    * Finding average of spherical (theta,phi) centers
    * can be tricky because of the 2pi periodicity of
    * theta: eg. (3.14,y) and (-3.14,y) are very close,
@@ -81,6 +83,8 @@ public class SphericalMath{
   }
   
   /**
+   * @aibrief Find inversive distance on the sphere between two circles.
+   *
    * Find inversive distance on sphere between circles.
    * @param z1 Complex, (theta,phi) center
    * @param z2 Complex, (theta,phi) center
@@ -111,8 +115,10 @@ public class SphericalMath{
   }
   
   /**
-   * Specialized routine to find the bearing 
-   * circle in a quad interstice; needed for 
+   * @aibrief Find the bearing circle in a symmetric quad interstice (for "reflect").
+   *
+   * Specialized routine to find the bearing
+   * circle in a quad interstice; needed for
    * "reflect" command.
    * This quad has reflective symmetry, so there
    * is a bearing circle. We compute its radius
@@ -242,9 +248,11 @@ public class SphericalMath{
   }
   
   
-  /** 
+  /**
+   * @aibrief Cosine of angle at first circle of a spherical tangent triple.
+   *
    * Compute cosine of angle at the first circle in spherical
-   * triangle formed by triple of spherical radii. 
+   * triangle formed by triple of spherical radii.
    * Increment flag on error: r1+r2+r3>M_PI or denom zero. 
    * TODO: Is this okay if r1+r2+r3 > M_PI? 
   */
@@ -428,7 +436,9 @@ public class SphericalMath{
 	}
 	
   /**
-   * Spherical distance between two spherical 
+   * @aibrief Spherical distance between two (theta,phi) points.
+   *
+   * Spherical distance between two spherical
    * (i.e., (theta,phi)) points
    * @param z Complex
    * @param w Complex
@@ -448,9 +458,11 @@ public class SphericalMath{
     return Math.acos(dotprod);
   }
   
-  /** 
-   * Stereographic projection of complex number to 
-   * complex spherical point, form (theta,phi). 
+  /**
+   * @aibrief Stereographic projection of a plane point to (theta,phi) sph point.
+   *
+   * Stereographic projection of complex number to
+   * complex spherical point, form (theta,phi).
    * IMPORTANT: note that we project so zero 
    * goes to North pole, infinity to South.
    * @param z Complex
@@ -464,6 +476,8 @@ public class SphericalMath{
   }
 
   /**
+   * @aibrief Distance from a spherical point to the geodesic through two points.
+   *
    * Find distance from spherical point to geodesic between two
    * spherical points.
    */
@@ -504,7 +518,9 @@ public class SphericalMath{
   }
   
   /**
-   * Return new Complex (theta,phi) representing projection of 
+   * @aibrief Project a 3D vector to the unit sphere, returning (theta,phi).
+   *
+   * Return new Complex (theta,phi) representing projection of
    * given 3D vector to the unit sphere; recall, origin 
    * goes to NORTH pole.
    * @param p3D Point3D
@@ -551,6 +567,9 @@ public static Complex sphToVisualPlane(double theta,double phi) {
   // controlpoint as the origin; may eventually need a flag
   // to indicate this.
   
+  /**
+   * @aibrief Control point for a quadratic arc of a great circle between two points.
+   */
   public static Point3D computeControl(Point3D A,Point3D B) {
 	  double AdotB=Point3D.DotProduct(A,B);
 	  if (AdotB<-.9999999) { // antipodal
@@ -560,8 +579,10 @@ public static Complex sphToVisualPlane(double theta,double phi) {
   }
   
   /**
-   * Given two sph circles which are (supposed to be) 
-   * tangent, find the tangency point on the geodesic 
+   * @aibrief Tangency point on the geodesic between two (supposedly) tangent sph circles.
+   *
+   * Given two sph circles which are (supposed to be)
+   * tangent, find the tangency point on the geodesic
    * between them. Actually, returns pt with distances 
    * from z1, z2 having proportions r1, r2.
    * If z1 and z2 essentially antipodal, then result 
@@ -641,9 +662,11 @@ public static Complex sphToVisualPlane(double theta,double phi) {
     return new CircleSimple(z,r2,1);
   }
   
-  /** 
-   * Find center of third circle in ordered triple 
-   * in tangency case. 
+  /**
+   * @aibrief Find center of third circle in an ordered sph triple, tangency case.
+   *
+   * Find center of third circle in ordered triple
+   * in tangency case.
    * @param z0 Complex, (theta, phi)
    * @param z1 Complex
    * @param r0 double
@@ -748,7 +771,9 @@ public static Complex sphToVisualPlane(double theta,double phi) {
   } 
 
   /**
-   * Returns new Complex giving stereographic projection 
+   * @aibrief Stereographic projection (from south pole) of sph point to the plane.
+   *
+   * Returns new Complex giving stereographic projection
    * (recall, we project from the south pole) of spherical 
    * point z to complex point w in plane. Key is 
    * |w| = sin(phi)/(1+cos(phi)).
@@ -914,9 +939,11 @@ public static Complex sphToVisualPlane(double theta,double phi) {
       return cS;
   }
   
-  /** 
-   * True if sph_pt (i.e., (theta,phi)) lies in 
-   * triangle with given spherical points as 
+  /**
+   * @aibrief Test whether a sph point lies in a convex spherical triangle.
+   *
+   * True if sph_pt (i.e., (theta,phi)) lies in
+   * triangle with given spherical points as
    * corners for a CONVEX triangle. 
    * TODO: handle non-convex triangles
    * @param sph_pt Complex (theta,phi)
@@ -972,9 +999,11 @@ public static Complex sphToVisualPlane(double theta,double phi) {
     return new UtilPacket(1,z.x,z.y);
   }
   
-  /** 
-   * Given points on sphere, return new Complex 
-   * barycenter (theta,phi) of triangle they form; 
+  /**
+   * @aibrief Barycenter (theta,phi) of a spherical triangle from its corners.
+   *
+   * Given points on sphere, return new Complex
+   * barycenter (theta,phi) of triangle they form;
    * inside determined by orientation.
    * @param z1 (theta,phi)
    * @param z2 (theta,phi)
@@ -1009,8 +1038,10 @@ public static Complex sphToVisualPlane(double theta,double phi) {
   } 
   
   /**
-	 * Given points z1,z2,z3 and z on the sphere (theta,phi), 
-	 * find barycentric coords of z relative to spherical 
+	 * @aibrief Barycentric coords of z relative to a (small) spherical triangle.
+	 *
+	 * Given points z1,z2,z3 and z on the sphere (theta,phi),
+	 * find barycentric coords of z relative to spherical
 	 * triangle {z1,z2,z3}. This applies only to triangles
 	 * of limited size due to the difficulty of defining 
 	 * them in general and the difficulty in converting back
@@ -1137,7 +1168,9 @@ public static Complex sphToVisualPlane(double theta,double phi) {
 	}
 			
 	/**
-	 * Given a list of sph points, (theta,phi), find 
+	 * @aibrief Return the 3-space centroid of a list of sph (theta,phi) points.
+	 *
+	 * Given a list of sph points, (theta,phi), find
 	 * their 3-space centroid
 	 * @param pts Complex[] (theta,phi) form
 	 * @return Point3D, null on error
@@ -1155,7 +1188,9 @@ public static Complex sphToVisualPlane(double theta,double phi) {
 	}
 	
 	/**
-	 * Stereographic projection: (u,v) --> (x,y,z) 
+	 * @aibrief Stereographic projection of plane point (u,v) to a 3D sphere vector.
+	 *
+	 * Stereographic projection: (u,v) --> (x,y,z)
 	 * on unit sphere
 	 *     z=(1-(u*u+v*v))/(1+(u*u+v*v));
 	 *     x=u*(1+z);

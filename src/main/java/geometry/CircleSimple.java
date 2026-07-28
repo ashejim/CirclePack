@@ -5,7 +5,9 @@ import packing.PackData;
 import complex.Complex;
 
 /**
- * Basic, simple circle, mainly for transferring data in/out 
+ * @aibrief Simple circle (center/radius/flags) for transferring data in and out of methods.
+ *
+ * Basic, simple circle, mainly for transferring data in/out
  * of methods. Note: geometry is NOT specified. May use 'flag' 
  * to codes for interpreting output/input. 
  * Normally, 
@@ -62,6 +64,8 @@ public class CircleSimple{
 	}
 	
 	/**
+	 * @aibrief Return true if this circle holds an error (flag<0).
+	 *
 	 * An error in building if flag<0
 	 * @return true on error
 	 */
@@ -73,6 +77,8 @@ public class CircleSimple{
   }
 
   /**
+   * @aibrief Store this circle's center/radius/flag into packing 'p' at vertex 'v'.
+   *
    * Store radius, center for 'v'
    * @param p PackData
    * @param v int, vertex
@@ -90,6 +96,8 @@ public class CircleSimple{
   }
   
   /**
+   * @aibrief Check equality of this circle and cs within tolerance .001*rad.
+   *
    * Check equality of this and cs. Calling routine checks
    * that geometries are the same. Tolerance is .001*rad.
    * radius.

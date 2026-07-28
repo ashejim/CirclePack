@@ -882,6 +882,8 @@ public class EuclMath{
 	} 
 	
 	/**
+	 * @aibrief Return true if {z1,z2,z3} form a counterclockwise triangle.
+	 *
 	 * Return 'true' if {z1,z2,z3} form a positively oriented
 	 * triangle (ie. counterclockwise).
 	 * TODO: doesn't work for spherical points yet.

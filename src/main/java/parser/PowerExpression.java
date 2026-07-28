@@ -2,6 +2,9 @@ package parser;
 import complex.Complex;
 import complex.MathComplex;
 
+/**
+ * @aibrief A power expression arg1 ^ arg2 on two operands.
+ */
 public class PowerExpression implements Word {
   // symbol of this operator
 //  String symbol;

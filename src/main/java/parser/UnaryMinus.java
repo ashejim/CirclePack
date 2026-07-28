@@ -1,6 +1,9 @@
 package parser;
 import complex.Complex;
 
+/**
+ * @aibrief A unary-minus expression negating its argument.
+ */
 public class UnaryMinus implements Word {
   // argument
   String arg;

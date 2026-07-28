@@ -51,6 +51,8 @@ public class ReadWrite {
 	public static int[] readOldNew;
 
 	/**
+	 * @aibrief Read a circle packing or ancillary data for pack p from an open file.
+	 *
 	 * Read new circle packing (or data for existing packing) 
 	 * into pack 'p' from an open file. Return 0 on error. 
 	 * Key "NODECOUNT:" or "TRIANTULATION:" indicates new 
@@ -2158,6 +2160,8 @@ public class ReadWrite {
 		
 	
 	/**
+	 * @aibrief Map an old vertex index to its new index via readOldNew (BOUQUET read).
+	 *
 	 * translation needed when reading "BOUQUET". (Not sure
 	 * this is still needed --- may have been from time of
 	 * conversion to DCEL structure.)

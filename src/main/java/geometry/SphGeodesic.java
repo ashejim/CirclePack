@@ -4,7 +4,9 @@ import complex.Complex;
 import math.Matrix3D;
 import math.Point3D;
 /**
- * Spherical geodesic for use in plotting. Set up 
+ * @aibrief Data holder for the visible portion of a spherical geodesic, for plotting.
+ *
+ * Spherical geodesic for use in plotting. Set up
  * data for the visual portion of the geodesic only. 
  * CAUTION: positions are relevant to the 'apparent' 
  * sphere (depends on 'spherical view'). 
@@ -164,7 +166,9 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * Return true if geodesic is visible and crosses 
+	 * @aibrief Return true if geodesic is visible and crosses front to back.
+	 *
+	 * Return true if geodesic is visible and crosses
 	 * front to back
 	 * @return boolean
 	 */
@@ -175,7 +179,9 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * Return true if geodesic is visible and crosses 
+	 * @aibrief Return true if geodesic is visible and crosses back to front.
+	 *
+	 * Return true if geodesic is visible and crosses
 	 * back to front
 	 * @return boolean
 	 */
@@ -186,7 +192,9 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * Check if geodesic follows horizon; return value 
+	 * @aibrief Check if geodesic follows the horizon; sign gives direction.
+	 *
+	 * Check if geodesic follows horizon; return value
 	 * gives direction.
 	 * NOTE: if this is edge-on great circle, the 
 	 * 'lineFlag' should be set and 0 is returned.
@@ -203,7 +211,9 @@ public class SphGeodesic{
 	}
 	
 	/**
-	 * @return oriented visible arc as string to 
+	 * @aibrief Return the oriented visible arc as a PostScript path string.
+	 *
+	 * @return oriented visible arc as string to
 	 * concatenate for postscript.
 	 * NOTE: PostFactory.sphEdgePath is already 
 	 * available and better.

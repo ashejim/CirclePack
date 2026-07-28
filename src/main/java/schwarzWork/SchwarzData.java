@@ -3,6 +3,8 @@ package schwarzWork;
 import complex.Complex;
 
 /**
+ * @aibrief Temporary holder for Schwarzian data of an edge (v,w).
+ *
  * Temporary holder for Schwarzian related data 
  * for a given edge <v,w>. Associated packing(s) 
  * depend on context. 

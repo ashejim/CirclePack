@@ -1009,6 +1009,9 @@ public class PackCreation {
 		return base;
 	}
 
+	/**
+	 * @aibrief Build N generations of a Euclidean pentagonal tiling packing with TileData.
+	 */
 	public static PackData pentTiling(int N) {
 		PackData pent=PackCreation.seed(5,0);
 		pent.swap_nodes(1,6);
@@ -1053,6 +1056,9 @@ public class PackCreation {
 		return pent;
 	}
 
+	/**
+	 * @aibrief Build N generations of a dyadic/Penrose-style hyperbolic pentagonal tiling packing.
+	 */
 	public static PackData pentHypTiling(int N) {
 		PackData pentBase=PackCreation.seed(5,0);
 		pentBase.packDCEL.swapNodes(1,6);
@@ -2405,6 +2411,8 @@ public class PackCreation {
 	}
 	
 	/**
+	 * @aibrief Store a BdryNode as a TmpVert.
+	 *
 	 * Store a BdryNode as a TmpVert
 	 */
 	public static TmpVert bdry2tmp(BdryNode bnode) {
@@ -2466,6 +2474,9 @@ class BdryNode {
 		petals=new ArrayList<Integer>();
 	}
 	
+	/**
+	 * @aibrief Print the boundary chain of BdryNodes from this node around to closure.
+	 */
 	public void printBdry() {
 		int safety=1000;
 		BdryNode btrace=this;

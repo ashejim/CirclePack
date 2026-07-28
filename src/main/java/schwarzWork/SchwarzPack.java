@@ -86,6 +86,8 @@ public class SchwarzPack extends PackExtender {
 	}
 	
 	/**
+	 * @aibrief Build the 'edgeData' array for adjustable interior edges.
+	 *
 	 * Set up 'edgeData' array. Note that if edge's
 	 * index is j, then 'theEdges[j]' is either 0 
 	 * or the edge's array index within 'edgeData'.
@@ -155,6 +157,9 @@ public class SchwarzPack extends PackExtender {
 		return count;
 	}
 	
+	/**
+	 * @aibrief Parse and execute this extender's Schwarzian-packing commands.
+	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
 		int count=0;
@@ -350,6 +355,9 @@ public class SchwarzPack extends PackExtender {
 		return 0;
 	}
 	
+	/**
+	 * @aibrief Run N trials adjusting random edge schwarzians, then update errors.
+	 */
 	public int runTrials(int N) {
 		int count=0;
 		for (int j=1;j<=N;j++) {
@@ -423,6 +431,8 @@ if (print)
 	}
 
 	/**
+	 * @aibrief Recompute all vertex/edge errors and set their colors.
+	 *
 	 * Recompute all vertex and edge errors and set
 	 * appropriate colors.
 	 */
@@ -522,6 +532,9 @@ if (print)
 		return he;
 	}
 
+	/**
+	 * @aibrief Return the uzians (1 - schwarzian) around a vertex's flower.
+	 */
 	public static double[] getUzians(Vertex vert) {
 		if (vert.isBdry())
 			return null;
@@ -539,6 +552,9 @@ if (print)
 	}
 		
 	// -------------------- command explanations --------
+	/**
+	 * @aibrief Register this extender's command structures.
+	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();
 		cmdStruct.add(new CmdStruct("analyze","v w",null,

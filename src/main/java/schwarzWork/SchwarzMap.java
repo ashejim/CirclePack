@@ -174,6 +174,8 @@ public class SchwarzMap extends PackExtender {
 	}
 	
 	/**
+	 * @aibrief Parse and execute this extender's Schwarzian/flower commands.
+	 *
 	 * This is where the user's commands are "parsed"
 	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs) {
@@ -1925,6 +1927,8 @@ public class SchwarzMap extends PackExtender {
 	}
 
 	/** 
+	 * @aibrief Register this extender's command structures.
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {

@@ -1,6 +1,9 @@
 package parser;
 import complex.Complex;
 
+/**
+ * @aibrief A binary operator expression (+, -, *, /) on two operands.
+ */
 public class BinaryExpression implements Word {
   // symbol of this operator
   String symbol;

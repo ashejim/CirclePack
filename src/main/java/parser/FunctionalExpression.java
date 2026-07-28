@@ -3,6 +3,9 @@ import complex.Complex;
 import complex.MathComplex;
 
 // function of one argument
+/**
+ * @aibrief A single-argument function expression (sin, cos, exp, etc.).
+ */
 public class FunctionalExpression implements Word {
   // symbol of this function
   String symbol;

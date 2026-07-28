@@ -18,6 +18,8 @@ public class Parser {
   }
   
   /**
+   * @aibrief Recursively tokenize 'parsedString' into vector v.
+   *
    * recursively parse 'parsedString'
    *
    */
@@ -105,6 +107,8 @@ public class Parser {
   }
 
   /**
+   * @aibrief Normalize the expression string (I->i, Pi->PI, implicit *i).
+   *
    * Standard replacements are performed: I --> i, Pi --> PI on a
    * function expression string.
    */
@@ -124,6 +128,9 @@ public class Parser {
     }
   }
   
+  /**
+   * @aibrief Compute the dictionary and evaluate the parsed expression.
+   */
   public Complex evaluate() {
     evaluator.computeDictionary();
     return evaluator.evaluate(v);

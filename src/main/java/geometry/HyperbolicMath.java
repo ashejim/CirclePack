@@ -1681,8 +1681,10 @@ public class HyperbolicMath{
 	}
 
 	/**
-	 * Given two points in {z>=1.0} (typically 
-	 * on the hyperboloid), find outer normal to 
+	 * @aibrief Outer normal to the plane through two hyperboloid points and (0,0,1).
+	 *
+	 * Given two points in {z>=1.0} (typically
+	 * on the hyperboloid), find outer normal to
 	 * plane containing them and (0,0,1).
 	 * 
 	 * @param p1 Point3D

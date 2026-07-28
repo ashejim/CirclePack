@@ -80,6 +80,8 @@ import widgets.AngSumSliders;
 import widgets.RadiiSliders;
 
 /**
+ * @aibrief Fundamental data repository for a circle packing, with combinatorics, I/O, and manipulation methods.
+ *
  * This is the fundamental data repository for a circle packing and is
  * associated with a CPDrawing for display. This is a workhorse, with 
  * methods for reading/writing, combinatorics, and manipulations.
@@ -93,6 +95,9 @@ public class PackData{
 	public static final int MAX_ACCUR=15;   // digits of accuracy for file writing
 	public static final int MAX_PETALS=1000; // the most petals a flower can have
 	
+	/**
+	 * @aibrief Enumerates parser states for reading the sections of a circle-packing file.
+	 */
 	public enum PackState { INITIAL,NODECOUNT,CHECKCOUNT,TILECOUNT,
 		TRIANGULATION,NEUTRAL,PACKNAME,ABG,
 		GEOMETRY,CIRCLE_PLOT_FLAGS,FACE_PLOT_FLAGS,SELECT_RADII,ANGLE_AIMS,
@@ -195,6 +200,8 @@ public class PackData{
     }
     
     /**
+     * @aibrief Create a DCEL structure for this packing and attach it.
+     *
      * Create a DCEL structure for 'this' packing and then attach it.
      * @return int
      */
@@ -206,6 +213,8 @@ public class PackData{
     }
     
     /**
+     * @aibrief Attach a new or modified DCEL structure, resetting counts and curvatures.
+     *
      * Attach a new or modified DCEL structure for this packing. 
      * 
      * NOTE: on leaving, 'pdcel.oldNew' is set to null. Calling 
@@ -242,6 +251,8 @@ public class PackData{
     }
     
     /**
+     * @aibrief Reset pack data space and set the PackDCEL size limit.
+     *
      * Reset pack data space and set PackDCEL.sizeLimit.
      * @param new_size int (often current 'sizeLimit')
      * @return 1
@@ -284,6 +295,8 @@ public class PackData{
     */
   
     /** 
+     * @aibrief Choose the 'alpha' halfedge (root vertex), preferring an interior vertex.
+     *
      * Choose 'alpha' halfedge; acts as root vertex. 
      * Should be interior if possible. Keep current 
      * value if it is legal. Drawing order recomputed 
@@ -295,6 +308,8 @@ public class PackData{
     }
 
     /**
+     * @aibrief Choose the 'gamma' halfedge, distinct from 'alpha'.
+     *
      * Choose 'gamma' halfedge, normally placed on 
      * positive y-axis. Must be distinct from 'alpha'. 
      * Keep current value, if legal.
@@ -305,6 +320,8 @@ public class PackData{
     } 
     
     /**
+     * @aibrief Set a prescribed interior 'alpha' vertex, moving 'gamma' if needed.
+     *
      * Set prescribed 'alpha' vertex; must be interior. Move 'gamma' 
      * if necessary. Face drawing order is automatically recomputed.
      * @param v int, preferred or 0
@@ -317,6 +334,8 @@ public class PackData{
     } 
 
     /**
+     * @aibrief Set the packing 'gamma' vertex index.
+     *
      * Set packing 'gamma' index
      * @param i int, can't be 'alpha'
      * @return 1 on success, 0 on failure
@@ -328,6 +347,8 @@ public class PackData{
     } 
     
     /** Set the 'fileName'; on failure, set to 'NoName'
+	 * @aibrief Set the packing 'fileName', defaulting to 'NoName' on failure.
+	 *
      * @param s String
      */
 	public void setName(String s) {
@@ -339,6 +360,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Get the packing's 'fileName' as a new String.
+	 *
 	 * Get 'fileName' for this packing
 	 * @return new String
 	 */
@@ -347,6 +370,8 @@ public class PackData{
 	}
 
 	/** 
+	 * @aibrief Get the 'alpha' vertex index.
+	 *
 	 * @return int
 	 */
 	public int getAlpha() {
@@ -354,6 +379,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Get the 'gamma' vertex index.
+	 *
 	 * @return int
 	 */
 	public int getGamma() {
@@ -361,6 +388,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return a string summarizing key data about this circle packing.
+	 *
 	 * Returns string listing key data on this circle packing.
 	 * @return String
 	 */
@@ -381,6 +410,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return the geometry name string for an integer 'hes' code.
+	 *
 	 * return string for geometry associated with integer hes
 	 * @param hes int
 	 * @return String, empty if hes not in {
@@ -392,6 +423,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get the 'aim' of vertex v.
+	 *
 	 * 'aim' from 'Vertex'
 	 * @param v int
 	 * @return double
@@ -401,6 +434,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Store the 'aim' of vertex v.
+	 *
 	 * Store 'aim' in 'Vertex'
 	 * @param v int
 	 * @param aim double
@@ -410,6 +445,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get the number of non-ideal faces at vertex v.
+	 *
 	 * get number of non-ideal faces at 'v'; this is usual
 	 * meaning of 'num' for traditional vertices.
 	 * @param v int
@@ -420,6 +457,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get the number of petals at vertex v.
+	 *
 	 * get number of petals at 'v'
 	 * @param v int
 	 * @return int (same as 'countFaces' for interior 'v')
@@ -429,6 +468,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get the 'curv' (angle sum) of vertex v.
+	 *
 	 * 'curv' from 'Vertex'
 	 * @param v int
 	 * @return double
@@ -438,6 +479,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Store the 'curv' (angle sum) of vertex v.
+	 *
 	 * Store 'curv' in 'Vertex'
 	 * TODO: might eliminate this call
 	 * @param v int
@@ -448,6 +491,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the boundary flag of vertex v.
+	 *
 	 * Return the bdryFlag of vertex v; often used for its
 	 * value '1' to be used in 'for' loops.
 	 * @param v int
@@ -462,6 +507,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return true if vertex v is a boundary vertex.
+	 *
 	 * Is this a boundary vertex? Depends on bdry edges
 	 * being identified with 'faceIndx'<0.
 	 * @param v int
@@ -472,6 +519,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return true if any vertex of face f is a boundary vertex.
+	 *
 	 * A face is 'boundary' if one or more of its vertices
      * is boundary.
 	 * @param f int
@@ -488,6 +537,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return true if vertices v and w share an edge.
+	 *
 	 * Do v and w share an edge?
 	 * @param v int
 	 * @param w int
@@ -498,12 +549,17 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get the array of vertices of face f.
+	 *
 	 * Get array of vertices for face 'f'
 	 */
 	public int[] getFaceVerts(int f) {
 		return packDCEL.faces[f].getVerts();
 	}
 	
+	/**
+	 * @aibrief Get the three circle centers (corners) of face f.
+	 */
 	public Complex[] getFaceCorners(int f) {
 		if (f<=0)
 			return null;
@@ -518,6 +574,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get the flower petals of v without closing up for interior vertices.
+	 *
 	 * Get flower petals, but don't close up for interior
 	 * @param v int
 	 * @return int[]
@@ -539,6 +597,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get the traditional neighbor array of v, closed for interior vertices.
+	 *
 	 * Get the traditional array of nghb'ing vertices;
 	 * meaning first repeats at end if 'v' is interior.
 	 * @param v int
@@ -549,6 +609,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Get the first counterclockwise petal of vertex v.
+	 *
 	 * the first cclw petal. If not bdry, this is
 	 * rather ambiguous.
 	 * @param v int
@@ -560,6 +622,8 @@ public class PackData{
 	}
 
 	/** 
+	 * @aibrief Get the last petal of the flower of vertex v.
+	 *
 	 * Get the last petal of the flower for 'v';
 	 * same as first petal if 'v' is interior.
 	 * @param v int
@@ -571,6 +635,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get the j-th petal of vertex v.
+	 *
 	 * get the jth petal for vertex v.
 	 * @param v int
 	 * @param j int
@@ -584,6 +650,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get the j-th entry in the face flower of vertex v.
+	 *
 	 * Get 'j'th entry in face flower of 'v'
 	 * @param v
 	 * @param j
@@ -598,6 +666,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Get the counterclockwise face-flower indices of v, omitting ideal faces.
+	 *
 	 * Get array of cclw nghb'ing face indices, closed if
 	 * interior, omitting any ideal faces (there should be
 	 * at most 1).
@@ -622,6 +692,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Get the incircle center of face f.
+	 *
 	 * TODO: cut out this call
 	 * Get the center of the incircle for face index 'f'.
 	 * @param f int
@@ -632,6 +704,8 @@ public class PackData{
 	}
 		
 	/**
+	 * @aibrief Reset the geometry of the associated CPDrawing graphics.
+	 *
 	 * Reset the geometry for the cpDrawing graphic objects;
 	 * if 'cpDrawing' is null, just return;
 	 * @param hes int, 1,0, or -1
@@ -642,6 +716,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get the number of boundary components.
+	 *
 	 * Get the count of bdry components
 	 * @return
 	 */
@@ -650,6 +726,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return a vertex on the j-th boundary component.
+	 *
 	 * Return a vertex on the j_th bdry component;
 	 * indexing starts at 1.
 	 * @param j int
@@ -660,6 +738,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get vertex v's center and radius as a CircleSimple.
+	 *
 	 * Get center/radius from 'Vertex' in 'CircleSimple' form.
 	 * Note: see 'RedEdge.getCircleSimple' to get the data
 	 * from a red edge.
@@ -671,6 +751,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Set vertex v's center and radius from a CircleSimple.
+	 *
 	 * Set data only in 'Vertex'. See 'RedEdge.setCircleSimple'
 	 * to set data in a red edge. 
 	 * @param cS CircleSimple
@@ -681,6 +763,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Set the center of vertex v from (x,y) coordinates.
+	 *
 	 * Enter center (x,y)
 	 * @param v int
 	 * @param x double
@@ -691,6 +775,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Set the center of vertex v, normalizing for hyperbolic/spherical geometry.
+	 *
 	 * Set the center for 'vert'. If hyperbolic and |z| greater than 1,
 	 * scale to put in disc. If spherical, assume z=(theta,phi)
 	 * and store as (theta, phi).
@@ -705,6 +791,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the center of vertex v as a new Complex.
+	 *
 	 * Return center as a new 'Complex'; if v is red, 
 	 * this may be stored in nearest clw red edge.
 	 * @param v int
@@ -717,6 +805,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return vertex v's center and radius as a new CircleSimple.
+	 *
 	 * Return 'CircleSimple'; if v is red, this may be 
 	 * stored in nearest clw red edge.
 	 * @param v int
@@ -727,6 +817,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Get a clone of the color of face f.
+	 *
 	 * Get clone of face color
 	 * @param f int
 	 * @return new Color
@@ -736,6 +828,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Set the color of face f to a clone of the given color.
+	 *
 	 * set color to clone of 'color'
 	 * @param f int
 	 * @param color Color
@@ -745,6 +839,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Get a clone of the color of halfedge he.
+	 *
 	 * Get clone of edge color
 	 * @param he HalfEdge
 	 * @return new Color
@@ -754,6 +850,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Set the color of halfedge he to a clone of the given color.
+	 *
 	 * set color to clone of 'color'
 	 * @param he HalfEdge
 	 * @param color Color
@@ -763,6 +861,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get a clone of the color of the circle at vertex v.
+	 *
 	 * get clone of circle color
 	 * @param v int
 	 * @return new Color
@@ -772,6 +872,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Set the circle color at vertex v to a clone of the given color.
+	 *
 	 * set circle color to clone of 'color'
 	 * @param v int 
 	 * @param color Color 
@@ -823,6 +925,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Return the actual radius of vertex v, converting x-radius in hyperbolic case.
+	 *
 	 * Return actual radius of a vertex, meaning in the hyp case the
 	 * "x-radius" is converted to the actual hyperbolic radius, which 
 	 * is what outside world should see. In hyp case, when x-radius<0, 
@@ -842,6 +946,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the stored radius of vertex v (x-radius in hyperbolic case).
+	 *
 	 * Return the stored radius; if v is a red vertex, 
 	 * this may be stored in a red edge. In the hyp
 	 * case, return the x-radius. (See 'getActualRadius' 
@@ -854,6 +960,8 @@ public class PackData{
 	}
 	  
 	/**
+	 * @aibrief Store radius r for vertex v, converting to internal form in hyperbolic case.
+	 *
 	 * Store given radius 'r' in internal form. Only 
 	 * issue is hyp case: when r>8.0, treat as horocycle,
 	 * when 'r' is the actual hyperbolic radius, 
@@ -881,6 +989,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Store radius r for vertex v in internal form.
+	 *
 	 * Store radius for 'v' (in all its locations). ('r' is in 
 	 * internal form; i.e., in hyp case, 'r' should already 
 	 * be in x_radius form. If it needs to be converted, call
@@ -897,6 +1007,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Send an error message to the status panel.
+	 *
 	 * Currently, just send error to statusPanel.
 	 * TODO: would like to have 'beep' sound
 	 * @param errmsg
@@ -910,6 +1022,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Placeholder for putting debugging details in the Error tab.
+	 *
 	 * Details for debugging can be put in 'Error' tab.
 	 * @param errmsg String
 	 */
@@ -920,6 +1034,8 @@ public class PackData{
 /* ================== combinatoric utilies for complexes ================ */	
 	
 	/**
+	 * @aibrief Return the index of w in the flower of v, or -1 if not a neighbor.
+	 *
 	 * If w is neighbor of v, return its index in the flower of v; 
 	 * else return -1. Note this works for DCEL structures, but
 	 * answer is no so useful if not -1.
@@ -941,6 +1057,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the clockwise edge about v from edge {v,w}, or null.
+	 *
 	 * If {v,w} is edge, find the clw edge about 'v', if it exists.
 	 * @param v int
 	 * @param w int
@@ -960,6 +1078,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the non-closed corner list of the dual face of vertex v.
+	 *
 	 * Return non-closed list of corners for dual face for v,
 	 * mainly centers of faces. For bdry v, add the partial 
 	 * edges ending at the tang pts of the two bdry edges. For v 
@@ -1037,6 +1157,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the non-closed hull corners of vertex v from edge tangency points.
+	 *
 	 * Return non-closed list of corners hull of v,
 	 * formed by the tangency points of edges from v,
 	 * including v itself if v is bdry.
@@ -1098,6 +1220,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the hull corners of a face from its edge tangency points.
+	 *
 	 * Return corners of "hull" for this face; that is,
 	 * formed by the tangency points of the face edges.
 	 * @param face Face
@@ -1123,6 +1247,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the non-closed corner list of face f in order.
+	 *
 	 * Return non-closed list of corners for face f, in correct order. 
 	 * @param f int
 	 * @return Complex[]
@@ -1147,6 +1273,8 @@ public class PackData{
 	}		
 	
 	/**
+	 * @aibrief Return the non-closed corner list of the 'paver' region of vertex v.
+	 *
 	 * Return non-closed list of corners for "paver" of v, i.e.,
 	 * polygonal region defined as union of v's faces (include
 	 * center of v itself if bdry). If v is red, we treat its 
@@ -1199,6 +1327,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return the endpoints of the dual edge between faces of the given edge.
+	 *
 	 * Return complex locations of ends of dual edge <f,g>.
 	 * If the edge between is red, we do a faux layout of g
 	 * to get its incircle.
@@ -1238,6 +1368,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return the fan of petal vertices of v from index j1 to j2.
+	 *
 	 * return the fan of petal vertices from index j1 to and
 	 * including j2. Null on error or if v is bdry and j1>=j2. 
 	 * If v is interior, treat j1, j2 mod num, and if j1==j2,
@@ -1283,6 +1415,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Find the index of vertex v within face f.
+	 *
 	 * Find index of vert v in face f.
 	 * @param f int
 	 * @param v int
@@ -1293,6 +1427,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Return the index of the face on the right of oriented edge {v,w}.
+	 *
 	 * Return index of face on right side of oriented edge {v,w} 
 	 * @param v int
 	 * @param w int
@@ -1306,6 +1442,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return the neighbor face of f opposite vertex v.
+	 *
 	 * Given face with index 'f' has 'v' as a vertex, 
 	 * find index of ngbh face 'g' opposite to 'v'. 
 	 * @param f int, face index
@@ -1318,6 +1456,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Return the face index of triangle {a,b,c}, or 0 if none.
+	 *
 	 * Return face index f if {a,b,c} or {a,c,b} is a face
 	 * @param a int
 	 * @param b int
@@ -1332,6 +1472,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return which boundary component vertex w belongs to.
+	 *
 	 * Which bdry component is 'w' in? 
 	 * @param w int
 	 * @return int, bdryStarts index or -1 if 'w' not found
@@ -1355,6 +1497,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Return the index of the begin vertex of the shared edge of faces f2 and f1.
+	 *
 	 * TODO: works for DCEL, but see 'Face.faceNghb' for
 	 * new version. Need to see how the index return value 
 	 * is used to see if there are other adjustment as well.
@@ -1387,6 +1531,8 @@ public class PackData{
 	}
 
 	/** 
+	 * @aibrief Return the index of v in face f if {v,w} is an edge of f, else -1.
+	 *
 	 * Return -1 if ordered edge {v,w} not in face f. Else, return 
 	 * index of v in verts of f.
 	 * @return int index or -1 on failure
@@ -1405,6 +1551,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the vertex across the designated edge from vertex v.
+	 *
 	 * Return vert across designated edge from 'v'. 
 	 * Edge is that from 'w' to next cclw petal of 'v'.
 	 * Return 0 on failure, e.g., invalid data or
@@ -1424,6 +1572,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the face to the left of edge {v,w} and its third vertex.
+	 *
 	 * Return face to left of edge v w if not ideal. 
 	 * On failure, return ans[0]=0. Also return ans[1]=u, 
 	 * the third vert of face. 
@@ -1437,6 +1587,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the face to the left of the given edge and its third vertex.
+	 *
 	 * Return face to left of edge <v w> if it's not an ideal
 	 * face. On failure, return ans[0]=0. Also return ans[1]=u, 
 	 * the third vert of face. 
@@ -1456,6 +1608,8 @@ public class PackData{
 	} 
 	
 	/**
+	 * @aibrief Return the tangency point between the circles of the given edge.
+	 *
 	 * Find the tangency point between the circles of given edge.
 	 * Actually, interpolate if circles are not quite tangent; should
 	 * be a point on the geodesic between the centers. Return is in
@@ -1481,6 +1635,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the petal of v opposite w under hex-projection.
+	 *
 	 * If v is interior and hex, w is petal, return petal u opposite w. 
 	 * If v bdry, 3 faces, w bdry, return petal on bdry opposite w.
 	 * @param v int
@@ -1511,6 +1667,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the petal of v opposite w along an even-degree axis.
+	 *
 	 * If v is interior and even degree, w is petal, return petal u 
 	 * opposite w. If v bdry, return boundary most opposite to w. 
 	 * If v==w, or v interior and odd degree, return 0.
@@ -1532,6 +1690,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Find the common edge with v to its left and w to its right.
+	 *
 	 * Find an common edge opposite to both v and w.
 	 * v will be to its left, w to its right.
 	 * CAUTION: edge may not be unique.
@@ -1545,6 +1705,8 @@ public class PackData{
 	}
 		
 	/** 
+	 * @aibrief Find the common neighbor of v and w on the left of directed edge (v,w).
+	 *
 	 * Find index of common nghb u to v and w which 
 	 * is on left of directed edge (v,w).
 	 * @param int v, beginning vert
@@ -1561,6 +1723,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return true if faces f1 and f2 share one or more vertices.
+	 *
 	 * Return true if faces share one or more vertices (may be same face)
 	 * @param f1 int
 	 * @param f2 int
@@ -1579,6 +1743,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Return the number of edges in the boundary component of vertex v.
+	 *
 	 * Return count of edges in bdry component of v. 
 	 * @param v int
 	 * @return 0 if v not bdry or with combinatorial error. 
@@ -1599,6 +1765,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return the edge {v,w}, or null if v and w are not neighbors.
+	 *
 	 * Return edge for v,w, null if they're not neighbors
 	 * @param v int
 	 * @param w int
@@ -1612,6 +1780,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Recompute combinatorics via the DCEL structure.
+	 *
 	 * traditional
 	 * 
 	 * OBE:Convenient combination call of 'complex_count(false)' and 
@@ -1624,6 +1794,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return true if the complex is simply connected.
+	 *
 	 * Return true if complex is simply connected: use
 	 * 'genus'==0 and 'euler' either 1 or 2.
 	 * @return boolean
@@ -1636,6 +1808,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Set the boundary flags of all vertices.
+	 *
 	 * traditional: 
 	 * 
 	 * Have to find where this is done in DCEL cases.
@@ -1703,6 +1877,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return the incircle of the triangle of face f's circle centers.
+	 *
 	 * Return incircle of face f. Note: this is the incircle of the
 	 * triangle formed by the centers of the circles, irrespective of
 	 * whether the packing has non-trivial inv distances. 
@@ -1734,6 +1910,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Put current curvatures into aims, optionally freeing boundary aims.
+	 *
 	 * Put current curvatures into aim. If flag, put neg aim in for 
 	 * bdry, since they are considered free. 
 	 * @param flag boolean, if true, set bdry negative
@@ -1749,6 +1927,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Set aims to the euclidean angles from 3D xyz face data, if present.
+	 *
 	 * If 3D 'xyzpoint' data exists, set aims to the existing
 	 * euclidean angles in the 3D faces.
 	 * @param flag boolean: true --> set bdry aims to -(angle sum)
@@ -1778,6 +1958,8 @@ public class PackData{
 	}
 
 	/** 
+	 * @aibrief Set all radii to the default value for the current geometry.
+	 *
 	 * Default radius is .5 in eucl/sph and x-radius (1-1/e) in hyp
 	 */
 	public void set_rad_default() {
@@ -1788,6 +1970,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Set all inversive distances to the default 1.0 (tangency).
+	 *
 	 * Set default invDistances to 1.0 (i.e., tangency)
 	 */
 	public void set_invD_default() {
@@ -1796,6 +1980,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Set aims to 2pi for interior and -1 for boundary vertices.
+	 *
 	 * Set aims at 2pi for all interior and -1 for all bdry vertices
 	*/
 	public void set_aim_default() {
@@ -1807,6 +1993,8 @@ public class PackData{
 	} 
 	
 	/**
+	 * @aibrief Adjust all interior aims toward 2pi by factor x.
+	 *
 	 * Adjust all interior aims toward 2pi by factor x>0. So if
 	 * x is small, make only small adjustment toward 2pi.
 	 * @param x double
@@ -1823,6 +2011,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Set aims to 2pi (interior) or -1 (boundary) for a list of vertices.
+	 *
 	 * Given a list of vertices, set aims to 2pi for interior
 	 * and -1 for bdry vertices.
 	 * @param vlist NodeLink
@@ -1840,6 +2030,8 @@ public class PackData{
 	} 
 	
 	/** 
+	 * @aibrief Reset all vertex plot flags to true.
+	 *
 	 * Reset 'plotFlags' to 1 (true)
 	 */
 	public void set_plotFlags() {
@@ -1848,6 +2040,8 @@ public class PackData{
 	}
 
 	/** 
+	 * @aibrief Return the inversive distance between circles at v and w.
+	 *
 	 * Return inversive distance between circles for 
 	 * v and w, not necessarily neighbors. InvDist rho 
 	 * goes from -1 to infinity. rho is in [-1,1] for 
@@ -1873,6 +2067,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Return the inversive distance between two euclidean spheres in 3-space.
+	 *
 	 * Find overlap/inversive distance between euclidean spheres
 	 * of given 3-space centers/radii. Return 1 (tangency) on error.
 	 * @param xyz Point3D
@@ -1892,6 +2088,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Fill in the angle sums (curvatures) of the packing face-by-face.
+	 *
 	 * Fill in the angle sums (curvature) of the packing. Note that 
 	 * angle sums at a vertex are computed face-by-face for faces
 	 * containing that vertex.
@@ -1911,6 +2109,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Compute the spherical angle sum at vertex v for radius r.
+	 *
 	 * Find anglesum at given vertex. Inversive distances not yet
 	 * included.
 	 * @param v, vert index
@@ -1937,6 +2137,8 @@ public class PackData{
 	} 
 
 	/**
+	 * @aibrief Compute the hyperbolic angle sum at vertex v, accounting for overlaps.
+	 *
 	 * Compute anglesum in hyperbolic geometry. Result in uP.value. 
 	 * @param v int, vertex
 	 * @param x double, x-rad
@@ -1977,6 +2179,8 @@ public class PackData{
 	} 
 	
 	/** 
+	 * @aibrief Compute the hyperbolic radius at v moving its angle sum toward aim.
+	 *
 	 * Computes radius at vert v that gives anglesum 
 	 * closer to aim; use secant method, r = first guess, 
 	 * N is a limit on the number of iterations.
@@ -2056,6 +2260,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Compute the euclidean radius at v moving its angle sum toward aim.
+	 *
 	 * Computes radius at vert v that gives anglesum closer to aim; use 
 	 * secant method, r = first guess, N is a limit on the number of iterations.
 	 * New radius is returned in uP.value, but will not increase or decrease
@@ -2126,6 +2332,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Compute and store the hyperbolic radius of vertex v from its aim.
+	 *
 	  * Compute and store hyp radius of given vertex based on 'aim'. 
 	  * Currently using 20 naive iterations.
 	  * @param v int
@@ -2136,6 +2344,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Compute and store the hyperbolic radius of vertex v for a given aim.
+	 *
 	  * Compute and store hyp radius of given vertex to achieve given 'aim'
 	  * Currently using 20 naive iterations.
 	  * @param v int
@@ -2169,6 +2379,8 @@ public class PackData{
 	  } 
 
 	/**
+	 * @aibrief Compute and store the euclidean radius of vertex v from its aim.
+	 *
 	  * Compute and store eucl radius of given vertex to get 'aim'. 
 	  * Currently using 20 naive iterations.
 	  * @param v int
@@ -2179,6 +2391,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Compute and store the euclidean radius of vertex v for a given aim.
+	 *
 	  * Compute and store eucl radius of given vertex to achieve 
 	  * given 'aim'. Currently using 20 naive iterations.
 	  * @param v int
@@ -2211,6 +2425,8 @@ public class PackData{
 	  } 
 
 	/**
+	 * @aibrief Write an SVG image of the packing's circles to file.
+	 *
 	 * write SVG image of circles.
 	 * TODO: add more types of objects in the future, e.g., edges
 	 * @param file BufferedWriter
@@ -2327,6 +2543,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return the side-pairing Mobius with the given label.
+	 *
 	 * Return side pairing mobius with given label (should be
 	 * just one letter, caps converted to two lower case.
 	 * @param moniker String
@@ -2359,6 +2577,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Call the appropriate repacking procedure for the current geometry.
+	 *
 	 * Call for appropriate 'repacking' procedure. This creates
 	 * tmp 'RePacker' and applies methods depending on geometry,
 	 * topology, bdry/overlap conditions, C library availability,
@@ -2373,6 +2593,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Call the appropriate repacking procedure with options.
+	 *
 	 * Call for appropriate 'repacking' procedure. 
 	 * This creates tmp 'RePacker' and applies 
 	 * methods depending on geometry, topology, 
@@ -2434,6 +2656,8 @@ public class PackData{
 	}
 	  
 	/** 
+	 * @aibrief Convert centers/radii to euclidean and set geometry to euclidean.
+	 *
 	 * Convert this packing centers/radii to eucl, set geometry
 	 * to euclidean. In spherical case, some discs may be outside
 	 * their circles.
@@ -2467,6 +2691,8 @@ public class PackData{
 	}
 
 	/** 
+	 * @aibrief Convert to euclidean, scale into the unit disc, and set hyperbolic geometry.
+	 *
 	 * Converts centers/radii to euclidean first, then 
 	 * scales packing to live in the unit disc and converts
 	 * to hyp center and s-radii. Sets hes=-1.
@@ -2508,6 +2734,8 @@ public class PackData{
 	}
 
 	/** 
+	 * @aibrief Convert the packing to spherical geometry with alpha at the north pole.
+	 *
 	 * Converts packing to spherical, with alpha 
 	 * vertex at north pole. (Note: our stereographic 
 	 * projection puts 0 at the NORTH pole.)
@@ -2540,6 +2768,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Enfold boundary vertex v1, linking its neighbors to make it interior.
+	 *
 	 * v1 must be boundary vertex; enfold links nghbs v2 
 	 * (cclw) to v3 (clw), making v1 interior. Local data 
 	 * is reset, but calling routine must update the packing.
@@ -2560,6 +2790,8 @@ public class PackData{
 	}
 
 	/** 
+	 * @aibrief Interchange two vertex numbers, adjusting tiling info if present.
+	 *
 	 * Interchange two legal vertex numbers (if tiling info 
 	 * exists, it is adjusted). 
 	 * @param v int
@@ -2593,6 +2825,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Swap two vertex numbers with bit options for which data is kept.
+	 *
 	 * Swap node numbers, but with bit options for info that will 
 	 * be kept (meaning, it is swapped along with the numbers): 
 	 * @param v int
@@ -2629,6 +2863,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return the vertex shared by faces f1 and f2, or -1 if none.
+	 *
 	 * Return index of circle shared by faces f1 and f2, or -1
 	 * if they don't share a vertex.
 	 * @param f1 int
@@ -2650,6 +2886,8 @@ public class PackData{
 	}
 
 	  /**
+	   * @aibrief Return the intended edge length of halfedge he, using inversive distance.
+	   *
 	   * Intended (not actual) edge length from v to w, using invDist
 	   * if that is set. This is not well defined in the sphere.
 	   * @param he HalfEdge
@@ -2669,6 +2907,8 @@ public class PackData{
 	  }
 
 	  /**
+	   * @aibrief Return the intended edge length of edge {v,w}, using inversive distance.
+	   *
 	   * Intended (not actual) edge length from v to w, using invDist
 	   * if that is set. This is not well defined in the sphere.
 	   * @param v int
@@ -2689,6 +2929,8 @@ public class PackData{
 	  }
 
 	  /**
+	   * @aibrief Return the actual distance between the centers of halfedge hedge.
+	   *
 	   * Distance between centers (actual edge length). Compare
 	   * to 'intendedEdgeLength'
 	   * @param hedge HalfEdge
@@ -2707,6 +2949,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Return the actual distance between the centers of edge {v,w}.
+	   *
 	   * OBE: Distance between centers (actual edge length). Compare
 	   * to 'intendedEdgeLength'
 	   * @param v int
@@ -2726,6 +2970,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Return the l2 angle-sum error over vertices with positive aim.
+	   *
 	   * Update curvatures, then finds l2 error, sqrt(sum[(aim-curv)^2]),
 	   * for circles with aim > 0.0.
 	   * @return double, l^2 error
@@ -2743,6 +2989,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Return the total area of all faces from radii and inversive distances.
+	   *
 	   * Compute the sum of areas of all faces, based on radii and
 	   * inversive distances.
 	   * @return double
@@ -2756,6 +3004,8 @@ public class PackData{
 	  }
 
 	  /**
+	   * @aibrief Return the total and average absolute angle-sum error for aim>=0 vertices.
+	   *
 	   * Find total absolute err (sum |aim-curv|) for vertices
 	   * with aim>=0, and the average (for these same vertices).
 	   * @return, double[0]=total abs error; double[1]=average,
@@ -2781,6 +3031,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Return the area of face f from its radii and overlaps.
+	   *
 	   * Compute face area based on radii and overlaps (except
 	   * overlaps not accounted for in spherical case). (Tacit
 	   * assumption is 'num'=3.)
@@ -2797,6 +3049,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Return the bouquet of petal vertices, closed for interior vertices.
+	   *
 	   * Get normal bouquet of petal vertices, closed
 	   * for interior vertex.
 	   * @return int[][]
@@ -2813,6 +3067,8 @@ public class PackData{
 	  }
 
 	  /**
+	   * @aibrief Flip the edge to the right of each halfedge in the list.
+	   *
 	   * This is more general version of 'hex_slide' mechanism.
 	   * Perform an edge flip on the edge to the right of each 
 	   * halfedge in 'hlink', i.e., flip twin.next. The effect
@@ -2840,6 +3096,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Flip the edges in the given list.
+	   *
 	   * Flip edges from a prepared list
 	   * @param fliplist EdgeLink
 	   * @return int, count, 0 on error
@@ -2863,6 +3121,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Return true if the edge clockwise from {v,w} is flippable.
+	   *
 	   * Check flipability of edge clw from <v,w>
 	   * @param v int
 	   * @param w int
@@ -2876,6 +3136,8 @@ public class PackData{
 	  }
 	  
 	  /** 
+	   * @aibrief Return true if edge {v,w} is flippable (Whitehead move).
+	   *
 	   * Determine if edge {v,w} is "flipable" (as in Whitehead move).
 	   * Situations that fail: 
 	   * * if flip would result in vert of degree 2 
@@ -2904,6 +3166,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Return the log of the width/height ratio for the four eucl corners.
+	   *
 	   * Report the log of ratio width/height of a eucl packing, 
 	   * given the four corner vertices in counterclockwise order, 
 	   * upper-left first. Throw DataExceptin on error or if off 
@@ -2933,6 +3197,8 @@ public class PackData{
 	  }
 	  
 	  /** 
+	 * @aibrief Determine the generation of vertices spreading from given seeds.
+	 *
 	   * Determine generation of vertices starting from given seeds.
 	   * If 'mark' is true, store in 'Vertex.mark', else just 
 	   * return the index of the last vertex. 'utilFlag' 
@@ -2965,6 +3231,8 @@ public class PackData{
 	}
 
 	  /**
+	   * @aibrief Return the combinatorial antipodal vertex to v.
+	   *
 	   * Return combinatorical antipodal vertex to v.
 	   * @param v int
 	   * @return int, 0 on error
@@ -2978,6 +3246,8 @@ public class PackData{
 	  }
 
 	  /**
+	   * @aibrief Return N successive combinatorial antipodal vertices from a seed list.
+	   *
 	   * Return N successive "antipodal" vertices, starting with 
 	   * given list 'ants'. That is, having reached list 
 	   * {v1, v2, ..., vj}, inductively the next so it is 
@@ -3025,6 +3295,8 @@ public class PackData{
 	  }
 	  
 	  /** 
+	 * @aibrief Return the generation numbers of vertices measured from a seed.
+	 *
 	   * Return array giving the generations of vertices from 'seed'; 
 	   * (NOTE: 'util_A' and 'util_B' are used to pass information back,
 	   * calling routine must use these immediately on return.)
@@ -3117,6 +3389,8 @@ public class PackData{
 	}
 
 	  /**
+	   * @aibrief Apply Mobius transformation Mob to a list of circles.
+	   *
 	   * Apply Mobius Mob to specified list of circles. (See more detailed call
 	   * for inverse and side-pairing issues.)
 	   * @param Mob Mobius
@@ -3128,6 +3402,8 @@ public class PackData{
 	  }
 	  
 	  /** 
+	   * @aibrief Apply Mobius Mob or its inverse to circles, with side-pairing handling.
+	   *
 	   * Apply Mobius Mob (oriented) or inverse to specified 
 	   * list of circles in all occurrences; if sp_flag is 
 	   * true (default), also recompute the side-pairing maps.
@@ -3179,6 +3455,8 @@ public class PackData{
 	  } 
 
 	  /**
+	   * @aibrief Add an ideal vertex connecting to a boundary component's vertices.
+	   *
 	   * adds a vertex which connects up to all vertices on the boundary
 	   * component of vertices in given list. Combinatorics are reset.
 	   * Lose any 'xyzpoint' info.
@@ -3218,6 +3496,8 @@ public class PackData{
 	  }
 
 	  /** 
+	   * @aibrief Project a laid-out hyperbolic max packing onto the sphere.
+	   *
 	   * Project hyp max packing (already computed and laid out) to sphere 
 	   * with normalization options; combination of 'geom_to_s', 'add_ideal', 
 	   * and 'NSpole'. 
@@ -3297,6 +3577,8 @@ public class PackData{
 	  } 
 
 	  /**
+	   * @aibrief Set circle color gradations from a color ramp based on radii.
+	   *
 	   * set circle color gradations from color ramp based on radii;
 	  */
 	  public int radius_col_comp() {
@@ -3330,6 +3612,8 @@ public class PackData{
 
 
 	  /**
+	   * @aibrief Color-code circles by ratio of radii or angle sums against pack q.
+	   *
 	   * Color code circles by ratio of radii or angle sum, this compared
 	   * to pack q; lower indices (blue) indicate q larger.
 	   * @param radcomp: true=compare radii; false=compare angle sums
@@ -3388,6 +3672,8 @@ public class PackData{
 	  } 
 
 	  /** 
+	   * @aibrief Set circle colors from an encoded string of options.
+	   *
 	   * Set circle colors using encoded string of options.
 	   *   q{pnum} or p{pnum} must be first (no '-' for these)
 	   *   bg/fg for fore/background
@@ -3541,6 +3827,9 @@ public class PackData{
 		  return 1;
 	  }
 	  
+	  /**
+	   * @aibrief Set face colors from an encoded string of options.
+	   */
 	  public int color_faces(Vector<Vector<String>> flagSegs) {
 		  Vector<String>items=(Vector<String>)flagSegs.get(0);
 		  String str=(String)items.remove(0); // throw out, but held in 'str'
@@ -3728,6 +4017,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Set the colors of edges from an encoded string of options.
+	   *
 	   * Set the 'color' of edges
 	   * @param flagSegs Vector<Vector<String>>
 	   * @return int count
@@ -3806,6 +4097,8 @@ public class PackData{
 	  }
 
 	  /**
+	   * @aibrief Set colors of tiles, dual tiles, or quad tiles from options.
+	   *
 	   * Set colors of tiles (tmode=1), dual tiles (tmode==2), or quad 
 	   * tiles (tmode==3), if such tilings exist. Options are color spread,
 	   * use color of 'baryVert' vertex, use given code.
@@ -3924,6 +4217,8 @@ public class PackData{
 	  }
 
 	  /**
+	   * @aibrief Color faces by quasiconformal dilatation from options.
+	   *
 	   * Color faces depending on quasiconformal dilatations. Options
 	   * include the qc-dilatation for a mapping from p to q; because
 	   * face data is ephemeral, we need p and q to have essentially
@@ -4036,6 +4331,8 @@ public class PackData{
 	  }
 	
 	  /**
+	   * @aibrief Color faces from positive per-vertex values using the red color ramp.
+	   *
 	   * Color faces based on positive values[] given for all vertices; 
 	   * uses red half of color ramp.
 	   * @param values double[nodeCount+1];
@@ -4072,6 +4369,8 @@ public class PackData{
 	  }
 	  
 	  /** 
+	   * @aibrief Color faces by quasiconformal dilatation of the map from this to q.
+	   *
 	   * Color faces to show quasiconformal dilatation for map from
 	   * 'this' to 'q'. Non-eucl data converted to eucl for the computation
 	   * (3D eucl flat triangles for sphere). Shades of red based on 
@@ -4112,6 +4411,8 @@ public class PackData{
 	  } 
 
 	  /** 
+	   * @aibrief Color faces by quasiconformal dilatation of a map between two packings via xyz data.
+	   *
 	   * For map between 2 (eucl) packings, color faces of p in
 	   * shades of red based on quasiconformal dilatation of the map. 
 	   * (Note: the faces should have corresponding triples of vertices, 
@@ -4218,6 +4519,8 @@ public class PackData{
 	  } 
 
 	  /** 
+	   * @aibrief Return the quasiconformal dilatation of the face map between this and q.
+	   *
 	   * Compute the quasiconformal dilatation of map between faces in
 	   * 'this' packing and packing q. 
 	   * 
@@ -4273,6 +4576,8 @@ public class PackData{
 	  } 
 	  
 	  /** 
+	   * @aibrief Copy this packing into a new PackData with a null CPDrawing.
+	   *
 	   * Copy this packing into a new 'PackData' having 
 	   * a null 'CPDrawing' and 'packNum' of 3. 'PackExtender's 
 	   * are lost. If the new packing is to replace another, 
@@ -4288,6 +4593,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Copy this packing into a new PackData, optionally keeping TileData.
+	   *
 	   * Same as 'copyPackTo', but option whether to 
 	   * keep 'TileData'
 	   * @param keepTD boolean; true, then recursively copy 'tileData'
@@ -4328,6 +4635,8 @@ public class PackData{
 	  } 
 	  
 		/** 
+		 * @aibrief Draw labels for circles or faces per the message flag.
+		 *
 		 * Draw labels for circles ('circles'=true) or else faces; 'msg_flag' is
 		 * 3 by default: bit 1 means display on canvas, bit 2 means to put in 
 		 * scratch window.
@@ -4357,6 +4666,8 @@ public class PackData{
 		}
 
 		/** 
+		 * @aibrief Return the list of plotted circles containing canvas point z.
+		 *
 		 * List plotted circles containing canvas point z. There
 		 * may be none: if you want the 'closest' circle, call
 		 * 'cir_closest'. 
@@ -4386,6 +4697,8 @@ public class PackData{
 		} 
 		
 		/**
+		 * @aibrief Return vertices whose circles contain z, or whose centers are closest to z.
+		 *
 		 * Find a list of vertices whose circles contain z if 'inside' is 
 		 * true. If 'inside' is false, find circle with center closest to z 
 		 * (first in case of ties), regardless of whether z is inside.
@@ -4445,6 +4758,8 @@ public class PackData{
 		}
 		
 		/**
+	 * @aibrief Return the closest edge of the packing to complex point z.
+	 *
 		 * TODO: This is very iffy stuff; needs lots of refinement. Given complex
 		 * number z, find the closest edge of the packing. Return null if no
 		 * appropriate edge is found or if there is too much ambiguity. For now,
@@ -4678,6 +4993,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return the geometric distance from complex z to the center of vertex v.
+	 *
 	 * Distance from Complex 'z' to center for vertex 'v'; depends on
 	 * geometry; use euclidean in both hyp and eucl cases.
 	 */
@@ -4694,6 +5011,8 @@ public class PackData{
 	} 
 
 	/** 
+	 * @aibrief Return true if z lies inside circle n (eucl/hyp only).
+	 *
 	 * Is z in circle n (eucl/hyp only)? 
 	 * @param n int
 	 * @param z Complex
@@ -4724,6 +5043,8 @@ public class PackData{
 		return 0;
 	}
 	/** 
+	 * @aibrief Return the list of plotted triangular faces under canvas point z.
+	 *
 	 * Search for plotted triangles under canvas pt z.
 	 * For sphere, z is already a real (not apparent) point in 
 	 * spherical coords. 
@@ -4742,6 +5063,8 @@ public class PackData{
 	}
 
 	/** 
+	 * @aibrief Return true if complex z lies inside triangular face f.
+	 *
 	 * Is complex number z in triangular face f?
 	 * @param f int, face index
 	 * @param z Complex, complex pt
@@ -4754,12 +5077,17 @@ public class PackData{
 		return 0;
 	}
 
+	/**
+	 * @aibrief Return the signed cross-product determinant of the given coordinates.
+	 */
 	public static double row_col(double x,double y,double xa,double xb,
 			double ya,double yb) {
 		return (x*(ya-yb)-y*(xa-xb)+xa*yb-xb*ya);
 	}
 
 	  /** 
+	   * @aibrief Remove an interior vertex with at least two generations of interior neighbors.
+	   *
 	   * Remove one interior vert; must have at least 2 generations 
 	   * of interior neighbors. Geometry is not changed; lists are 
 	   * adjusted, but any face list data is tossed. Calling routine
@@ -4778,6 +5106,8 @@ public class PackData{
 	  }
 	  
 	  /** 
+	   * @aibrief Remove a face, converting its three vertices into a new boundary component.
+	   *
 	   * Remove a face, converting its three vertices to form a new
 	   * 3-edge boundary component. Face needs to be at least 2 
 	   * generations distant from the original boundary to avoid
@@ -4799,6 +5129,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Hex-refine the packing: split each edge and each face into four.
+	   *
 	   * We are operating on this packing. Each edge 
 	   * gets new vertex, each face broken into 4 faces. 
 	   * Try to propagate old centers/radii, overlaps, 
@@ -4812,6 +5144,8 @@ public class PackData{
 	  }
 
 	  /**
+	   * @aibrief Store the packing centers as 3D xyzpoint data.
+	   *
 	   * Store 3D data in p->xyzpoint. More options in the future perhaps,
 	   * but for now just converts centers to 3D and stores those. (These
 	   * lie in plane (z=0) in eucl/hyp cases.)
@@ -4842,6 +5176,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	 * @aibrief Set inversive distances from xyz data.
+	 *
 		 * Use xyz data to set 'invDist's. This command 
 		 * is still evolving. Eventually, may want to 
 		 * specify which ones to set; for now, set all.
@@ -4961,6 +5297,8 @@ public class PackData{
 	}
 
 	  /**
+	   * @aibrief Apply euclidean scaling to all centers and radii, including red edges.
+	   *
 		 * "Euclidean" scaling is applied to centers and radii, 
 		 * including data stored in red edges.
 		 * Note: in the hyperbolic case, some circles could be 
@@ -5034,6 +5372,8 @@ public class PackData{
 	}
 
 	  /**
+	   * @aibrief Rotate the packing by the given angle without changing radii.
+	   *
 		 * Rotate pack p by given angle. Note that radii
 		 * don't change. The redvert data and side pairing
 		 * data are updated as well.
@@ -5077,6 +5417,8 @@ public class PackData{
 	  } 
 
 	  /**
+	   * @aibrief Top-level 'adjoin' call to glue two packings along boundary segments.
+	   *
 	   * Top level 'adjoin' call. 
 	   *  * test for legality
 	   *  * adjoin via DCEL
@@ -5190,6 +5532,8 @@ public class PackData{
 	  }
 
 	  /**
+	   * @aibrief Return the schwarzian of the given halfedge.
+	   *
 	   * Return schwarzian for given halfedge
 	   * @param es HalfEdge
 	   * @return double, 
@@ -5202,6 +5546,8 @@ public class PackData{
 	  }
 
 	  /**
+	   * @aibrief Store the schwarzian of the given edge.
+	   *
 	   * Store schwarzian for EdgeSimple <v,w>
 	   * @param edge EdgeSimple
 	   * @param sch double
@@ -5214,6 +5560,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Return the inversive distance recorded for edge {v,w}.
+	   *
 	   * Return the inversive distance recorded for edge from
 	   * v to nghb w. 1.0 is default.
 	   * @param v int
@@ -5229,6 +5577,8 @@ public class PackData{
 	  }
 	  
 	  /** 
+	   * @aibrief Fill a RadIvdPacket with the radius/inversive-distance data of face f.
+	   *
 	   * Fill a 'RadIvdPacket' with data for this face. Note that
 	   * inversive distance k is that for edge <k,k+1>.
 	   * @param f int
@@ -5248,6 +5598,8 @@ public class PackData{
 	  }
 	  
 	  /** 
+	   * @aibrief Store one inversive distance value for an edge and its twin.
+	   *
 	   * Store one legal inversive distance value for edge and
 	   * its twin. Note: 'invDist' values: deep overlap in (-1,0); 
 	   * normal overlap in [0,1]; separated circles in (1,infty); 
@@ -5271,6 +5623,8 @@ public class PackData{
 	  }
 	    
 	  /** 
+	   * @aibrief Return an edge path from v1 drawn from the given vertex list.
+	   *
 	   * Return vertices defining an edge path proceeding from 'v1'
 	   * and taken from the given 'vertlist'. Currently two methods:
 	   * + flag=0: multiple-choice (default: for multi-sheeted surfaces):
@@ -5336,6 +5690,8 @@ public class PackData{
 	  }
 
 	  /**
+	   * @aibrief Return the dual edge {f,g} of the faces adjacent to edge {v,w}.
+	   *
 	   * If {v,w} is an edge between vertices, this returns the
 	   * dual edge {f,g} of neighboring faces to left/right of 
 	   * {v,w}, respectively. Note, dual edge direction is 
@@ -5355,6 +5711,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Return the dual face-pairs for the given list of edges.
+	   *
 	   * Returns GraphLink of face pairs {f,g} sharing given 
 	   * edges {v,w} from input elist. Note orientation: f is 
 	   * to left of directed edge {v w}, g is to right. Skip 
@@ -5378,6 +5736,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Return the total length of the given dual edges.
+	   *
 	   * Find total of length of dual edges in given 'delist'.
 	   * @param delist EdgeLink, dual edges
 	   * @return double
@@ -5401,6 +5761,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Return the primal edge {v,w} dual to the shared edge of faces f and g.
+	   *
 	   * Given faces f and g, if they share an edge,
 	   * return dual edge {v,w}, where f is to left of
 	   * {v,w} and g is to the right. (dualEdge)
@@ -5421,6 +5783,8 @@ public class PackData{
 	  }
 	  
 	  /**
+	   * @aibrief Return the primal edges dual to the given list of dual edges.
+	   *
 	   * Returns 'EdgeLink' of edges {v,w} dual to given list
 	   * of dual edge. Note orientation: given dual edge {f,g}
 	   * from face f to face g, return {v, w} which is positively
@@ -5443,6 +5807,8 @@ public class PackData{
 	  }
   
 	 /**  
+	  * @aibrief Flatten a jagged hex-packing edge by introducing special overlaps.
+	  *
  	  * Flattening jagged edge of hex packing by introducing 
 	  * special overlaps. Each v must be bdry vert, have 3 nghbs.
 	  * Introduces 2*pi/3 overlap with interior neighbor and pi/3
@@ -5468,6 +5834,8 @@ public class PackData{
 	 }
 	 
 	 /** 
+	  * @aibrief Set overlaps to flatten a square-grid packing.
+	  *
 	  * "Square grid" packings typically have (interior) vertices 
 	  * of degrees 4 and 8, and the "ball bearings", those of 
 	  * degree 4, have overlaps of angle pi/2 with their neighbors.
@@ -5495,6 +5863,8 @@ public class PackData{
 	 } 
 
 	 /**
+	 * @aibrief Recenter the packing to put the given point at the origin.
+	 *
 	  * If hyperbolic, apply a Mobius trans of disc 
 	  * putting ctr at origin. If euclidean, translate. 
 	  * If sphere, rigid Mobius moves ctr to north pole.
@@ -5580,6 +5950,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Set the center of the given vertices to the given point.
+	 *
 	 * Set given center for given vertices
 	 */
 	public int set_centers(Complex ctr,NodeLink vertlist) {
@@ -5595,6 +5967,8 @@ public class PackData{
 	}
 
 	/** 
+	 * @aibrief Build per-face TriAspect data for packing p.
+	 *
 	 * Create 'TriAspect' face data, which contains data 
 	 * face-by-face for use, e.g., in 'Schwarzian' and 
 	 * 'ProjStruct'. Set the tanPts. This does not change 
@@ -5635,6 +6009,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Do the work of the get_data and put_data commands per the putget flag.
+	 *
 	 * Does the work for the "get_data" and "put_data" calls, 
 	 * depending on 'putget' flag. If 'put', then data goes 
 	 * from 'this' to 'q'; 'get' goes from 'q' to 'this'. 
@@ -5956,6 +6332,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Reset aims of vertices from their current angle sums by factor x.
+	 *
 	 * Reset aims of vlist based on their current angle sum, aim, and specified
 	 * factor x. If aim is positive, aim(v)=angle sum(v) + x*[aim(v)-angle sum(v)].
 	 * Return count of adjustments.
@@ -5993,6 +6371,8 @@ public class PackData{
 	}
 
 	/** 
+	 * @aibrief Interpolate radii between this pack and q by the given factor.
+	 *
 	 * Reset radii of p to interpolate between current values and
 	 * values in q by factor: 
 	     rad_p(v)=rad_p(v) + x*[rad_p(v)-rad_q(v)].
@@ -6019,6 +6399,8 @@ public class PackData{
 	} 
 
 	/** 
+	 * @aibrief Draw a combinatorial hexagon of side length n from corner v toward w.
+	 *
 	 * Try to draw a combinatorial hexagon of side length n, 
 	 * starting at corner v, in direction of neighbor w. 
 	 * Pretend combinatorics are hex: do 6 n-step edges, and 
@@ -6087,6 +6469,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Display a clicked face and its associated face in the q canvas.
+	 *
 	 * When clicking on face in this packing, display it for this canvas 
 	 * and also display the associated face in the q canvas. Translate
 	 * directly if 'this.nodeCount' and 'q.nodeCount' are equal or if 
@@ -6127,6 +6511,8 @@ public class PackData{
 	}
 	 
 	/**
+	 * @aibrief Display a clicked circle and its associated circle in the q canvas.
+	 *
 	 * When clicking on circle in this packing, display it for this canvas 
 	 * and also display the associated circle in the q canvas. Translate
 	 * directly if 'this.nodeCount' and 'q.nodeCount' are equal or if 
@@ -6175,6 +6561,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the existing PackExtender with the given extension type, or null.
+	 *
 	 * Return a pointer to 'PackExtender' if there is an existing one
 	 * with given 'extensionType' 
 	 * @param String xType (different for each subclass)
@@ -6191,6 +6579,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return the existing PackExtender matching the given abbreviation, or null.
+	 *
 	 * Return a pointer to 'PackExtender' if there is an existing one
 	 * with given 'extensionType' (ignoring case). If 'xAbbre' is empty
 	 * return unique extender if there is one.
@@ -6217,6 +6607,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Draw the segment number label at the first circle of side n.
+	 *
 	 * Currently, put segment number at first circle.
 	 * TODO: need better placement; e.g. this will conflict with circle index
 	 * @param n int
@@ -6237,6 +6629,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Post the segment number label at the first circle of side n.
+	 *
 	 * Currently, put segment number at first circle.
 	 * TODO: need better placement; e.g. this will conflict with 
 	 * circle index
@@ -6263,6 +6657,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Draw an edge-pairing boundary segment for side n.
+	 *
 	 * Draw an edge-pairing boundary segment for side n.
 	 * @param n int, index of side-pair (indices start at 0)
 	 * @param do_label boolean, label side edge also?
@@ -6318,6 +6714,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Post an edge-pairing boundary segment for side n.
+	 *
 	 * Post an edge-pairing boundary segment based on starting face and 
 	 * index of beginning vert. 
 	 * @param pF PostFactory
@@ -6370,6 +6768,9 @@ public class PackData{
 		  return 1;
 	}
 
+	/**
+	 * @aibrief Write output text (prefix/data/loop/suffix) to the given file.
+	 */
 	public int output_parse(BufferedWriter fp,String prefix,String data,String loop,
 			String suffix,Mobius mob) {
 		try {
@@ -6384,6 +6785,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Find and apply a Mobius putting this pack in register with q.
+	 *
 	 * Find Mobius 'mob' to apply to this pack to put it in register with q. 
 	 * Both packs hyp or both eucl. Apply 'best' automorphism to line up centers 
 	 * of designated vertices: v1 with w1, v2 with w2. In hyp case, must have
@@ -6441,6 +6844,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Find the boundary vertex combinatorially opposite a given boundary vertex.
+	 *
 	 * Given bdry vert 'v=ans[0]', find bdry vert 'w=ans[1]' in same bdry 
 	 * component which is combinatorially 'opposite' v. Return 0 on error, 
 	 * eg. bdry component length < 4..
@@ -6475,6 +6880,8 @@ public class PackData{
 	} 
 	
 	/** "Blending" refers to the attachment of one packing to another,
+	 * @aibrief Blend this packing with q, smoothly transitioning radii in the overlap.
+	 *
 	generally with some overlap where a smooth transition in radii
 	and centers from one pack to the other can be made. (Eg., packing 
 	'islands' generated with PlugPack or "mending" a flaw.)
@@ -6608,6 +7015,8 @@ public class PackData{
 	}
 	
 	/** 
+	 * @aibrief Write the packing's adjacency matrix to file in Matlab-readable form.
+	 *
 	 * Save adjacency matrix of packing (<= 10,000 verts) in form for
 	 * matlab to read; the adjacency matrix has a 1 in (i,j) spot if
 	 * i and j are neighboring vertices, else a 0. 
@@ -6687,6 +7096,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Adjust the radius of vertex v by the given factor.
+	 *
 	 * adjust a radius by a given factor
 	 * @param v, vertex
 	 * @param factor, double, positive
@@ -6734,6 +7145,9 @@ public class PackData{
 		return count;
 	}
 	
+	/**
+	 * @aibrief Adjust the schwarzian of an edge by scaling its 'uzian' by a factor.
+	 */
 	public int adjust_uzian(HalfEdge edge,double factor) {
 		if (factor==1.0)
 			return 1;
@@ -6750,6 +7164,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Create a circular spoke/circle grid from center and radius.
+	 *
 	 * create a circular spoke/circle grid from {cent,rad}, filling 
 	 * global vector 'Blink' of 'BaryLink's.
 	 * @param cent Complex
@@ -6782,6 +7198,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Create a rectangular grid between two corner points.
+	 *
 	 * create a rectangular grid from {lowl,upr}, filling global 
 	 * vector 'baryVector' of 'BaryCoordLink's.
 	 * @param lowl, upr, Complex
@@ -6823,6 +7241,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return the combinatorics as an undirected GraphLink.
+	 *
 	 * Represent the combinatorics as an undirected graph in 
 	 * 'GraphLink' form. Each edge occurs only once, {u,v}
 	 * v greater than u. Leave out all edges to/from vertices 
@@ -6847,6 +7267,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Convert the packing combinatorics to a Triangulation object.
+	 *
 	 * Convert 'PackData' combinatorics to 'Triangulation' object
 	 * @return Triangulation
 	 */
@@ -6876,6 +7298,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Resample vertices of p by applying a filter test.
+	 *
 	 * Idea of resampling is to apply some filter to the
 	 * vertices of 'p', marking those that pass the test. 
 	 * I think this method will be made more general and 
@@ -6943,6 +7367,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Build a new packing from chosen interior vertices via Delaunay.
+	 *
 	 * Given packing and NodeLink of chosen interior 
 	 * vertices, create new packing by Delaunay 
 	 * triangulating the chosen vertices, plus all the 
@@ -7038,6 +7464,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Get the indices of the first sides of all side pairs.
+	 *
 	 * Get the indices of the first sides in all side pairs
 	 * @return int[], null if no paired sides
 	 */
@@ -7054,6 +7482,8 @@ public class PackData{
 	}
 
 	/**
+	 * @aibrief Return the Mobius for the given side-pair index.
+	 *
 	 * Return the Mobius with the given side-pair index
 	 * @param e int, for DCEL, starts with 1
 	 * @return Mobius
@@ -7067,6 +7497,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return true if the packing has any non-trivial inversive distances.
+	 *
 	 * Are there any non-trivial inversive distances?
 	 * @return boolean
 	 */
@@ -7085,6 +7517,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Return the intrinsic geometry code (-1,0,1) from the combinatorics.
+	 *
 	 * Get the 'intrinsicGeom', -1, 0, 1, based on
 	 * combinatorics, i.e., number of bdry 
 	 * components and genus. 
@@ -7105,6 +7539,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Compute the Mobius of the holonomy along a closed chain of faces.
+	 *
 	 * Compute Mobius associated with holonomy along 
 	 * a closed chain of faces. The faces are defined
 	 * by given 'HalfLink', the first assumed to be 
@@ -7191,6 +7627,8 @@ public class PackData{
 	}
 	
 	/**
+	 * @aibrief Generate a euclidean flower packing from a vertex's intrinsic data.
+	 *
 	 * Generate a euclidean flower packing based 
 	 * on 'vert' but using only its intrinsic 
 	 * schwarzians and recover the 'error' in 

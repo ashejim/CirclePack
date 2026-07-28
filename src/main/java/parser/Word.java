@@ -10,5 +10,8 @@ package parser;
  * @author not attributable
  * @version 1.0
  */public interface Word {
+  /**
+   * @aibrief Evaluate this word to a complex value using the evaluator.
+   */
   public complex.Complex evaluate(Evaluator ev);
 }

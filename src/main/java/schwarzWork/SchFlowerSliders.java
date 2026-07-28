@@ -105,6 +105,9 @@ public class SchFlowerSliders extends SliderFrame {
 	
 	// ============= abstract methods ==================
 	
+	/**
+	 * @aibrief Build the slider array from the flower's edges.
+	 */
 	public void populate() {
 		// note: sliders indexed from 0
 		ActiveSlider[] tmpSliders = new ActiveSlider[sliderCount];
@@ -136,6 +139,8 @@ public class SchFlowerSliders extends SliderFrame {
 	}
 	
 	/**
+	 * @aibrief No-op: adding/removing sliders is not allowed here.
+	 *
 	 * Not allowed to add/remove sliders
 	 */
 	public int addObject(String objstr) {return 0;}
@@ -153,6 +158,8 @@ public class SchFlowerSliders extends SliderFrame {
 	}
 	
 	/**
+	 * @aibrief Store the slider's value as the edge schwarzian and refresh errors.
+	 *
 	 * Stores schwarzian in packData
 	 */
 	public void valueToPacking(int indx) {
@@ -161,6 +168,8 @@ public class SchFlowerSliders extends SliderFrame {
 	}
 	
 	/**
+	 * @aibrief Build the slider panel plus the radius/angle error fields.
+	 *
 	 * This is done here to embellish with displays of
 	 * the "error" in radii and angle when laying out
 	 * a flower.
@@ -195,6 +204,9 @@ public class SchFlowerSliders extends SliderFrame {
 	}
 	
 	// recompute/display errors
+	/**
+	 * @aibrief Recompute and display the flower's radius and angle errors.
+	 */
 	public void updateErrorFields() {
 		CircleSimple cs=new CircleSimple();
 		Complex err=new Complex(0.0);
@@ -204,6 +216,8 @@ public class SchFlowerSliders extends SliderFrame {
 	}
 	
 	/**
+	 * @aibrief Handle a value-field change by delegating to SliderFrame.
+	 *
 	 * Triggered by value field changes, kick back
 	 * to 'SliderFrame'.
 	 */
@@ -212,6 +226,8 @@ public class SchFlowerSliders extends SliderFrame {
 	}
 
 	/**
+	 * @aibrief Set the slider range for the s-variable.
+	 *
 	 * Set the initial values of val_min and val_max. 
 	 */
 	public void initRange() {

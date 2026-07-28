@@ -223,6 +223,8 @@ public class Schwarzian {
 	}
 	
 	/**
+	 * @aibrief Get the 4 radii of an edge used to compute its schwarzian.
+	 *
 	 * Get the 4 radii for given edge that are used in 
 	 * calculating its schwarzian. "Ordinary" because there 
 	 * are no complications due to multi-connectedness.
@@ -522,6 +524,8 @@ public class Schwarzian {
 	}
 	
 	/**
+	 * @aibrief Color circles/edges by schwarzian sum (blue-to-red) and draw.
+	 *
 	 * Develop various schemes to help understand schwarzians: 
 	 * e.g., draw circles with color blue-to-red based on sum 
 	 * of schwarzians; draw edges blue-to-red based on 
@@ -662,6 +666,8 @@ public class Schwarzian {
 	}
 	
 	/**
+	 * @aibrief Fill a SchwarzData for an edge from domain/range face aspects.
+	 *
 	 * Fill in the 'SchwarzData' utility package
 	 * @param domf TriAspects
 	 * @param tmpg
@@ -895,6 +901,8 @@ public class Schwarzian {
 	}
 
 	/**
+	 * @aibrief Compute the intrinsic schwarzian for the edge shared by two faces.
+	 *
 	 * Compute the INtrinsic Schwarzian for edge shared by 
 	 * two faces. Note that g should already have been
 	 * adjusted to align along shared edge with f.

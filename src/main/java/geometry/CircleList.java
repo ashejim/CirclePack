@@ -11,7 +11,9 @@ import complex.Complex;
 import complex.MathComplex;
 
 /**
- * This is a geometric utility class. It uses a 
+ * @aibrief Utility for generating 2D point lists for circles/arcs via matrix propagation.
+ *
+ * This is a geometric utility class. It uses a
  * simple matrix propagation method to generate 
  * 2D points forming a circle or arc of a circle. 
  * @author kens
@@ -30,8 +32,10 @@ public class CircleList {
 	static double ua22=ua11;
 	
 	/**
-	 * Compute vector of points forming an oriented 
-	 * arc of a circle with given radius, center, 
+	 * @aibrief Compute point vector for an oriented arc of a circle.
+	 *
+	 * Compute vector of points forming an oriented
+	 * arc of a circle with given radius, center,
 	 * given start angle (radians) and angle extent 
 	 * (positive or negative radians) and number of 
 	 * divisions (with possibly additional point for 
@@ -148,7 +152,9 @@ public class CircleList {
 	}
 		
 	/**
-	 * Using static variables, convert 2D list to 3D and 
+	 * @aibrief Convert 2D point list to 3D, project, and store in static 'vec'.
+	 *
+	 * Using static variables, convert 2D list to 3D and
 	 * then project and put in the static 'vec'. First 
 	 * spot in vec already occupied.
 	 * @param twoD

@@ -66,6 +66,8 @@ public class QualMeasures {
 	}
 
 	/** same as 'visual-error', but using sph radii/centers
+	 * @aibrief Visual error of an edge using spherical radii/centers (-1 if a radius is too small).
+	 *
 	 * @param r1 double
 	 * @param r2 double
 	 * @param z1 Complex
@@ -83,6 +85,8 @@ public class QualMeasures {
 	}
 	
 	/** 
+	 * @aibrief Return the most well-placed vertex of the given face (vert[0] on error).
+	 *
 	 * Returns the most well-placed vertex of given face.
 	 * On computation error, return vert[0].
 	 */	  

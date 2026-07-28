@@ -155,6 +155,8 @@ public abstract class PackExtender {
 	}
 
 	/**
+	 * @aibrief Show the vector of extender commands in the 'Message' tab.
+	 *
 	 * Show vector of commands in 'Message' tab.
 	 */
 	public void helpInfo() {
@@ -173,6 +175,8 @@ public abstract class PackExtender {
 	}
 	
 	/** 
+	 * @aibrief Register this extension type (if not a duplicate) and its help info and commands.
+	 *
 	 * register the extension type after confirming it does not duplicate 
 	 *   existing extension for this PackData; also store help info in
 	 *   'extenderArea' of Help Frame (if not already there) and add
@@ -194,6 +198,8 @@ public abstract class PackExtender {
 	}
 
 	/**
+	 * @aibrief Create the canvas info-area tool and embellish its icon with the extender initials.
+	 *
 	 * Create tool for small canvas info area and embellish icon
 	 * with initials; use 'iconName' in 'Resources/Icon'. 
 	 * Can be overriden.
@@ -232,6 +238,8 @@ public abstract class PackExtender {
 	}
 	
 	/**
+	 * @aibrief Report status: return true if this extender started successfully.
+	 *
 	 * Report status: generally called just after instantiation to see if
 	 * it was started successfully.
 	 */
@@ -248,6 +256,8 @@ public abstract class PackExtender {
 	}
 
 	/**
+	 * @aibrief Initialize the command catalog; derived extenders call this to start cataloging commands.
+	 *
 	 * Derived extenders should call this to initiate cataloging
 	 * its commands.
 	 */
@@ -258,6 +268,8 @@ public abstract class PackExtender {
 	}
 	
 	/**
+	 * @aibrief Detach this extender from its 'PackData' before it is destroyed.
+	 *
 	 * Before destroying a packextender, should detach it from its packData.
 	 * Then the calling routine can set the extender to null.
 	 */
@@ -266,6 +278,8 @@ public abstract class PackExtender {
 	}
 	
 	/**
+	 * @aibrief Send extender help info to the message output.
+	 *
 	 * Help info from extenders goes here
 	 */
 	public void helpMsg(String helpinfo) {
@@ -273,6 +287,8 @@ public abstract class PackExtender {
 	}
 	
 	/**
+	 * @aibrief Return this extender if 'nodecount' matches, so it survives a packing copy; else null.
+	 *
 	 * Save the handle to this packExtender: eg, so not lost with copy
 	 */
 	public PackExtender transfer(int nodecount) {
@@ -284,6 +300,8 @@ public abstract class PackExtender {
 	}
 	
 	/**
+	 * @aibrief Refresh the canvas(es) for the parent packing.
+	 *
 	 * Refresh the canvas(es) for the parent packing.
 	 */
 	public void repaintMe() {
@@ -333,6 +351,8 @@ public abstract class PackExtender {
 	}
 	
 	/**
+	 * @aibrief Post an error message tagged with the extender abbreviation and pack number.
+	 *
 	 * Error message
 	 */
 	public void errorMsg(String errmsg) {
@@ -340,6 +360,8 @@ public abstract class PackExtender {
 	}
 	
 	/**
+	 * @aibrief Post a regular message tagged with the extender abbreviation and pack number.
+	 *
 	 * Regular message
 	 */
 	public void msg(String msG) {
@@ -352,6 +374,8 @@ public abstract class PackExtender {
 	}
 	
 	/**
+	 * @aibrief Add extender type/command info to the Help Frame and register commands for completion.
+	 *
 	 * Add the extender type and command information to the Help Frame
 	 * 'extenderArea' and add extender commands to the hash table for 
 	 * command completion.

@@ -106,6 +106,8 @@ public class Interpolator {
 	}
 	
 	/**
+	 * @aibrief Fill the array of interpolated 'ZRhold' entries for all vertices, stages 0 to N.
+	 *
 	 * Fill the final array of 'ZRhold' entries for 
 	 * all vertices, all stages, 0 to N. 
 	 */

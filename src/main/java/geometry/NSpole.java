@@ -13,7 +13,9 @@ import packing.PackData;
 import util.StringUtil;
 
 /**
- * Select and implement 'NSpole' normalizations. 
+ * @aibrief Selects and implements 'NSpole' spherical normalizations of a packing.
+ *
+ * Select and implement 'NSpole' normalizations.
  * @author kstephe2
   */
 public class NSpole {
@@ -46,6 +48,8 @@ public class NSpole {
 	}
 	
 	/**
+	 * @aibrief Parse and execute an 'NSpole' command from its flag segments.
+	 *
 	 * Process an NSpole call
 	 * @param flagSegs Vector<Vector<String>>
 	 * @return int, 0 on failure
@@ -266,6 +270,8 @@ public class NSpole {
 	}
 	
 	/**
+	 * @aibrief Return array of tangency points from current radii/centers.
+	 *
 	 * Load a vector with tangency points based on current radii/centers
 	 * @return Complex[]
 	 */
@@ -291,7 +297,9 @@ public class NSpole {
 	}
 
 	/**
-	 * Load a vector based on current packing centers. 
+	 * @aibrief Return array of the current packing circle centers.
+	 *
+	 * Load a vector based on current packing centers.
 	 * @return Complex[]
 	 */
 	public Complex []loadCenters() {
@@ -304,8 +312,10 @@ public class NSpole {
 	}
 
 	/**
-	 * Given vector of points in the plane, 
-	 * return a Mobius transformation that puts 
+	 * @aibrief Find Mobius moving centroid of stereo-projected plane points near origin.
+	 *
+	 * Given vector of points in the plane,
+	 * return a Mobius transformation that puts
 	 * the centroid of their stereo projections 
 	 * to the sphere close to the origin in 3-space. 
 	 * Return null on error. Note that the resulting 
@@ -453,6 +463,9 @@ public class NSpole {
 				new Complex(0.0), new Complex(1.0));
 	}
 
+	/**
+	 * @aibrief Count edges of the packing (each interior/petal pair once).
+	 */
 	public int setEdgeCount() {
 		int eCount=0;
 		for (int v=1;v<=packData.nodeCount;v++) {
@@ -467,6 +480,8 @@ public class NSpole {
 	}
 
 	/**
+	 * @aibrief Apply Mobius to update all circle centers/radii in the packing.
+	 *
 	 * Apply Mobius to get new centers/radii, or if M==null, transfer
 	 * data temporarily held in cent and rad.
 	 * @param M Mobius, or null

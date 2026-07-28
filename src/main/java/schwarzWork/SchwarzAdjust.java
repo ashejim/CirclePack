@@ -82,6 +82,9 @@ public class SchwarzAdjust extends PackExtender {
 		}
 	}
 
+	/**
+	 * @aibrief Parse and execute this extender's commands (init, restart).
+	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs) {
 		Vector<String> items = null;
 		if (flagSegs!=null && flagSegs.size()>0) {
@@ -179,6 +182,8 @@ public class SchwarzAdjust extends PackExtender {
 	}
 	
 	/** 
+	 * @aibrief Register this extender's command structures.
+	 *
 	 * Override method for cataloging command structures
 	 */
 	public void initCmdStruct() {

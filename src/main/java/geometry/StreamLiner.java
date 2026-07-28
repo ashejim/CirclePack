@@ -137,6 +137,8 @@ public class StreamLiner {
 	}
 
 	/**
+	 * @aibrief Compute and store the (ccw) normal vector for each face.
+	 *
 	 * For each face, find the normal to the face as normalized
 	 * cross product of 3D vectors from v0 to v1 and v1 to v2.
 	 * (Caution: using centers from 'basePack'.)

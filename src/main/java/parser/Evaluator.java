@@ -50,6 +50,8 @@ private static String[] groupers = {
   }
   
   /**
+   * @aibrief Puts i, PI, and e in the 'values' hashtable.
+   *
    * Puts i, PI, and e in the 'values' hashtable 
    */
   public void init() {
@@ -62,6 +64,8 @@ private static String[] groupers = {
   }
 
   /**
+   * @aibrief Clears the 'dictionary' and 'values' hashtables.
+   *
    * Clears the 'dictionary' and 'values' hashtables
    */
   public void reset() {
@@ -71,6 +75,9 @@ private static String[] groupers = {
     init();
   }
   
+  /**
+   * @aibrief True if char c is a terminal symbol.
+   */
   public static boolean isTerminal(char c) {
     for (int i = 0; i < terminals.length; i++)
       if (terminals[i].charAt(0) == c)
@@ -78,6 +85,9 @@ private static String[] groupers = {
     return false;
   }
 
+  /**
+   * @aibrief True if string s is a recognized operator.
+   */
   public static boolean isOperator(String s) {
     for (int i = 0; i < operators.length; i++)
       if (operators[i].equals(s))
@@ -85,6 +95,9 @@ private static String[] groupers = {
     return false;
   }
 
+  /**
+   * @aibrief True if char c is valid input; throws Unexpected otherwise.
+   */
   public static boolean isValid(char c) throws Unexpected {
 	  if ((int) c==32) return true; // space
     for (int i = 0; i < unexpected.length; i++)
@@ -95,6 +108,9 @@ private static String[] groupers = {
     return true;
   }
 
+  /**
+   * @aibrief True if char c is an ASCII letter.
+   */
   public static boolean isLetter(char c) {
     if ( (c >= 'A') && (c <= 'Z'))
       return true;
@@ -104,12 +120,18 @@ private static String[] groupers = {
       return false;
   }
 
+  /**
+   * @aibrief True if char c is a digit or decimal point.
+   */
   public static boolean isDigit(char c) {
     if ( ( (c <= '9') && (c >= '0')) || (c == '.'))
       return true;
     return false;
   }
 
+  /**
+   * @aibrief True if string s parses as a number.
+   */
   public static boolean isNumber(String s) {
     try {
       return true;
@@ -119,6 +141,9 @@ private static String[] groupers = {
     }
   }
 
+  /**
+   * @aibrief True if string s is a recognized function name.
+   */
   public static boolean isFunction(String s) {
     for (int i = 0; i < functions.length; i++)
       if (functions[i].equals(s))
@@ -126,28 +151,43 @@ private static String[] groupers = {
     return false;
   }
 
+  /**
+   * @aibrief True if string s is a variable (letter-led, not a function).
+   */
   public static boolean isVariable(String s) {
     if (!isLetter(s.charAt(0)))
       return false;
     return!isFunction(s);
   }
 
+  /**
+   * @aibrief True if string s is an open parenthesis.
+   */
   public static boolean isOpenParenthesis(String s) {
     if (s.compareTo("(") == 0)
       return true;
     return false;
   }
 
+  /**
+   * @aibrief True if string s is a close parenthesis.
+   */
   public static boolean isCloseParenthesis(String s) {
     if (s.compareTo(")") == 0)
       return true;
     return false;
   }
 
+  /**
+   * @aibrief True if string s is an operand (neither function nor operator).
+   */
   public static boolean isOperand(String s) {
     return !isFunction(s) && !isOperator(s);
   }
 
+  /**
+   * @aibrief Operator precedence for string s (higher binds tighter).
+   */
   public static int priority(String s) {
     if (s.compareTo("+") == 0)
       return 1;
@@ -164,6 +204,8 @@ private static String[] groupers = {
   }
 
   /**
+   * @aibrief Checks/consolidates a leading unary +/- in vector v.
+   *
    * checks vector v as a unary expression; throws out leading
    * + signs, incorporates - sign if there's a following operand. 
    * Returns true or false.
@@ -190,6 +232,8 @@ private static String[] groupers = {
   }
 
   /**
+   * @aibrief Consolidates a power (^) binary expression at index ind.
+   *
    * determines if v(ind-1) v(ind) v(ind+1) consitutes a power 
    * binary expression and if so replaces it with a word. Always
    * check this before checking for other binary expressions.
@@ -225,6 +269,8 @@ private static String[] groupers = {
   }
 
   /**
+   * @aibrief Consolidates a valid binary expression at index ind.
+   *
    * determines if v(ind-1) v(ind) v(ind+1) consitutes a valid 
    * binary expression and if so replaces it with a word
    */
@@ -255,6 +301,8 @@ private static String[] groupers = {
 
 
   /**
+   * @aibrief Consolidates a function/argument pair at index ind.
+   *
    * determines if v(ind) v(ind+1) consitutes a function/arg pair
    * and if so replaces it with a word
    */
@@ -292,6 +340,8 @@ private static String[] groupers = {
   }
 
   /**
+   * @aibrief Recursively analyze v, resolving innermost parentheses first.
+   *
    * Recursively analyze the vector v which contains our 
    * expression: consolidate innermost parenthetical expression
    * and analyse parentless stuff.
@@ -492,6 +542,8 @@ private static String[] groupers = {
   }
 
   /**
+   * @aibrief Evaluates dictionary entries in order, storing results in 'values'.
+   *
    * Goes through the 'dictionary' and puts successively computed
    * numerical values in the 'values' hashtable. 
    *
@@ -507,6 +559,9 @@ private static String[] groupers = {
   }
 
   // following seem to be debugging aids.
+  /**
+   * @aibrief Debugging aid: print the tokens of vector v.
+   */
   public static void printV(Vector<String> v) {
 	    System.out.println("Printing vector:");
 	    for (int i = 0; i < v.size(); i++)
@@ -555,6 +610,9 @@ private static String inToPostFix(Vector<String> f) {
 
 }
 
+/**
+ * @aibrief Exception for an unrecognized binary operator.
+ */
 class UnrecognizedBinary
     extends ParserException {
 
@@ -562,6 +620,9 @@ class UnrecognizedBinary
 	serialVersionUID = 1L;
 }
 
+/**
+ * @aibrief Exception for unmatched parentheses in an expression.
+ */
 class UnmatchedParenthesis
     extends ParserException {
 
@@ -569,6 +630,9 @@ class UnmatchedParenthesis
 	serialVersionUID = 1L;
 }
 
+/**
+ * @aibrief Exception for two consecutive operators in an expression.
+ */
 class TwoOperatorsInARow
     extends ParserException {
 

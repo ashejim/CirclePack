@@ -5,6 +5,8 @@ import math.Mobius;
 import math.Point3D;
 
 /**
+ * @aibrief Represents circles as points in de Sitter space (Minkowski R^{3,1}).
+ *
  * Using de Sitter space is a potential alternative
  * to spherical representation of circles. This 
  * is inspired by the work of Phil Bowers and 
@@ -58,12 +60,17 @@ public class DeSitter {
 		t=1/n;
 	}
 	
+	/**
+	 * @aibrief Return the de Sitter (Lorentz) norm of this point.
+	 */
 	public double norm() {
 		double nsq=this.spacept.norm();
 		return Math.sqrt(Math.abs(nsq*nsq-this.t*this.t));
 	}
 	
 	/**
+	 * @aibrief Convert a de Sitter point to a spherical circle (CircleSimple).
+	 *
 	 * Convert a point in de Sitter space to a
 	 * spherical circle, center in (theta,phi) form.
 	 * @param dS, DeSitter
@@ -76,6 +83,8 @@ public class DeSitter {
 	}
 	
 	/**
+	 * @aibrief Return normalized copy so that x^2+y^2+z^2-t^2 = 1.
+	 *
 	 * normalize so that x^2+y^2+z^2-t^2 = 1.
 	 * @param dS DeSitter
 	 * @return new DeSitter
@@ -92,7 +101,9 @@ public class DeSitter {
 	}
 	
 	/**
-	 * Negative of Lorentz inner product of normalized 
+	 * @aibrief Inversive distance between circles via Lorentz inner product.
+	 *
+	 * Negative of Lorentz inner product of normalized
 	 * DsSitters gives the inversive distance between 
 	 * the associated circles.
 	 * @param dS1 DeSitter
@@ -106,8 +117,10 @@ public class DeSitter {
 	}
 
 	/**
+	 * @aibrief Return the 2x2 (Mobius) matrix representation of a de Sitter point.
+	 *
 	 * The matrix representation of point (x,y,z,t) in
-	 * Lorentz space is 
+	 * Lorentz space is
 	 *    [t+x , y+iz; y-iz , t-x1].
 	 * Its determinant is the negative of Lorentz norm.
 	 */ 
@@ -121,7 +134,9 @@ public class DeSitter {
 	}
 
 	/**
-	 * Ortho circle for any geometry; Given a triple of 
+	 * @aibrief Find the circle orthogonal to a triple of circles, any geometry.
+	 *
+	 * Ortho circle for any geometry; Given a triple of
 	 * circles (typically forming a face), find the 
 	 * common orthogonal circle. 
 	 * @param c0 CircleSimple
@@ -152,6 +167,8 @@ public class DeSitter {
 	}
 	
 	/**
+	 * @aibrief Act on a de Sitter point by Mobius m via m*dS*conj(m).
+	 *
 	 * We act on a point in de Sitter space with a Mobius
 	 * transformation: m*dS*conj(m). 
 	 * Since we normalize m to have det(m)=1, the determinant

@@ -233,6 +233,9 @@ public class CPdrawing extends JPanel implements MouseListener {
 	 * @param wide; int pixel width
 	 * @param high; int pixel height
 	 */
+	/**
+	 * @aibrief Resize the buffered image, copying old content, and refresh context.
+	 */
 	public BufferedImage resetCanvasSize(int wide,int high) {
 		BufferedImage bI=new BufferedImage(wide,high,BufferedImage.TYPE_INT_RGB);	
 		
@@ -256,6 +259,8 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
     /**
+     * @aibrief Recompute screen coords, factors, and stroke after size change.
+     *
      * After a change in real or pixel screen size, update.
      * If option==1, then just change for translations.
      * If option>1, also redo stroke, thresholds, etc.
@@ -285,6 +290,9 @@ public class CPdrawing extends JPanel implements MouseListener {
     
 	// GUI
 	// Some mouse events may first be picked off by parents of this CPcanvas
+	/**
+	 * @aibrief Handle double-click on canvas to switch the active packing.
+	 */
 	public void mouseReleased(MouseEvent e) {
 		if (e.getClickCount() >= 2) { // double click to change active packing
 			try {
@@ -308,6 +316,9 @@ public class CPdrawing extends JPanel implements MouseListener {
 		return antialiasing;
 	}
 	
+	/**
+	 * @aibrief Enable or disable the antialiasing rendering hint on the image context.
+	 */
 	public void setAntialiasing(boolean b) {
 		antialiasing = b;
 		if (antialiasing) {
@@ -322,11 +333,17 @@ public class CPdrawing extends JPanel implements MouseListener {
 		}
 	}
 
+	/**
+	 * @aibrief Toggle axis display on/off and repaint.
+	 */
 	public void toggleAxisMode() {
 		showAxis = !showAxis;
 		repaint();
 	}
 
+	/**
+	 * @aibrief Report whether axis display mode is on.
+	 */
 	/** determine if axes are active or not */
 	public boolean isAxisMode() {
 		return this.showAxis;
@@ -855,6 +872,8 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/**
+	 * @aibrief Repaint both the main and small canvasses for this packing.
+	 *
 	 * GUI stuff
 	 * 
 	 * Call for repaint of canvas and small canvas.
@@ -864,6 +883,8 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/**
+	 * @aibrief Paint the buffered image into the small canvas, adding axes if enabled.
+	 *
 	 * GUI stuff
 	 * 
 	 * CPDrawing directly manages only the small canvass. For more
@@ -925,6 +946,8 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/**
+	 * @aibrief Refresh the packing's Xtender tool buttons in the small canvas panel.
+	 *
 	 * GUI stuff
 	 * 
 	 * Update displayed Xtender tools (if any) for this packing
@@ -948,6 +971,9 @@ public class CPdrawing extends JPanel implements MouseListener {
 		scp.cpInfo[pnum].repaint();
 	}
 	
+	/**
+	 * @aibrief Return a scaled thumbnail of the buffered image (or blank if none).
+	 */
 	public Image getThumbnailImage(){
 	    if(packImage != null)
 	      return packImage.getScaledInstance(
@@ -982,6 +1008,8 @@ public class CPdrawing extends JPanel implements MouseListener {
 	
 
 	/**
+	 * @aibrief Set the small canvas label from packData.fileName and geometry.
+	 *
 	 * GUI stuff
 	 * 
 	 * Update small canvas pack label using 'packData.fileName'.
@@ -1016,6 +1044,8 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 	
 	/**
+	 * @aibrief Reset screen, view, and clear the canvas for a new packing.
+	 *
 	 * Call if new packing has been put in place; clear/reset the screen
 	 * and 'dispOptions'.
 	 */
@@ -1102,6 +1132,8 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/** converts real world double x to pixel double
+	 * @aibrief Convert a real-world x coordinate to a pixel x as a double.
+	 *
 	 * @param x
 	 * @return double
 	 */
@@ -1110,6 +1142,8 @@ public class CPdrawing extends JPanel implements MouseListener {
 	}
 
 	/** converts real world double x to pixel double
+	 * @aibrief Convert a real-world y coordinate to a pixel y as a double.
+	 *
 	 * @param x
 	 * @return double
 	 */

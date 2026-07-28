@@ -105,6 +105,8 @@ public class SchEdgeData {
 	}
 	
 	/**
+	 * @aibrief Compute the next three schwarzians from the first n-3 uzians.
+	 *
 	 * Given 'uzians' (indexed from 1), compute the
 	 * next three schwarzians based on u1,u2,...,u{n-3}
 	 * @param uzians double[], indexed from 1
