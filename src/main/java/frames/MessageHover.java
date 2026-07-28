@@ -71,7 +71,7 @@ import input.ShellManager;
 		}
 
 		/**
-		 * @brief Create the shell pane, scratch area, split pane, and command line.
+		 * @aibrief Create the shell pane, scratch area, split pane, and command line.
 		 * Create all the components
 		 */
 		public void initComponents() {
@@ -123,7 +123,7 @@ import input.ShellManager;
 		}
 		
 		/**
-		 * @brief Load the shell/scratch split pane for the hovering frame.
+		 * @aibrief Load the shell/scratch split pane for the hovering frame.
 		 */
 		public void loadHover() {
 			this.removeAll();
@@ -137,7 +137,7 @@ import input.ShellManager;
 		}
 		
 		/**
-		 * @brief Load split pane plus command line for the locked frame.
+		 * @aibrief Load split pane plus command line for the locked frame.
 		 */
 		public void loadLocked() {
 			this.removeAll();
@@ -150,7 +150,7 @@ import input.ShellManager;
 		}
 
 		/**
-		 * @brief Set the shell pane text, wrapping it with the HTML header/footer.
+		 * @aibrief Set the shell pane text, wrapping it with the HTML header/footer.
 		 * @param passedText
 		 */
 		public void setText(String passedText) {
@@ -159,7 +159,7 @@ import input.ShellManager;
 		}
 		
 		/**
-		 * @brief Refresh the shell pane from ShellManager history and scroll to bottom.
+		 * @aibrief Refresh the shell pane from ShellManager history and scroll to bottom.
 		 * Arranged like this to try to avoid timing/thread conflicts
 		 *
 		 * TODO: when history gets too long, this may be causing time delays (6/2013)
@@ -178,7 +178,7 @@ import input.ShellManager;
 		}
 		
 		/**
-		 * @brief Handle shell hyperlink events: copy a command, show tooltip, or clear it.
+		 * @aibrief Handle shell hyperlink events: copy a command, show tooltip, or clear it.
 		 * TODO: Not implemented when 'MsgFrame' window was replaced by 'ShellManager'
 		 *
 		 * When the user clicks on a previous command in the 'historyPane', copy

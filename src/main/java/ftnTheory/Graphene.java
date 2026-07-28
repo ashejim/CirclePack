@@ -32,7 +32,7 @@ import util.StringUtil;
 import util.UtilPacket;
 
 /**
- * @brief Pack extender modeling carbon "graphene" sheets as duals of circle packings.
+ * @aibrief Pack extender modeling carbon "graphene" sheets as duals of circle packings.
  *
  * Pack Extender to experiment with a "graphene" model of
  * circle packing. Here one considers the geometry that
@@ -126,7 +126,7 @@ public class Graphene extends PackExtender {
 	}
 
 	/**
-	 * @brief Build the per-face 'carbonEnergies' vector and update it.
+	 * @aibrief Build the per-face 'carbonEnergies' vector and update it.
 	 *
 	 * create and fill 'carbonEnergies' vector
 	 * and update it
@@ -140,7 +140,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and execute user commands for the graphene model.
+	 * @aibrief Parse and execute user commands for the graphene model.
 	 *
 	 * This is were the user's commands are "parsed"
 	 */
@@ -539,7 +539,7 @@ public class Graphene extends PackExtender {
 	}
 
 	/**
-	 * @brief Update every carbon's radii, overlaps, bond, angle, and energy data.
+	 * @aibrief Update every carbon's radii, overlaps, bond, angle, and energy data.
 	 *
 	 * Have 'carbonEnergies' update their radii and overlaps,
 	 * then update their bond, angle, and energy data.
@@ -551,7 +551,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief Color faces, vertices, and edges by their energy via red ramps.
+	 * @aibrief Color faces, vertices, and edges by their energy via red ramps.
 	 *
 	 * Color coding of faces, vertices, and edges.
 	 * CAUTION: calling routine must insure that 
@@ -607,7 +607,7 @@ public class Graphene extends PackExtender {
 	// ========= energy computations ===============
 	
 	/**
-	 * @brief Sum ring energies over all vertices for the adjust routine.
+	 * @aibrief Sum ring energies over all vertices for the adjust routine.
 	 *
 	 * Just energy total for adjust routine.
 	 * CAUTION: calling routine must insure that 'CarbonEnergy'
@@ -621,7 +621,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief Compute energy contributions and top contributors, set colors, report totals.
+	 * @aibrief Compute energy contributions and top contributors, set colors, report totals.
 	 *
 	 * Compute various energy contributions, max
 	 * contributors, set colors, report results.
@@ -707,7 +707,7 @@ public class Graphene extends PackExtender {
 	}
 
 	/**
-	 * @brief Total ring energy over all vertices, filling 'colorVec' with an energy ramp.
+	 * @aibrief Total ring energy over all vertices, filling 'colorVec' with an energy ramp.
 	 *
 	 * Total energy with current parameters and relaxedBond.
 	 * fill 'colorVec' with ramp of energies by vertex.
@@ -727,7 +727,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief Energy of the ring of carbons around v (bonds, angles, anglesum).
+	 * @aibrief Energy of the ring of carbons around v (bonds, angles, anglesum).
 	 *
 	 * Return energy for the ring of carbons around v. This is
 	 * in bonds, angles at the carbons, and anglesum at v.
@@ -761,7 +761,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief Euclidean inradius of face f from its intended edge lengths.
+	 * @aibrief Euclidean inradius of face f from its intended edge lengths.
 	 *
 	 * Find the euclidean inradius for face f
 	 * @param p
@@ -779,7 +779,7 @@ public class Graphene extends PackExtender {
 	// ********************* calculus stuff ********************************
 	
 	/**
-	 * @brief Bond length between carbons of faces with radii <r,s,t> and <r,t,u>.
+	 * @aibrief Bond length between carbons of faces with radii <r,s,t> and <r,t,u>.
 	 *
 	 * Compute bond length for carbons associated with faces having
 	 * radii <r,s,t> and <r,t,u>.
@@ -794,7 +794,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief Cosine of the bond angle at r for radii {r,t,u}.
+	 * @aibrief Cosine of the bond angle at r for radii {r,t,u}.
 	 *
 	 * Cosine of bond angle at r, radii {r,t,u}
 	 * @param r,t,u, radii
@@ -817,7 +817,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief Angle energy for radii {r,s,t,u,v}.
+	 * @aibrief Angle energy for radii {r,s,t,u,v}.
 	 *
 	 * Angle energy
 	 * @param r, s, t, u, v radii
@@ -914,7 +914,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief Gradient of the total energy with respect to each vertex radius.
+	 * @aibrief Gradient of the total energy with respect to each vertex radius.
 	 *
 	 * traditional, needs work to recall the computation
 	 *
@@ -985,7 +985,7 @@ public class Graphene extends PackExtender {
 	/******************** stitch stuff ****************************/
 	
 	/**
-	 * @brief Apply a single N/S 'Stitch' to the packing at the relevant pole.
+	 * @aibrief Apply a single N/S 'Stitch' to the packing at the relevant pole.
 	 *
 	 * Given a 'Stitch' (N or S, not P), then apply it to
 	 * 'packData'. This may be called several times; ultimately
@@ -1064,7 +1064,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief After a stitch, fix combinatorics, set radii/aims, repack, layout, and display.
+	 * @aibrief After a stitch, fix combinatorics, set radii/aims, repack, layout, and display.
 	 *
 	 * After a stitch action, need to fix things up.
 	 */
@@ -1105,7 +1105,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse flag segments into a vector of 'Stitch' add-ons.
+	 * @aibrief Parse flag segments into a vector of 'Stitch' add-ons.
 	 *
 	 * Parse strings and create add-ons to vector of 'Stitch's.
 	 * Calling routines checks if initial pasting is specified.
@@ -1150,7 +1150,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief Build 'stitchBase' by cutting and adjoining two rotated hex half-planes.
+	 * @aibrief Build 'stitchBase' by cutting and adjoining two rotated hex half-planes.
 	 *
 	 * Create and store 'stitchBase' packing and half-planes. The 'basePack'
 	 * is n generations of hex. Cut two half planes 'leftPack' and 'rightPack' 
@@ -1232,7 +1232,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief Process a stitch vector (start anew or append) and return the full new list.
+	 * @aibrief Process a stitch vector (start anew or append) and return the full new list.
 	 *
 	 * Process a vector of stitches, which may start anew or
 	 * add to current stitches. Either way, return the full new 
@@ -1307,7 +1307,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/**
-	 * @brief Cut a half-plane from a rotated packing, returning it as a new PackData.
+	 * @aibrief Cut a half-plane from a rotated packing, returning it as a new PackData.
 	 *
 	 * We cut a "half-plane" out. Given a packing (laid out)
 	 * and with alpha = 1 at origin, rotate by 'angle', cut 
@@ -1402,7 +1402,7 @@ public class Graphene extends PackExtender {
 	}
 	
 	/********************************************
-	 * @brief Utility class holding one stitch instruction (pole key, mode, angles).
+	 * @aibrief Utility class holding one stitch instruction (pole key, mode, angles).
 	 *
 	 * Utility class:
 	 * Holds stitch instructions: 'key' is N or S for north/south
@@ -1458,7 +1458,7 @@ public class Graphene extends PackExtender {
 		}
 		
 		/**
-		 * @brief Return the pole/paste key (N, S, or P).
+		 * @aibrief Return the pole/paste key (N, S, or P).
 		 *
 		 * What is the pole designation?
 		 * @return String, one of S N or P
@@ -1468,7 +1468,7 @@ public class Graphene extends PackExtender {
 		}
 		
 		/**
-		 * @brief Return the stitch mode.
+		 * @aibrief Return the stitch mode.
 		 *
 		 * What is the mode?
 		 * @return int
@@ -1492,7 +1492,7 @@ public class Graphene extends PackExtender {
 	}
 
 	/********************************************
-	 * @brief Utility class holding one carbon atom's bond lengths, angles, and energies.
+	 * @aibrief Utility class holding one carbon atom's bond lengths, angles, and energies.
 	 *
 	 * Utility class:
 	 * Holds data on atom in a molecule: bond lengths,
@@ -1531,7 +1531,7 @@ public class Graphene extends PackExtender {
 		}
 
 		/**
-		 * @brief Recompute this carbon's radii, angles, and bond lengths.
+		 * @aibrief Recompute this carbon's radii, angles, and bond lengths.
 		 *
 		 * Update local data, e.g., when radii or overlaps change.
 		 */
@@ -1577,7 +1577,7 @@ public class Graphene extends PackExtender {
 		}
 
 		/**
-		 * @brief Sum of the three bond angles (should equal 2pi).
+		 * @aibrief Sum of the three bond angles (should equal 2pi).
 		 *
 		 * Each bond angle is the complement of a vertex angle in
 		 * the face, so their sum should always be 2pi.
@@ -1588,7 +1588,7 @@ public class Graphene extends PackExtender {
 		}
 		
 		/**
-		 * @brief Atom energy: sum of angle energies from bond lengths and angles.
+		 * @aibrief Atom energy: sum of angle energies from bond lengths and angles.
 		 *
 		 * The atom energy is the sum of 'angle' energies from
 		 * bond lengths and bond angles.
@@ -1605,7 +1605,7 @@ public class Graphene extends PackExtender {
 		}
 		
 		/**
-		 * @brief Bond length associated with vertex v (edge opposite v).
+		 * @aibrief Bond length associated with vertex v (edge opposite v).
 		 *
 		 * If v is a vert, return the associated bond length, namely,
 		 * that for dual to edge opposite v. 
@@ -1621,7 +1621,7 @@ public class Graphene extends PackExtender {
 		}
 
 		/**
-		 * @brief Bond energy associated with vertex v.
+		 * @aibrief Bond energy associated with vertex v.
 		 *
 		 * If v is a vert, return the associated bond energy
 		 * @param v int
@@ -1638,7 +1638,7 @@ public class Graphene extends PackExtender {
 		}
 		
 		/**
-		 * @brief Angle energy at vertex v within this face.
+		 * @aibrief Angle energy at vertex v within this face.
 		 *
 		 * If v is a vert, return the associated angle energy in
 		 * this face.
@@ -1657,7 +1657,7 @@ public class Graphene extends PackExtender {
 	}
 
 	/**
-	 * @brief Register this extender's command structures for help/catalog.
+	 * @aibrief Register this extender's command structures for help/catalog.
 	 *
 	 * Override method for cataloging command structures
 	 */

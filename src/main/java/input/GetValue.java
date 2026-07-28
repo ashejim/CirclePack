@@ -36,7 +36,7 @@ public class GetValue {
 	}
 	
 	/**
-	 * @brief Find the integer value specified by a string (number or variable)
+	 * @aibrief Find the integer value specified by a string (number or variable)
 	 */
 	public static Integer get1Integer(String str) throws VarException {
 		if (str==null) 
@@ -59,7 +59,7 @@ public class GetValue {
 	}
 
 	/**
-	 * @brief Build a Complex from real/imaginary strings (numbers or variables)
+	 * @aibrief Build a Complex from real/imaginary strings (numbers or variables)
 	 */
 	public static Complex get1Complex(String re,String im) throws VarException {
 		Double x=null;

@@ -145,7 +145,7 @@ public class ScriptManager implements ActionListener {
 	}
 
 	/**
-	 * @brief Repopulate the whole display from the top script and data nodes.
+	 * @aibrief Repopulate the whole display from the top script and data nodes.
 	 *
 	 * Used only when new script is loaded; this
 	 * is 'repopulateRecurse' from the top nodes,
@@ -174,7 +174,7 @@ public class ScriptManager implements ActionListener {
 	//	    }};
 
 	/**
-	 * @brief Recursively rebuild the StackBox display under a tree node.
+	 * @aibrief Recursively rebuild the StackBox display under a tree node.
 	 *
 	 * Recursively repopulate the script 'StackBox's
 	 */
@@ -217,7 +217,7 @@ public class ScriptManager implements ActionListener {
 	}
 
 	/**
-	 * @brief Rebuild the script toolbar and modes from named/XY commands and modes.
+	 * @aibrief Rebuild the script toolbar and modes from named/XY commands and modes.
 	 *
 	 * Clear the script 'toolVector', 'toolBar', and vector of
 	 * 'scriptMode's. Refill toolBar with clones of the script
@@ -953,7 +953,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * @brief Reset the 'next' command node, clearing the former one first.
+	  * @aibrief Reset the 'next' command node, clearing the former one first.
 	  *
 	  * Need to cancel former nextCmdNode??
 	  */
@@ -1045,7 +1045,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * @brief Accept all pending edits across the tree (used before saving).
+	  * @aibrief Accept all pending edits across the tree (used before saving).
 	  *
 	  * When saving, need to first resolve all open
 	  * edit decisions; for now, accept them all.
@@ -1312,7 +1312,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * @brief Get the command string for a named command in the script.
+	  * @aibrief Get the command string for a named command in the script.
 	  *
 	  * Get command string for a named command in script:
 	  * mode=0, first character of name matches first char of key
@@ -1405,7 +1405,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * @brief Execute the inline command in nextCmdNode, then advance 'next'.
+	  * @aibrief Execute the inline command in nextCmdNode, then advance 'next'.
 	  *
 	  * Execute the (inline) command given in nextCmdNode and then
 	  * reset nextCmdNode.
@@ -1445,7 +1445,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * @brief Notify tree model listeners that the structure at a path changed.
+	  * @aibrief Notify tree model listeners that the structure at a path changed.
 	  */
 	 protected void fireTreeStructureChanged(TreePath path) {
 		 int length = treeModelListeners.size();
@@ -1457,7 +1457,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * @brief Notify tree model listeners that a node was inserted at the path.
+	  * @aibrief Notify tree model listeners that a node was inserted at the path.
 	  *
 	  * Notify listeners that a new object exists at the given path.
 	  * path is the TreePath to the node inserted
@@ -1480,7 +1480,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * @brief Notify tree model listeners that a child was removed from the path.
+	  * @aibrief Notify tree model listeners that a child was removed from the path.
 	  *
 	  * Notify listeners that the path given has had a child deleted. path is the
 	  * TreePath to the Parent of the deleted node
@@ -1530,7 +1530,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * @brief True if a script working file has been loaded.
+	  * @aibrief True if a script working file has been loaded.
 	  * @return boolean
 	  */
 	 public boolean isScriptLoaded() {
@@ -1541,7 +1541,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * @brief Dispatch script toolbar/button actions (load, new, next, save, etc.).
+	  * @aibrief Dispatch script toolbar/button actions (load, new, next, save, etc.).
 	  *
 	  * Actions initiated in the 'scriptAction' panel
 	  * and button presses come through this method.
@@ -1729,7 +1729,7 @@ public class ScriptManager implements ActionListener {
 	 }
 
 	 /**
-	  * @brief Return the root CPTreeNode.
+	  * @aibrief Return the root CPTreeNode.
 	  *
 	  * Use: Returns the root CPTreeNode.
 	  */
@@ -1737,7 +1737,7 @@ public class ScriptManager implements ActionListener {
 		 return rootNode;
 	 }
 	 /**
-	  * @brief Toggle whether all command boxes are open or closed.
+	  * @aibrief Toggle whether all command boxes are open or closed.
 	  *
 	  * Toggle 'cmdOpenMode' (whether all command boxes are open or closed)
 	  */

@@ -145,14 +145,14 @@ public class FileDialogs {
 	}
 	
 	/**
-	 * @brief Open a save dialog for the given file type
+	 * @aibrief Open a save dialog for the given file type
 	 */
 	public static File saveDialog(int type,boolean swDir) {
 		return saveDialog(type,swDir,null);
 	}
 
 	/**
-	 * @brief Open a save dialog for the given file type with a message string
+	 * @aibrief Open a save dialog for the given file type with a message string
 	 */
 	public static File saveDialog(int type,boolean swDir,String actStr) {
 		JFileChooser dbox = new JFileChooser();
@@ -269,7 +269,7 @@ public class FileDialogs {
 	// Various filters for reading/writing
 
 	/**
-	 * @brief File filter accepting CirclePack script files (.cmd/.xmd/.cps)
+	 * @aibrief File filter accepting CirclePack script files (.cmd/.xmd/.cps)
 	 *
 	 * CirclePack script write file filter
 	 */
@@ -287,7 +287,7 @@ public class FileDialogs {
 
 
 	/**
-	 * @brief File filter accepting subdivision rules (.r) files
+	 * @aibrief File filter accepting subdivision rules (.r) files
 	 *
 	 * Subdivision rules file, a la Bill Floyd's software
 	 */
@@ -303,7 +303,7 @@ public class FileDialogs {
 
 
 	/**
-	 * @brief File filter accepting PostScript (.ps) files
+	 * @aibrief File filter accepting PostScript (.ps) files
 	 *
 	 * PostScript write file filter
 	 */
@@ -318,7 +318,7 @@ public class FileDialogs {
 	}
 	
 	/**
-	 * @brief File filter accepting JPG (.jpg) files
+	 * @aibrief File filter accepting JPG (.jpg) files
 	 *
 	 * jpg write file filter
 	 */
@@ -333,7 +333,7 @@ public class FileDialogs {
 	}
 	
 	/**
-	 * @brief File filter accepting packing files (.p/.q/.off/.pl)
+	 * @aibrief File filter accepting packing files (.p/.q/.off/.pl)
 	 *
 	 * Packing read file filter
 	 */
@@ -352,7 +352,7 @@ public class FileDialogs {
 	}
 	
 	/**
-	 * @brief File filter accepting all files (data files)
+	 * @aibrief File filter accepting all files (data files)
 	 *
 	 * Packing read file filter
 	 */
@@ -367,7 +367,7 @@ public class FileDialogs {
 	}
 	
 	/** 
-	 * @brief File filter accepting ToolBox (.myt) files
+	 * @aibrief File filter accepting ToolBox (.myt) files
 	 *
 	 * File filter for ToolBox files (i.e., MyTool's)
 	 */
@@ -382,7 +382,7 @@ public class FileDialogs {
 	}
 	
 	/**
-	 * @brief File filter accepting 'PackExtender' .class files
+	 * @aibrief File filter accepting 'PackExtender' .class files
 	 *
 	 * File filter for 'PackExtender' .class files
 	 */

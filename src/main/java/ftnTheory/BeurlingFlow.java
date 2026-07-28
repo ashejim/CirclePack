@@ -56,7 +56,7 @@ public class BeurlingFlow extends PackExtender {
 	}
 			
 	/**
-	 * @brief Parse and execute extender commands (getDom, ftn, flow)
+	 * @aibrief Parse and execute extender commands (getDom, ftn, flow)
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
@@ -128,7 +128,7 @@ public class BeurlingFlow extends PackExtender {
 	}
 	
 	/**
-	 * @brief Set which Beurling function 'h' to use (0 = 'Function' tab)
+	 * @aibrief Set which Beurling function 'h' to use (0 = 'Function' tab)
 	 *
 	 * Set the function mode: 0 (default) means use that specified
 	 * in 'Function' tab; others must be defined explicitly in
@@ -212,7 +212,7 @@ public class BeurlingFlow extends PackExtender {
 	}
 	
 	/**
-	 * @brief Register this extender's command structures for help/catalog
+	 * @aibrief Register this extender's command structures for help/catalog
 	 *
 	 * Override method for cataloging command structures
 	 */

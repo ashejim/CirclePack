@@ -25,7 +25,7 @@ public class ForSpec {
 	}
 	
 	/**
-	 * @brief Set (and return) 'itNum' based on data
+	 * @aibrief Set (and return) 'itNum' based on data
 	 *
 	 * Set (and return) 'itNum' based on data
 	 */

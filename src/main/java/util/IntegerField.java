@@ -43,7 +43,7 @@ public class IntegerField extends JPanel {
 	protected boolean titled; // Whether or not this instance has a title.
 
 	/**
-	 * @brief Create a non-titled instance.
+	 * @aibrief Create a non-titled instance.
 	 *
 	 * Create a non-titled instance.
 	 */
@@ -67,7 +67,7 @@ public class IntegerField extends JPanel {
 	}
 	
 	/**
-	 * @brief Lay out the interface, with optional title label over the text field
+	 * @aibrief Lay out the interface, with optional title label over the text field
 	 *
 	 * Lay out the interface. The title is displayed as a label over the text
 	 * field below.
@@ -101,7 +101,7 @@ public class IntegerField extends JPanel {
 	}
 	
 	/**
-	 * @brief Clear the associated text field.
+	 * @aibrief Clear the associated text field.
 	 *
 	 * Clear the associated text field.
 	 */

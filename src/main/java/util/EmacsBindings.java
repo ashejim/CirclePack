@@ -23,7 +23,7 @@ import javax.swing.text.TextAction;
 public class EmacsBindings {
 	
 	/**
-	 * @brief Install emacs-like Ctrl-key bindings on the given JComponent.
+	 * @aibrief Install emacs-like Ctrl-key bindings on the given JComponent.
 	 */
 	public static void addEmacsBindings(JComponent jcomponent) {
 		InputMap inputMap = jcomponent.getInputMap();
@@ -76,7 +76,7 @@ public class EmacsBindings {
         }
 
         /**
-         * @brief The operation to perform when this action is triggered.
+         * @aibrief The operation to perform when this action is triggered.
          *
          * The operation to perform when this action is triggered. */
         public void actionPerformed(ActionEvent e) {

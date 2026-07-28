@@ -39,7 +39,7 @@ public class DispOptions {
 	}
 	
 	/**
-	 * @brief Set display options for circles/faces to their defaults
+	 * @aibrief Set display options for circles/faces to their defaults
 	 *
 	 * Set display options for circles/faces to their defaults
 	 */

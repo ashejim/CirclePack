@@ -29,7 +29,7 @@ import util.StringUtil;
 import util.UtilPacket;
 
 /**
- * @brief Linked list of 'HalfEdge's for DCEL structures, with parsing.
+ * @aibrief Linked list of 'HalfEdge's for DCEL structures, with parsing.
  *
  * Linked list for 'HalfEdge's for DCEL structures.
  * @author kens, September 2020
@@ -47,7 +47,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 
 	// Constructors
 	/**
-	 * @brief Create list for packing 'p' initialized with a single 'edge'.
+	 * @aibrief Create list for packing 'p' initialized with a single 'edge'.
 	 */
 	public HalfLink(PackData p,HalfEdge edge) {
 		super();
@@ -57,7 +57,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * @brief Create list for 'p' by parsing 'datastr'; 'xtd' allows extended edges.
+	 * @aibrief Create list for 'p' by parsing 'datastr'; 'xtd' allows extended edges.
 	 *
 	 * @param p @see PackData
 	 * @param datastr String
@@ -72,7 +72,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * @brief Create list for 'p' by parsing 'datastr' (no extended edges).
+	 * @aibrief Create list for 'p' by parsing 'datastr' (no extended edges).
 	 *
 	 * not necessarily extended edges
 	 * @param p PackData
@@ -83,7 +83,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * @brief Create list for 'p' from parse-string vector 'items'; 'xtd' allows extended edges.
+	 * @aibrief Create list for 'p' from parse-string vector 'items'; 'xtd' allows extended edges.
 	 *
 	 * Allow extended edges
 	 * @param p
@@ -102,7 +102,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * @brief Create list for 'p' from parse-string vector 'items' (no extended edges).
+	 * @aibrief Create list for 'p' from parse-string vector 'items' (no extended edges).
 	 *
 	 * not necessarily extended edges
 	 * @param p PackData
@@ -113,7 +113,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * @brief Convert an 'EdgeLink' into a (legal) 'HalfLink'.
+	 * @aibrief Convert an 'EdgeLink' into a (legal) 'HalfLink'.
 	 *
 	 * Convert 'EdgeLink' to (legal) 'HalfLink'.
 	 * @param elink
@@ -130,7 +130,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * @brief Convert a 'FaceLink' into a 'HalfLink' (each face's base edge).
+	 * @aibrief Convert a 'FaceLink' into a 'HalfLink' (each face's base edge).
 	 *
 	 * Convert 'FaceLink' to 'HalfLink'.
 	 * @param p
@@ -145,7 +145,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * @brief Build closed redChain from a tile's augmented edges at given vertex.
+	 * @aibrief Build closed redChain from a tile's augmented edges at given vertex.
 	 *
 	 * Return closed redChain comprising the augmented
 	 * edges of the given tile, starting with the 
@@ -190,7 +190,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * @brief Extract chain of contiguous 'HalfEdge's from a 'NodeLink'.
+	 * @aibrief Extract chain of contiguous 'HalfEdge's from a 'NodeLink'.
 	 *
 	 * Chain of successive 'HalfEdge's extracted from 'NodeLink'.
 	 * Check if successive entries form halfedge's; stop when 
@@ -218,7 +218,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * @brief Create list by parsing 'datastr', not associated with any PackData.
+	 * @aibrief Create list by parsing 'datastr', not associated with any PackData.
 	 *
 	 * Not associated with any PackData
 	 * @param datastr
@@ -228,7 +228,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * @brief Create an empty list with no associated packing.
+	 * @aibrief Create an empty list with no associated packing.
 	 *
 	 * empty list, no packing
 	 */
@@ -239,7 +239,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * @brief Create an empty list associated with packing 'p'.
+	 * @aibrief Create an empty list associated with packing 'p'.
 	 *
 	 * Initiate empty list
 	 * @param p
@@ -249,7 +249,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * @brief Add 'edge', enforcing legal vertex indices when 'packData' is set.
+	 * @aibrief Add 'edge', enforcing legal vertex indices when 'packData' is set.
 	 *
 	 * Enforce legality of vertex indices if 'packData' is not null. 'edge.v' 
 	 * and 'edge.w' must be positive.
@@ -268,7 +268,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * @brief Remove all occurrences of edge <v,w> or <w,v>; return count.
+	 * @aibrief Remove all occurrences of edge <v,w> or <w,v>; return count.
 	 *
 	 * Remove occurances of <v,w> or <w,v>
 	 * @param es EdgeSimple
@@ -289,7 +289,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 	
 	/**
-	 * @brief Remove all occurrences of the given 'edge' object; return count.
+	 * @aibrief Remove all occurrences of the given 'edge' object; return count.
 	 *
 	 * Remove occurrences of 'edge', irrespective of order
 	 * @param edge EdgeSimple
@@ -312,7 +312,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	}
 
 	/**
-	 * @brief Parse 'datastr' and add resulting edges to this list; 'xtd' allows extended.
+	 * @aibrief Parse 'datastr' and add resulting edges to this list; 'xtd' allows extended.
 	 *
 	 * Add links to this list (if it is associated with PackData); 
 	 * flag also permits 'extended' edges.
@@ -326,7 +326,7 @@ public class HalfLink extends LinkedList<HalfEdge> {
 	} // this.size();
 	
 	/**
-	 * @brief Parse item strings and add resulting edges; 'xtd' allows extended edges.
+	 * @aibrief Parse item strings and add resulting edges; 'xtd' allows extended edges.
 	 *
 	 * Add links to this list (if it is associated with PackData).
 	 * Don't have much to do now, since we don't have string

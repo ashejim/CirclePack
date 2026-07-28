@@ -46,7 +46,7 @@ public class MobiusFrame extends JFrame implements ActionListener {
 	private JPanel genMobPanel;
 
 	/**
-	 * @brief Create the Mobius frame with side-pair and general Mobius tool handlers.
+	 * @aibrief Create the Mobius frame with side-pair and general Mobius tool handlers.
 	 */
 	public MobiusFrame() {
 		super();
@@ -150,7 +150,7 @@ public class MobiusFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * @brief Handle button actions: update side-pairings, optionally re-layout first.
+	 * @aibrief Handle button actions: update side-pairings, optionally re-layout first.
 	 */
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
@@ -169,7 +169,7 @@ public class MobiusFrame extends JFrame implements ActionListener {
 	}
 	
     /**
-     * @brief Window adapter that hides the Mobius frame on close.
+     * @aibrief Window adapter that hides the Mobius frame on close.
      */
     class WAdapter extends WindowAdapter {
     	public void windowClosing(WindowEvent wevt) {

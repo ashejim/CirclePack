@@ -126,7 +126,7 @@ public class Percolation extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and execute user commands for percolation experiments.
+	 * @aibrief Parse and execute user commands for percolation experiments.
 	 *
 	 * Process commands routed to 'PR'
 	 */
@@ -357,7 +357,7 @@ public class Percolation extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse corner vertices, optionally with a fractional 4th corner along an edge.
+	 * @aibrief Parse corner vertices, optionally with a fractional 4th corner along an edge.
 	 */
 	public NodeLink getCornerX(String str) {
 		str=str.trim();
@@ -779,7 +779,7 @@ public class Percolation extends PackExtender {
 	}
 	
 	/**
-	 * @brief Register this extender's command structures for help/catalog.
+	 * @aibrief Register this extender's command structures for help/catalog.
 	 *
 	 * Override method for cataloging command structures
 	 */

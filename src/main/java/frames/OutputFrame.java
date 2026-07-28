@@ -11,7 +11,7 @@ import panels.PostPanel;
 import panels.WritePackPanel;
 
 /**
- * @brief Frame with tabbed panels for saving pack data, tailored data, and images.
+ * @aibrief Frame with tabbed panels for saving pack data, tailored data, and images.
  */
 public class OutputFrame extends javax.swing.JFrame {
 
@@ -57,7 +57,7 @@ public class OutputFrame extends javax.swing.JFrame {
 	}
 
 	/**
-	 * @brief Select the given output tab by index (bounds checked).
+	 * @aibrief Select the given output tab by index (bounds checked).
 	 */
 	public void setTab(int tab) {
 		if (tab<0 || tab>OutputTabbing.getComponentCount())
@@ -66,7 +66,7 @@ public class OutputFrame extends javax.swing.JFrame {
 	}
 	
 	/**
-	 * @brief Window adapter that hides the output frame on close.
+	 * @aibrief Window adapter that hides the output frame on close.
 	 */
 	class WAdapter extends WindowAdapter {
 	   	/**

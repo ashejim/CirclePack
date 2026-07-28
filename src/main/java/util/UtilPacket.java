@@ -5,7 +5,7 @@ import java.util.Vector;
 import complex.Complex;
 
 /**
- * @brief Utility class carrying data to/from subroutines (values, point lists, etc.).
+ * @aibrief Utility class carrying data to/from subroutines (values, point lists, etc.).
  *
  * Utility class to carry data to/from subroutines, especially,
  * e.g., angle sum computations, lists of points, etc.

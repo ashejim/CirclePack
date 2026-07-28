@@ -23,7 +23,7 @@ import komplex.EdgeSimple;
 import packing.PackData;
 
 /**
- * @brief Tabbed panel for editing the active packing's vlist/elist/flist.
+ * @aibrief Tabbed panel for editing the active packing's vlist/elist/flist.
  */
 public class LocListPanel extends JPanel implements ActionListener {
 

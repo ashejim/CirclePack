@@ -22,7 +22,7 @@ public class SplashFrame extends JFrame {
 
 	// Constructor
 	/**
-	 * @brief Create an undecorated splash frame sized to and centered on the image.
+	 * @aibrief Create an undecorated splash frame sized to and centered on the image.
 	 */
 	public SplashFrame(BufferedImage image){
 		// splashscreen shouldn't have a title bar
@@ -39,7 +39,7 @@ public class SplashFrame extends JFrame {
 	}	
 
 	/**
-	 * @brief Component that draws the splashscreen image.
+	 * @aibrief Component that draws the splashscreen image.
 	 * Component to actually display the splashscreen image.
 	 */
 	private class ImageComponent extends JComponent {
@@ -58,7 +58,7 @@ public class SplashFrame extends JFrame {
 		}
 
 		/**
-		 * @brief Draw the splashscreen image at the top-left of the component.
+		 * @aibrief Draw the splashscreen image at the top-left of the component.
 		 */
 		// called when the component needs to be drawn
 		public void paintComponent(Graphics g){

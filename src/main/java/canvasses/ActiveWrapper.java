@@ -91,7 +91,7 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 	// Calling the old versions (no arguments) will zoom by the old
 	// default amounts.
 	/**
-	 * @brief Zoom out by the default factor of 2.0.
+	 * @aibrief Zoom out by the default factor of 2.0.
 	 */
 	public void zoomOut() {
 		zoomOut(2.0D);
@@ -139,7 +139,7 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 	public void keyReleased(KeyEvent e) {} 
 	    // cuation: keyPressed desirable, since extraneous keyReleases might be caught. 
 	/**
-	 * @brief Handle key presses; execute next/keyed script command if a script is loaded.
+	 * @aibrief Handle key presses; execute next/keyed script command if a script is loaded.
 	 */
 	public void keyPressed(KeyEvent e) {
 		if (!(e.getComponent() instanceof ActiveWrapper)) // for correct window?
@@ -162,7 +162,7 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 	
 	// Methods required for MouseListener/MouseMotionListener
 	/**
-	 * @brief Dispatch mouse clicks to the active mode by button (1/2/3, with modifiers).
+	 * @aibrief Dispatch mouse clicks to the active mode by button (1/2/3, with modifiers).
 	 */
 	public void mouseClicked(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON2 ||
@@ -228,7 +228,7 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 
 	// MouseMotionListener
 	/**
-	 * @brief Forward mouse drags to the active mode.
+	 * @aibrief Forward mouse drags to the active mode.
 	 */
 	public void mouseDragged(MouseEvent e) {
 		activeMode.dragged(this,e);
@@ -249,7 +249,7 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 	}
 
 	/**
-	 * @brief Update the 'MainFrame' cursor coordinate indicator as the mouse moves.
+	 * @aibrief Update the 'MainFrame' cursor coordinate indicator as the mouse moves.
 	 */
 	// update cursor coordinate indicator in 'MainFrame'
 	public void mouseMoved(MouseEvent e) {
@@ -264,7 +264,7 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 	
 	//AF>>>//
 	/**
-	 * @brief Zoom in/out toward the cursor position based on mouse wheel rotation.
+	 * @aibrief Zoom in/out toward the cursor position based on mouse wheel rotation.
 	 */
 	// This implements cursor position dependent mouse wheel zooming.
 	// If the user rotates the mouse wheel away from them, the canvas
@@ -309,7 +309,7 @@ public class ActiveWrapper extends JPanel implements KeyListener,
 	//<<<AF//
 
 	/**
-	 * @brief Paint the current 'CPDrawing' image (and axes if enabled).
+	 * @aibrief Paint the current 'CPDrawing' image (and axes if enabled).
 	 *
 	 * Throw in correct 'CPDrawing' image
 	 */

@@ -61,7 +61,7 @@ public class RealField extends JPanel {
 	}
 	
 	/**
-	 * @brief Lay out the interface with optional title label over the text field.
+	 * @aibrief Lay out the interface with optional title label over the text field.
 	 *
 	 * Lay out the interface. The title is displayed
 	 * as a label over the text field below.
@@ -85,7 +85,7 @@ public class RealField extends JPanel {
 	}
 
 	/**
-	 * @brief Empty the field so it is just blank.
+	 * @aibrief Empty the field so it is just blank.
 	 *
 	 * Empty the field so it is just blank
 	 */

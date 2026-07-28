@@ -418,7 +418,7 @@ public class PostPanel extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * @brief Handle GO/flag buttons, JPG dumps, and checkbox state changes.
+	 * @aibrief Handle GO/flag buttons, JPG dumps, and checkbox state changes.
 	 */
 	public void actionPerformed(ActionEvent e){
 	 	String command = e.getActionCommand();
@@ -557,7 +557,7 @@ public class PostPanel extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * @brief Save old packing's post options and load the active packing's.
+	 * @aibrief Save old packing's post options and load the active packing's.
 	 *
 	 * Get postscript options from the active packing's postOptions
 	 */

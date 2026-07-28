@@ -48,7 +48,7 @@ public class zNumField extends JPanel {
 	}
 	
 	/**
-	 * @brief Build the GUI: optional title label over paired real/imaginary fields.
+	 * @aibrief Build the GUI: optional title label over paired real/imaginary fields.
 	 *
 	 * Layout in over/under form
 	 */
@@ -119,7 +119,7 @@ public class zNumField extends JPanel {
 	}
 	
 	/**
-	 * @brief Return the complex value from the real/imaginary fields, null on error.
+	 * @aibrief Return the complex value from the real/imaginary fields, null on error.
 	 */
 	public Complex getValue() {
 		try {

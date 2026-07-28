@@ -10,12 +10,12 @@ import geometry.HyperbolicMath;
 import packing.PackData;
 
 /**
- * @brief Static methods for building Doyle spiral packings and finding spiral parameters.
+ * @aibrief Static methods for building Doyle spiral packings and finding spiral parameters.
  */
 public class Exponential {
 
 	/**
-	 * @brief Compute radii/centers of a hexagonal Doyle spiral pack with parameters a,b>0.
+	 * @aibrief Compute radii/centers of a hexagonal Doyle spiral pack with parameters a,b>0.
 	 *
 	 * Compute radii of spiral pack with parameters a,b > 0. Unit circle 
 	 * at 0, tangent circle, radius a, on x-axis, circle, rad b, in first 
@@ -147,7 +147,7 @@ public class Exponential {
 	}
 
 	/**
-	 * @brief Compute the Doyle spiral point and parameters a,b from three tangent circles.
+	 * @aibrief Compute the Doyle spiral point and parameters a,b from three tangent circles.
 	 *
 	 * A circle C=C(r,z) whose disc is in the puncture plane has aspect 
 	 * ratio AR(C)= r/|z|. Any triple of eucl circles generates a Doyle 

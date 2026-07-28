@@ -62,7 +62,7 @@ public class FluidHoverPanel extends JPanel {
 	protected final FluidHoverPanel currentInstance = this; // For referencing from threads and subclasses.
 
 	/**
-	 * @brief Unusable no-arg constructor; a parent component is required.
+	 * @aibrief Unusable no-arg constructor; a parent component is required.
 	 *
 	 * The FluidHoverPanel must be constructed with a reference to its parent
 	 * component. Do not use this constructor.
@@ -178,7 +178,7 @@ public class FluidHoverPanel extends JPanel {
 	}
 	
 	/**
-	 * @brief Set the locked frame's state (e.g. Frame.NORMAL) if visible.
+	 * @aibrief Set the locked frame's state (e.g. Frame.NORMAL) if visible.
 	 *
 	 * Set the state of lockedFrame if it's visible. E.g., to
 	 * Frame.NORMAL

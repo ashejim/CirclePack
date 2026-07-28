@@ -134,7 +134,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 	}
 
 	/**
-	 * @brief Build the tabbed GUI: VEF data panels, pack data tree, and variable/slider controls.
+	 * @aibrief Build the tabbed GUI: VEF data panels, pack data tree, and variable/slider controls.
 	 */
 	public void createGUI() {
 		// TODO: Add empty borders around components for legible spacing.
@@ -648,7 +648,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 	}
 
 	/**
-	 * @brief Request this panel update its GUI to reflect the given packing.
+	 * @aibrief Request this panel update its GUI to reflect the given packing.
 	 * hack to request this object update its GUI. Should be removed
 	 * 	after the real PackDataListener system is implemented.
 	 */
@@ -872,7 +872,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * @brief Apply the vertex mark from the field to the chosen vertex.
+		 * @aibrief Apply the vertex mark from the field to the chosen vertex.
 		 */
 		public void putVertMark(PackData p) {
 			int vert = NodeLink.grab_one_vert(p, vertexChoiceField.getText());
@@ -883,7 +883,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * @brief Apply the face color from the field to the chosen face.
+		 * @aibrief Apply the face color from the field to the chosen face.
 		 */
 		public void putFaceColor(PackData p) {
 			int face = NodeLink.grab_one_vert(p, faceChoiceField.getText());
@@ -894,7 +894,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * @brief Apply the face mark from the field to the chosen face.
+		 * @aibrief Apply the face mark from the field to the chosen face.
 		 */
 		public void putFaceMark(PackData p) {
 			int face = NodeLink.grab_one_vert(p, faceChoiceField.getText());
@@ -905,7 +905,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * @brief Apply the tile color from the field to the chosen tile.
+		 * @aibrief Apply the tile color from the field to the chosen tile.
 		 */
 		public void putTileColor(PackData p) {
 			int tindx = NodeLink.grab_one_vert(p, tileChoiceField.getText());
@@ -918,7 +918,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * @brief Apply the tile mark from the field to the chosen tile.
+		 * @aibrief Apply the tile mark from the field to the chosen tile.
 		 */
 		public void putTileMark(PackData p) {
 			int tindx = NodeLink.grab_one_vert(p, tileChoiceField.getText());
@@ -929,7 +929,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * @brief Apply the radius from the field to the chosen vertex.
+		 * @aibrief Apply the radius from the field to the chosen vertex.
 		 */
 		public void putRadius(PackData p) {
 			int vert = NodeLink.grab_one_vert(p, vertexChoiceField.getText());
@@ -940,7 +940,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * @brief Apply the red radius from the field to the chosen edge's red edge.
+		 * @aibrief Apply the red radius from the field to the chosen edge's red edge.
 		 */
 		public void putRedRadius(PackData p) {
 			HalfEdge he=HalfLink.grab_one_edge(p,edgeChoiceField.getText());
@@ -950,7 +950,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * @brief Apply the aim from the field to the chosen vertex.
+		 * @aibrief Apply the aim from the field to the chosen vertex.
 		 */
 		public void putAim(PackData p) {
 			int vert = NodeLink.grab_one_vert(p, vertexChoiceField.getText());
@@ -961,7 +961,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * @brief Apply the center (resolving variables) from the field to the chosen vertex.
+		 * @aibrief Apply the center (resolving variables) from the field to the chosen vertex.
 		 */
 		public void putCenter(PackData p) {
 			int vert = NodeLink.grab_one_vert(p, vertexChoiceField.getText());
@@ -984,7 +984,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * @brief Apply the red center (resolving variables) to the chosen edge's red edge.
+		 * @aibrief Apply the red center (resolving variables) to the chosen edge's red edge.
 		 */
 		public void putRedCenter(PackData p) {
 			HalfEdge he=HalfLink.grab_one_edge(p,edgeChoiceField.getText());
@@ -1007,7 +1007,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * @brief Parse and apply the inversive distance/overlap from the field to the chosen edge.
+		 * @aibrief Parse and apply the inversive distance/overlap from the field to the chosen edge.
 		 */
 		public void putInvDist(PackData p) {
 			EdgeSimple edge=EdgeLink.grab_one_edge(p,edgeChoiceField.getText());
@@ -1049,7 +1049,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 		}
 		
 		/**
-		 * @brief Apply the schwarzian value from the field to the chosen edge.
+		 * @aibrief Apply the schwarzian value from the field to the chosen edge.
 		 */
 		public void putSchwarzian(PackData p) {
 			EdgeSimple edge=EdgeLink.grab_one_edge(p,edgeChoiceField.getText());
@@ -1073,7 +1073,7 @@ public class TabbedPackDataHover extends FluidHoverPanel implements ActionListen
 	}
 	
 	/**
-	 * @brief Dispatch field-edit actions to the matching UpdateActions put* method.
+	 * @aibrief Dispatch field-edit actions to the matching UpdateActions put* method.
 	 */
 	public void actionPerformed(ActionEvent evt) {
 		String cmd=evt.getActionCommand();

@@ -34,14 +34,14 @@ public class StackArea extends JPanel implements Scrollable {
 	}
 
 	/**
-	 * @brief Preferred size of the scrollable viewport.
+	 * @aibrief Preferred size of the scrollable viewport.
 	 */
 	public Dimension getPreferredScrollableViewportSize() {
 		return new Dimension(550,400);
 	}
 
 	/**
-	 * @brief Pixels to shift for a unit scroll increment.
+	 * @aibrief Pixels to shift for a unit scroll increment.
 	 */
 	public int getScrollableUnitIncrement(Rectangle visibleRect,
 			int orientation, int direction) {
@@ -49,7 +49,7 @@ public class StackArea extends JPanel implements Scrollable {
 	}
 
 	/**
-	 * @brief Pixels to shift for a block scroll increment.
+	 * @aibrief Pixels to shift for a block scroll increment.
 	 */
 	public int getScrollableBlockIncrement(Rectangle visibleRect,
 			int orientation, int direction) {
@@ -60,7 +60,7 @@ public class StackArea extends JPanel implements Scrollable {
 	}
 
 	/**
-	 * @brief Whether the panel tracks the viewport width (true).
+	 * @aibrief Whether the panel tracks the viewport width (true).
 	 */
 	public boolean getScrollableTracksViewportWidth() {
 		// TODO Auto-generated method stub
@@ -68,7 +68,7 @@ public class StackArea extends JPanel implements Scrollable {
 	}
 
 	/**
-	 * @brief Whether the panel tracks the viewport height (false).
+	 * @aibrief Whether the panel tracks the viewport height (false).
 	 */
 	public boolean getScrollableTracksViewportHeight() {
 		// TODO Auto-generated method stub

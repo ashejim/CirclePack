@@ -321,7 +321,7 @@ public class ScriptModel {
 	}
 
 	/**
-	 * @brief Creates the default "starter" script file and returns its path.
+	 * @aibrief Creates the default "starter" script file and returns its path.
 	 *
 	 * Creates the default "starter" script file and
 	 * returns a string giving its path.

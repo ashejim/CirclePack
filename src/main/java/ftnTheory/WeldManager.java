@@ -36,7 +36,7 @@ import util.RandPaths;
 import util.StringUtil;
 
 /**
- * @brief PackExtender for conformal welding of packings along boundaries
+ * @aibrief PackExtender for conformal welding of packings along boundaries
  *
  * Extender for managing "conformal welding" manipulations.
  * 
@@ -155,7 +155,7 @@ public class WeldManager extends PackExtender {
 	}
 	
 	/**
-	 * @brief Build the welding map arguments matching bdry verts of p1, p2
+	 * @aibrief Build the welding map arguments matching bdry verts of p1, p2
 	 *
 	 * Record corresponding arguments in weldmapDomain/Range
 	 * associated with welding between maximal packings p1 and p2 
@@ -279,7 +279,7 @@ public class WeldManager extends PackExtender {
 	}
 	
 	/**
-	 * @brief Write the weld map to a file (matlab, map/PATH, or postscript)
+	 * @aibrief Write the weld map to a file (matlab, map/PATH, or postscript)
 	 *
 	 * Output weld map, stored as arguments in weldmapDomain/Range,
 	 * to 'filename'. The output file is matlab or 'map' form. 
@@ -393,7 +393,7 @@ public class WeldManager extends PackExtender {
 	} 
 
 	/**
-	 * @brief Split p along a closed edgepath; return the complex to its left
+	 * @aibrief Split p along a closed edgepath; return the complex to its left
 	 *
 	 * Goal is to create new packing by splitting p along a
 	 * given closed oriented edgepath --- this path plays 
@@ -480,7 +480,7 @@ public class WeldManager extends PackExtender {
 	}		
 
 	/**
-	 * @brief Read weld map and write vertex match/add instructions to weld list
+	 * @aibrief Read weld map and write vertex match/add instructions to weld list
 	 *
 	 * Reads 'weldmapfile' and writes "weld list" information
 	 * in temp file 'weldListFileName'. This list gives 
@@ -847,7 +847,7 @@ public class WeldManager extends PackExtender {
 	} 
 
 	/**
-	 * @brief Walk both boundaries matching/adding verts per the weld list
+	 * @aibrief Walk both boundaries matching/adding verts per the weld list
 	 *
 	 * Go counterclockwise around p, clockwise around q,
 	 * starting at v and w, resp, until pasting directions 
@@ -962,7 +962,7 @@ public class WeldManager extends PackExtender {
 	} 
 
 	/**
-	 * @brief Add a new boundary vertex between v and v_next
+	 * @aibrief Add a new boundary vertex between v and v_next
 	 *
 	 * Adds a new vert on boundary between v and v_next.
 	 * Assumes both v, v_next are on boundary and 
@@ -1012,7 +1012,7 @@ public class WeldManager extends PackExtender {
 	}
 
 	/**
-	 * @brief Full welding pipeline: build weld list, weld, and optionally adjoin
+	 * @aibrief Full welding pipeline: build weld list, weld, and optionally adjoin
 	 *
 	 * Most comprehensive of procedures: does all steps.
 	 * 
@@ -1063,7 +1063,7 @@ public class WeldManager extends PackExtender {
 	} 
 
 	/**
-	 * @brief Parse and dispatch this extender's user commands
+	 * @aibrief Parse and dispatch this extender's user commands
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
@@ -1280,7 +1280,7 @@ public class WeldManager extends PackExtender {
 	}
 	
 	/**
-	 * @brief Override method for cataloging command structures
+	 * @aibrief Override method for cataloging command structures
 	 *
 	 * Override method for cataloging command structures
 	 */

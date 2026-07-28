@@ -44,7 +44,7 @@ public class UtilThread extends Thread{
     }
     
     /**
-     * @brief Thread body: update the label with an incrementing counter each second.
+     * @aibrief Thread body: update the label with an incrementing counter each second.
      */
     public void run(){
         

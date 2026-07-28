@@ -178,7 +178,7 @@ public class WritePackPanel extends javax.swing.JPanel {
 	}
 	
 	/**
-	 * @brief Poll the checkboxes and build the write flag string
+	 * @aibrief Poll the checkboxes and build the write flag string
 	 *
 	 * This polls the checkboxes and returns the string with
 	 * the corresponding flags. See 'write' in 'CmdDetails'
@@ -235,7 +235,7 @@ public class WritePackPanel extends javax.swing.JPanel {
 	}
 
 	/**
-	 * @brief Run the write/append/script dialog and issue the write command
+	 * @aibrief Run the write/append/script dialog and issue the write command
 	 */
 	protected int displayWriteDialog(){
 

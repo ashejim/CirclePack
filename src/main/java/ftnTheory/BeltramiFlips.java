@@ -82,7 +82,7 @@ public class BeltramiFlips extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and dispatch this extender's commands (color_e, try_flip, go).
+	 * @aibrief Parse and dispatch this extender's commands (color_e, try_flip, go).
 	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs) {
 		Vector<String> items = null;
@@ -398,7 +398,7 @@ public class BeltramiFlips extends PackExtender {
 	}
 	
 	/**
-	 * @brief Register this extender's command descriptions for help/parsing.
+	 * @aibrief Register this extender's command descriptions for help/parsing.
 	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();
@@ -411,7 +411,7 @@ public class BeltramiFlips extends PackExtender {
 }
 
 /**
- * @brief Holds an edge with its computed illegality value and display color.
+ * @aibrief Holds an edge with its computed illegality value and display color.
  */
 class EdgeData {
 	EdgeSimple edge;
@@ -427,13 +427,13 @@ class EdgeData {
 }
 
 /**
- * @brief Comparator ordering EdgeData by descending illegality.
+ * @aibrief Comparator ordering EdgeData by descending illegality.
  */
 class EDComparator implements Comparator<EdgeData> {
 
     // Comparator interface requires defining compare method.
     /**
-     * @brief Compare two EdgeData so higher illegality sorts first.
+     * @aibrief Compare two EdgeData so higher illegality sorts first.
      */
     public int compare(EdgeData ed1,EdgeData ed2) {
     	if (ed1.illegality>ed2.illegality)

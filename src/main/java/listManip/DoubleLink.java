@@ -78,7 +78,7 @@ public class DoubleLink extends LinkedList<Double> {
 	}
 	
 	/**
-	 * @brief Add a Double if non-null.
+	 * @aibrief Add a Double if non-null.
 	 */
 	public boolean add(Double X) {
 		if (X!=null)

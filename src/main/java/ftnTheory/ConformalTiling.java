@@ -218,7 +218,7 @@ public class ConformalTiling extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and dispatch this extender's tiling commands (subtile, build_sub, disp, etc.).
+	 * @aibrief Parse and dispatch this extender's tiling commands (subtile, build_sub, disp, etc.).
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
@@ -2621,7 +2621,7 @@ public class ConformalTiling extends PackExtender {
 	}
 		
 	/**
-	 * @brief Register this extender's commands and their help/usage strings.
+	 * @aibrief Register this extender's commands and their help/usage strings.
 	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();

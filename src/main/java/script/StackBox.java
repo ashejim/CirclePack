@@ -224,7 +224,7 @@ MouseListener {
 	}
 	
 	/**
-	 * @brief Repopulate the parent StackBox subtree.
+	 * @aibrief Repopulate the parent StackBox subtree.
 	 */
 	public void redisplayParentSB() {
 		CPTreeNode par=(CPTreeNode)tNode.getParent();
@@ -236,7 +236,7 @@ MouseListener {
 	}
 	
 	/**
-	 * @brief Open this StackBox for display (if it can have children).
+	 * @aibrief Open this StackBox for display (if it can have children).
 	 *
 	 * Open this StackBox for display purposes; may have
 	 * ancestors to open as well.
@@ -252,7 +252,7 @@ MouseListener {
 	}
 	
 	/**
-	 * @brief Close this StackBox for display, hiding its child boxes.
+	 * @aibrief Close this StackBox for display, hiding its child boxes.
 	 *
 	 * Close this StackBox for display purposes; redisplay
 	 * should shuck stackbox children, though they may remain open.
@@ -268,7 +268,7 @@ MouseListener {
 	}
 	
 	/**
-	 * @brief Create an open (+) or close (-) node button by type.
+	 * @aibrief Create an open (+) or close (-) node button by type.
 	 */
 	public JButton ModeButton(int type) {
 		Dimension dim=new Dimension(20,20);
@@ -355,7 +355,7 @@ MouseListener {
 	}
 	
 	/**
-	 * @brief Build the "add a node" submenu of command/text/section items.
+	 * @aibrief Build the "add a node" submenu of command/text/section items.
 	 */
 	public JMenu buildAddMenu() {
 		JMenu addMenu=new JMenu("add a node");
@@ -400,7 +400,7 @@ MouseListener {
 	}
 
 	/**
-	 * @brief Scroll 'stackScroll' so this stackBox is in view.
+	 * @aibrief Scroll 'stackScroll' so this stackBox is in view.
 	 *
 	 * Attempt to 'setViewPosition' of 'stackScroll' to show the
 	 * 'Rectangle' of this stackBox.
@@ -468,7 +468,7 @@ MouseListener {
 	public void mouseExited(MouseEvent e) {}
 	
 	/**
-	 * @brief Dispatch button/menu actions: open/close, edit, delete, export.
+	 * @aibrief Dispatch button/menu actions: open/close, edit, delete, export.
 	 *
 	 * Handle various open/close options, pass edit
 	 * options to 'editAction'

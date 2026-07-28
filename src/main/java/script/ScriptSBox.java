@@ -76,7 +76,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
-	 * @brief Build the panels, borders, and fields for the script box.
+	 * @aibrief Build the panels, borders, and fields for the script box.
 	 *
 	 * 'leftPanel' is empty or has accept/cancel info
 	 */
@@ -192,7 +192,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
-	 * @brief Repopulate 'mainPanel' for display or edit mode.
+	 * @aibrief Repopulate 'mainPanel' for display or edit mode.
 	 *
 	 * repopulate 'mainPanel'
 	 */
@@ -253,7 +253,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
-	 * @brief Rebuild the script box and re-add child boxes if open.
+	 * @aibrief Rebuild the script box and re-add child boxes if open.
 	 */
 	public void redisplaySB(int wide) { // rebuild headerPanel each time
 		myWidth=wide;
@@ -271,7 +271,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 
 	/**
-	 * @brief Set description and tag fields when a new script is loaded.
+	 * @aibrief Set description and tag fields when a new script is loaded.
 	 *
 	 * Since script node is only created once, script loader calls
 	 * this to set 'scriptDescription' and 'scriptTagname' when a
@@ -287,7 +287,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
-	 * @brief Open this script box and redisplay it.
+	 * @aibrief Open this script box and redisplay it.
 	 */
 	public void openSB() {
 		isOpen=true;
@@ -295,7 +295,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
-	 * @brief Switch the script box into edit mode.
+	 * @aibrief Switch the script box into edit mode.
 	 */
 	public void startEdit() {
 		if (currentMode==EDIT) return;
@@ -322,7 +322,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
-	 * @brief Cancel edits and return the script box to display mode.
+	 * @aibrief Cancel edits and return the script box to display mode.
 	 */
 	public void cancelEdit() {
 		if (currentMode!=EDIT) return;
@@ -346,7 +346,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 		
 	/**
-	 * @brief Accept edits to title/description/tag and return to display mode.
+	 * @aibrief Accept edits to title/description/tag and return to display mode.
 	 */
 	public void acceptEdit() {
 		if (currentMode!=EDIT) return;
@@ -384,7 +384,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
-	 * @brief Delete all the children nodes and repopulate.
+	 * @aibrief Delete all the children nodes and repopulate.
 	 *
 	 * Delete all the children nodes.
 	 */
@@ -409,7 +409,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
-	 * @brief Remove all the contents, leaving empty CPSCRIPT.
+	 * @aibrief Remove all the contents, leaving empty CPSCRIPT.
 	 *
 	 * Remove all the contents, leaving empty CPSCRIPT
 	 */
@@ -437,7 +437,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}
 	
 	/**
-	 * @brief Handle level and map-mode checkbox changes.
+	 * @aibrief Handle level and map-mode checkbox changes.
 	 *
 	 * Listens to various checkbox and sets 'inline' status
 	 * */
@@ -516,7 +516,7 @@ public class ScriptSBox extends StackBox implements ItemListener {
 	}	
 	
 	/**
-	 * @brief Return the header (upperPanel) height, or 10 on error.
+	 * @aibrief Return the header (upperPanel) height, or 10 on error.
 	 */
 	public int getHeaderHeight() {
 		try {

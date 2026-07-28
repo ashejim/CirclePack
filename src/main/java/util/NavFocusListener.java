@@ -17,7 +17,7 @@ import javax.swing.text.JTextComponent;
  *         exampleTextComponent));
  */
 /**
- * @brief FocusListener that keeps the caret visible in a non-editable text component
+ * @aibrief FocusListener that keeps the caret visible in a non-editable text component
  */
 public class NavFocusListener implements FocusListener {
 	JTextComponent attachToThis;

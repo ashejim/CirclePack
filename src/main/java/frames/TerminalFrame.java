@@ -250,7 +250,7 @@ public class TerminalFrame extends JFrame {
 	}
 
 	/**
-	 * @brief Minimal XML escaping for attribute/element content.
+	 * @aibrief Minimal XML escaping for attribute/element content.
 	 * minimal XML escaping for attribute/element content
 	 */
 	private static String xml(String s) {
@@ -259,7 +259,7 @@ public class TerminalFrame extends JFrame {
 	}
 
 	/**
-	 * @brief Window adapter that hides the terminal frame on close.
+	 * @aibrief Window adapter that hides the terminal frame on close.
 	 */
 	class WAdapter extends WindowAdapter {
 		public void windowClosing(WindowEvent wevt) {

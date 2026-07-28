@@ -329,7 +329,7 @@ public class SetBuilderParser {
 	}
 	
 	/**
-	 * @brief Does 'status' indicate success?
+	 * @aibrief Does 'status' indicate success?
 	 */
 	public boolean isOkay() {
 		return status;

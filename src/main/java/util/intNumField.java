@@ -42,7 +42,7 @@ public class intNumField extends JPanel {
 	}
 	
 	/**
-	 * @brief Build the GUI: optional title label over the integer text field.
+	 * @aibrief Build the GUI: optional title label over the integer text field.
 	 *
 	 * Layout in over/under form
 	 */

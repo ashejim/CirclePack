@@ -29,7 +29,7 @@ public class TileLink extends LinkedList<Integer> {
 	
 	// Constructors
 	/**
-	 * @brief Build tile list for 'TileData' td by parsing tiles from data string.
+	 * @aibrief Build tile list for 'TileData' td by parsing tiles from data string.
 	 */
 	public TileLink(TileData td,String datastr) {
 		super();
@@ -39,7 +39,7 @@ public class TileLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Build tile list for td seeded with single index n (if a valid tile).
+	 * @aibrief Build tile list for td seeded with single index n (if a valid tile).
 	 */
 	public TileLink(TileData td,int n) {
 		super();
@@ -48,7 +48,7 @@ public class TileLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Build tile list for td from string tokens; empty input defaults to 'a' (all tiles).
+	 * @aibrief Build tile list for td from string tokens; empty input defaults to 'a' (all tiles).
 	 */
 	public TileLink(TileData td,Vector<String> items) {
 		super();
@@ -63,7 +63,7 @@ public class TileLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Empty utility list with no 'TileData' specified.
+	 * @aibrief Empty utility list with no 'TileData' specified.
 	 *
 	 * utility, no 'TileData' specified
 	 */

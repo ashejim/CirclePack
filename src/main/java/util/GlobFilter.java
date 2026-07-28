@@ -19,7 +19,7 @@ class GlobFilter implements FilenameFilter {
 	}
 
 	/**
-	 * @brief Accept a file name if it matches any of the glob patterns
+	 * @aibrief Accept a file name if it matches any of the glob patterns
 	 */
 	@Override
 	public boolean accept(File dir, String name) {

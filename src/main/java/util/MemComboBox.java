@@ -204,7 +204,7 @@ public class MemComboBox extends JComboBox<String>
 	}
 	
 	/**
-	 * @brief set script choose border to black, neutral
+	 * @aibrief set script choose border to black, neutral
 	 *
 	 * set script choose border to black, neutral
 	 */
@@ -213,7 +213,7 @@ public class MemComboBox extends JComboBox<String>
 	}
 	
 	/**
-	 * @brief set script chooser border to green, indicating success in loading
+	 * @aibrief set script chooser border to green, indicating success in loading
 	 *
 	 * set script chooser border to green, indicating success in loading
 	 */
@@ -222,7 +222,7 @@ public class MemComboBox extends JComboBox<String>
 	}
 	
 	/**
-	 * @brief set script chooser border to red, indicating failure in loading
+	 * @aibrief set script chooser border to red, indicating failure in loading
 	 *
 	 * set script chooser border to red, indicating failure in loading
 	 */
@@ -231,7 +231,7 @@ public class MemComboBox extends JComboBox<String>
 	}
 	
 	/**
-	 * @brief Handle key release: fire on Enter, else auto-complete from the list
+	 * @aibrief Handle key release: fire on Enter, else auto-complete from the list
 	 */
 	// This seems to give the typing completion feature
 	public void keyReleased(KeyEvent e) {

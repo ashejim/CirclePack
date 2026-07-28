@@ -91,7 +91,7 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 	}
 	
 	/**
-	 * @brief Build the vertex, edge, face, tile, and pack-data-tree panels.
+	 * @aibrief Build the vertex, edge, face, tile, and pack-data-tree panels.
 	 */
 	public void initComponents() {
 		this.setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
@@ -338,7 +338,7 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 	}
 	
 	/**
-	 * @brief Load just the vertex panel for the hovering frame.
+	 * @aibrief Load just the vertex panel for the hovering frame.
 	 */
 	public void loadHover() {
 		this.removeAll();
@@ -346,14 +346,14 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 	}
 
 	/**
-	 * @brief Refresh vertex data for the active pack before hovering.
+	 * @aibrief Refresh vertex data for the active pack before hovering.
 	 */
 	public void hoverCall() {
 		update_vert(CirclePack.cpb.getActivePackData(),true);
 	}
 
 	/**
-	 * @brief Load all data panels and the data tree for the locked frame.
+	 * @aibrief Load all data panels and the data tree for the locked frame.
 	 */
 	public void loadLocked() {
 		this.removeAll();
@@ -382,7 +382,7 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 	}
 
 	/**
-	 * @brief Update the vertex data fields for the chosen or active vertex.
+	 * @aibrief Update the vertex data fields for the chosen or active vertex.
 	 * @param p
 	 * @param useActiveVert, boolean: true, use packings active vert
 	 */
@@ -437,7 +437,7 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 	}
 	
 	/**
-	 * @brief Update the face data fields for the chosen face.
+	 * @aibrief Update the face data fields for the chosen face.
 	 */
 	public void update_face(PackData p) {
 		if (p==null || !p.status)
@@ -481,7 +481,7 @@ public class PackDataHover extends HoverPanel implements ActionListener {
 	}
 	
 	/**
-	 * @brief Dispatch update actions from the data panels' buttons/fields.
+	 * @aibrief Dispatch update actions from the data panels' buttons/fields.
 	 */
 	public void actionPerformed(ActionEvent evt) {
 		String cmd=evt.getActionCommand();

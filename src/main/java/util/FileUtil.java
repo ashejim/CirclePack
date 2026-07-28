@@ -283,7 +283,7 @@ public class FileUtil {
 	}
 
 	/**
-	 * @brief Return list of files in the given directory.
+	 * @aibrief Return list of files in the given directory.
 	 *
 	 * Return list of files in the given directory.
 	 */
@@ -381,7 +381,7 @@ public class FileUtil {
 	}
 	
 	/**
-	 * @brief Return true if the file at 'urlString' path exists and is readable.
+	 * @aibrief Return true if the file at 'urlString' path exists and is readable.
 	 */
 	public static boolean AddressReadable(String urlString) {
 		return Files.isReadable(Paths.get(urlString));

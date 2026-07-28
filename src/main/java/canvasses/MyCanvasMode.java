@@ -87,7 +87,7 @@ public class MyCanvasMode extends MyTool {
 	}
 
 	/**
-	 * @brief Rebuild this mode's 'menuItem' and re-register it in the proper modes vector.
+	 * @aibrief Rebuild this mode's 'menuItem' and re-register it in the proper modes vector.
 	 *
 	 * update 'menuItem' for this mode, replace it in the
 	 * appropriate modes vector for the mode popup menu.
@@ -124,7 +124,7 @@ public class MyCanvasMode extends MyTool {
 	}
 
 	/**
-	 * @brief Set this mode's primary command string (button 1), trimming/nulling empties.
+	 * @aibrief Set this mode's primary command string (button 1), trimming/nulling empties.
 	 */
 	public void setCmd(String cmdstr) {
 		if (cmdstr!=null) {
@@ -140,7 +140,7 @@ public class MyCanvasMode extends MyTool {
 	}
 	
 	/**
-	 * @brief Set the button-2 command string ('cmd2'), trimming/nulling empties.
+	 * @aibrief Set the button-2 command string ('cmd2'), trimming/nulling empties.
 	 */
 	public void setCmd2(String cd2) {
 		if (cd2!=null) {
@@ -155,7 +155,7 @@ public class MyCanvasMode extends MyTool {
 	}
 	
 	/**
-	 * @brief Set the button-3 command string ('cmd3'), trimming/nulling empties.
+	 * @aibrief Set the button-3 command string ('cmd3'), trimming/nulling empties.
 	 */
 	public void setCmd3(String cd3) {
 		if (cd3!=null) {
@@ -220,7 +220,7 @@ public class MyCanvasMode extends MyTool {
 	}
 	
 	/**
-	 * @brief Rotate the spherical view so the drag start point maps to the current point.
+	 * @aibrief Rotate the spherical view so the drag start point maps to the current point.
 	 */
 	// rotate sphere: 'ACTIVEHandler' holds data; this rotates so
 	//    handStartX/Y becomes handX/Y
@@ -271,7 +271,7 @@ public class MyCanvasMode extends MyTool {
 	}
 
 	/**
-	 * @brief Default button-1 action: run the mode command, else locate a circle.
+	 * @aibrief Default button-1 action: run the mode command, else locate a circle.
 	 *
 	 * Default mouse1 action: execute 'cpCommand'.
 	 * If this is null, display circle number(s).
@@ -294,7 +294,7 @@ public class MyCanvasMode extends MyTool {
 	}
 
 	/**
-	 * @brief Default button-2 action: run 'cmd2', else locate a face.
+	 * @aibrief Default button-2 action: run 'cmd2', else locate a face.
 	 *
 	 * Default mouse2 action is to display face indices.
 	 * If 'cmd2' is non-empty, then execute that.
@@ -317,7 +317,7 @@ public class MyCanvasMode extends MyTool {
 	}
 
 	/**
-	 * @brief Default button-3 action: run 'cmd3', else show the button-3 popup menu.
+	 * @aibrief Default button-3 action: run 'cmd3', else show the button-3 popup menu.
 	 *
 	 * Default mouse3 action: main.myt and canvas.myt tool
 	 * files may specify a popup menu for button 3;else
@@ -335,7 +335,7 @@ public class MyCanvasMode extends MyTool {
 	}
 	
 	/**
-	 * @brief On left press, record the drag start point when 'handy' translation is on.
+	 * @aibrief On left press, record the drag start point when 'handy' translation is on.
 	 */
 	public void pressed1(ActiveWrapper aW,MouseEvent e) {
 		if (handy) {
@@ -351,7 +351,7 @@ public class MyCanvasMode extends MyTool {
 	public void pressed3(ActiveWrapper aW,MouseEvent e) {}
 
 	/**
-	 * @brief On drag, rotate the sphere or translate the eucl/hyp view.
+	 * @aibrief On drag, rotate the sphere or translate the eucl/hyp view.
 	 */
 	public int dragged(ActiveWrapper aW,MouseEvent e) {
 		if (!handy) return 0;

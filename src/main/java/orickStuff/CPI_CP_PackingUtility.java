@@ -9,7 +9,7 @@ import packing.PackData;
 public class CPI_CP_PackingUtility extends CPI_PackingUtility{
 	
 	/**
-	 * @brief Normalize a PackData sphere packing via its ball sectors and write back.
+	 * @aibrief Normalize a PackData sphere packing via its ball sectors and write back.
 	 */
 	public static int normalize( PackData p) {
 		

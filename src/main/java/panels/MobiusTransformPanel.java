@@ -54,7 +54,7 @@ public class MobiusTransformPanel extends JFrame implements ActionListener {
     this.setTitle("Resulting Mobius transform");
   }
   /**
-   * @brief Parse the entered Mobius transform and show its type.
+   * @aibrief Parse the entered Mobius transform and show its type.
    */
   public void actionPerformed(ActionEvent e){
     try {

@@ -23,7 +23,7 @@ import circlePack.PackControl;
 import exceptions.ParserException;
 
 /**
- * @brief Tabbed panel for editing the global Vlist/Elist/Flist and syncing with CirclePack.
+ * @aibrief Tabbed panel for editing the global Vlist/Elist/Flist and syncing with CirclePack.
  */
 public class GlobalListPanel extends JPanel implements ActionListener {
 

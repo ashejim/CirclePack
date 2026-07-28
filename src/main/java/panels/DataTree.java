@@ -14,7 +14,7 @@ import images.CPIcon;
 import packing.PackData;
 
 /**
- * @brief Organizes packing data into hashtables and a JTree for 'Pack Info'.
+ * @aibrief Organizes packing data into hashtables and a JTree for 'Pack Info'.
  *
  * DataTree organizes the data on a packing in hashtables and
  * a tree for display in the 'Pack Info' button.
@@ -48,7 +48,7 @@ public class DataTree extends JPanel {
 	}
 
 	/**
-	 * @brief Rebuild the data tree view for packing 'p'.
+	 * @aibrief Rebuild the data tree view for packing 'p'.
 	 *
 	 * Execute 'pdata' and update packing data in 'DataPanel'.
 	 */
@@ -57,7 +57,7 @@ public class DataTree extends JPanel {
 	}
 
 	/**
-	 * @brief Build the JTree of packing data for "Pack Info".
+	 * @aibrief Build the JTree of packing data for "Pack Info".
 	 *
 	 * Initiates button, tree, and treescroll for "Pack Info" data.
 	 * Also used to update in 'updatePackingData'.
@@ -81,7 +81,7 @@ public class DataTree extends JPanel {
 	}
 
 	/**
-	 * @brief Bundle packing data into a nested hashtable for JTree display.
+	 * @aibrief Bundle packing data into a nested hashtable for JTree display.
 	 *
 	 *  Use:  Bundles up the data on packing in hashtable
 	 *  for display by a JTree.
@@ -204,7 +204,7 @@ public class DataTree extends JPanel {
 	}  
 
 	/**
-	 * @brief Return a text description of the packing's topological type.
+	 * @aibrief Return a text description of the packing's topological type.
 	 */
 	public static String setTopologyStr(PackData p) {
 		if (!p.status) 

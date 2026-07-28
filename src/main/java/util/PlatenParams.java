@@ -37,7 +37,7 @@ public class PlatenParams {
 	}
 		
 	/**
-	 * @brief set 'minR' (and possibly adjust 'maxR') subject to constraints
+	 * @aibrief set 'minR' (and possibly adjust 'maxR') subject to constraints
 	 */
 	/*
 	 * set 'minR' (and possibly adjust 'maxR') but with constraints

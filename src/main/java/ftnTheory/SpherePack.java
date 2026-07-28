@@ -64,7 +64,7 @@ public class SpherePack extends PackExtender {
 	}
 
 	/**
-	 * @brief Parse and dispatch this extender's user commands
+	 * @aibrief Parse and dispatch this extender's user commands
 	 */
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs) {
 		Vector<String> items = null;
@@ -100,7 +100,7 @@ public class SpherePack extends PackExtender {
 	}
 	
 	/**
-	 * @brief Dispose the auxiliary frame and clean up this extender
+	 * @aibrief Dispose the auxiliary frame and clean up this extender
 	 */
 	public void killMe() {
 		if (auxFrame!=null)
@@ -110,7 +110,7 @@ public class SpherePack extends PackExtender {
 	}
 	
 	/**
-	 * @brief Override method for cataloging command structures
+	 * @aibrief Override method for cataloging command structures
 	 *
 	 * Override method for cataloging command structures
 	 */

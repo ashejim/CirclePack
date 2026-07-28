@@ -34,7 +34,7 @@ public class SelectSpec {
 	// 'c' circles, 'f' faces, 't' tiles, 'e' edges
 	
 	/**
-	 * @brief Encoded comparison conditions: <, <=, >, >=, ==, != or none.
+	 * @aibrief Encoded comparison conditions: <, <=, >, >=, ==, != or none.
 	 */
 	enum  Condition {LT,LE,GT,GE,EQ,NE,NULL};
 	
@@ -55,7 +55,7 @@ public class SelectSpec {
 	}
 	
 	/**
-	 * @brief Parse a comparison operator string into the 'condition' field.
+	 * @aibrief Parse a comparison operator string into the 'condition' field.
 	 */
 	public void setCondition(String str) {
 		str=str.trim();
@@ -69,7 +69,7 @@ public class SelectSpec {
 	}
 	
 	/**
-	 * @brief Interchange inequalities to get target/value order (OBE).
+	 * @aibrief Interchange inequalities to get target/value order (OBE).
 	 *
 	 * OBE: interchange inequalities to get target/value order */
 	public void flipCondition() {

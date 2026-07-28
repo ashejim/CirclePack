@@ -153,7 +153,7 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * @brief Set the canvas dimension and re-lay out the frame.
+	 * @aibrief Set the canvas dimension and re-lay out the frame.
 	 */
 	public void layMeOut(Dimension dim) {
 		canvasDim=dim;
@@ -161,7 +161,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * @brief Re-lay out the frame and its canvas using 'canvasDim', after a size change.
+	 * @aibrief Re-lay out the frame and its canvas using 'canvasDim', after a size change.
 	 *
 	 * Lays out 'MainFrame' with the active canvas anew, as after
 	 * a size change. Adjust 'packImage' size (buffered image).
@@ -225,7 +225,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * @brief Update the title bar of 'activeFrame' with the active pack number and file.
+	 * @aibrief Update the title bar of 'activeFrame' with the active pack number and file.
 	 *
 	 * update title bar of 'activeFrame'
 	 */
@@ -285,7 +285,7 @@ public class MainFrame extends JFrame {
 	}
 		
 	/**
-	 * @brief Build the top toolbar with canvas mytools and the cursor-modes popup button.
+	 * @aibrief Build the top toolbar with canvas mytools and the cursor-modes popup button.
 	 *
 	 * Main menu bar for canvas operations, setting modes
 	 * like deletion, zoom, axes, etc., and region for cursor
@@ -325,7 +325,7 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * @brief Create the 'ActiveWrapper' canvas panel and set it up as a drop target.
+	 * @aibrief Create the 'ActiveWrapper' canvas panel and set it up as a drop target.
 	 *
 	 * create the panel containing the canvas itself
 	 */
@@ -358,7 +358,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * @brief Set/change the 'CPDrawing' associated with this 'ActiveFrame'.
+	 * @aibrief Set/change the 'CPDrawing' associated with this 'ActiveFrame'.
 	 *
 	 * Set/change the 'CPDrawing' associated with this 'ActiveFrame'
 	 */
@@ -367,7 +367,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * @brief Repaint the active screen and its small canvas version.
+	 * @aibrief Repaint the active screen and its small canvas version.
 	 *
 	 * This puts new image in the activeScreen and updates its
 	 * small version.
@@ -378,7 +378,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * @brief Swap in the current owl/progress button and reposition it.
+	 * @aibrief Swap in the current owl/progress button and reposition it.
 	 *
 	 * update owl/progress button to new state
 	 */
@@ -391,7 +391,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	/**
-	 * @brief Start the component listener for frame size changes.
+	 * @aibrief Start the component listener for frame size changes.
 	 *
 	 * Start the listener for frame size changes
 	 */
@@ -426,7 +426,7 @@ public class MainFrame extends JFrame {
 	}
 	 	
 	/**
-	 * @brief Window component listener that re-lays out the frame on resize.
+	 * @aibrief Window component listener that re-lays out the frame on resize.
 	 */
 	class ResizeAdapter extends ComponentAdapter {
 		  public void componentResized(ComponentEvent e) {

@@ -22,7 +22,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * @brief Serializes a DOM tree to a file or output stream (used when saving scripts).
+ * @aibrief Serializes a DOM tree to a file or output stream (used when saving scripts).
  */
 public class DOMSerializer {
   private String indent;
@@ -67,7 +67,7 @@ public class DOMSerializer {
   }
 
   /**
-   * @brief Write a single DOM node to the writer, recursing on children.
+   * @aibrief Write a single DOM node to the writer, recursing on children.
    *
    *  Use:  Writes the node content to the writer, recurses on any
    *    child nodes.

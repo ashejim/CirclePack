@@ -20,7 +20,7 @@ import circlePack.PackControl;
 import input.TrafficCenter;
 
 /**
- * @brief Panel with checkboxes/flags controlling how the packing is displayed.
+ * @aibrief Panel with checkboxes/flags controlling how the packing is displayed.
  */
 public class DispPanel extends javax.swing.JPanel implements ActionListener {
 

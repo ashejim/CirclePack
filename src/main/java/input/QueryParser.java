@@ -41,7 +41,7 @@ import util.ViewBox;
 public class QueryParser {
 	
 	/**
-	 * @brief Parse a '?'-prefixed query string and post the result as a message
+	 * @aibrief Parse a '?'-prefixed query string and post the result as a message
 	 */
 	public static int processQuery(PackData p,
 			Vector<String> queryStr,boolean forMsg) {

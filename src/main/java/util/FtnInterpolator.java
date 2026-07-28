@@ -46,7 +46,7 @@ public class FtnInterpolator {
 	}
 
 	/**
-	 * @brief Linearly interpolate to get the function value at parameter s
+	 * @aibrief Linearly interpolate to get the function value at parameter s
 	 */
 	public Complex interpValue(double s) {
 		s=(s+m2pi)%m2pi;

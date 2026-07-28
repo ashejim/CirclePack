@@ -39,7 +39,7 @@ public class MyToolBar extends JPanel implements MouseListener {
 	}
 
 	/**
-	 * @brief Handle background mouse events; right-click shows the tool popup menu.
+	 * @aibrief Handle background mouse events; right-click shows the tool popup menu.
 	 *
 	 * Just for popup menu on the bar's background; mouse events on
 	 * the tools themselves are handled elsewhere.

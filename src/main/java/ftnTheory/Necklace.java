@@ -62,7 +62,7 @@ public class Necklace extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and execute user commands for necklace constructions.
+	 * @aibrief Parse and execute user commands for necklace constructions.
 	 *
 	 * This is where the user's commands are "parsed"
 	 */
@@ -494,7 +494,7 @@ System.err.println("starting bottomHemi:");
 
 		
 	/**
-	 * @brief Register this extender's command structures for help/catalog.
+	 * @aibrief Register this extender's command structures for help/catalog.
 	 *
 	 * help info
 	 */

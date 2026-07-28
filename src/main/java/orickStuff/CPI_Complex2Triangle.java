@@ -131,7 +131,7 @@ public class CPI_Complex2Triangle {
     }
 
     /**
-     * @brief Test entry: plot a triangle with its circumcircle and incircle.
+     * @aibrief Test entry: plot a triangle with its circumcircle and incircle.
      */
     public static void testIncircleMmain(String[] args) {
 

@@ -84,7 +84,7 @@ public class FileSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Build the header panel, file button, and name field for this box.
+	 * @aibrief Build the header panel, file button, and name field for this box.
 	 */
 	public void buildComponents() {
 		emptyBorder=new EmptyBorder(0,0,0,0);
@@ -133,7 +133,7 @@ public class FileSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Rebuild and lay out this file box for display or edit mode.
+	 * @aibrief Rebuild and lay out this file box for display or edit mode.
 	 * @param wide
 	 */
 	public void redisplaySB(int wide) {
@@ -170,7 +170,7 @@ public class FileSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Populate the header panel with controls for the current mode.
+	 * @aibrief Populate the header panel with controls for the current mode.
 	 */
 	public void buildSB() {
 		if (currentMode==DISPLAY) {
@@ -194,7 +194,7 @@ public class FileSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Build the scrollable editor pane showing the file contents (edit mode).
+	 * @aibrief Build the scrollable editor pane showing the file contents (edit mode).
 	 */
 	public void buildFileEditor() {
 		if (currentMode==DISPLAY)
@@ -228,7 +228,7 @@ public class FileSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Enter edit mode for this file (disallowed for 'AboutImage').
+	 * @aibrief Enter edit mode for this file (disallowed for 'AboutImage').
 	 */
 	public void startEdit() {
 		if (currentMode!=DISPLAY) return;
@@ -264,7 +264,7 @@ public class FileSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Cancel editing, reverting to display mode (or deleting a NEW node).
+	 * @aibrief Cancel editing, reverting to display mode (or deleting a NEW node).
 	 */
 	public void cancelEdit() {
 		if (currentMode==DISPLAY) return;
@@ -299,7 +299,7 @@ public class FileSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Accept edits: save file contents/name and return to display mode.
+	 * @aibrief Accept edits: save file contents/name and return to display mode.
 	 *
 	 * Note, avoid name conflicts. Type of file does not change (even if a new
 	 * extension type is given).
@@ -365,7 +365,7 @@ public class FileSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Delete this file: remove its CPTreeNode, StackBox, and includedFiles entry.
+	 * @aibrief Delete this file: remove its CPTreeNode, StackBox, and includedFiles entry.
 	 *
 	 * Delete this FILE: get rid of CPTreeNode and StackBox
 	 */
@@ -458,7 +458,7 @@ public class FileSBox extends StackBox {
 	}
 	
 	/**
-	 * @brief Return the URL of this file's temporary copy.
+	 * @aibrief Return the URL of this file's temporary copy.
 	 *
 	 * @return URL
 	 */

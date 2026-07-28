@@ -59,7 +59,7 @@ public class ActiveOwl implements Runnable {
     }
     
     /**
-     * @brief Cycle the owl cursor frames on the glass pane while visible.
+     * @aibrief Cycle the owl cursor frames on the glass pane while visible.
      */
     public void run() {
     	int click=0;

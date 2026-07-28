@@ -29,7 +29,7 @@ import allMains.CPBase;
 public class GlobResources {
 
 	/**
-	 * @brief Return base file names of resources in a directory matching glob patterns
+	 * @aibrief Return base file names of resources in a directory matching glob patterns
 	 *
 	 * Return a 'Set' with base file names of all
 	 * resources in given directory that match given
@@ -118,7 +118,7 @@ public class GlobResources {
 	}
 
 	/**
-	 * @brief Return base file names matching patterns in the directory of a jar URL
+	 * @aibrief Return base file names matching patterns in the directory of a jar URL
 	 *
 	 * Return a list of the base file names that match the
 	 * given patterns and can be found in the directory

@@ -43,7 +43,7 @@ import util.StringUtil;
 import workshops.LayoutShop;
 
 /**
- * @brief Parses display flag segments and carries out drawing actions on canvasses.
+ * @aibrief Parses display flag segments and carries out drawing actions on canvasses.
  *
  * This static code parses the vector of display flag segments
  * for canvasses and carries out the specified display actions.
@@ -59,7 +59,7 @@ import workshops.LayoutShop;
 public class DisplayParser {
 	
 	/**
-	 * @brief Display objects from packing p on its own 'CPDrawing' per flag segments.
+	 * @aibrief Display objects from packing p on its own 'CPDrawing' per flag segments.
 	 *
 	 * Display objects from packing p on its own
 	 * 'CPDrawing' based on flag segments
@@ -73,7 +73,7 @@ public class DisplayParser {
 	}
 	
 	/**
-	 * @brief Display objects from packing p on a designated 'CPDrawing' per flag segments.
+	 * @aibrief Display objects from packing p on a designated 'CPDrawing' per flag segments.
 	 *
 	 * Display objects from packing p on designated
 	 * 'CPDrawing' based on flag segments given in

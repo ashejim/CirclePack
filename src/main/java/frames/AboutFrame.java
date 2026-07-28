@@ -66,7 +66,7 @@ public class AboutFrame extends JFrame {
 	}
 	
 	/**
-	 * @brief Build 'infoPane' with owl image and copyright info (unused).
+	 * @aibrief Build 'infoPane' with owl image and copyright info (unused).
 	 *
 	 * This is not currently in use: it creates 'infoPane' with
 	 * image and copyright info.
@@ -104,14 +104,14 @@ public class AboutFrame extends JFrame {
 	}
 	
 	/**
-	 * @brief Open the About frame at the default location.
+	 * @aibrief Open the About frame at the default location.
 	 */
 	public void openAbout() {
 		openAbout(50,50); // (50,50);
 	}
 	
 	/**
-	 * @brief Build and show the About frame with script description and image.
+	 * @aibrief Build and show the About frame with script description and image.
 	 */
 	public void openAbout(int X,int Y) {
 		Container pane=this.getContentPane();

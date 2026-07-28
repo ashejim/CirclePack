@@ -72,7 +72,7 @@ public class MobiusToolEditor extends MyToolEditor {
 	
 	// Constructor
 	/**
-	 * @brief Create the editor, loading the Mobius icon set and default orientation.
+	 * @aibrief Create the editor, loading the Mobius icon set and default orientation.
 	 */
 	public MobiusToolEditor(String tool_type,MyToolHandler par) {
 		super(tool_type,par);
@@ -85,7 +85,7 @@ public class MobiusToolEditor extends MyToolEditor {
 	}
 	
 	/**
-	 * @brief Build the editor's top panel with SO(3), Unit Disc, and General tabs.
+	 * @aibrief Build the editor's top panel with SO(3), Unit Disc, and General tabs.
 	 */
 	public JPanel topPanel() {
 		JPanel panel=new JPanel();
@@ -198,7 +198,7 @@ public class MobiusToolEditor extends MyToolEditor {
 		return panel;
 	}
 	/**
-	 * @brief Default dropability for tools (true for Mobius tools).
+	 * @aibrief Default dropability for tools (true for Mobius tools).
 	 * default dropability for tools
 	 */
 	public boolean setDropDefault() {
@@ -206,14 +206,14 @@ public class MobiusToolEditor extends MyToolEditor {
 	}
 
 	/**
-	 * @brief Description of the substance this tool produces.
+	 * @aibrief Description of the substance this tool produces.
 	 */
 	public String substanceText() {
 		return new String("a legitimate Mobius transform.");
 	}
 
 	/**
-	 * @brief Reset the a,b,c,d entry fields to the identity transform.
+	 * @aibrief Reset the a,b,c,d entry fields to the identity transform.
 	 */
 	public void reset_abcd() {
 		aField.setValue(new Complex(1.0));
@@ -223,7 +223,7 @@ public class MobiusToolEditor extends MyToolEditor {
 	}
 	
 	/**
-	 * @brief Build the 'appMob' command string from the a,b,c,d fields and orientation.
+	 * @aibrief Build the 'appMob' command string from the a,b,c,d fields and orientation.
 	 */
 	public String formulateCmd() {
 		Complex a=new Complex(1.0);
@@ -255,7 +255,7 @@ public class MobiusToolEditor extends MyToolEditor {
 	}
 	
 	/**
-	 * @brief Enable the dropability checkbox and set its default mode.
+	 * @aibrief Enable the dropability checkbox and set its default mode.
 	 * Want a checkbox? set default
 	 */
 	public void dropableCheckBox() {
@@ -264,7 +264,7 @@ public class MobiusToolEditor extends MyToolEditor {
 	}
 
 	/**
-	 * @brief Reset the a,b,c,d fields and pick a random icon.
+	 * @aibrief Reset the a,b,c,d fields and pick a random icon.
 	 */
 	public void resetMoreFields() {
 		reset_abcd();
@@ -272,7 +272,7 @@ public class MobiusToolEditor extends MyToolEditor {
 	}
 
 	/**
-	 * @brief Populate icon and a,b,c,d fields by parsing an existing tool's command.
+	 * @aibrief Populate icon and a,b,c,d fields by parsing an existing tool's command.
 	 */
 	public void initMoreFields(MyTool theTool) {
 		reset_abcd();

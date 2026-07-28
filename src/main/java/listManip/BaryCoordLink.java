@@ -55,7 +55,7 @@ public class BaryCoordLink extends LinkedList<BaryPacket> {
 	}
 	
 	/**
-	 * @brief Add a 'BaryPacket' if its three vertices are valid.
+	 * @aibrief Add a 'BaryPacket' if its three vertices are valid.
 	 */
 	public boolean add(BaryPacket bp) {
 		if (bp.vert[0]>0 && bp.vert[1]>0 && bp.vert[2]>0 &&

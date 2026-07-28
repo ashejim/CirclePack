@@ -260,7 +260,7 @@ public class SectionSBox extends StackBox {
 
 
 	/**
-	 * @brief Delete this SECTION and all its children.
+	 * @aibrief Delete this SECTION and all its children.
 	 *
 	 * Delete SECTION and all its children; should have moved children
 	 * already if they were to be saved -- see StackBox code.
@@ -293,7 +293,7 @@ public class SectionSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Remove all the contents, leaving empty SECTION.
+	 * @aibrief Remove all the contents, leaving empty SECTION.
 	 *
 	 * Remove all the contents, leaving empty SECTION
 	 */
@@ -374,7 +374,7 @@ public class SectionSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Return the headerPanel height, or 10 on error.
+	 * @aibrief Return the headerPanel height, or 10 on error.
 	 */
 	public int getHeaderHeight() {
 		try {

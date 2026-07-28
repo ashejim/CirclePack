@@ -73,7 +73,7 @@ public class ScreenCtrlFrame extends JFrame implements ActionListener {
 	 * see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	/**
-	 * @brief On "Repaint", re-run the display command and refresh the active frame.
+	 * @aibrief On "Repaint", re-run the display command and refresh the active frame.
 	 */
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
@@ -87,7 +87,7 @@ public class ScreenCtrlFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * @brief Select the given tab by index (bounds checked).
+	 * @aibrief Select the given tab by index (bounds checked).
 	 */
 	public void setTab(int tab) {
 		if (tab<0 || tab>tabbedPane.getComponentCount())
@@ -96,7 +96,7 @@ public class ScreenCtrlFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * @brief Window adapter that hides the screen-control frame on close.
+	 * @aibrief Window adapter that hides the screen-control frame on close.
 	 */
 	class WAdapter extends WindowAdapter {
 		public void windowClosing(WindowEvent wevt) {

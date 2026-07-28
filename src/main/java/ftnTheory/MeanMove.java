@@ -68,7 +68,7 @@ public class MeanMove extends PackExtender {
 	 *         here is the place to put radii adjustment strategies
 	 * ================================================================= */
 	/**
-	 * @brief Adjust boundary radii one step down the curvature gradient per 'mode'.
+	 * @aibrief Adjust boundary radii one step down the curvature gradient per 'mode'.
 	 *
 	 * This routine is called in an adjustment cycle; and applies
 	 * the strategy specified in "mode" string.
@@ -138,7 +138,7 @@ public class MeanMove extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and execute user commands for mean-curvature motion.
+	 * @aibrief Parse and execute user commands for mean-curvature motion.
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
@@ -395,7 +395,7 @@ public class MeanMove extends PackExtender {
 	}
 	
 	/**
-	 * @brief Register this extender's command structures for help/catalog.
+	 * @aibrief Register this extender's command structures for help/catalog.
 	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();

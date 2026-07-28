@@ -77,7 +77,7 @@ public class FeedBack extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and execute FeedBack commands (reset, radMult, setRadii, setVW, etc.).
+	 * @aibrief Parse and execute FeedBack commands (reset, radMult, setRadii, setVW, etc.).
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		int count=0;
@@ -306,7 +306,7 @@ public class FeedBack extends PackExtender {
 	}
 	
 	/**
-	 * @brief Register FeedBack's command structures for the command catalog.
+	 * @aibrief Register FeedBack's command structures for the command catalog.
 	 *
 	 * Override method for cataloging command structures
 	 */

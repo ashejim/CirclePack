@@ -114,7 +114,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * @brief Create the domain/range panels, canvasses, and teleTools (added in layMeOut).
+	 * @aibrief Create the domain/range panels, canvasses, and teleTools (added in layMeOut).
 	 * GUI initiation called only during 'CirclePack' startup:
 	 * create the panels, etc. here, but add them in 'layMeOut'.
 	 */
@@ -249,7 +249,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * @brief Create or recreate the frame layout (domain, mid, range boxes).
+	 * @aibrief Create or recreate the frame layout (domain, mid, range boxes).
 	 * This is where the layout is created or recreated (as after a
 	 * size change).
 	 *
@@ -374,7 +374,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * @brief Color canvas borders green for the active pack, gray otherwise.
+	 * @aibrief Color canvas borders green for the active pack, gray otherwise.
 	 */
 	public void colorBorders() {
 //System.err.println("colorBorders");
@@ -440,7 +440,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * @brief Replace the progress/owl button in the mid box with a fresh one.
+	 * @aibrief Replace the progress/owl button in the mid box with a fresh one.
 	 */
 	public void swapProgBar() {
 		progressBar=((OwlSpinner)CPBase.runSpinner).getPairProgButton();
@@ -525,7 +525,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * @brief Remove all script tools from the vertical script bar.
+	 * @aibrief Remove all script tools from the vertical script bar.
 	 */
 	public void removeScriptTools() {
 		PackControl.vertScriptBar.scriptTools.removeAll();
@@ -574,7 +574,7 @@ public class PairedFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * @brief Handle pack combo-box changes, screendump, and teleTool toggle.
+	 * @aibrief Handle pack combo-box changes, screendump, and teleTool toggle.
 	 */
 	public void actionPerformed(ActionEvent e){
 

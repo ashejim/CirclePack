@@ -53,7 +53,7 @@ public class MatchingRules extends PackExtender {
 	}
 
 	/**
-	 * @brief Parse and execute user commands (currently a stub returning 0).
+	 * @aibrief Parse and execute user commands (currently a stub returning 0).
 	 *
 	 * This is where the user's commands are "parsed"
 	 */
@@ -66,7 +66,7 @@ public class MatchingRules extends PackExtender {
 		
 
 	/**
-	 * @brief A single tile type: a regular n-gon as a barycentrically refined flower.
+	 * @aibrief A single tile type: a regular n-gon as a barycentrically refined flower.
 	 */
 	class TileType {
 		PackData tile;

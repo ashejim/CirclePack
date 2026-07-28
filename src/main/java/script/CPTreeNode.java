@@ -216,7 +216,7 @@ public class CPTreeNode extends DefaultMutableTreeNode {
   }
 
   /**
-   * @brief True only for active inline command nodes.
+   * @aibrief True only for active inline command nodes.
    *
    * Only inline command nodes can be active.
    */

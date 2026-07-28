@@ -325,7 +325,7 @@ public class PathUtil {
     }
 	
     /**
-     * @brief Create a Path2D.Double from function text, defaulting to 200 points
+     * @aibrief Create a Path2D.Double from function text, defaulting to 200 points
      */
     public static Path2D.Double path_from_text(String path_text) {
     	return path_from_text(path_text,200);

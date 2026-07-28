@@ -46,7 +46,7 @@ public class PointLink extends LinkedList<Complex> {
 	
 	// Constructors
 	/**
-	 * @brief Build list for packing 'p' by parsing points from data string.
+	 * @aibrief Build list for packing 'p' by parsing points from data string.
 	 */
 	public PointLink(PackData p,String datastr) {
 		super();
@@ -59,7 +59,7 @@ public class PointLink extends LinkedList<Complex> {
 	}
 	
 	/**
-	 * @brief Build list for packing 'p' seeded with single complex z (if non-null).
+	 * @aibrief Build list for packing 'p' seeded with single complex z (if non-null).
 	 */
 	public PointLink(PackData p,Complex z) {
 		super();
@@ -73,7 +73,7 @@ public class PointLink extends LinkedList<Complex> {
 	}
 	
 	/**
-	 * @brief Build list for packing 'p' by parsing points from string tokens.
+	 * @aibrief Build list for packing 'p' by parsing points from string tokens.
 	 */
 	public PointLink(PackData p,Vector<String> items) {
 		super();
@@ -396,7 +396,7 @@ public class PointLink extends LinkedList<Complex> {
 	}
 
 	/**
-	 * @brief Pick first complex number off given string.
+	 * @aibrief Pick first complex number off given string.
 	 *
 	 * Pick first complex number off given string
 	 * @param str String

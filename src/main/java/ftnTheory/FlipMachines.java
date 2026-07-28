@@ -16,7 +16,7 @@ public class FlipMachines extends PackExtender {
 	
 	// Constructor
 	/**
-	 * @brief Set up FlipMachines extender; requires packing with >= 5 vertices.
+	 * @aibrief Set up FlipMachines extender; requires packing with >= 5 vertices.
 	 */
 	public FlipMachines(PackData p) {
 		super(p);
@@ -34,7 +34,7 @@ public class FlipMachines extends PackExtender {
 		}	
 	}
 	/**
-	 * @brief Parse and dispatch user commands for this extender.
+	 * @aibrief Parse and dispatch user commands for this extender.
 	 *
 	 * This is were the user's commands are "parsed"
 	 */
@@ -45,7 +45,7 @@ public class FlipMachines extends PackExtender {
 	}
 	
 	/**
-	 * @brief Register command structures available in this extender.
+	 * @aibrief Register command structures available in this extender.
 	 *
 	 * Override method for cataloging command structures
 	 */

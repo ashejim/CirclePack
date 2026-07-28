@@ -58,7 +58,7 @@ public class AffinePack extends PackExtender {
 	public static int PASSES=10000;
 	
 	/**
-	 * @brief Construct the AffinePack extender; requires a euclidean torus.
+	 * @aibrief Construct the AffinePack extender; requires a euclidean torus.
 	 */
 	// Constructor
 	public AffinePack(PackData p) {
@@ -90,7 +90,7 @@ public class AffinePack extends PackExtender {
 	}
 	
 	/**
-	 * @brief Create a new 'aspects' array of 'TriAspect's, one per face.
+	 * @aibrief Create a new 'aspects' array of 'TriAspect's, one per face.
 	 *
 	 * Create a new 'aspects' array of 'TriAspect's. May need to do
 	 * this if the packing or its drawing order is changed.
@@ -121,7 +121,7 @@ public class AffinePack extends PackExtender {
 	 *    EDGE12
 	 */
 	/**
-	 * @brief Sum combinatorial and effective lengths along boundary edge 1-2.
+	 * @aibrief Sum combinatorial and effective lengths along boundary edge 1-2.
 	 */
 	public static double [] Edge12(PackData p, TriAspect[] asp){
 		
@@ -183,7 +183,7 @@ public class AffinePack extends PackExtender {
 	 *    EDGE34
 	 */
 	/**
-	 * @brief Sum combinatorial and effective lengths along boundary edge 3-4.
+	 * @aibrief Sum combinatorial and effective lengths along boundary edge 3-4.
 	 */
 	public static double [] Edge34(PackData p, TriAspect[] asp){
 		
@@ -244,7 +244,7 @@ public class AffinePack extends PackExtender {
 	 *    EDGE23
 	 */
 	/**
-	 * @brief Sum combinatorial and effective lengths along boundary edge 2-3.
+	 * @aibrief Sum combinatorial and effective lengths along boundary edge 2-3.
 	 */
 	public static double [] Edge23(PackData p, TriAspect[] asp){
 		
@@ -305,7 +305,7 @@ public class AffinePack extends PackExtender {
 	 *    EDGE41
 	 */
 	/**
-	 * @brief Sum combinatorial and effective lengths along boundary edge 4-1.
+	 * @aibrief Sum combinatorial and effective lengths along boundary edge 4-1.
 	 */
 	public static double [] Edge41(PackData p, TriAspect[] asp){
 		
@@ -366,7 +366,7 @@ public class AffinePack extends PackExtender {
 	 *    ADJBD
 	 */
 	/**
-	 * @brief Redistribute boundary vertex centers evenly along all four sides.
+	 * @aibrief Redistribute boundary vertex centers evenly along all four sides.
 	 */
 	public static int AdjBd(PackData p, TriAspect[] asp){
 		
@@ -871,7 +871,7 @@ public class AffinePack extends PackExtender {
 	 *    
 	 */
 	/**
-	 * @brief Rescale boundary vertex centers along each side by effective length.
+	 * @aibrief Rescale boundary vertex centers along each side by effective length.
 	 */
 	public static int adjBd(PackData p, TriAspect[] asp){
 		
@@ -1223,7 +1223,7 @@ public class AffinePack extends PackExtender {
 	 *    @return new center nz (Complex)
 	 */
 	/**
-	 * @brief Compute new center for v as average of incident face incircle centers.
+	 * @aibrief Compute new center for v as average of incident face incircle centers.
 	 */
 	public static Complex NewCenter(PackData p, TriAspect[] asp, int v){
 		
@@ -1267,7 +1267,7 @@ public class AffinePack extends PackExtender {
 	 *    
 	 */
 	/**
-	 * @brief Iteratively move random interior centers until error drops by 5%.
+	 * @aibrief Iteratively move random interior centers until error drops by 5%.
 	 */
 	public int IncNC(PackData p, TriAspect[] asp){
 		
@@ -1351,7 +1351,7 @@ public class AffinePack extends PackExtender {
 
 	
 	/**
-	 * @brief Adjust edges toward strong consistency over repeated passes.
+	 * @aibrief Adjust edges toward strong consistency over repeated passes.
 	 *
 	 *   RECTANGLE ADJUST
 	 */
@@ -1450,7 +1450,7 @@ public class AffinePack extends PackExtender {
 	}
 
 	/**
-	 * @brief Adjust one random edge toward strong consistency (no riffle).
+	 * @aibrief Adjust one random edge toward strong consistency (no riffle).
 	 *
 	 *   rectAd1
 	 *   chooses a random side to adjust
@@ -1514,7 +1514,7 @@ public class AffinePack extends PackExtender {
 	}
 	
 	/**
-	 * @brief One pass of riffle adjusting sides toward target angle sums.
+	 * @aibrief One pass of riffle adjusting sides toward target angle sums.
 	 *
 	 * riffle
 	 * one pass of riffle
@@ -2049,7 +2049,7 @@ public class AffinePack extends PackExtender {
 	}
 	
 	/**
-	 * @brief Run affine-packing trials over an (N+1)x(N+1) grid, buffering results.
+	 * @aibrief Run affine-packing trials over an (N+1)x(N+1) grid, buffering results.
 	 *
 	 * Run trials over a grid and put the results
 	 * in a buffer. Output lines: A B t T c a.x a.y
@@ -2164,7 +2164,7 @@ public class AffinePack extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and dispatch this extender's user commands.
+	 * @aibrief Parse and dispatch this extender's user commands.
 	 *
 	 * This is where the user's commands are "parsed"
 	 */
@@ -3025,7 +3025,7 @@ public class AffinePack extends PackExtender {
 	}
 	
 	/**
-	 * @brief Register this extender's command descriptions for help/parsing.
+	 * @aibrief Register this extender's command descriptions for help/parsing.
 	 *
 	 * Override method for cataloging command structures
 	 */

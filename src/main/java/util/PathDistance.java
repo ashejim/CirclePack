@@ -43,7 +43,7 @@ public class PathDistance {
 	}
 	
 	/**
-	 * @brief Build the list of line segments approximating 'myPath'
+	 * @aibrief Build the list of line segments approximating 'myPath'
 	 *
 	 * initiate
 	 */

@@ -40,7 +40,7 @@ public class VertScriptBar extends JPanel {
 	public NextBundle nextBundle;
 	
 	/**
-	 * @brief Build the vertical script bar with Script button and tools.
+	 * @aibrief Build the vertical script bar with Script button and tools.
 	 */
 	public VertScriptBar() {
 		setLayout(new BoxLayout(this,BoxLayout.PAGE_AXIS));
@@ -78,7 +78,7 @@ public class VertScriptBar extends JPanel {
 	}
 	
 	/**
-	 * @brief Move the script bar between 'MainFrame' and 'PairedFrame'.
+	 * @aibrief Move the script bar between 'MainFrame' and 'PairedFrame'.
 	 *
 	 * A single 'VertScriptBar' is created in PackControl but used
 	 * both in 'PairedFrame' and 'MainFrame'. Move from one to

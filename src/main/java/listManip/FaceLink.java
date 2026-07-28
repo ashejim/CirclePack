@@ -30,7 +30,7 @@ import util.StringUtil;
 import util.UtilPacket;
 
 /**
- * @brief Linked list of face indices tied to a circle packing, with rich parsing.
+ * @aibrief Linked list of face indices tied to a circle packing, with rich parsing.
  *
  * Linked list of faces for circle packings.
  *
@@ -48,7 +48,7 @@ public class FaceLink extends LinkedList<Integer> {
 	
 	// Constructors
 	/**
-	 * @brief Build a face list for packing 'p' by parsing 'datastr'.
+	 * @aibrief Build a face list for packing 'p' by parsing 'datastr'.
 	 */
 	public FaceLink(PackData p,String datastr) {
 		super();
@@ -57,7 +57,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Build a face list for packing 'p' from parse items; defaults to all faces.
+	 * @aibrief Build a face list for packing 'p' from parse items; defaults to all faces.
 	 */
 	public FaceLink(PackData p,Vector<String> items) {
 		super();
@@ -69,7 +69,7 @@ public class FaceLink extends LinkedList<Integer> {
 		addFaceLinks(items);
 	}
 	/**
-	 * @brief Build a face list from 'datastr' with no associated packing.
+	 * @aibrief Build a face list from 'datastr' with no associated packing.
 	 *
 	 * Not associated with any PackData
 	 * @param datastr
@@ -79,7 +79,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Create an empty face list with no associated packing.
+	 * @aibrief Create an empty face list with no associated packing.
 	 *
 	 * empty list, no packing
 	 */
@@ -89,7 +89,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Create an empty face list associated with packing 'p'.
+	 * @aibrief Create an empty face list associated with packing 'p'.
 	 *
 	 * Initiate empty list
 	 * @param p
@@ -99,7 +99,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Add face index 'v', accepting it only if it is a legal face for the packing.
+	 * @aibrief Add face index 'v', accepting it only if it is a legal face for the packing.
 	 */
 	public boolean add(int v) {
 		if ((packData!=null && v>0 && v<=packData.faceCount) || packData==null)
@@ -108,7 +108,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 
 	/**
-	 * @brief Add face index 'v', accepting it only if it is a legal face for the packing.
+	 * @aibrief Add face index 'v', accepting it only if it is a legal face for the packing.
 	 */
 	public boolean add(Integer v) {
 		if (v==null)
@@ -120,7 +120,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Parse 'datastr' into face specifiers and add the resulting faces.
+	 * @aibrief Parse 'datastr' into face specifiers and add the resulting faces.
 	 *
 	 * Add links to this list (only if it is associated with PackData?)
 	 * @param datastr
@@ -132,7 +132,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Parse face specifier tokens (a/b/r/R/I/F/z/G/{...}/indices) and add matching faces.
+	 * @aibrief Parse face specifier tokens (a/b/r/R/I/F/z/G/{...}/indices) and add matching faces.
 	 *
 	 * Add links to this list (only if it is associated with PackData?)
 	 * @param datastr
@@ -835,7 +835,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Return a distinct copy of this face list (indices not revalidated).
+	 * @aibrief Return a distinct copy of this face list (indices not revalidated).
 	 *
 	 * Make a distinct copy of this linked list; no check
 	 * of validity of the indices.
@@ -851,7 +851,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Append the entries of another 'FaceLink' onto the end of this one.
+	 * @aibrief Append the entries of another 'FaceLink' onto the end of this one.
 	 *
 	 * Abut a 'FaceLink' to the end of this one.
 	 * @param moreFL
@@ -872,7 +872,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Parse 'str' and return the first face index, or 0 on failure.
+	 * @aibrief Parse 'str' and return the first face index, or 0 on failure.
 	 *
 	 * Pick first vertex number off a string. Return 0 on failure.
 	 * @param p
@@ -886,7 +886,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Return the first face index parsed from the first token segment.
+	 * @aibrief Return the first face index parsed from the first token segment.
 	 */
 	public static int grab_one_face(PackData p,Vector<Vector<String>> flagsegs) {
 		Vector<String> its=(Vector<String>)flagsegs.get(0);
@@ -895,7 +895,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Return the list index of face 'f', or -1 if not present.
+	 * @aibrief Return the list index of face 'f', or -1 if not present.
 	 *
 	 * Is 'f' an entry?
 	 * @param f
@@ -909,7 +909,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 		
 	/**
-	 * @brief Count distinct face indices in 'nl' (ignoring repeats).
+	 * @aibrief Count distinct face indices in 'nl' (ignoring repeats).
 	 *
 	 * Count my elements (without repeats)
 	 * @return int count; -1 on error
@@ -940,7 +940,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Rotate a closed face list so it starts/ends at the entry at 'indx'.
+	 * @aibrief Rotate a closed face list so it starts/ends at the entry at 'indx'.
 	 *
 	 * If @see FaceLink is a closed face list and 'indx' points to
 	 * entry f, then rotate, returning a new closed FaceLink
@@ -969,7 +969,7 @@ public class FaceLink extends LinkedList<Integer> {
 	
 	
 	/**
-	 * @brief Return a new 'FaceLink' with the entries in reverse order.
+	 * @aibrief Return a new 'FaceLink' with the entries in reverse order.
 	 *
 	 * Return a new 'FaceLink' whose order is the reverse of this
 	 * @return new 'FaceLink', null if this is empty.
@@ -985,7 +985,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Build a 'FaceParam' chain of faces approximating a polygonal path (eucl only).
+	 * @aibrief Build a 'FaceParam' chain of faces approximating a polygonal path (eucl only).
 	 *
 	 * Given a polygonal path and a packing, return a 'FaceParam' linked list
 	 * of faces approximating the path. Should be closed if the path is
@@ -1199,7 +1199,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Build the 'HalfLink' of edges for this ordered face list (shared edges preferred).
+	 * @aibrief Build the 'HalfLink' of edges for this ordered face list (shared edges preferred).
 	 *
 	 * Generate 'HalfLink' of edges associated with this
 	 * ordered 'FaceLink'; if successive faces f,g share
@@ -1228,7 +1228,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Extend a face chain along the path until reaching a face non-incident to the first.
+	 * @aibrief Extend a face chain along the path until reaching a face non-incident to the first.
 	 *
 	 * Prolonging a chain to follow a path. Given the last 'FaceParam'
 	 * element in a chain, add links (with successively distinct faces)
@@ -1379,7 +1379,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Fill in the fan of faces between two incident 'FaceParam' entries sharing a vertex.
+	 * @aibrief Fill in the fan of faces between two incident 'FaceParam' entries sharing a vertex.
 	 *
 	 * Given 'FaceParam', if 'FaceParam.face' and 'FaceParam.next.face'
 	 * are incident, build chain of 'FaceParam's between them (with
@@ -1483,7 +1483,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 	
 	/**
-	 * @brief Step along the path from face f until the next incident face is entered.
+	 * @aibrief Step along the path from face f until the next incident face is entered.
 	 *
 	 * In face f at parameter 'param'. Move along the path until you encounter
 	 * the next incident face (and you leave f). Return vector ans[]:
@@ -1562,7 +1562,7 @@ public class FaceLink extends LinkedList<Integer> {
 	}
 
 	 /**
-	  * @brief Set the associated 'packData' used to validate entries.
+	  * @aibrief Set the associated 'packData' used to validate entries.
 	  *
 	  * Set 'packData' (which helps determine eligibility of entries)
 	  * @param p PackData
@@ -1572,7 +1572,7 @@ public class FaceLink extends LinkedList<Integer> {
 	 }
 
 	/**
-     * @brief Return a random entry from 'facelist' (does not account for repeats).
+     * @aibrief Return a random entry from 'facelist' (does not account for repeats).
      *
      * Return random entry from facelist; caution, does not adjust
      * for repeat entries.
@@ -1587,7 +1587,7 @@ public class FaceLink extends LinkedList<Integer> {
     
 
 	/**
-	 * @brief Build a face list from set-builder ({..}) specification vector.
+	 * @aibrief Build a face list from set-builder ({..}) specification vector.
 	 *
 	 * Make up list by looking through SetBuilder specs
 	 * (from {..} set-builder notation). Use 'tmpUtil'

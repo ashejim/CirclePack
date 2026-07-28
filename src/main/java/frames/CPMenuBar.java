@@ -123,7 +123,7 @@ public class CPMenuBar extends JMenuBar implements ActionListener {
 	}
 
 	/**
-	 * @brief Dispatch menu actions: load, save, screen, help, advanced.
+	 * @aibrief Dispatch menu actions: load, save, screen, help, advanced.
 	 */
 	public void actionPerformed(ActionEvent evt) {
 		String acmd=evt.getActionCommand();

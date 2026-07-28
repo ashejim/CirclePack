@@ -20,7 +20,7 @@ public class CPI_Math {
 
     //---- TESTING
     /**
-     * @brief Test: generate and print 999 random points from the unit disk.
+     * @aibrief Test: generate and print 999 random points from the unit disk.
      */
     public static void randomtest(String[] args) {
 	int i;

@@ -113,7 +113,7 @@ public class CylinderSpheres extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and execute extender commands: param, comp, data, output.
+	 * @aibrief Parse and execute extender commands: param, comp, data, output.
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
@@ -772,7 +772,7 @@ public class CylinderSpheres extends PackExtender {
 	}
 
 	/**
-	 * @brief Compute square of distance of S2 to S1 as function of S2 height x.
+	 * @aibrief Compute square of distance of S2 to S1 as function of S2 height x.
 	 *
 	 *  Compute square of distance of S2 to S1 as
 	 *  function of height x of S2. We use intermediate 
@@ -848,14 +848,14 @@ public class CylinderSpheres extends PackExtender {
 	}
 	
 	/**
-	 * @brief Compute arclength t of a sphere center at height z1 on Cyl(R).
+	 * @aibrief Compute arclength t of a sphere center at height z1 on Cyl(R).
 	 */
 	public double what_is_t(double R,double z1) {
 		return R*Math.acos(1.0+(z1*z1-1.0)/(2.0*R*R));
 	}
 	
 	/**
-	 * @brief Compute the maximal sphere-center height Z_R on Cyl(R).
+	 * @aibrief Compute the maximal sphere-center height Z_R on Cyl(R).
 	 */
 	public double what_is_Z_R(double R) {
 		return Math.sqrt(1.0+2.0*R*R*(Math.sqrt(1.0-1.0/(4.0*R*R))-1.0));
@@ -874,7 +874,7 @@ public class CylinderSpheres extends PackExtender {
 	}
 
 	/**
-	 * @brief Register this extender's command structures for help/usage.
+	 * @aibrief Register this extender's command structures for help/usage.
 	 */
 	public void initCmdStruct() {
 		super.initCmdStruct();

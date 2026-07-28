@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class Cps2HTML {
 
 	/**
-	 * @brief Build an HTML table row describing a cps script file (name, description, image).
+	 * @aibrief Build an HTML table row describing a cps script file (name, description, image).
 	 */
 	public static StringBuilder tableText(File file) {
 		

@@ -30,7 +30,7 @@ public class LongLabel extends JButton {
 	String actionCmd;
 
 	/**
-	 * @brief Build a small button with icon/tooltip/action based on its type.
+	 * @aibrief Build a small button with icon/tooltip/action based on its type.
 	 */
 	public LongLabel(int type) {
 		super();

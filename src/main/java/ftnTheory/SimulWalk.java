@@ -51,7 +51,7 @@ public class SimulWalk extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and dispatch this extender's user commands
+	 * @aibrief Parse and dispatch this extender's user commands
 	 *
 	 * This is were the user's commands are "parsed"
 	 */
@@ -62,7 +62,7 @@ public class SimulWalk extends PackExtender {
 	}
 	
 	/**
-	 * @brief Override method for cataloging command structures
+	 * @aibrief Override method for cataloging command structures
 	 *
 	 * Override method for cataloging command structures
 	 */

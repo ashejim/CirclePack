@@ -41,7 +41,7 @@ public class CanvasReDrawManager {
 	}
 	
 	/**
-	 * @brief Update the registry to mark the given pack number as the active one.
+	 * @aibrief Update the registry to mark the given pack number as the active one.
 	 */
 	// reflect a change in which pack is active
 	public void changeActive(int pnum) {
@@ -61,7 +61,7 @@ public class CanvasReDrawManager {
 	}
 	
 	/**
-	 * @brief Register the given pack as the one shown in the pair 'domain' canvas.
+	 * @aibrief Register the given pack as the one shown in the pair 'domain' canvas.
 	 */
 	// After initiation, only called through ComboBox action
 	public void changeDomain(int pnum) {
@@ -71,7 +71,7 @@ public class CanvasReDrawManager {
 	}
 	
 	/**
-	 * @brief Register the given pack as the one shown in the pair 'range' canvas.
+	 * @aibrief Register the given pack as the one shown in the pair 'range' canvas.
 	 */
 	// After initiation, only called through ComboBox action
 	public void changeRange(int pnum) {

@@ -10,7 +10,7 @@ import packing.PackData;
 import packing.PackExtender;
 
 /**
- * @brief Pack extender for manipulating discrete polynomials via their branch values.
+ * @aibrief Pack extender for manipulating discrete polynomials via their branch values.
  */
 public class PolyBranching extends PackExtender {
 
@@ -34,7 +34,7 @@ public class PolyBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and execute user commands for discrete polynomial branching.
+	 * @aibrief Parse and execute user commands for discrete polynomial branching.
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
@@ -134,7 +134,7 @@ public class PolyBranching extends PackExtender {
 	}
 
 	/**
-	 * @brief Determine branch vertices from the parent packing's aims.
+	 * @aibrief Determine branch vertices from the parent packing's aims.
 	 *
 	 * Determine branching from aims of parent 'packData'.
 	 * Normally this is done only on startup, but can be
@@ -164,7 +164,7 @@ public class PolyBranching extends PackExtender {
 	}
 	
 	/**
-	 * @brief Print help information for this extender's commands.
+	 * @aibrief Print help information for this extender's commands.
 	 */
 	public void helpInfo() {
 		helpMsg("Info on PackExtender "+extensionAbbrev+" (Poly branching)");

@@ -29,7 +29,7 @@ public class VertexMap extends EdgeLink {
 	}
 
 	/**
-	 * @brief Add an EdgeSimple entry, ignoring null.
+	 * @aibrief Add an EdgeSimple entry, ignoring null.
 	 */
 	public boolean add(EdgeSimple edge) {
 		if (edge==null)
@@ -38,7 +38,7 @@ public class VertexMap extends EdgeLink {
 	}
 
 	/**
-	 * @brief Add an entry from a pair of indices (a,b).
+	 * @aibrief Add an entry from a pair of indices (a,b).
 	 */
 	public boolean add(int a,int b) {
 		return super.add(new EdgeSimple(a,b));
@@ -106,7 +106,7 @@ public class VertexMap extends EdgeLink {
 	}
 
 	/**
-	 * @brief Clone this VertexMap, sharing the same 'PackData'.
+	 * @aibrief Clone this VertexMap, sharing the same 'PackData'.
 	 *
 	 * Clone with the same 'PackData'
 	 */

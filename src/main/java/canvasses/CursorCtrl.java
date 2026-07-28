@@ -79,7 +79,7 @@ public class CursorCtrl {
 	}
 	
 	/**
-	 * @brief Build the popup menu of canvas, user, and script cursor modes.
+	 * @aibrief Build the popup menu of canvas, user, and script cursor modes.
 	 * @param mL ACTIVEListener
 	 * @return JPopupMenu
 	 */

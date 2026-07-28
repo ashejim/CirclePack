@@ -10,7 +10,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneLayout;
 
 /**
- * @brief A JScrollPane that scrolls vertically only, sizing the view to width.
+ * @aibrief A JScrollPane that scrolls vertically only, sizing the view to width.
  */
 public class JScrollPaneVertical extends JScrollPane {
 
@@ -36,7 +36,7 @@ public class JScrollPaneVertical extends JScrollPane {
 
 
 	/**
-	 * @brief Layout that fixes view width and grows its height to fit contents.
+	 * @aibrief Layout that fixes view width and grows its height to fit contents.
 	 */
 	private class MyScrollLayout extends ScrollPaneLayout {
 

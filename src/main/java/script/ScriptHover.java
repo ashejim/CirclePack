@@ -41,7 +41,7 @@ public class ScriptHover extends HoverPanel {
 	}
 
 	/**
-	 * @brief Build the script frame's panels and the lockable scroll area.
+	 * @aibrief Build the script frame's panels and the lockable scroll area.
 	 */
 	public void initComponents() {
 
@@ -94,7 +94,7 @@ public class ScriptHover extends HoverPanel {
 	}
 	
 	/**
-	 * @brief Add the stack scroll area to this panel at startup.
+	 * @aibrief Add the stack scroll area to this panel at startup.
 	 */
 	public void setInitPanel() {
 		// TODO: have to figure out how to choose size.
@@ -102,7 +102,7 @@ public class ScriptHover extends HoverPanel {
 	}
 
 	/**
-	 * @brief Reload the script display in hover (unlocked) mode.
+	 * @aibrief Reload the script display in hover (unlocked) mode.
 	 */
 	public void loadHover() {
 		this.removeAll();
@@ -112,7 +112,7 @@ public class ScriptHover extends HoverPanel {
 	}
 	
 	/**
-	 * @brief Reload the script display in locked-frame mode with the edit bar.
+	 * @aibrief Reload the script display in locked-frame mode with the edit bar.
 	 */
 	public void loadLocked() {
 		this.removeAll();
@@ -138,7 +138,7 @@ public class ScriptHover extends HoverPanel {
 	}
 	
 	/**
-	 * @brief Initialize the script area with the default width.
+	 * @aibrief Initialize the script area with the default width.
 	 *
 	 * At startup, this initiates scriptArea with default width.
 	 */
@@ -147,7 +147,7 @@ public class ScriptHover extends HoverPanel {
 	}
 	
 	/**
-	 * @brief Create the persistent root/script/data nodes and place their boxes.
+	 * @aibrief Create the persistent root/script/data nodes and place their boxes.
 	 *
 	 * This initiates persistent 'rootNode', 'cpScriptNode',
 	 * and 'cpDataNode' nodes: these stay until closing the
@@ -191,7 +191,7 @@ public class ScriptHover extends HoverPanel {
 	 */
 	class ResizeAdapter extends ComponentAdapter {
 		  /**
-		   * @brief On resize, reset StackBox widths and repopulate the display.
+		   * @aibrief On resize, reset StackBox widths and repopulate the display.
 		   */
 		  public void componentResized(ComponentEvent e) {
 			  lockedFrame.setPreferredSize(new Dimension(lockedFrame.getWidth(),lockedFrame.getHeight()));

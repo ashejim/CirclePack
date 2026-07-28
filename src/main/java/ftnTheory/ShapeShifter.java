@@ -56,7 +56,7 @@ public class ShapeShifter extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and dispatch this extender's user commands
+	 * @aibrief Parse and dispatch this extender's user commands
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
@@ -146,7 +146,7 @@ public class ShapeShifter extends PackExtender {
 	} 
 	
 	/**
-	 * @brief Print help text listing this extender's commands
+	 * @aibrief Print help text listing this extender's commands
 	 */
 	public void helpInfo() {
 		helpMsg("Commands for PackExtender "+extensionType+"(ShapeShifter)\n"+

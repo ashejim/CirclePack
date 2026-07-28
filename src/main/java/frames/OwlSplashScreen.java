@@ -5,7 +5,7 @@ import java.awt.*;
 import java.net.URL;
 
 /**
- * @brief Borderless splash window showing the owl image with a status label and progress bar.
+ * @aibrief Borderless splash window showing the owl image with a status label and progress bar.
  *
  * Borderless splash window.
  * Top area  : Owl_Splash.png scaled to fit.
@@ -85,7 +85,7 @@ public class OwlSplashScreen extends JWindow {
     }
 
     /**
-     * @brief Update the status label text and progress bar percentage.
+     * @aibrief Update the status label text and progress bar percentage.
      */
     public void setStatus(String message, int percent) {
         statusLabel.setText(message);

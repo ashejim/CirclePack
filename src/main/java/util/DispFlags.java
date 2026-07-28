@@ -165,7 +165,7 @@ public class DispFlags {
 	}
 	
 	/**
-	 * @brief Get a clone of the set color (may be null).
+	 * @aibrief Get a clone of the set color (may be null).
 	 * @return Color
 	 */
 	public Color getColor() {
@@ -181,7 +181,7 @@ public class DispFlags {
 	}
 	
 	/**
-	 * @brief Set the color to a clone of the given Color.
+	 * @aibrief Set the color to a clone of the given Color.
 	 * @param col Color
 	 */
 	public void setColor(Color col) {
@@ -261,7 +261,7 @@ public class DispFlags {
 	}
 
 	/**
-	 * @brief clone this set of flags
+	 * @aibrief clone this set of flags
 	 *
 	 * clone this set of flags
 	 */

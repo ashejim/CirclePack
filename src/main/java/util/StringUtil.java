@@ -809,7 +809,7 @@ public class StringUtil {
 	  }
 	  
 	  /**
-	   * @brief Recombine strings split across broken parenthesis pairs (unused).
+	   * @aibrief Recombine strings split across broken parenthesis pairs (unused).
 	   *
 	   * If parentheses pairs are broken (e.g., whitespace between),
 	   * then may have to recombine some of strings, or on error,

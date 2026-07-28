@@ -33,7 +33,7 @@ import util.StringUtil;
 public class RiemHilbert extends PackExtender {
 
 	/**
-	 * @brief Parser states while reading a Riemann-Hilbert curve file
+	 * @aibrief Parser states while reading a Riemann-Hilbert curve file
 	 */
 	enum ReadState {OPEN,FIND_CURVE,PATH,CIRCLE,READ_XY,READ_CR,NULL};
 	
@@ -172,7 +172,7 @@ public class RiemHilbert extends PackExtender {
 	}
 	
 	/**
-	 * @brief Draw the restriction curves for the listed boundary vertices
+	 * @aibrief Draw the restriction curves for the listed boundary vertices
 	 */
 	public int drawRestCurves(NodeLink vertlist) {
 		int count=0;
@@ -227,7 +227,7 @@ public class RiemHilbert extends PackExtender {
 	}
 	
 	/**
-	 * @brief Signed distance from circle 'v' to its restriction curve
+	 * @aibrief Signed distance from circle 'v' to its restriction curve
 	 *
 	 * Signed distance from circle to its curve.
 	 *   Plus: lies inside curve, minimum distance. 
@@ -262,7 +262,7 @@ public class RiemHilbert extends PackExtender {
 	}
 	
 	/**
-	 * @brief Link packing boundary to curves starting at first boundary vertex
+	 * @aibrief Link packing boundary to curves starting at first boundary vertex
 	 */
 	public int linkPackCurves() {
 		return linkPackCurves(extenderPD.bdryStarts[1]);
@@ -425,7 +425,7 @@ public class RiemHilbert extends PackExtender {
 	}
 
 	/**
-	 * @brief Parse and dispatch this extender's user commands
+	 * @aibrief Parse and dispatch this extender's user commands
 	 *
 	 * Parsing commands sent here from 'CommandStrParser'
 	 */
@@ -513,7 +513,7 @@ public class RiemHilbert extends PackExtender {
 	}
 	
 	/**
-	 * @brief Override method for cataloging command structures
+	 * @aibrief Override method for cataloging command structures
 	 *
 	 * Override method for cataloging command structures
 	 */

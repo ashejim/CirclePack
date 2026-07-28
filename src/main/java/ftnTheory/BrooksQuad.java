@@ -18,7 +18,7 @@ import util.ColorUtil;
 import util.StringUtil;
 
 /**
- * @brief Extender that builds 'Brooks' packings of circles in quad interstices
+ * @aibrief Extender that builds 'Brooks' packings of circles in quad interstices
  *
  * "Brooks" packings are patterns of circles inside quadrilateral interstices.
  * A "quad" interstice is one formed by 4 successively tangent circles with
@@ -82,7 +82,7 @@ public class BrooksQuad extends PackExtender {
 	}
 	
 	/**
-	 * @brief Build the initial 4-flower quad seed with the 'plug' at max index
+	 * @aibrief Build the initial 4-flower quad seed with the 'plug' at max index
 	 *
 	 * This creates an initial 4-flower as the basis for later
 	 * changes, swap so the center is the largest index, it's 
@@ -108,7 +108,7 @@ public class BrooksQuad extends PackExtender {
 	}
 	
 	/**
-	 * @brief Add a new 'vertical' circle tangent to T and B into the interstice
+	 * @aibrief Add a new 'vertical' circle tangent to T and B into the interstice
 	 *
 	 * A new 'vertical' circle is one which is tangent to T and B (and L or R,
 	 * depending). We do various interchanges of T/B and L/R depending on the
@@ -170,7 +170,7 @@ public class BrooksQuad extends PackExtender {
 	}
 	
 	/**
-	 * @brief Add a new 'horizontal' circle tangent to L and R into the interstice
+	 * @aibrief Add a new 'horizontal' circle tangent to L and R into the interstice
 	 *
 	 * A new 'horizontal' circle is one which is tangent to L and R (and T or B,
 	 * depending). We do various interchanges of T/B and L/R depending on the
@@ -229,7 +229,7 @@ public class BrooksQuad extends PackExtender {
 	}
 
 	/**
-	 * @brief Parse extender commands (HV/VH, cfrac, addV/addH, norm, toggle, rematch)
+	 * @aibrief Parse extender commands (HV/VH, cfrac, addV/addH, norm, toggle, rematch)
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
@@ -320,7 +320,7 @@ public class BrooksQuad extends PackExtender {
 	}
 
 	/**
-	 * @brief Repack and lay out the packing in standard normalized position
+	 * @aibrief Repack and lay out the packing in standard normalized position
 	 */
 	public void normalize() {
 		cpCommand("repack");
@@ -330,7 +330,7 @@ public class BrooksQuad extends PackExtender {
 	}
 	
 	/**
-	 * @brief Display the Brooks packing circles with fill and margins
+	 * @aibrief Display the Brooks packing circles with fill and margins
 	 */
 	public void draw() {
 		try {
@@ -342,7 +342,7 @@ public class BrooksQuad extends PackExtender {
 	}
 	
 	/**
-	 * @brief Register this extender's command structures for help/catalog
+	 * @aibrief Register this extender's command structures for help/catalog
 	 *
 	 * Override method for cataloging command structures
 	 */

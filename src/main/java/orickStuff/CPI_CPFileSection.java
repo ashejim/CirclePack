@@ -56,7 +56,7 @@ public class CPI_CPFileSection {
 	}
 	
 	/**
-	 * @brief Test entry: build a sample section with one token and print it.
+	 * @aibrief Test entry: build a sample section with one token and print it.
 	 */
 	public static void main(String[] args){
 		CPI_CPFileSection h = new CPI_CPFileSection("HEADER:");

@@ -278,7 +278,7 @@ public class ScriptBundle extends JPanel implements ActionListener {
 				
 				
 	/**
-	 * @brief Build the drag-and-drop script edit bar of tool buttons.
+	 * @aibrief Build the drag-and-drop script edit bar of tool buttons.
 	 *
 	 * Build the scriptEditBar of The actions here end up calling 'StackBox.editAction'.
 	 */
@@ -306,7 +306,7 @@ public class ScriptBundle extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * @brief Handle script locator comboBox changes by loading the selected script.
+	 * @aibrief Handle script locator comboBox changes by loading the selected script.
 	 *
 	 * For comboBox change events in 'scriptBar'
 	 * (bottom of 'PackControl' or top of 'ScriptFrame')
@@ -419,7 +419,7 @@ class editTool extends MyTool {
 	serialVersionUID = 1L;
 	
 	/**
-	 * @brief Build an edit-bar MyTool with the given icon/name/tooltip and drag action.
+	 * @aibrief Build an edit-bar MyTool with the given icon/name/tooltip and drag action.
 	 */
 	// Constructor
 	public editTool(String iconname,String name,String tooltip) {

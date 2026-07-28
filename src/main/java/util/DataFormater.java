@@ -20,7 +20,7 @@ public class DataFormater {
 	}
 	
 	/**
-	 * @brief Set the prefix, data-type, object-list, and suffix format strings.
+	 * @aibrief Set the prefix, data-type, object-list, and suffix format strings.
 	 */
 	public void update(String pref,String datat,String olist,String suf) {
 		prefixText=pref;

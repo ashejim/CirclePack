@@ -29,7 +29,7 @@ public class ViewBox {
 	}
 
 	/**
-	 * @brief Reset to the default square view box [-1.1,-1.1] to [1.1,1.1].
+	 * @aibrief Reset to the default square view box [-1.1,-1.1] to [1.1,1.1].
 	 */
 	public void reset() {
 		Aspect=1.0;

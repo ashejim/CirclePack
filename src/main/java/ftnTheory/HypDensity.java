@@ -54,7 +54,7 @@ public class HypDensity extends PackExtender {
 	}	
 	
 	/**
-	 * @brief Parse and execute user commands for hyperbolic-density resampling.
+	 * @aibrief Parse and execute user commands for hyperbolic-density resampling.
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		Vector<String> items=null;
@@ -128,7 +128,7 @@ public class HypDensity extends PackExtender {
 	}
 	
 	/**
-	 * @brief Register this extender's command structures for help/catalog.
+	 * @aibrief Register this extender's command structures for help/catalog.
 	 *
 	 * Override method for cataloging command structures
 	 */

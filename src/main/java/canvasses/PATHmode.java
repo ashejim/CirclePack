@@ -32,7 +32,7 @@ public class PATHmode extends MyCanvasMode {
 	}
 	
 	/**
-	 * @brief On left press, start a new polygonal path or add a point to it.
+	 * @aibrief On left press, start a new polygonal path or add a point to it.
 	 */
 	// start or add to segment
 	public void pressed1(ActiveWrapper aW,MouseEvent e) { // override
@@ -68,7 +68,7 @@ public class PATHmode extends MyCanvasMode {
 	public void clicked1(ActiveWrapper aW,MouseEvent e) {} // override
 
 	/**
-	 * @brief On right click, close the path, store it globally, and restore default mode.
+	 * @aibrief On right click, close the path, store it globally, and restore default mode.
 	 */
 	// close path and display
 	public void clicked3(ActiveWrapper aW,MouseEvent e) { // override
@@ -121,7 +121,7 @@ public class PATHmode extends MyCanvasMode {
 	}
 	
 	/**
-	 * @brief Store a clone of the handler's path in the global 'ClosedPath'.
+	 * @aibrief Store a clone of the handler's path in the global 'ClosedPath'.
 	 *
 	 * Store clone in the global Path2D.Double 'ClosedPath'.
 	 */

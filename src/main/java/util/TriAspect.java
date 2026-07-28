@@ -16,7 +16,7 @@ import math.Mobius;
 import packing.PackData;
 
 /**
- * @brief Geometric data localized to a triangular face, for affine/projective structures and Schwarzians.
+ * @aibrief Geometric data localized to a triangular face, for affine/projective structures and Schwarzians.
  *
  * Utility class holding geometric info localized to triangular
  * faces of some parent circle packing. Used, e.g., with
@@ -155,7 +155,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Allocate the center array and set all entries to 0.0.
+	 * @aibrief Allocate the center array and set all entries to 0.0.
 	 *
 	 * allocate center array and set to 0.0
 	 */
@@ -189,7 +189,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Find the incircle of this face (uses tangency points in hyp case).
+	 * @aibrief Find the incircle of this face (uses tangency points in hyp case).
 	 *
 	 * Find the incircle. For eucl/sph, just use centers;
 	 * for hyp case, use 3 generalized tangency points.
@@ -204,7 +204,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Compute the circle opposite edge (j,j+1) from centers, radii, inv distances.
+	 * @aibrief Compute the circle opposite edge (j,j+1) from centers, radii, inv distances.
 	 *
 	 * Compute the circle opposite edge (j,j+1) using
 	 * centers, radii, and inv distances.
@@ -223,7 +223,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Compute and store the Mobius from the base equilateral to this face.
+	 * @aibrief Compute and store the Mobius from the base equilateral to this face.
 	 */
 	public Mobius setBaseMobius() {
 		if (tanPts==null)
@@ -241,7 +241,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Return the tangency point of edge j based on geometry 'hes'.
+	 * @aibrief Return the tangency point of edge j based on geometry 'hes'.
 	 */
 	public Complex getTangPt(int j) {
 		if (hes < 0)
@@ -255,14 +255,14 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Compute the incircle of the triangle formed by the three centers.
+	 * @aibrief Compute the incircle of the triangle formed by the three centers.
 	 */
 	public CircleSimple compIncircle() {
 		return CommonMath.tri_incircle(center[0],center[1],center[2],hes);
 	}
 
 	/**
-	 * @brief Copy this face's centers/radii by edge into the given PackDCEL.
+	 * @aibrief Copy this face's centers/radii by edge into the given PackDCEL.
 	 *
 	 * Copy cent/radii by edge to pdcel
 	 * @param pdcel PackDCEL
@@ -277,7 +277,7 @@ public class TriAspect extends TriData {
 	}
 		
 	/**
-	 * @brief Compute/store edge "tangency" points (incircle contacts) from current centers.
+	 * @aibrief Compute/store edge "tangency" points (incircle contacts) from current centers.
 	 *
 	 * Compute/store "tangency" points based on current
 	 * centers. Actually these are points where the incircle
@@ -294,7 +294,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Return local index of the first edge this face shares with 'ntri'.
+	 * @aibrief Return local index of the first edge this face shares with 'ntri'.
 	 *
 	 * Return index k in 'this' of first edge 'this' shares
 	 * with 'ntri', if it exists.
@@ -315,7 +315,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Compute eucl centers in normalized position from current 'labels'.
+	 * @aibrief Compute eucl centers in normalized position from current 'labels'.
 	 *
 	 * Compute the eucl centers in normalized position
 	 * (v0 at origin, v1 on positive real, v2 in upper half
@@ -336,7 +336,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Get the center for local index j as a new Complex.
+	 * @aibrief Get the center for local index j as a new Complex.
 	 *
 	 * Get the center as new Complex.
 	 * @param j int, index in 'vert'
@@ -356,7 +356,7 @@ public class TriAspect extends TriData {
 
 
 	/**
-	 * @brief Create a base equilateral TriAspect (rad/cent data) in geometry 'hes'.
+	 * @aibrief Create a base equilateral TriAspect (rad/cent data) in geometry 'hes'.
 	 *
 	 * Utility routine: only use 'TriAspect' to
 	 * hold rad/cent data. Create a baseEquilateral
@@ -385,7 +385,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Compute the Mobius aligning this face with the face across a shared edge.
+	 * @aibrief Compute the Mobius aligning this face with the face across a shared edge.
 	 *
 	 * Compute the Mobius that would align 'this' with
 	 * 'acrossTri' (the 'TriAspect' across 'edge').
@@ -443,7 +443,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Apply a Mobius transformation to my centers/radii (only).
+	 * @aibrief Apply a Mobius transformation to my centers/radii (only).
 	 *
 	 * Apply a Mobius transformation to my centers/radii.
 	 * Note: other data, eg. labels, sides, tangPts,
@@ -463,7 +463,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Adjust center/label/side data so edge centers match given c0,c1.
+	 * @aibrief Adjust center/label/side data so edge centers match given c0,c1.
 	 *
 	 * Assume 'center's give eucl face in normalized
 	 * position based on current 'labels'. Given vert
@@ -498,7 +498,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Adjust this face's data to align with the face across edge opposite v2.
+	 * @aibrief Adjust this face's data to align with the face across edge opposite v2.
 	 *
 	 * Assume 'center's have been computed in
 	 * normalized position* from 'labels'. Adjust
@@ -523,7 +523,7 @@ public class TriAspect extends TriData {
 	}
 
 	/**
-	 * @brief Set 'labels' from current 'center' data (corner = (B+C-A)/2).
+	 * @aibrief Set 'labels' from current 'center' data (corner = (B+C-A)/2).
 	 *
 	 * Sets 'labels' based on current 'center' data. In particular,
 	 * value at corner a is (B+C-A)/2, where A, B, C are the
@@ -545,7 +545,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Set 'sidelengths' based on current 'center' data.
+	 * @aibrief Set 'sidelengths' based on current 'center' data.
 	 *
 	 * Sets 'sides' based on current 'center' data.
 	 */
@@ -563,7 +563,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Set homogeneous 'labels' from current 'sides' data (corner = (B+C-A)/2).
+	 * @aibrief Set homogeneous 'labels' from current 'sides' data (corner = (B+C-A)/2).
 	 *
 	 * Sets homogeneous 'labels' based on current 'sides' data.
 	 * In particular, value at corner a is (B+C-A)/2, where A, B, C
@@ -577,7 +577,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Set homogeneous 'sides' from current 'labels' and 'invDist' data.
+	 * @aibrief Set homogeneous 'sides' from current 'labels' and 'invDist' data.
 	 *
 	 * Sets homogeneous 'sides' based on current 'labels' and
 	 * 'invDist' data.
@@ -589,7 +589,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Set 'labels' randomly, values in (0,1).
+	 * @aibrief Set 'labels' randomly, values in (0,1).
 	 *
 	 * Set 'labels' randomly, values in (0,1).
 	 */
@@ -599,7 +599,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Normalize 'labels' to sum zero (for log-of-ratio values).
+	 * @aibrief Normalize 'labels' to sum zero (for log-of-ratio values).
 	 *
 	 * Normalize so sum of 'labels' is zero by subtracting
 	 * 1/3 of the sum from each entry. (Use when these represent
@@ -612,7 +612,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Normalize the 'labels' vector so the max entry is 1.0.
+	 * @aibrief Normalize the 'labels' vector so the max entry is 1.0.
 	 *
 	 * Normalize 'labels' vector so the max entry is 1.0.
 	 */
@@ -630,7 +630,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Return the skew log(left/right) at v (label scaled by t) and its derivative.
+	 * @aibrief Return the skew log(left/right) at v (label scaled by t) and its derivative.
 	 *
 	 * Given vertex 'v' (from parent packing) of
 	 * this face, return the skew, log(left/right
@@ -656,7 +656,7 @@ public class TriAspect extends TriData {
 	}
 
 	/**
-	 * @brief Return the angle at v (label scaled by t) and its derivative w.r.t. t.
+	 * @aibrief Return the angle at v (label scaled by t) and its derivative w.r.t. t.
 	 *
 	 * Return the angle at v, but with the recorded
 	 * eucl label at v multiplied by 't'. Thus, for
@@ -681,7 +681,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Find the eucl area of the sector at 'v' based on the labels.
+	 * @aibrief Find the eucl area of the sector at 'v' based on the labels.
 	 *
 	 * Find the eucl area of the sector at 'v'
 	 * based on the labels
@@ -696,7 +696,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Using center data, compute the eucl face 'sector' area at v.
+	 * @aibrief Using center data, compute the eucl face 'sector' area at v.
 	 *
 	 * Using center data, compute the area of
 	 * eucl face 'sector' at v. Assume angles
@@ -716,7 +716,7 @@ public class TriAspect extends TriData {
 	}
 
 	/**
-	 * @brief Debug aid: display rgb dots at face corners via base-equilateral Mobius.
+	 * @aibrief Debug aid: display rgb dots at face corners via base-equilateral Mobius.
 	 *
 	 * For help when debugging Schwarzian code. This
 	 * displaye rgb dots at corners of this face base
@@ -762,7 +762,7 @@ public class TriAspect extends TriData {
 	}
 	
 	/**
-	 * @brief Return the complex tanPts as a bracketed string, e.g. for matlab.
+	 * @aibrief Return the complex tanPts as a bracketed string, e.g. for matlab.
 	 *
 	 * Return vector of complex tanPts, e.g. for matlab.
 	 * @return String

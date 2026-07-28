@@ -298,7 +298,7 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 	}
 
 	/**
-	 * @brief Build the compact panel (icon, open/close, inline) for this box.
+	 * @aibrief Build the compact panel (icon, open/close, inline) for this box.
 	 *
 	 * Build compact structure. This may be panel within 'this'
 	 * or may be 'this' itself when in a 'LineSBox'.
@@ -463,7 +463,7 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 	}
 
 	/**
-	 * @brief Configure the command editor pane for the current mode.
+	 * @aibrief Configure the command editor pane for the current mode.
 	 *
 	 * Lower panel has the command editor
 	 */
@@ -889,7 +889,7 @@ public class CmdSBox extends StackBox implements ItemListener, KeyListener {
 	public void deleteChildNodes() {}
 
 	/**
-	 * @brief Handle checkbox changes (inline, dropable, cursor, handy, tip, EOL).
+	 * @aibrief Handle checkbox changes (inline, dropable, cursor, handy, tip, EOL).
 	 *
 	 * Listens to various checkbox and sets 'inline' status
 	 * */

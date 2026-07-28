@@ -92,7 +92,7 @@ public class FlipStrategy extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and execute user commands for edge-flip strategies.
+	 * @aibrief Parse and execute user commands for edge-flip strategies.
 	 *
 	 * This is were the user's commands are "parsed"
 	 */
@@ -517,7 +517,7 @@ public class FlipStrategy extends PackExtender {
 	}
 	
 	/**
-	 * @brief Register this extender's command structures for help/catalog.
+	 * @aibrief Register this extender's command structures for help/catalog.
 	 *
 	 * Override method for cataloging command structures
 	 */

@@ -48,7 +48,7 @@ public class WordWalker extends PackExtender {
 	}
 	
 	/**
-	 * @brief Parse and dispatch this extender's user commands
+	 * @aibrief Parse and dispatch this extender's user commands
 	 */
 	public int cmdParser(String cmd,Vector<Vector<String>> flagSegs) {
 		int count=0;
@@ -112,7 +112,7 @@ public class WordWalker extends PackExtender {
 	}
 	
 	/**
-	 * @brief Print help text describing this extender's purpose
+	 * @aibrief Print help text describing this extender's purpose
 	 */
 	public void helpInfo() {
 		helpMsg("Commands for PackExtender "+extensionAbbrev+" (Word Walking)");

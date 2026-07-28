@@ -35,7 +35,7 @@ public class PathLink extends LinkedList<Complex> {
 	
 	// Constructors
 	/**
-	 * @brief Build path from data string, geometry 'heS'; auto-detects closure.
+	 * @aibrief Build path from data string, geometry 'heS'; auto-detects closure.
 	 */
 	public PathLink(int heS,String datastr) {
 		super();
@@ -45,7 +45,7 @@ public class PathLink extends LinkedList<Complex> {
 	}
 
 	/**
-	 * @brief Build single-point path at (x,y) with geometry 'heS'.
+	 * @aibrief Build single-point path at (x,y) with geometry 'heS'.
 	 */
 	public PathLink(int heS,double x,double y) {
 		super();
@@ -55,7 +55,7 @@ public class PathLink extends LinkedList<Complex> {
 	}
 
 	/**
-	 * @brief Build path from vector of string tokens, geometry 'heS'; auto-closure.
+	 * @aibrief Build path from vector of string tokens, geometry 'heS'; auto-closure.
 	 */
 	public PathLink(int heS,Vector<String> items) {
 		super();
@@ -65,7 +65,7 @@ public class PathLink extends LinkedList<Complex> {
 	}
 
 	/**
-	 * @brief Empty path, geometry defaults to euclidean.
+	 * @aibrief Empty path, geometry defaults to euclidean.
 	 *
 	 * Empty list, geometry defaults to euclidean
 	 */
@@ -74,7 +74,7 @@ public class PathLink extends LinkedList<Complex> {
 	}
 
 	/**
-	 * @brief Set 'closed' if first and last points coincide within threshold.
+	 * @aibrief Set 'closed' if first and last points coincide within threshold.
 	 */
 	public void autoClosure() {
 		if (this.size()<2) return; // nothing to do
@@ -91,7 +91,7 @@ public class PathLink extends LinkedList<Complex> {
 	}
 	
 	/**
-	 * @brief Add a copy of z; in disc mode projects points outside unit circle onto it.
+	 * @aibrief Add a copy of z; in disc mode projects points outside unit circle onto it.
 	 */
 	public boolean add(Complex z) {
 		if (hes<0 && z.abs()>1.0) z.divide(z.abs()); // project to unit circle
@@ -111,7 +111,7 @@ public class PathLink extends LinkedList<Complex> {
 	}
 	
 	/**
-	 * @brief Parse x y pairs into complex nodes; empty input falls back to 'ClosedPath'.
+	 * @aibrief Parse x y pairs into complex nodes; empty input falls back to 'ClosedPath'.
 	 * @param items Vector<String>
 	 * @return int count of nodes added
 	 */

@@ -16,7 +16,7 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
 /**
- * @brief Incremental search that highlights matches in a text component as the query changes.
+ * @aibrief Incremental search that highlights matches in a text component as the query changes.
  */
 public class IncrementalSearch implements DocumentListener, ActionListener, ChangeListener {
     protected JTextComponent content;
@@ -34,7 +34,7 @@ public class IncrementalSearch implements DocumentListener, ActionListener, Chan
     
     /* DocumentListener implementation */
     /**
-     * @brief Re-run the search when text is inserted into the query field.
+     * @aibrief Re-run the search when text is inserted into the query field.
      * @param evt
      */
     public void insertUpdate(DocumentEvent evt) {
@@ -57,7 +57,7 @@ public class IncrementalSearch implements DocumentListener, ActionListener, Chan
     
     /* ActionListener implementation */
     /**
-     * @brief On ENTER, advance to the next match of the current query.
+     * @aibrief On ENTER, advance to the next match of the current query.
      * @param evt
      */
     public void actionPerformed(ActionEvent evt) {

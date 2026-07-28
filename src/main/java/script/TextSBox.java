@@ -57,7 +57,7 @@ public class TextSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Build the edit/display panes, borders, and accept/cancel cluster.
+	 * @aibrief Build the edit/display panes, borders, and accept/cancel cluster.
 	 */
 	public void buildComponents() {
 
@@ -108,7 +108,7 @@ public class TextSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Redo layout, showing text pane or edit pane per mode.
+	 * @aibrief Redo layout, showing text pane or edit pane per mode.
 	 */
 	public void redisplaySB(int wide) {
 		myWidth=wide;
@@ -142,7 +142,7 @@ public class TextSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Switch to edit mode; 'editPane' gets text from 'textPane'.
+	 * @aibrief Switch to edit mode; 'editPane' gets text from 'textPane'.
 	 *
 	 * 'editPane' gets text from 'textPane'
 	 */
@@ -171,7 +171,7 @@ public class TextSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Cancel edit, discarding changes (delete node if NEW).
+	 * @aibrief Cancel edit, discarding changes (delete node if NEW).
 	 *
 	 * 'textPane' contents should not have changed until
 	 * 'acceptEdit'
@@ -206,7 +206,7 @@ public class TextSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Accept edit: copy 'editPane' text to 'textPane' (discard if empty).
+	 * @aibrief Accept edit: copy 'editPane' text to 'textPane' (discard if empty).
 	 *
 	 * Here 'textPane' is reset to 'editPane's contents. During
 	 * edit, new content is only in 'editPane'. Note that if the
@@ -254,7 +254,7 @@ public class TextSBox extends StackBox {
 	}
 
 	/**
-	 * @brief Delete this node: get rid of CPTreeNode and StackBox.
+	 * @aibrief Delete this node: get rid of CPTreeNode and StackBox.
 	 *
 	 * Delete this node: get rid of CPTreeNode and StackBox
 	 */
