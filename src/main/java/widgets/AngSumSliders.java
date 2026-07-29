@@ -29,6 +29,9 @@ public class AngSumSliders extends SliderFrame {
 		this(p,"","",vlist);
 	}
 
+	/**
+	 * @aibrief Build an angle-sum slider frame for the given vertices and command strings.
+	 */
 	public AngSumSliders(PackData p,String chgcmd,String movcmd,NodeLink vlist) {
 		super(p,chgcmd,movcmd);
 		type=ANGLESUM;
@@ -61,6 +64,9 @@ public class AngSumSliders extends SliderFrame {
 	}
 
 	// ============= abstract methods ==================
+	/**
+	 * @aibrief Create an ActiveSlider for each vertex, showing its angle sum over pi.
+	 */
 	public void populate() {
 		mySliders = new ActiveSlider[sliderCount];
 		Iterator<Integer> vlst=verts.iterator();
@@ -74,6 +80,9 @@ public class AngSumSliders extends SliderFrame {
 		}
 	}
 	
+	/**
+	 * @aibrief Add sliders for new vertices parsed from objstr; return count added.
+	 */
 	public int addObject(String objstr) {
 		NodeLink nl=new NodeLink(packData,objstr);
 		if (nl==null || nl.size()==0)
@@ -104,6 +113,9 @@ public class AngSumSliders extends SliderFrame {
 		return hit;
 	}
 	
+	/**
+	 * @aibrief Remove sliders for vertices parsed from objstr; return count removed.
+	 */
 	public int removeObject(String objstr) {
 		NodeLink nl=new NodeLink(packData,objstr);
 		if (nl==null || nl.size()==0)
@@ -140,6 +152,8 @@ public class AngSumSliders extends SliderFrame {
 	}
 	
 	/**
+	 * @aibrief Return the parent-held value for a slider (unused; returns 0).
+	 *
 	 * abstract method, not yet used here. Intention
 	 * is to have data values held by Double[] pointer
 	 * 'parentValues' to the parent's data. 
@@ -149,6 +163,8 @@ public class AngSumSliders extends SliderFrame {
 	}
 	
 	/**
+	 * @aibrief Push a slider's angle-sum value into the packing data.
+	 *
 	 * when a slider changes, it sends the new value to packData
 	 */
 	public void valueToPacking(int indx) {
@@ -156,6 +172,8 @@ public class AngSumSliders extends SliderFrame {
 	}
 	
 	/**
+	 * @aibrief Update a slider from the packing's angle sum without firing a change event.
+	 *
 	 * Set slider value from packing data without
 	 * causing change event
 	 */
@@ -164,6 +182,8 @@ public class AngSumSliders extends SliderFrame {
 	}
 	
 	/**
+	 * @aibrief Create the slider panel with an angle-sum background color.
+	 *
 	 * Done here in case there are embellishments to the panel
 	 */
 	public void createSliderPanel() {
@@ -191,11 +211,17 @@ public class AngSumSliders extends SliderFrame {
 		valueField_action(val,indx);
 	}
 
+	/**
+	 * @aibrief Set the slider range to [0,4] (multiples of pi).
+	 */
 	public void initRange() { // [0,4], always multiplied by pi
 		val_min=0.0;
 		val_max=4.0;
 	}
 
+	/**
+	 * @aibrief Close this angle-sum slider frame via the CirclePack command.
+	 */
 	public void killMe() {
 		CommandStrParser.jexecute(packData,"slider -A -x");
 	}

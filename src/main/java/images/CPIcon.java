@@ -213,7 +213,9 @@ public class CPIcon {
 
 	
 	/**
-	 * Circle packing version of 'ImageIcon'; need 
+	 * @aibrief Load an 'ImageIcon' from the CirclePack "Icons/" resource path.
+	 *
+	 * Circle packing version of 'ImageIcon'; need
 	 * to look in right place for icons so that we 
 	 * can 'jar' up the code.
 	 * @param iconname should start without a leading '/'

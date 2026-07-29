@@ -10,7 +10,13 @@ package circlePack;
  */
 public abstract class RunProgress {
 	
+	/**
+	 * @aibrief Start or stop the progress indicator.
+	 */
 	public abstract void startstop(boolean ok);
+	/**
+	 * @aibrief Report whether a computation is currently running.
+	 */
 	public abstract boolean isRunning();
 
 }

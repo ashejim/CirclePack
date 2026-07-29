@@ -44,6 +44,8 @@ public class IconComboBox extends JPanel {
     }
     
     /**
+     * @aibrief Reset the combobox model from a vector of 'CPIcon's.
+     *
      * Reset list of icons (have to convert vector to list)
      *
      */
@@ -58,6 +60,9 @@ public class IconComboBox extends JPanel {
     
     //  We create our own inner class to handle setting and
     //  repainting the image and the text.
+    /**
+     * @aibrief Inner panel holding/repainting the icon label.
+     */
     class ImagePanel extends JPanel {
 
     	private static final long 

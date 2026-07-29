@@ -188,6 +188,9 @@ MouseMotionListener,FocusListener {
 	public static MyConsole consoleCmd;
 	
 	// Constructor
+	/**
+	 * @aibrief Configure GUI mode: sockets, canvas modes, packing count, timer, default icon.
+	 */
 	public PackControl() {
 		
 // debugging
@@ -219,6 +222,8 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
+	 * @aibrief Start PackControl: preferences, packings, drawings, frames, consoles, and GUI.
+	 *
 	 * This actually starts PackControl: initiate preferences,
 	 * start C libraries, create packings[] vector of 'PackData's,
 	 * create the interfaces frames and windows, pack 'frame',
@@ -405,6 +410,8 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
+	 * @aibrief Lay out and build the principal PackControl 'frame' content pane.
+	 *
 	 * Initiate the GUI for 'frame', the principal PackControl JFrame; 
 	 * other things have had to be started first.
 	 */
@@ -522,6 +529,8 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
+	 * @aibrief Re-lay out active/paired canvasses per current MapCanvasMode and AdvancedMode.
+	 *
 	 * Incoming script may change canvas layouts by changing
 	 * 'MapCanvasMode' and 'AdvancedMode' choice.
 	 */
@@ -571,6 +580,8 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
+	 * @aibrief Create the auxiliary frames and panels (help, mobius, output, etc.).
+	 *
 	 * Create auxiliary frames/panels: 'helpFrame, 
 	 * 'mapPairFrame','mobiusFrame','functionFrame',
 	 * 'packDataFrame','mbarPanel','outputFrame',
@@ -653,6 +664,8 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
+	 * @aibrief Build the row of buttons that open support frames (messages, mobius, etc.).
+	 *
 	 * Buttons for opening various support frames.
 	 */
 	public JPanel buildFrameButtons() {
@@ -1146,6 +1159,8 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
+	 * @aibrief Prompt the user (offering to save a changed script) before exiting CirclePack.
+	 *
 	 * Prompt the user to exit CirclePack. If the user confirms the exit,
 	 * CirclePack will exit. The user may also cancel the process, in which
 	 * case this function will return. If the current script has not been
@@ -1186,6 +1201,8 @@ MouseMotionListener,FocusListener {
 	}
 	
 	/**
+	 * @aibrief Dispose all frames so Swing exits gracefully.
+	 *
 	 * Gracefully exit CirclePack.
 	 */
 	protected void exit() {
@@ -1220,6 +1237,9 @@ MouseMotionListener,FocusListener {
 		consoleCmd.cmdline.requestFocusInWindow();      
 		debugFocusMsg("gained focus",evt);
 	}
+    /**
+     * @aibrief Print debug info about a focus event to standard out.
+     */
     public void debugFocusMsg(String prefix, FocusEvent e) {
     	System.out.println(prefix
                            + (e.isTemporary() ? " (temporary):" : ":")

@@ -31,6 +31,9 @@ public class RadiiSliders extends SliderFrame {
 		this(p,"","",vlist);
 	}
 
+	/**
+	 * @aibrief Build a radii slider frame for the given vertices and command strings.
+	 */
 	public RadiiSliders(PackData p,String chgcmd,String movcmd,NodeLink vlist) {
 		super(p,chgcmd,movcmd);
 		type=RADSLIDER;
@@ -63,6 +66,9 @@ public class RadiiSliders extends SliderFrame {
 	}
 
 	// ============= abstract methods ==================
+	/**
+	 * @aibrief Create an ActiveSlider for each vertex, showing its radius.
+	 */
 	public void populate() {
 		mySliders = new ActiveSlider[sliderCount];
 		Iterator<Integer> vlst=verts.iterator();
@@ -76,6 +82,9 @@ public class RadiiSliders extends SliderFrame {
 		}
 	}
 	
+	/**
+	 * @aibrief Add sliders for new vertices parsed from objstr; return count added.
+	 */
 	public int addObject(String objstr) {
 		NodeLink nl=new NodeLink(packData,objstr);
 		if (nl==null || nl.size()==0)
@@ -107,6 +116,9 @@ public class RadiiSliders extends SliderFrame {
 		return hit;
 	}
 	
+	/**
+	 * @aibrief Remove sliders for vertices parsed from objstr; return count removed.
+	 */
 	public int removeObject(String objstr) {
 		NodeLink nl=new NodeLink(packData,objstr);
 		if (nl==null || nl.size()==0)
@@ -143,6 +155,8 @@ public class RadiiSliders extends SliderFrame {
 	}
 		
 	/**
+	 * @aibrief Return the parent-held value for a slider (unused; returns 0).
+	 *
 	 * abstract method, not yet used here. Intention
 	 * is to have data values held by Double[] pointer
 	 * 'parentValues' to the parent's data. 
@@ -153,6 +167,8 @@ public class RadiiSliders extends SliderFrame {
 
 	
 	/**
+	 * @aibrief Push a slider's radius value into the packing data.
+	 *
 	 * when a slider changes, it sends the new value to packData
 	 */
 	public void valueToPacking(int indx) {
@@ -161,6 +177,8 @@ public class RadiiSliders extends SliderFrame {
 	}
 	
 	/**
+	 * @aibrief Update a slider from the packing's radius without firing a change event.
+	 *
 	 * Set slider value from packing data without
 	 * causing change event
 	 */
@@ -170,6 +188,8 @@ public class RadiiSliders extends SliderFrame {
 	}
 	
 	/**
+	 * @aibrief Create the slider panel with a radii background color.
+	 *
 	 * Done here in case there are embellishments to the panel
 	 */
 	public void createSliderPanel() {
@@ -197,6 +217,9 @@ public class RadiiSliders extends SliderFrame {
 		valueField_action(val,indx);
 	}
 
+	/**
+	 * @aibrief Set slider min/max from the current radii range, widened by a factor of two.
+	 */
 	public void initRange() {
 		val_min=1000000;
 		val_max=-1;
@@ -211,6 +234,9 @@ public class RadiiSliders extends SliderFrame {
 		val_max *=2.0;
 	}
 
+	/**
+	 * @aibrief Close this radii slider frame via the CirclePack command.
+	 */
 	public void killMe() {
 		CommandStrParser.jexecute(packData,"slider -R -x");
 	}

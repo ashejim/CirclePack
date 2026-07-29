@@ -14,6 +14,8 @@ import javax.imageio.ImageIO;
 import frames.SplashFrame;
 
 /**
+ * @aibrief Alternative main() that shows a splash while reflectively loading the real main.
+ *
  * This class provides an alternative main() function 
  * which will pop up a splash screen, load the real 
  * main class in the background, then remove the splash 
@@ -83,6 +85,8 @@ public class SplashMain {
 	}
 	
 	/**
+	 * @aibrief Show splash, reflectively load allMains.CP_after_Splash, then run its main.
+	 *
 	 * main routine to be invoked with command 
 	 * line arguments (if any)
 	 * 

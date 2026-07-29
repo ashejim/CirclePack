@@ -230,7 +230,10 @@ public abstract class CPBase {
 	}
 */
 
-// version suggested by Claude, 7/26	
+// version suggested by Claude, 7/26
+	/**
+	 * @aibrief Resolve a URL for a path under 'Resources', via ClassLoader or working dir.
+	 */
 	public static URL getResourceURL(String path) {
 	    if (!path.startsWith("/")) path = "/" + path;
 	    String resPath = "Resources" + path; // e.g. "Resources/icons/foo.png"
@@ -258,6 +261,9 @@ public abstract class CPBase {
 
 	
 	// Constructor
+	/**
+	 * @aibrief Extract executables, init colors, tools, variable/function parsers.
+	 */
 	public CPBase() {
 		if( CPBase.sharedinstance==null )
 			CPBase.sharedinstance=this;
@@ -387,6 +393,8 @@ public abstract class CPBase {
 	}
 
     /**
+     * @aibrief Evaluate the user function at complex value z.
+     *
      * The parser treats 'z' as denoting a complex variable. 
      * This tells parser to set z to a specific value and 
      * evaluate the function.
@@ -404,6 +412,8 @@ public abstract class CPBase {
     }
     
     /**
+     * @aibrief Evaluate the parameter expression at double value t.
+     *
      * TODO: have to figure out how to designate variable 
      * character 't'
      * 
@@ -422,6 +432,8 @@ public abstract class CPBase {
     }
     
 	/**
+	 * @aibrief Pass a generic message to the subclass.
+	 *
 	 * Call the subclass for generic message
 	 */
 	public void msg(String str) {
@@ -429,6 +441,8 @@ public abstract class CPBase {
 	}
 
 	/**
+	 * @aibrief Pass an error message to the subclass.
+	 *
 	 * Pass to subclass for generic message
 	 */
 	public void errMsg(String str) {
@@ -436,6 +450,8 @@ public abstract class CPBase {
 	}
 
 	/**
+	 * @aibrief Pass a debug message to the subclass.
+	 *
 	 * Pass to subclass for generic message
 	 */
 	public void debugMsg(String str) {

@@ -24,6 +24,9 @@ public class IndexedJSlider extends JSlider {
 		myIndx=indx;
 	}
 	
+	/**
+	 * @aibrief Construct with a parent, index, and initial double value, then fire a change.
+	 */
 	public IndexedJSlider(SliderFrame sfp,double val, int indx) {
 		super(MIN_VALUE,MAX_VALUE);
 		sfparent=sfp;
@@ -36,6 +39,9 @@ public class IndexedJSlider extends JSlider {
 		return myIndx;
 	}
 	
+	/**
+	 * @aibrief Map the integer slider position to a double in the parent's [min,max] range.
+	 */
 	public double getCurrentValue() {
 		double f=((double)getValue())/(double)MAX_VALUE;
 		return (f*(sfparent.val_max-sfparent.val_min)+sfparent.val_min);

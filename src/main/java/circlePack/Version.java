@@ -15,6 +15,8 @@ public class Version
 		// "J2.4 as of 4/2/2014 // "J2.3" // as of 3/1/2013
 	
 	/**
+	 * @aibrief Print the CirclePack version string to standard out.
+	 *
 	 * @param args
 	 */
 	public static void main(String[] args) 

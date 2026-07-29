@@ -45,6 +45,9 @@ import util.xNumField;
  * @author Cay Horstmann
  */
 public class MultiSlider {
+	/**
+	 * @aibrief Launch a demo SliderTestFrame on the event dispatch thread.
+	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -64,6 +67,9 @@ public class MultiSlider {
 class SliderTestFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * @aibrief Build a demo frame populated with many styled JSliders and a value field.
+	 */
 	public SliderTestFrame() {
 		setTitle("SliderTest");
 		setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);

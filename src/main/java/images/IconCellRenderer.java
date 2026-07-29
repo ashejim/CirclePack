@@ -28,6 +28,9 @@ public class IconCellRenderer extends JLabel implements ListCellRenderer<Object>
         setIconTextGap(2);
     }
 
+    /**
+     * @aibrief Render a 'CPIcon' value as a list cell, honoring selection state.
+     */
     public Component getListCellRendererComponent(
         JList<?> list,
         Object value,

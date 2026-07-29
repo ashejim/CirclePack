@@ -82,6 +82,9 @@ public class ScriptLister {
 		this(dir,0,outname);
 	}
 	
+	/**
+	 * @aibrief Set target directory, output html filename, and listing mode.
+	 */
 	public ScriptLister(File dir, int m, String outname) {
 
 		theDirectory=dir;
@@ -111,6 +114,9 @@ public class ScriptLister {
 //		System.out.println("from "+theDirectory+", into "+theFilename);
 	}
 		
+	/**
+	 * @aibrief Gather the directory's script files and their content, then write the html.
+	 */
 	public File go() {
 			
 		File[] paths=theDirectory.listFiles();
@@ -424,6 +430,9 @@ public class ScriptLister {
 		return outfile;
 	}
 	
+	/**
+	 * @aibrief Standalone entry: parse flags/directory and run the script lister.
+	 */
 	public static void main(String[] args) {
 		
 		// default directory to get files from

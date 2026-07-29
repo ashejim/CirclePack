@@ -36,6 +36,9 @@ public class ShellControl extends CPBase {
 	public static CPPreferences preferences; // user preferences
 
 	// Constructor
+	/**
+	 * @aibrief Configure standalone shell mode: sockets, packing count, faux radius, timer.
+	 */
 	public ShellControl() {
 		socketActive=true;  // means that socket server will be started
 		cpSocketHost=null;
@@ -48,6 +51,8 @@ public class ShellControl extends CPBase {
 	}
 	
 	/**
+	 * @aibrief Start ShellControl: preferences, C libraries, and the packings[] array.
+	 *
 	 * This actually starts ShellControl: initiate preferences,
 	 * start C libraries, create the packings[] array,
 	 */
@@ -109,6 +114,8 @@ public class ShellControl extends CPBase {
 	// ============= abstract methods required by CPBase =============
 
 	/**
+	 * @aibrief Print a normal message to standard out.
+	 *
 	 * @param msgstr String
 	 */
 	public void myMsg(String msgstr) {
@@ -116,6 +123,8 @@ public class ShellControl extends CPBase {
 	}
 
 	/**
+	 * @aibrief Print an error message to standard error.
+	 *
 	 * @param msgstr String
 	 */
 	public void myErrorMsg(String msgstr) {
@@ -167,6 +176,9 @@ public class ShellControl extends CPBase {
 	
 	// done with abstract methods
 	
+	/**
+	 * @aibrief Switch the currently active packing to the given number, with bounds checks.
+	 */
 	public static void switchActivePack(int packnum) {
 		int old_pack = activePackNum;
 		if (packnum<0 || packnum>2 || old_pack==packnum) 

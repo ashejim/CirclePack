@@ -15,6 +15,9 @@ public class CP_standalone {
 	// static start for 'CirclePack'
 	public static CirclePack circlePack=new CirclePack(0);
 	
+	/**
+	 * @aibrief Parse command-line args (dir, script, socket) and start the shell version.
+	 */
 	public static void main(String[] args) {
 		// parse command line argument
 		if (args.length>=1) {

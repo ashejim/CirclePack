@@ -79,6 +79,9 @@ public class OwlSpinner extends RunProgress {
 		runTimer.setInitialDelay(200); 
 	}
 	
+	/**
+	 * @aibrief Adjust running count and start the progress-bar timer when active.
+	 */
 	synchronized public void setProgressBar(boolean ok) {
 		
 		running += (ok) ? 1 : -1;

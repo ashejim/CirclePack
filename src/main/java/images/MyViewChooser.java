@@ -24,7 +24,10 @@ public class MyViewChooser extends JFrame {
 	JFrame parent;
   
 	// Constructor
-  
+
+	/**
+	 * @aibrief Build the frame with an Open button that shows a thumbnail file chooser.
+	 */
 	public MyViewChooser() {
 		super("Icon View Test Frame");
 		setSize(350, 200);

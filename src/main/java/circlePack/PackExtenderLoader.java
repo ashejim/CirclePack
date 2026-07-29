@@ -16,6 +16,9 @@ public class PackExtenderLoader extends ClassLoader
 
     @Override
     // TODO: changed 'protected' to 'public'. OK???
+    /**
+     * @aibrief Load and define a class from the bytecode file at the given path.
+     */
     protected Class<?> findClass(String path) throws ClassNotFoundException
     {
         try

@@ -22,8 +22,11 @@ public class URLtesting {
 	String testInput;
 	String testOutput;
 
-	public URLtesting() {	
-		
+	/**
+	 * @aibrief Exercise URL/File/path parsing via FileUtil and print diagnostic info.
+	 */
+	public URLtesting() {
+	
 		URL url1=null;
 		URL url2=null;
 		URL url3=null;
@@ -127,6 +130,9 @@ public class URLtesting {
 
 	}
 	
+	/**
+	 * @aibrief Print a URL's protocol, host, path, and file.
+	 */
 	public void printURLInfo(URL url) {
 		if (url==null) {
 			System.err.println("url is null");
@@ -139,6 +145,9 @@ public class URLtesting {
 		
 	}
 	
+	/**
+	 * @aibrief Print a File's name, directory flag, timestamp, length, path, and parent.
+	 */
 	public void printFileInfo(File file) {
 		if (file==null) {
 			System.err.println("file is null");
@@ -152,6 +161,9 @@ public class URLtesting {
 		System.out.println("file parent: "+file.getParent());
 	}
 	
+	/**
+	 * @aibrief Entry point: instantiate URLtesting to run the diagnostics.
+	 */
 	public static void main(String[] args) {
 		@SuppressWarnings("unused")
 		URLtesting obj=new URLtesting();

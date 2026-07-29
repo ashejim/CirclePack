@@ -61,7 +61,9 @@ public class EdgeSimple {
 			return ((v==es.v && w==es.w) || (v==es.w && w==es.v));
 	}
 	
-	/** is this actually a 'GraphSimple' (e.g., a face pair)?
+	/** @aibrief is the given edge actually a 'GraphSimple' (e.g., a face pair)?
+	 *
+	 * is this actually a 'GraphSimple' (e.g., a face pair)?
 	 * @param edge EdgeSimple
 	 * @return boolean
 	 */

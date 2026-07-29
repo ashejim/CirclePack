@@ -29,6 +29,9 @@ public class Embedder {
 	public static int []vstat;
 	public static int []Vstat;
 	
+	/**
+	 * @aibrief Embed/intersect packing p into q from seed vertex pairs; return VertexMap.
+	 */
 	public static VertexMap embed(PackData p,PackData q,int a,int b,int A,int B) {
 		NodeLink news=null;
 		int indv=0;

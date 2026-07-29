@@ -1142,6 +1142,9 @@ public class TileBuilder {
 		return tick-1;
 	}
 	
+	/**
+	 * @aibrief Debug helper: print a tile's index, baryVert, and vertices as a disp command.
+	 */
 	public void printTileVerts(Tile tile) {
 		StringBuilder strbld=new StringBuilder("Tile: "+tile.tileIndex+" baryVert = "+tile.baryVert+"; disp -cfn  ");
 		for (int j=0;j<tile.vertCount;j++)

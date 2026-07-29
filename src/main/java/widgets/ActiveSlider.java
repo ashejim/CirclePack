@@ -40,6 +40,9 @@ public class ActiveSlider extends JPanel {
 	xNumField valueField;     // holds value
 
 	// Constructor (default)
+	/**
+	 * @aibrief Build the panel of label, slider, and value field for one object.
+	 */
 	public ActiveSlider(SliderFrame sfp, int indx, String lbl,double val,boolean actv) {
 		setBorder(BorderFactory.createLineBorder(Color.blue));
 		setLayout(new FlowLayout(FlowLayout.LEADING));
@@ -83,6 +86,8 @@ public class ActiveSlider extends JPanel {
 	}
 	
 	/**
+	 * @aibrief Refresh slider and value field from the parent without firing a change command.
+	 *
 	 * Just refresh the slider location and text field;
 	 * but don't trigger chgCmd; e.g., when min or max 
 	 * changes
@@ -136,6 +141,8 @@ public class ActiveSlider extends JPanel {
 	}
 	
 	/**
+	 * @aibrief Handle mouse entering this slider's zone.
+	 *
 	 * Notify parent when mouse enters this slider's zone.
 	 * Hum???? seems to be tripped only in the text box
 	 * on left.

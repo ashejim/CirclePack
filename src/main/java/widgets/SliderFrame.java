@@ -57,19 +57,61 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 	public final int ANGLESUM=2;
 	
 	// abstract methods that must be implemented by derived classes
+	/**
+	 * @aibrief Retrieve the value held by the parent for the given slider index.
+	 */
 	public abstract double getParentValue(int indx); // retrieve value held by parent
+	/**
+	 * @aibrief Create and add the ActiveSlider bars to the slider panel.
+	 */
 	public abstract void populate(); // create and add the 'ActiveBar's
+	/**
+	 * @aibrief Update the given slider from the packing data.
+	 */
 	public abstract void valueFromPacking(int indx); // from packing to slider
+	/**
+	 * @aibrief Send the given slider's value up to the packing data.
+	 */
 	public abstract void valueToPacking(int indx); // send slider value up to packing
+	/**
+	 * @aibrief Create the slider panel (subclasses may add borders/colors).
+	 */
 	public abstract void createSliderPanel(); // may want, e.g., special border
+	/**
+	 * @aibrief Set the optional command executed on a value change.
+	 */
 	public abstract void setChangeField(String cmd); // set optional command with value change
+	/**
+	 * @aibrief Set the optional command executed on mouse motion into a slider.
+	 */
 	public abstract void setMotionField(String cmd); // set optional command on motion into slider
+	/**
+	 * @aibrief Set the optional 'OptCmd' command field.
+	 */
 	public abstract void setOptCmdField(String cmd); // set optional 'OptCmd' command
+	/**
+	 * @aibrief Handle the mouse entering the given slider.
+	 */
 	public abstract void mouse_entry_action(int indx); 
+	/**
+	 * @aibrief Handle a value typed into the given slider's value field.
+	 */
 	public abstract void changeValueField_action(double val,int indx); 
+	/**
+	 * @aibrief Add object(s) parsed from the string; return count added.
+	 */
 	public abstract int addObject(String obj);  // add object(s) 
+	/**
+	 * @aibrief Remove object(s) parsed from the string; return count removed.
+	 */
 	public abstract int removeObject(String obj); // remove object(s)
+	/**
+	 * @aibrief Ask CirclePack to close this slider frame.
+	 */
 	public abstract void killMe(); // to call CirclePack to kill this frame
+	/**
+	 * @aibrief Set the initial slider min/max ranges.
+	 */
 	public abstract void initRange(); // set the initial slider ranges
 	
 	public Double[] parentValues; // parent may hold the values
@@ -100,6 +142,9 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 	public ChangeListener listener; // listener for all the ActiveSlider's
 	public StringBuilder helpInfo;
 
+	/**
+	 * @aibrief Base constructor: attach the packing, window-close handler, and change listener.
+	 */
 	public SliderFrame(PackData p) {
 		super();
 		optionalPanel=null;
@@ -130,6 +175,9 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 		};
 	}
 	
+	/**
+	 * @aibrief Construct and stash the optional change and motion command strings.
+	 */
 	public SliderFrame(PackData p,String chgcmd,String movcmd) {
 		this(p);
 		// strings should have been processed to remove quotes, 
@@ -148,6 +196,8 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 	}
 	
 	/**
+	 * @aibrief Build the full slider GUI: control panel, slider scroll pane, and command panel.
+	 *
 	 * Basic GUI start: data has been initiated by instantiating code.
 	 * They appear on the right of the screen, varying colors, positions
 	 */
@@ -350,6 +400,9 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 		return CommandStrParser.jexecute(packData,cmdstr);
 	}
 	
+	/**
+	 * @aibrief Run the 'change' command for a slider if checked; return commands executed.
+	 */
 	public int changeAction(int indx) {
 		setObjVariable(mySliders[indx].getLabel()); // set variable 'Obj' in any case
 		String chgstr=changeCmdField.getText();
@@ -361,6 +414,9 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 		return 0;
 	}
 	
+	/**
+	 * @aibrief Run the 'motion' command for a slider if checked; return commands executed.
+	 */
 	public int motionAction(int indx) {
 		setObjVariable(mySliders[indx].getLabel()); // set variable 'Obj' in any case
 		String mvstr=motionCmdField.getText();
@@ -372,6 +428,9 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 		return 0;
 	}
 	
+	/**
+	 * @aibrief Apply a typed value to a slider, push it to packing, and run the change action.
+	 */
 	public void valueField_action(double val, int indx) {
 		mySliders[indx].value=val;
 		valueToPacking(indx); // send value up to packing
@@ -412,6 +471,8 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 	}
 
 	/**
+	 * @aibrief Refresh all sliders from the packing data without firing change actions.
+	 *
 	 * Update all slider values and slider field
 	 * values from PackData without triggering
 	 * change action.
@@ -436,6 +497,9 @@ public abstract class SliderFrame extends JFrame implements ActionListener {
 	}
 
 	// Process button pressing events
+	/**
+	 * @aibrief Dispatch button events (Info, Update, add/remove, min/max, optional cmd).
+	 */
 	public void actionPerformed(ActionEvent evt) {
 
 		String cmd=evt.getActionCommand();

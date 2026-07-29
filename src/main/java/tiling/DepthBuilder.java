@@ -338,6 +338,9 @@ public class DepthBuilder {
 		return p;
 	}
 	
+	/**
+	 * @aibrief Build/reuse the depth-0 canonical packing for one tile and update its 'tile' data.
+	 */
 	public PackData oneTileDepth0(Tile tile,int tt) {
 		
 // debugging
@@ -389,6 +392,9 @@ public class DepthBuilder {
 		return tmpPD;
 	}
 
+	/**
+	 * @aibrief Recursively build the positive-depth subdivision packing for one tile and augment it.
+	 */
 	public PackData oneTileDepthPos(Tile tile,int tt) {
 		
 // debugging

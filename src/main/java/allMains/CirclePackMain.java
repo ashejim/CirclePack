@@ -9,6 +9,8 @@ import circlePack.PackControl;
 import frames.OwlSplashScreen;
 
 /**
+ * @aibrief Single-process entry point that shows a splash and builds CirclePack off the EDT.
+ *
  * Single-process entry point for CirclePack, using OwlSplashScreen.
  *
  * This REPLACES both SplashMain.java and RunCirclePack.java. The old chain
@@ -51,6 +53,9 @@ import frames.OwlSplashScreen;
  */
 public class CirclePackMain {
 
+    /**
+     * @aibrief Parse args, show splash, construct CirclePack in background, then start it.
+     */
     public static void main(String[] args) {
         // Parse command-line args up front, same logic as
         // CP_after_Splash.main() used to do. These fields (CPBase.directory,

@@ -19,7 +19,9 @@ import listManip.VertexMap;
 import packing.PackData;
 
 /**
- * This class supports creation, storage, and manipulations for 
+ * @aibrief Holds and manipulates combinatorial tiling data (tiles, flowers, subdivisions) and its packing.
+ *
+ * This class supports creation, storage, and manipulations for
  * combinatorial data on 'tilings'. This data may be associated
  * with a circle packing parent; often, the packing is created 
  * from initial tiling data. 
@@ -158,7 +160,9 @@ public class TileData {
 	}
 	
 	/**
-	 * Converts tiling via 'tileFlowers' to a simple PackData; 
+	 * @aibrief Build a simple PackData with one circle per tile from 'tileFlower' data (no boundary).
+	 *
+	 * Converts tiling via 'tileFlowers' to a simple PackData;
 	 * in particular, there is just one circle for each tile 
 	 * (not a circle for each vertex of each tile). This was 
 	 * needed in looking at simulated 2D 'glasses'. 
@@ -210,7 +214,9 @@ public class TileData {
 	}
 
 	/**
-	 * Create the minimal packing based on 'myTiles' data, 
+	 * @aibrief Create the minimal circle packing from 'myTiles' data (TILES: or TILEFLOWERS: input).
+	 *
+	 * Create the minimal packing based on 'myTiles' data,
 	 * as when reading from a TILECOUNT file. There are 
 	 * two types of data input files: 'TILES:' and 'TILEFLOWERS:' (mutually exclusive). 
 	 * Normally, need 'TILEFLOWERS:' if there are unigons, 
@@ -475,7 +481,7 @@ public class TileData {
 		for (int t=1;t<=newtd.tileCount;t++) {
 			Tile tile=newtd.myTiles[t];
 			HalfLink spokes=
-					thePack.packDCEL.vertices[tile.baryVert].getSpokes(null);
+					thePack.packDCEL.vertices[tile.baryVert].getSpokes(null);
 			// go around vertices, see if there's a tile across edge.
 			for (int k=0;k<spokes.size();k++) {
 				HalfEdge spoke=spokes.get(k);
@@ -510,6 +516,8 @@ public class TileData {
 	}
 	
 	/**
+	 * @aibrief Return a new array with 'newV' inserted after 'preV' in 'array'.
+	 *
 	 * Create a new integer array by inserting 'newV' after 'preV'
 	 * in 'array'. Typically 'array' is a closed petal flower, so
 	 * if 'preV' is both first and last, 'newV' should become 
@@ -537,7 +545,9 @@ public class TileData {
 	}
 
 	/**
-	 * Create a fully realized (builtMode 3) packing for 
+	 * @aibrief Build the full builtMode-3 packing (hex-refined barycentric subdivision) for a TileData.
+	 *
+	 * Create a fully realized (builtMode 3) packing for
 	 * given 'TileData'. This is a hex refinement of the 
 	 * barycentric refinement of the original tiles: that is,
 	 * 
@@ -996,7 +1006,9 @@ public class TileData {
 	}
 	
 	/**
-	 * Check if given ordered list equals the 'vert' vector 
+	 * @aibrief Return the index of the tile whose 'vert' list equals the given ordered list, else -1.
+	 *
+	 * Check if given ordered list equals the 'vert' vector
 	 * for some tile.
 	 * @param vlist NodeLink
 	 * @return int, tile index or -1 if not found
@@ -1022,6 +1034,8 @@ public class TileData {
 	}
 	
 	/**
+	 * @aibrief Identify tiles by finding closed vertex loops from existing HalfEdge data.
+	 *
 	 * TODO: not used currently, needs to be checked
 	 * Using provisional 'nodeCount' and 'HalfEdge's already
 	 * in place, decern tiling information by finding closed 
@@ -1113,6 +1127,8 @@ public class TileData {
 	}
 	
 	/**
+	 * @aibrief Build a TileData by maximally paving packing p with interior flowers starting at V.
+	 *
 	 * Given a circle packing p and an interior vertex V, find a
 	 * maximal paving of p by interior flowers, starting with that
 	 * of V itself. A paving is a disjoint union of interior flowers 
@@ -1175,6 +1191,8 @@ public class TileData {
 	}
 	
 	/**
+	 * @aibrief Create a TileData whose tiles are the flowers of the given (interior, non-adjacent) vertices.
+	 *
 	 * Given a packing and a list of its vertices, create tiling
 	 * consisting of the flowers of the given vertices. We check
 	 * that vertices in the list are interior and non-neighboring,
@@ -1243,6 +1261,8 @@ public class TileData {
 	}
 	
 	/** 
+	 * @aibrief Recursively deep-copy a TileData tree, setting packData/parentTile and nulling dual/quad.
+	 *
 	 * Recursively copy 'TileData' tree: go recursively through 
 	 * 'myTiles' and their 'myTileData's, recursively set 
 	 * 'packData' if 'parentPD' is given, set 'parentTile' 
@@ -1271,8 +1291,10 @@ public class TileData {
 	}
 
 	/**
-	 * Clone 'tileData'; 'packData' and 'parentTile' 
-	 * set to null and may need to be set by calling 
+	 * @aibrief Clone this TileData (with dual/quad/wgTiles), leaving packData and parentTile null.
+	 *
+	 * Clone 'tileData'; 'packData' and 'parentTile'
+	 * set to null and may need to be set by calling
 	 * routine. Also, 'subRule' and 'vertMap' must be 
 	 * updated separately.
 	 * @return new TileData
@@ -1298,6 +1320,8 @@ public class TileData {
 	}
 	
 	/**
+	 * @aibrief Copy this TileData keeping only tile geometry fields (no myTileData/wgIndices/etc.).
+	 *
 	 * Create new 'TileData' with copies of 'this' tiles,
 	 * but only copy 'vert', 'vertCount','augVert',
 	 * 'augVertCount, 'tileType', 'baryVert', 'mark', and 
@@ -1330,6 +1354,8 @@ public class TileData {
 	}
 	
 	/**
+	 * @aibrief Return the tile whose baryVert equals the given vertex, or null.
+	 *
 	 * Given vertex, see if it's baryVert for some 'myTiles' entry
 	 * @param bc int, baryVert
 	 * @return Tile, null if not found
@@ -1344,6 +1370,8 @@ public class TileData {
 	}
 	
 	/**
+	 * @aibrief Return the petal indices at which tile s appears in tile t's flower.
+	 *
 	 * Return list of petal indices of tile s in the flower of tile t.
 	 * Careful, not the tile indices, just petal indices in the flower.
 	 * Note: tile may NOT neighbor itself.
@@ -1370,7 +1398,9 @@ public class TileData {
 	}
 	
 	/**
-	 * Use 'subdivisionRule' info to set 'vert' and 
+	 * @aibrief Set 'vert'/'augVert' of a subdivided tile using its subdivision rule edges.
+	 *
+	 * Use 'subdivisionRule' info to set 'vert' and
 	 * 'augVert' data for the specified tile.
 	 * Caution: tileedges are given in rules files
 	 * in clockwise direction (not counterclockwise).
@@ -1410,7 +1440,9 @@ public class TileData {
 	}
 
 	/**
-	 * Given 'tIndx' tile index and 'eIndx' edge index, 
+	 * @aibrief Return the ccw augmented-vertex list along edge eIndx of tile tIndx (recursing if subdivided).
+	 *
+	 * Given 'tIndx' tile index and 'eIndx' edge index,
 	 * return the 'augVert' list cclw along that edge, including
 	 * both first and last vertex.
 	 * 
@@ -1451,6 +1483,8 @@ public class TileData {
 	}
 
 	/**
+	 * @aibrief Recursively set 'packData' on a TileData and its dual and quad TileData.
+	 *
 	 * set 'packData' element of 'TileData' and of its
 	 * dual and quad TileData. 
 	 * @param td TileData
@@ -1472,8 +1506,10 @@ public class TileData {
 	}
 
 	/**
-	 * Fill in the tileFlower information. Main 
-	 * complications are due to possible unigons 
+	 * @aibrief Compute and fill in tileFlower neighbor data for all tiles (handles unigons/digons).
+	 *
+	 * Fill in the tileFlower information. Main
+	 * complications are due to possible unigons
 	 * and digons.
 	 * @param tData TileData
 	 * @return int count
@@ -1621,7 +1657,9 @@ public class TileData {
 	}
 
 	/**
-	 * Are the 'tileFlower's consistent? 
+	 * @aibrief Return true if all tileFlower neighbor relations are mutually consistent.
+	 *
+	 * Are the 'tileFlower's consistent?
 	 * @return boolean
 	 */
 	public boolean flowerConsistency() {

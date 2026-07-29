@@ -33,6 +33,9 @@ public class DualTri {
 	public DualTri() {
 	}
 	
+	/**
+	 * @aibrief Construct dual triangle from three corner points and geometry code.
+	 */
 	public DualTri(Complex z0,Complex z1,Complex z2,int hs) {
 		hes=hs;
 		corners=new Complex[3];
@@ -43,6 +46,9 @@ public class DualTri {
 		setInCirclePts();
 	}
 	
+	/**
+	 * @aibrief Construct dual triangle from a DCEL face's three vertex centers.
+	 */
 	public DualTri(PackDCEL pdcel,combinatorics.komplex.DcelFace face) {
 		super();
 		HalfEdge he=face.edge; // based on face edges
@@ -56,6 +62,8 @@ public class DualTri {
 	}
 	
 	/**
+	 * @aibrief Compute/store incircle tangency points from 'corners' alone.
+	 *
 	 * Compute/store points where triangle incircle hits
 	 * edges, based solely on 'corners'; intended for cases 
 	 * when radii are not available, so hyperbolic case is 

@@ -19,6 +19,9 @@ public class CPSplash implements Runnable {
 	
 	Graphics2D g;
 	final SplashScreen splash = SplashScreen.getSplashScreen();
+	/**
+	 * @aibrief Paint one loading-progress frame onto the splash-screen graphics.
+	 */
 	static void renderSplashFrame(Graphics2D g,int frame) {
 		g.setComposite(AlphaComposite.Clear);
 		g.fillRect(10,325,300,40);
@@ -30,6 +33,9 @@ public class CPSplash implements Runnable {
 		g.fillRect(10,355,(frame*10)%290,10);
 	}
 	
+	/**
+	 * @aibrief Grab the splash-screen graphics context if a splash screen exists.
+	 */
 	public CPSplash() {
 		if (splash == null) {
 			System.out.println("SplashScreen.getSplashScreen() returned null");
@@ -42,6 +48,9 @@ public class CPSplash implements Runnable {
 		}
 	}
 	
+	/**
+	 * @aibrief Animate the splash loading bar in a loop, then close the splash.
+	 */
 	public void run() {
 		for(int i=0; i<100; i++) {
 			renderSplashFrame(g, i);

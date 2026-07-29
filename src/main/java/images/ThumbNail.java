@@ -36,6 +36,9 @@ public class ThumbNail extends JPanel implements MouseListener {
 	public JPopupMenu thumbMenu;
 	
 	// Constructor
+	/**
+	 * @aibrief Build a thumbnail panel: load scaled image, label, and popup menu.
+	 */
 	public ThumbNail(File file,JPopupMenu tM) throws InOutException {
 		super(new BorderLayout());
 		imageFileName=file;

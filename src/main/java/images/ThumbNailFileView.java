@@ -25,12 +25,18 @@ public class ThumbNailFileView extends FileView {
 //    observer = c;
   }
 
+  /**
+   * @aibrief Return the file's type description.
+   */
   public String getDescription(File f) {
     // We won’t store individual descriptions, so just return the
     // type description.
     return getTypeDescription(f);
   }
 
+  /**
+   * @aibrief Return folder icon, a 22x22 thumbnail for image files, else generic icon.
+   */
   public Icon getIcon(File f) {
     // Is it a folder?
     if (f.isDirectory()) { return folderIcon; }
@@ -45,11 +51,17 @@ public class ThumbNailFileView extends FileView {
     return fileIcon;
   }
 
+  /**
+   * @aibrief Return the file's name, or its path if the name is empty.
+   */
   public String getName(File f) {
     String name = f.getName();
     return name.equals("") ? f.getPath() : name;
   }
 
+  /**
+   * @aibrief Describe the file type (folder or JPEG/GIF/PNG/generic).
+   */
   public String getTypeDescription(File f) {
     String name = f.getName().toLowerCase();
     if (f.isDirectory()) { return "Folder"; }
@@ -59,11 +71,17 @@ public class ThumbNailFileView extends FileView {
     return "Generic File";
   }
 
+  /**
+   * @aibrief Mark directories as traversable.
+   */
   public Boolean isTraversable(File f) {
     // We’ll mark all directories as traversable
     return f.isDirectory() ? Boolean.TRUE : Boolean.FALSE;
   }
 
+  /**
+   * @aibrief 22x22 'ImageIcon' subclass drawing a scaled image file.
+   */
   public class Icon22 extends ImageIcon {
 
 	private static final long 

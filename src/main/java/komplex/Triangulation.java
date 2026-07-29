@@ -29,7 +29,9 @@ import util.ColorUtil;
 import util.StringUtil;
 
 /**
- * Holds combinatoric triangulations; eventually want more general 
+ * @aibrief Holds combinatoric triangulations and utilities to build/read them.
+ *
+ * Holds combinatoric triangulations; eventually want more general
  * combinatoric polygonal cells. Faces indexed starting at 1.
  * @author kens
  *
@@ -60,7 +62,9 @@ public class Triangulation {
 	}
 	
 	/**
-	 * Attempt to create 'PackData' from 'Triangulation' object. 
+	 * @aibrief Create a 'PackData' from a 'Triangulation' object.
+	 *
+	 * Attempt to create 'PackData' from 'Triangulation' object.
 	 * Calling routine must set radii, aims, etc. Errors may not 
 	 * show up until packing is processed in calling routine.
 	 * @param Tri Triangulation
@@ -153,8 +157,10 @@ public class Triangulation {
 		return p;
 	}
 	
-	/** 
-	 * If verts in 'fvert[3]' have edge {t,v}, return third vert w (or -1 on 
+	/**
+	 * @aibrief Given edge {t,v} in a face, return the third vertex (and reorient flag).
+	 *
+	 * If verts in 'fvert[3]' have edge {t,v}, return third vert w (or -1 on
 	 * failure) via 'ans[0]'. If 'fb' is true, then the search is forward 
 	 * wrt oriented edge <t v>, else backward. Set 'ans[1]' to 1 if the
 	 * face orientation is reverse of what it should be and face needs 
@@ -185,7 +191,9 @@ public class Triangulation {
 		return ans;
 	}
 	
-	/** 
+	/**
+	 * @aibrief Return orientation (+1/-1/0) of triple <c,v,w> using c's flower.
+	 *
 	 * Node v has neighbor c and w in one of its faces, and
 	 * c already has a flower. Return 1 if <c,v,w> is positively
 	 * oriented, -1 if it's negatively oriented, 0 on error.
@@ -212,8 +220,10 @@ public class Triangulation {
 	  return 0;
 	} 
 
-	/** 
-	 * Process collection of triangles to see if it can	
+	/**
+	 * @aibrief Process triangles into oriented, reindexed 'TmpVert' flowers for a packing.
+	 *
+	 * Process collection of triangles to see if it can
 	 * form a packing complex. For now we don't bother to try 
 	 * to salvage bad data --- just throw 'DataException'.
 	 * 
@@ -553,7 +563,9 @@ public class Triangulation {
 	}
 
 	/**
-	 * Read a file of combinatorial polygons (n-tuples of indices, one 
+	 * @aibrief Read a combinatorics file (CirclePack/OFF/VTK/generic) into a 'Triangulation'.
+	 *
+	 * Read a file of combinatorial polygons (n-tuples of indices, one
 	 * n-tuple per line) and create a 'Triangulation' object. Try to
 	 * handle several possible formats: CirclePack, OFF, VTK, and 
 	 * (for triangulations) even more rudimentary formats. Data may 
@@ -999,6 +1011,8 @@ public class Triangulation {
 	} // done with OFF reading
     
 	/**
+	 * @aibrief Read face lines (possibly n-gons, with optional colors) from the file.
+	 *
 	 * Read the original faces from the file, possibly not all triangles.
 	 * @param fp BufferedReader, open	
 	 * @param tmpfaces Vector<Face>, instantiated, but must be size 0
@@ -1078,7 +1092,9 @@ public class Triangulation {
 	}
  	
     /**
-     * Parse lines with doubles to get xyz data and possibly colors. 
+     * @aibrief Parse xy[z] location lines (with optional colors) from the file.
+     *
+     * Parse lines with doubles to get xyz data and possibly colors.
      * Start with incoming line, return with next line.   	
      * @param fp BufferedReader, open by calling routine
      * @param pts Vector<Point3D>, instantiated, but must be size 0
@@ -1171,6 +1187,8 @@ public class Triangulation {
     }    		
 	
 	/**
+	 * @aibrief Create a Delaunay 'Triangulation' from 2D or spherical points.
+	 *
 	 * Create Delaunay triangulation from points (2D or spherical);
 	 * no boundary specified in this call.
 	 * @param hes int, prescribed geometry
@@ -1203,6 +1221,8 @@ public class Triangulation {
 	}
 	
 	/**
+	 * @aibrief Find neighboring boundary vertex from a face and vertex index.
+	 *
 	 * Given face and index in its vert[3], find neighboring bdry vertex.
 	 * @param face int
 	 * @param indx int
@@ -1235,6 +1255,8 @@ public class Triangulation {
 	}
 
 	/**
+	 * @aibrief Return first face (and index of s) containing oriented edge [s,e].
+	 *
 	 * Return index of first face containing edge [s,e], else -1's
 	 * @param s int, start vertex
 	 * @param e int, end vertex
@@ -1259,6 +1281,8 @@ public class Triangulation {
 	}
 
 	/**
+	 * @aibrief Return the f1/f2 indices of the shared-edge end at vertex v.
+	 *
 	 * Given faces f1 and f2 sharing vertex v, return indices
 	 * in f1 and f2, respectively, for the first end of the shared edge
 	 * containing v. 
@@ -1296,7 +1320,9 @@ public class Triangulation {
 	}
 
 	/**
-	 * Alternate type of cookie cutting: (Jan 2017) We basically 
+	 * @aibrief Cookie-cut a 'Triangulation' to faces with centroids inside a Jordan curve.
+	 *
+	 * Alternate type of cookie cutting: (Jan 2017) We basically
 	 * keep only those faces whose centroids are in the region. 
 	 * We want a simply connected result, however, so we must 
 	 * fill in any encircled faces. Problem: many boundary faces 

@@ -24,6 +24,9 @@ public class CirclePack {
 	public static CPBase cpb;   // the head of this program
 	
 	// Constructor(s)
+	/**
+	 * @aibrief Create the program head: 'ShellControl' (mode 0) or 'PackControl' (else).
+	 */
 	public CirclePack(int mode) {
 		
 		if (mode==0) { // standalone, no GUI
@@ -44,7 +47,9 @@ public class CirclePack {
 		}
 	}
 	
-	/** 
+	/**
+	 * @aibrief Actual start of CirclePack: load initial or default script, maybe start socket.
+	 *
 	 * This is actual start of 'CirclePack'. We had to wait
 	 * for the script frame and other things to get started
 	 * so an initial script could be loaded (if called for).
