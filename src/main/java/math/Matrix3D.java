@@ -4,7 +4,8 @@ import complex.Complex;
 import geometry.SphericalMath;
 
 /**
- * For manipulations of 3x3 real matrices 
+ * @aibrief 3x3 real matrix with rotation, product, inverse, and SO(3) rigid-motion helpers.
+ * For manipulations of 3x3 real matrices
  *
 // NOTE.  The (x,y,z) coordinate system is 
 ///assumed right-handed.
@@ -40,6 +41,9 @@ public class Matrix3D {
 			new Matrix3D(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
 
 	// Constructors
+	/**
+	 * @aibrief Construct a Matrix3D with all nine entries zero.
+	 */
 	public Matrix3D() { // starts as zero matrix
 		this.m00 = 0d; this.m01 = 0d; this.m02 = 0d;
 		this.m10 = 0d; this.m11 = 0d; this.m12 = 0d;
@@ -47,6 +51,7 @@ public class Matrix3D {
 	}
         
 	/**
+	 * @aibrief Copy-construct from another matrix; use identity if argument is null.
 	 * Clone existing matrix; identity on error
 	 * @param inM
 	 */
@@ -65,8 +70,9 @@ public class Matrix3D {
 	}
         
 	/**
+	 * @aibrief Construct a Matrix3D from nine explicit row-major double entries.
 	 * Matrix from 0 entries
-	 * 
+	 *
 	 * @param m00
 	 * @param m01
 	 * @param m02
@@ -91,8 +97,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return the shared identity 3x3 real matrix.
 	 * Identity 3x3 real matrix
-	 * 
+	 *
 	 * @return
 	 */
 	public static Matrix3D Identity() {
@@ -100,8 +107,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return the shared zero 3x3 real matrix.
 	 * Zero 3x3 real matrix
-	 * 
+	 *
 	 * @return
 	 */
 	public static Matrix3D Zero() {
@@ -109,6 +117,7 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return a new matrix that is the transpose of 'this'.
 	 * Transpose of real 3x3 matrix
 	 * @return new Matrix3D
 	 */
@@ -117,7 +126,8 @@ public class Matrix3D {
 	}
 
 	/**
-	 * Matrix determined by the product of rotations 
+	 * @aibrief Build rotation matrix yRot*xRot*zRot from axis angles (radians).
+	 * Matrix determined by the product of rotations
 	 * about axis of xyz coord system (treated as fixed). 
 	 * Each angle in radians, counterclockwise rotation as
 	 * viewed from the positive end of the axis involved; 
@@ -148,7 +158,8 @@ public class Matrix3D {
 	}
 
 	/**
-	 * Given 'mob' which is a rigid motion of the sphere, 
+	 * @aibrief Recover the three Euler axis angles producing a sphere rigid motion 'mob' (stub).
+	 * Given 'mob' which is a rigid motion of the sphere,
 	 * find the three angles to produce 'mob' using 
 	 * 'FromEulerAnglesXYZ' above.
 	 * 
@@ -166,7 +177,8 @@ public class Matrix3D {
 	}
         
 	/**
-	 * Build matrix for rigid motion that fixes axis 
+	 * @aibrief Build rotation by theta radians about the axis through spherical point 'fixed'.
+	 * Build matrix for rigid motion that fixes axis
 	 * through spherical point sph_z. The motion is cclw 
 	 * rotation by theta radians in looking toward the origin
 	 * from sph_z.
@@ -203,7 +215,8 @@ public class Matrix3D {
 	}
 
 	/**
-	 * Given (theta,phi) point on the sphere, find rotation 
+	 * @aibrief Build the 3-space rotation carrying spherical point sph_z to the north pole.
+	 * Given (theta,phi) point on the sphere, find rotation
 	 * of 3-space moving it to the north pole. Compute angle 
 	 * and then cross product to get axis of rotation.
 	 * See 'Mobius.rotate2North' for Mobius version of this.
@@ -230,8 +243,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return the matrix product left*right.
 	 * Matrix multiplication, Mleft*Mright
-	 * 
+	 *
 	 * @param left, right matrices in the matrix product
 	 * @return Matrix3D=left*right
 	 */
@@ -252,8 +266,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return matrix applied to column vector, matrix*vector.
 	 * matrix times column vector M.v
-	 * 
+	 *
 	 * @param vector Point3D (i.e., 3x1)
 	 * @param matrix Matrix3D
 	 * @return Point3D, matrix*vector
@@ -266,8 +281,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return matrix applied to column vector, matrix*vector (argument order variant).
 	 * matrix times column vector M.v
-	 * 
+	 *
 	 * @param matrix Matrix3D
 	 * @param vector Point3D (column),
 	 * @return Point3D, matrix*vector
@@ -277,8 +293,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return matrix with every entry multiplied by a scalar.
 	 * matric times scalar
-	 * 
+	 *
 	 * @param matrix Matrix3D
 	 * @param scalar double
 	 * @return Matrix3D scalar*matrix
@@ -298,8 +315,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return the entrywise sum left+right.
 	 * matrix addition
-	 * 
+	 *
 	 * @param left  Matrix3D
 	 * @param right Matrix3D
 	 * @return Matrix3D left+right
@@ -319,8 +337,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return the entrywise difference left-right.
 	 * matric subtraction, Mleft-Mright
-	 * 
+	 *
 	 * @param left  Matrix3D
 	 * @param right Matrix3D
 	 * @return Matrix3D left-right
@@ -340,8 +359,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return the entrywise negation of a matrix.
 	 * matrix negation
-	 * 
+	 *
 	 * @param matrix Matrix3D
 	 * @return Matrix3D (-1)*matrix
 	 */
@@ -360,8 +380,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return true iff all nine entries of the two matrices are exactly equal.
 	 * Are these matrices equal?
-	 * 
+	 *
 	 * @param left  Matrix3D
 	 * @param right Matrix3D
 	 * @return boolean
@@ -376,8 +397,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return the determinant of 'this' via cofactor expansion.
 	 * Returns the determinant of 'this'
-	 * 
+	 *
 	 * @return double
 	 */
 	public double Determinant() {
@@ -389,6 +411,7 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return the nine entries as a space-separated string.
 	 * @return String, six entries separated by spaces
 	 */
 	public String toString() {
@@ -399,8 +422,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return the inverse matrix via adjugate divided by determinant.
 	 * Returns inverse of a matrix
-	 * 
+	 *
 	 * @param m Matrix3D
 	 * @return Matrix3D inverse of m
 	 */
@@ -422,8 +446,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return the l^2 (Frobenius) norm of 'this' treated as a 9-vector.
 	 * Return l^2 norm of matrix (i.e., as though a 9-vector)
-	 * 
+	 *
 	 * @return double
 	 */
 	public double norm() {
@@ -432,8 +457,9 @@ public class Matrix3D {
 	}
 
 	/**
+	 * @aibrief Return true iff any entry of the matrix is NaN.
 	 * Return true if 'Matrix3D' has a NaN entry.
-	 * 
+	 *
 	 * @param m Matrix3D
 	 * @return boolean: true if NaN, else false
 	 */

@@ -10,9 +10,15 @@ import javax.swing.SwingConstants;
  * JScrollPane, it will automatically resize itself
  * to the width of the view port of the JScrollPane.
  */
+/**
+ * @aibrief Scrollable JPanel that tracks its enclosing JScrollPane's viewport width.
+ */
 public class FWSJPanel extends JPanel implements Scrollable {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * @aibrief Return an arbitrary 100x100 preferred viewport size.
+	 */
 	@Override
 	public Dimension getPreferredScrollableViewportSize() {
 		/* This dimension is totally arbitrary. I have no idea
@@ -22,6 +28,9 @@ public class FWSJPanel extends JPanel implements Scrollable {
 		return new Dimension(100, 100);
 	}
 
+	/**
+	 * @aibrief Block-scroll increment: 60px vertical, 120px horizontal.
+	 */
 	@Override
 	public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
 		/* How many pixels to scroll for large scrolls, like when
@@ -31,6 +40,9 @@ public class FWSJPanel extends JPanel implements Scrollable {
 		else return 120;
 	}
 
+	/**
+	 * @aibrief Return true so the panel resizes to the viewport width.
+	 */
 	@Override
 	public boolean getScrollableTracksViewportWidth() {
 		/* Returning true in this function causes the JPanel
@@ -40,12 +52,18 @@ public class FWSJPanel extends JPanel implements Scrollable {
 		return true;
 	}
 	
+	/**
+	 * @aibrief Return false so the panel does not track viewport height.
+	 */
 	@Override
 	public boolean getScrollableTracksViewportHeight() {
 		/* Return false so it won't do the same for height. */
 		return false;
 	}
 
+	/**
+	 * @aibrief Unit-scroll increment: 20px vertical, 40px horizontal.
+	 */
 	@Override
 	public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
 		/* How many pixels to scroll for small scrolls, like mouse wheel

@@ -21,11 +21,17 @@ import javax.swing.WindowConstants;
 
 /* This class reads the HTML file, displays it in a JEditorPane, then
    contains the print() function to print the JEditorPane. */
+/**
+ * @aibrief JEditorPane subclass that loads an HTML file and prints it via the Printable interface.
+ */
 public class HTMLPrintable extends JEditorPane
 implements Printable {
 	private static final long serialVersionUID = 1L;
 	File file;
 	
+	/**
+	 * @aibrief Store the HTML file to be printed.
+	 */
 	HTMLPrintable(File receivedFile) {
 		//Accept the HTML file to print.
 		file = receivedFile;
@@ -35,6 +41,9 @@ implements Printable {
 	repeatedly with increasing page numbers until NO_SUCH_PAGE is returned.
 	The Graphics parameter is operated on to render the current page,
 	and is printed if PAGE_EXISTS is returned from the function. */
+	/**
+	 * @aibrief Render the HTML page 'pageNumber' into the print graphics, returning PAGE_EXISTS or NO_SUCH_PAGE.
+	 */
 	public int print(Graphics graphics, PageFormat pageFormat, int pageNumber)
 	throws PrinterException {
 		Graphics2D graphics2d;

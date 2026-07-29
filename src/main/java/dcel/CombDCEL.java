@@ -31,6 +31,7 @@ import util.PathUtil;
 import util.StringUtil;
 
 /**
+ * @aibrief Static DCEL combinatorics: build/extract/cookie complexes, red chains, layout order, adjoin/double/reflect.
  * Static combinatorial routines for working with 
  * DCEL (directed half-edge) structures.
  * 
@@ -44,6 +45,7 @@ import util.StringUtil;
 public class CombDCEL {
 
 	/**
+	 * @aibrief Extract a new DCEL avoiding forbidden 'hlink' edges, rebuild red chain, reset bdry aims.
 	 * Starting with 'pdcel' structure, extract new DCEL 
 	 * avoiding the forbidden edges in 'hlink'. Start 
 	 * based on 'alphaEdge', but if this is null, use 
@@ -78,6 +80,7 @@ public class CombDCEL {
 	}
 
 	/**
+	 * @aibrief Build minimal DCEL (vertices/edges only) from a bouquet, default alpha index 0.
 	 * Given a bouquet of combinatoric data alone, create a
 	 * DCEL structure with 'vertices' and 'edges' only.
 	 * Bouquet satisfies usual conventions: counterclockwise order, 
@@ -92,6 +95,7 @@ public class CombDCEL {
 	}
 
 	/**
+	 * @aibrief Build minimal DCEL from a PackData's bouquet using its alpha; does not attach.
 	 * Given a packing, create its bouquet and get minimal
 	 * DCEL structure with 'vertices' and 'edges' only. This
 	 * does not attach the DCEL structure.
@@ -103,6 +107,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Core builder: create Vertex/HalfEdge objects, twins, next/prev, bdry faces, and alpha from a bouquet.
 	 * Given a bouquet of combinatoric data alone, create a minimal
 	 * DCEL structure, including 'vertices' and 'edges' only.
 	 * Bouquet satisfies usual conventions: counterclockwise order, 
@@ -265,6 +270,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Grow a red chain from alphaEdge without crossing forbidden 'hlink' edges, then finishRedChain.
 	 * Modify given 'pdcel' based on red chain formed about 
 	 * given 'alphaEdge' and not crossing any edge in 'hlink'.
 	 * Face and edge indexing are no longer reliable. After
@@ -650,6 +656,7 @@ public class CombDCEL {
 	}
 
 	/**
+	 * @aibrief Finalize a red chain: create/process PreRedVertices, split vertices, re-index, build oldNew.
 	 * This completes 'redchain_by_edge' processing. Moreover,
 	 * sometimes we wish to prescribe a red chain (as with 
 	 * 1-tori), and this processes a proposed red chain.
@@ -1044,6 +1051,7 @@ public class CombDCEL {
 	}	
 	
 	/** 
+	 * @aibrief Shift the red chain to shortcut and eliminate "blue" faces where safe; return change count.
 	 * See if the red chain can be shifted to eliminate some blue
 	 * faces. (In earlier work, a "blue" face has two successive
 	 * red edges, so might be eliminated by shortcutting via the
@@ -1159,6 +1167,7 @@ public class CombDCEL {
 	}
 
 	/**
+	 * @aibrief From a processed red chain, catalog faces/edges, build layoutOrder, ideal faces, and side pairings.
 	 * Given a DCEL structure with an already processed 
 	 * red chain and 'vertices' updated, we process to 
 	 * create 'faces', 'edges', 'layoutOrder', etc. 
@@ -2095,6 +2104,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Build a red chain tile-by-tile so tiles stay intact during layout; return tile layout count.
 	 * This applies only when 'TileData' is  available.
 	 * The idea is to keep tiles in one piece during
 	 * layout and is particularly valuable for tilings
@@ -2220,6 +2230,7 @@ public class CombDCEL {
 	}
 
 	/**
+	 * @aibrief Repeatedly "zip" (collapse) redEdges whose myEdge.twin equals the next redEdge; return shortened chain.
 	 * scan through redChain for any redEdge where
 	 * we can "zip"; meaning its 'myEdge.twin' is
 	 * equal to 'nextRed.myEdge'. Repeatedly shorten
@@ -2253,6 +2264,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Build a partial face-layout order from alpha avoiding forbidden/red edges; null on error.
 	 * Determine a partial order to lay out faces
 	 * for computing radii, starting with 'alpha' and 
 	 * avoiding crossing any forbidden edges in 'hlink' 
@@ -2340,6 +2352,7 @@ public class CombDCEL {
 	}
 	
 	/** 
+	 * @aibrief Reorder face layout to avoid unreliable vertices; if keepon, fall back to unreliable edges to finish.
 	 * Alternative face drawing orders for simply connected 
 	 * complexes. Typically ('keepon=true') we get a 'HalfLink'
 	 * which lays out every circle, but our aim is to avoid 
@@ -2481,6 +2494,7 @@ public class CombDCEL {
 	}
 		      
 	/**
+	 * @aibrief Renumber vertices (interior first from alpha, then red) on a clone, shift vData, and attach.
 	 * 'pdcel' should be complete with red chain
 	 * established. Goal is to renumber the vertices,
 	 * starting with alpha and working through the
@@ -2575,6 +2589,7 @@ public class CombDCEL {
 	}
 		
 	/**
+	 * @aibrief If edge origin is red, return the next clockwise RedEdge (possibly itself); else null.
 	 * Given a 'HalfEdge', check if origin is 'RedVertex'. If so,
 	 * return the next clw 'RedEdge' (possibly itself). If not,
 	 * return null;
@@ -2596,6 +2611,7 @@ public class CombDCEL {
 	}
 
 	/**
+	 * @aibrief Return index of w in v's bouquet flower, or -1 if not found.
 	 * Find index of w in flower of v. See 'PackData.nghb'
 	 * @param bouq int[][], array of flowers
 	 * @param v    int
@@ -2613,6 +2629,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Return the flower index of 'edge' (or its twin) about vertex V, or null on error.
 	 * Find the index of 'edge' (or 'edge.twin') in the
 	 * flower of Vertex V
 	 * @param edge HalfEdge
@@ -2646,6 +2663,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief True if vertex w has an open flower (is a boundary vertex) in the bouquet.
 	 * Is w a boundary vertex according to bouquet?
 	 * @param bouquet int[][]
 	 * @param w int
@@ -2661,6 +2679,7 @@ public class CombDCEL {
 	}
 
 	/**
+	 * @aibrief True if red chain degenerated to two edges with a keeper end, indicating a sphere.
 	 * Check if red chain has degenerated to two edges and one 
 	 * end or other is a keeper. This must be a sphere (possibly
 	 * with one non-keeper).  
@@ -2679,6 +2698,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Search redChain for the RedEdge whose myEdge equals the given edge; null if none.
 	 * Find 'RedEdge' from redChain whose 'myEdge' is equal to given 'edge'
 	 * @param redchain RedEdge
 	 * @param edge HalfEdge
@@ -2697,6 +2717,7 @@ public class CombDCEL {
 	}
 
 	/**
+	 * @aibrief Set eutil to 1 on each edge of this face that is currently zero.
 	 * For edges of this face, set 'eutil' to 1 if it is zero.
 	 * @param edge HalfEdge
 	 */
@@ -2715,6 +2736,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Mark the interior component containing 'seed' avoiding 'hlink' ends via markGenerations.
 	 * Find the component of interiors containing the given
 	 * 'seed' and avoiding forbidden vertices from 'hlink'.
 	 * Set up for call to 'markGenerations', so if 'seed' 
@@ -2749,6 +2771,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Return a new bouquet with each flower reversed to flip orientation.
 	 * Given a bouquet, return a bouquet with reverse orientation.
 	 * @param bouq int[][]
 	 * @return new bouquet[][]
@@ -2768,6 +2791,7 @@ public class CombDCEL {
 	
 
 	/**
+	 * @aibrief True if all spokes from edge's origin have non-zero eutil (all forbidden/bdry/touched).
 	 * check if all all edges from 'edge' origin vertex
 	 * have non-zero 'eutil', i.e. are forbidden, bdry, or already touched
 	 * @param edge
@@ -2784,6 +2808,7 @@ public class CombDCEL {
 	}
 	
 	/** 
+	 * @aibrief True if v and w are both boundary and lie on the same boundary component.
 	 * Are v/w bdry and on same bdry component?
 	 * @param v int
 	 * @param w int
@@ -2812,6 +2837,7 @@ public class CombDCEL {
 	}
 	
 	/** 
+	 * @aibrief Remove ("puncture") vertex v by forbidding its spokes and extracting the surviving DCEL.
 	 * Remove one vertex. This is called a "puncture" if 'v' has 2 
 	 * generations of interior neighbors. Otherwise, may result in
 	 * bdry vertices with no interior neighbors. 
@@ -2864,12 +2890,16 @@ public class CombDCEL {
 	    return CombDCEL.extractDCEL(pdcel,hlink,baseEdge);
 	}
 
+	/**
+	 * @aibrief Parse a command string into flag segments and delegate to the flag-based cookieData.
+	 */
 	public static HalfLink cookieData(PackData p,String str) {
 		Vector<Vector<String>> flagSegs=StringUtil.flagSeg(str);
 		return cookieData(p,flagSegs);
 	}
 	
 	/**
+	 * @aibrief Parse cookie flags (poison/-v/-e/-n or ClosedPath) into a HalfLink of forbidden edges.
 	 * The "cookie" process (cutting out a subcomplex from an
 	 * existing packing) involves specifying a new red chain 
 	 * defining the subcomplex. To get that red chain, we must
@@ -3040,6 +3070,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Prune so every bdry vertex has an interior neighbor by re-cookieing with prune=true.
 	 * Given 'pdcel' with redchain, we want to "prune" so 
 	 * that every bdry vertex has an interior neighbor. 
 	 * We simply cookie with halfLink as the current 
@@ -3068,6 +3099,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Intended to build largest simply connected complex within 'gen' of seeds (currently returns null).
 	 * Create largest simply connected complex containing
 	 * 'seed' vertices as generation 0, and up to generation 
 	 * no bigger than 'gen' from those seeds. This is two step
@@ -3112,6 +3144,7 @@ public class CombDCEL {
 	}
 		
 	/** 
+	 * @aibrief Remove ("puncture") face f by forbidding its three edges and extracting the DCEL.
 	 * Remove one face. 
 	 * 
 	 * TODO: coordinate with "rm_face", adjust lists of verts/faces
@@ -3131,6 +3164,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Reflect across bdry component(s) or a segment, adjoining a reversed clone with ball-bearing faces.
 	 * Combinatorial reflection with ball bearings.
 	 * That is, attach a reflected copy across one 
 	 * or more boundary components or a segment, 
@@ -3227,6 +3261,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Double the packing across full bdry component(s) or a segment by adjoining a reversed clone.
 	 * Double this packing across one or more full 
 	 * bdry components, or if 'segment' is true, 
 	 * double across a segment of one bdry component
@@ -3316,6 +3351,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Reverse pdc orientation in place: rebuild edges/pointers, reverse redchain, reflect centers, fillInside.
 	 * Given 'pdc' (sometimes a clone of original DCEL), reverse
 	 * its orientation: clone all edges, establish prev, next, 
 	 * twins, reverse redchain, adjust faces, keep vertices but 
@@ -3421,6 +3457,7 @@ public class CombDCEL {
 	}
 	  
 	/**
+     * @aibrief Deep-clone a PackDCEL: duplicate vertices/edges/faces/redchain/pairLink with re-linked pointers.
      * Create an exact duplicate of this 'pdc' and
      * all its existing objects. Note that faces,
      * ideal faces, layoutOrder, etc. may be missing.
@@ -3589,6 +3626,7 @@ public class CombDCEL {
     }
     
     /**
+     * @aibrief Return cclw NodeLink of vertices on v's boundary component; null if v not bdry.
      * Return cclw linked open list of verts on the same bdry
      * component as 'v' using DCEL structure. Null on error or if
      * 'v' not bdry. 
@@ -3614,6 +3652,7 @@ public class CombDCEL {
    	}
 
 	/**
+	 * @aibrief Rotate a PreRedVertex so its first petal is a slit's redSpoke; return num, 0 if no slit, -1 error.
 	 * The 'PreRedVertex' must have a closed flower, and we rotate so the
 	 * first petal is 'redSpoke'. Further, if there is a "slit", 
 	 * meaning a common direction with 'red/inSpoke' which are 
@@ -3674,6 +3713,7 @@ public class CombDCEL {
 	}
 
 	/**
+	 * @aibrief Split a PreRedVertex into new RedVertices, one per cclw fan between redSpoke and inSpoke.
 	 * The 'PreRedVertex' is temporary; we use it to 
 	 * gather entries in 'redSpoke', 'inSpoke', and we 
 	 * 'rotateMe' if necessary to avoid wrapping problems. 
@@ -3805,6 +3845,7 @@ public class CombDCEL {
 	}
 
 	/** 
+	   * @aibrief Adjoin/self-adjoin bdry segments of pdc1,pdc2 by zipping n edges, melding red chains, then wrapAdjoin.
 	   * Adjoin a boundary segment of pdc2 to a boundary segment
 	   * of pdc1, starting with 'v2' in 'pdc2' to vert v1 in 'pdc1'
 	   * and proceeding n edges CLOCKWISE (negative direction) on
@@ -4020,6 +4061,7 @@ public class CombDCEL {
 	  }
 	  
 	  /**
+	   * @aibrief Finish an adjoin: re-index surviving vertices, build oldNew, and repack pdc1.vertices.
 	   * Special helper routine to wrap up 'd_adjoin' 
 	   * when ready to return results, which are in 
 	   * 'pdc1'. This re-indexes 'vertices' and forms
@@ -4110,6 +4152,7 @@ public class CombDCEL {
 	  }
 	  
 	  /**
+	   * @aibrief Flip each edge in hlink via flipEdge_raw until one fails; return count flipped.
 	   * Given 'HalfLink' list of edges, flip as many as possible.
 	   * Each time we get a new 'HalfEdge', remove it from list.
 	   * Calling routine must complete combinatorics  
@@ -4136,6 +4179,7 @@ public class CombDCEL {
 	  }
 
 	  /**
+	   * @aibrief Flip an interior triangulated edge to the other diagonal; set redProblem if it was red.
 	   * Flip an interior edge. In a triangulation, an interior edge is
 	   * shared by two faces. To "flip" the edge means to remove it and
 	   * replace it with the other diagonal in the union of those faces. 
@@ -4204,6 +4248,7 @@ public class CombDCEL {
 	  }
 	  
 	  /**
+	   * @aibrief For a torus, build a 2-side-pairing red chain from a non-separating path and cut path.
 	   * Given 'pdcel' must be a topological torus with an 
 	   * existing 'redChain'. Generically a red chain will
 	   * have 3 side pairings; this routine finds a new red 
@@ -4324,6 +4369,7 @@ public class CombDCEL {
 	  }
 
 	/**
+	 * @aibrief Zip the two bdry edges at vert (twin them), handling 2/3/4-edge cases and red-chain contraction.
 	 * Modify 'pdcel' by zipping together the two bdry edges 
 	 * from 'vert'. This means the downstream edge is twinned
 	 * with the upstream edge, and so a vertex may be orphaned.
@@ -4589,6 +4635,7 @@ public class CombDCEL {
 	}
 	
 	/** 
+	 * @aibrief Trace an axis-extended edge chain from arrow to w within lgth (hex-only if hexflag); null on failure.
 	 * Check for an "axis-extended" 'HalfLink' from v to w 
 	 * starting with spoke 'arrow' at v and with length no
 	 * more than 'lgth'. Exclude paths through bdry verts 
@@ -4659,6 +4706,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Try each spoke of basevert for an axis-extended chain to w and return the best (longest) one.
 	 * Find shortest axis_extended HalfLink from 'basevert' ending
 	 * at 'w' through interior vertices (except for first/last)
 	 * and no longer than 'lgth'. If 'hexflag', then intermediate
@@ -4699,6 +4747,7 @@ public class CombDCEL {
 	}
 	
 	/**
+	 * @aibrief Convert a NodeLink of vertices into a HalfLink of connecting edges (axis-extended if hexFlag).
 	 * Convert 'NodeLink' list of vertices into a 'HalfLink' 
 	 * chain of connected edges. (If 'hexFlag' is true, 
 	 * then "hex-extended" edges, meaning string of verts 
@@ -4752,6 +4801,7 @@ public class CombDCEL {
 	}
 	  
 	/**
+	 * @aibrief Slit the complex open along an hlink chain via cookie; return {first,last} bdry ends or null.
 	 * Slit open along given edges via 'cookie' method.
 	 * 'hlink' must form a chain; start and/or end may 
 	 * be boundary, rest must be interior. If the complex 
@@ -4819,12 +4869,16 @@ public class CombDCEL {
 		return ans;
 	}
 
+	/**
+	 * @aibrief Convenience overload of addlayer with null ball-bearing list.
+	 */
 	public static int addlayer(PackDCEL pdcel, int mode, 
 		  int deg, int v1, int v2) {
 		return addlayer(pdcel,mode,deg,v1,v2,null);
 	}
 
 	/**
+	 * @aibrief Add a boundary layer from v1 to v2 in TENT, DEGREE, or DUPLICATE mode; return count added.
 	 * Add a layer of nodes to bdry segment from 
 	 * vertex v1 to v2. Three modes:
 	 * 
@@ -4962,6 +5016,7 @@ public class CombDCEL {
 } // end of 'CombDCEL'
 
 /**
+ * @aibrief Temporary Vertex subclass holding redSpoke/inSpoke arrays while processing a red-chain vertex.
  * Inner class: temporary object to hold 'redSpoke' and 'inSpoke' data
  * until appropriate 'Vertex's are created and processed.
  * @author kstephe2, 8/2020
@@ -4972,6 +5027,9 @@ class PreRedVertex extends Vertex {
 	public int num;
 	boolean closed;   // if true, then original flower was closed
 	
+	/**
+	 * @aibrief Construct a PreRedVertex with parent index v, marked not-closed and num=-1.
+	 */
 	// Constructor
 	public PreRedVertex(int v) {
 		super(v);

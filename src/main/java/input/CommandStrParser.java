@@ -140,6 +140,7 @@ import widgets.SliderFrame;
 import workshops.LayoutShop;
 
 /**
+ * @aibrief Parses and dispatches individual CirclePack commands to the appropriate Java routines.
  * This class handles parsing of individual commands for CirclePack.
  * These are generally sent from 'TrafficCenter'. 
  * (That's where preprocessing takes place: splitting 
@@ -152,6 +153,9 @@ import workshops.LayoutShop;
  */
 public class CommandStrParser {
 
+  /**
+   * @aibrief Enumerates energy kernels (Coulomb, L2, log, min-distance) used by 'PointEnergies'.
+   */
   public enum Energy {COULOMB,L2,LOG,MIN_DIST}; // for 'PointEnergies'
 
   public static PostFactory pF; // 'PostFactory' updated externally.
@@ -159,6 +163,7 @@ public class CommandStrParser {
   public static final double LAYOUT_THRESHOLD=.00001; // layouts quality
 
   /**
+   * @aibrief Forwards a command string to 'jexecute' using the currently active packing.
    * Send on to 'jexecute' using active packing.
    * @param s, command string (see limitations)
    * @return 0 on error or no action
@@ -168,6 +173,7 @@ public class CommandStrParser {
   }
   
   /**
+	 * @aibrief Main command dispatcher: parses a single command, catches special cases, then switches on the first letter.
 	 * This is where individual commands are analyzed 
 	 * and sent to appropriate Java routines. 
 	 * 
@@ -5160,6 +5166,7 @@ public class CommandStrParser {
   
   
   /**
+   * @aibrief Handles commands requiring an active packing (status true), dispatched from 'jexecute'.
    * internally called to handle packings with 'status' 
    * true.
    * @param packData PackData
@@ -11195,6 +11202,7 @@ public class CommandStrParser {
   } // end of 'packExecute'
   
 /**
+ * @aibrief Splits off the first command, strips any -p flag to pick the packing, then delegates to the 3-arg valueExecute.
  * Execute commands that return a value of some type. 
  * This handles just a single call (one command with 
  * accompanying flags) and is called when 'jexecute' 
@@ -11248,6 +11256,7 @@ public static CallPacket valueExecute(PackData packData,String cmdstr) {
 }
 
 /**
+ * @aibrief Executes a value-returning command and packages the result in a CallPacket (or null on error).
  * Should be called from 'valueExecute' or from 'jexecute', 
  * and in both cases, any -p flag should have been 
  * processed and removed.
@@ -11705,14 +11714,18 @@ public static CallPacket valueExecute(PackData packData,
 
 
 /** =================== local utility classes ========================
-/** for use with 'adjoin' */
+/**
+ * @aibrief Linked-list node holding an inversive-distance/overlap angle for an edge (v,w), used by 'adjoin'.
+ * for use with 'adjoin' */
 class Overlap {
   int v,w;
   double angle;
   Overlap next;
 }
 
-/** for use with 'set_overlap': parse the <a> {(v,u)..} strings */
+/**
+ * @aibrief Holds a parsed overlap/inversive-distance angle and its edge list for 'set_overlap'.
+ * for use with 'set_overlap': parse the <a> {(v,u)..} strings */
 class LapList {
 	boolean invDist_flag=false; // indication: inv_dist or overlap 
 	double angle;

@@ -35,6 +35,7 @@ import util.SphView;
 import util.StringUtil;
 
 /**
+ * @aibrief Static parser turning '-flag' display segments into PostScript output via a PostFactory.
  * This static code parses PostScript writing actions
  * and carries them out. Preliminary file opening and
  * closing actions are handled in the calling routine.
@@ -42,6 +43,9 @@ import util.StringUtil;
  */
 public class PostParser {
 
+	/**
+	 * @aibrief Iterate flag segments, dispatching circle/edge/face/dual/tile/trinket cases to PostScript output.
+	 */
 	public static int postParse(PostFactory pF,PackData p,
 			Vector<Vector<String>>flagSegs) {
 		if (pF==null) {

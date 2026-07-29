@@ -21,7 +21,8 @@ import schwarzWork.SchwarzMap;
 import schwarzWork.Schwarzian;
 
 /**
- * Mobius transformations of the sphere are 
+ * @aibrief 2x2 complex Mobius transformations of the sphere; group element with apply/compose/normalize.
+ * Mobius transformations of the sphere are
  * represented by 2x2 complex matrices [a b; c d]. 
  * They form a group under composition, hence this 
  * class extends @see GroupElement. Image of z
@@ -61,6 +62,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	// TODO: work on these thresholds.
 
 	// Constructors
+	/**
+	 * @aibrief Construct the identity Mobius [1 0; 0 1], oriented.
+	 */
 	public Mobius() { // identity
 		a = new Complex(1.0);
 		b = new Complex(0.0);
@@ -69,6 +73,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 		oriented = true;
 	}
 
+	/**
+	 * @aibrief Construct Mobius from complex entries, scaling to det=1, with orientation flag.
+	 */
 	public Mobius(Complex ap, Complex bp, Complex cp, Complex dp, boolean noflip) { // PSL(2,C)
 		Complex detSq = ap.times(dp).minus(bp.times(cp)).sqrt().reciprocal();
 		a = ap.times(detSq);
@@ -78,31 +85,49 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 		oriented = noflip;
 	}
 
+	/**
+	 * @aibrief Construct oriented Mobius from complex entries, scaled to det=1.
+	 */
 	public Mobius(Complex ap, Complex bp, Complex cp, Complex dp) { // PSL(2,C)
 		this(ap, bp, cp, dp, true);
 	}
 
+	/**
+	 * @aibrief Construct Mobius from real entries, scaled to det=1, with orientation flag.
+	 */
 	public Mobius(double ap, double bp, double cp, double dp, boolean noflip) { // PSL(2,R)
 		this(new Complex(ap), new Complex(bp), new Complex(cp),
 				new Complex(dp), noflip);
 	}
 
+	/**
+	 * @aibrief Construct oriented Mobius from real entries, scaled to det=1.
+	 */
 	public Mobius(double ap, double bp, double cp, double dp) { // PSL(2,R)
 		this(new Complex(ap), new Complex(bp), new Complex(cp),
 				new Complex(dp), true);
 	}
 
+	/**
+	 * @aibrief Construct Mobius from integer entries, scaled to det=1, with orientation flag.
+	 */
 	public Mobius(int ia, int ib, int ic, int id, boolean noflip) { // PSL(2,Z)
 		this(new Complex((double) ia), new Complex((double) ib), new Complex(
 				(double) ic), new Complex((double) id), noflip);
 	}
 
+	/**
+	 * @aibrief Construct oriented Mobius from integer entries, scaled to det=1.
+	 */
 	public Mobius(int ia, int ib, int ic, int id) { // PSL(2,Z)
 		this(new Complex((double) ia), new Complex((double) ib), new Complex(
 				(double) ic), new Complex((double) id), true);
 	}
 
 	// clone constructor
+	/**
+	 * @aibrief Copy-construct a Mobius, deep-copying entries and orientation.
+	 */
 	public Mobius(Mobius mob) {
 		this();
 		a=new Complex(mob.a);
@@ -113,7 +138,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Return new Complex by applying this Mobius 
+	 * @aibrief Apply this Mobius to z, returning (az+b)/(cz+d) (conjugating z if unoriented).
+	 * Return new Complex by applying this Mobius
 	 * transformation to z = x + iy
 	 * @param z Complex, x+iy
 	 * @return Complex, or essential infinity
@@ -129,7 +155,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * Given spherical point (theta,phi), apply mobius and 
+	 * @aibrief Apply this Mobius to a spherical point via stereographic projection, returning a sph point.
+	 * Given spherical point (theta,phi), apply mobius and
 	 * return sph pt.
 	 * @param z Complex, spherical point
 	 * @return Complex, spherical point
@@ -152,7 +179,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Return new Complex number by applying this Mobius 
+	 * @aibrief Apply this Mobius to z, or its inverse when 'oriented' is false.
+	 * Return new Complex number by applying this Mobius
 	 * (or inverse) to z.
 	 * @param z Complex
 	 * @param oriented boolean, if false use inverse
@@ -166,6 +194,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
+	 * @aibrief Return the determinant ad-cb of this Mobius.
 	 * Return new Complex giving determinant of this Mobius.
 	 */
 	public Complex det() {
@@ -173,6 +202,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Rescale 'this' in place so det=1 and real part of trace is nonnegative.
 	 * Normalize 'this' Mobius so that ad-bc=1 and real(trace)>=0.
 	 *  
 	 * TODO: what happens if 'this' is orientation reversing?
@@ -201,7 +231,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Return new Complex giving trace-squared of this 
+	 * @aibrief Return trace-squared (a+d)^2/det^2 of this Mobius.
+	 * Return new Complex giving trace-squared of this
 	 * Mobius transformation: (Recall; must adjust so 
 	 * determinant is 1, so result is (a+d)^2/det^2.)
 	 * @return Complex
@@ -214,6 +245,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Return a new Mobius that is the inverse of 'this'.
 	 * Returns new Mobius, the inverse of this Mobius
 	 */
 	public GroupElement inverse() {
@@ -223,6 +255,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Conjugate all four entries of 'this' in place.
 	 * Change 'this' by complex conjugation of all entries.
 	 */
 	public void conj() {
@@ -233,6 +266,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Transpose 'this' in place, swapping b and c.
 	 * Change 'this' to its transpose. So [ a b; c d]
 	 * becomes [a c;b d].
 	 */
@@ -244,6 +278,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
+	 * @aibrief Return the derivative det/(cz+d)^2 of this Mobius at z.
 	 * Return the derivative of this Mobius at z.
 	 * @param z Complex
 	 * @return Complex
@@ -256,6 +291,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Return new Mobius scaling/rotating output by multiplying a,b by factor.
 	 * Return new Mobius, scale and/or rotate this by argument
 	 * @param factor Complex
 	 * @return GroupElement
@@ -265,6 +301,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
+	 * @aibrief Return new Mobius with all four entries multiplied by a complex scalar.
 	 * Return new Mobius; multiply all entries by complex scalar
 	 * @param scalar Complex
 	 * @return GroupElement
@@ -274,6 +311,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Return the matrix product left*this as a new Mobius.
 	 * Return new Mobius, multiply this on left by argument; ie.,
 	 * output=left*this
 	 * @param left GroupElement
@@ -288,6 +326,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Return the matrix product this*right as a new Mobius.
 	 * Return new Mobius, multiply this on right by argument; ie.,
 	 * output=this*right
 	 * @param left GroupElement
@@ -303,7 +342,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Type of Mobius is Parabolic, elliptic, hyperbolic, 
+	 * @aibrief Classify this Mobius as Parabolic, Elliptic, Hyperbolic, or Loxodromic via its trace.
+	 * Type of Mobius is Parabolic, elliptic, hyperbolic,
 	 * or loxodromic
 	 * @return String
 	 */
@@ -324,6 +364,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 		return type;
 	}
 	
+	/**
+	 * @aibrief Return the four entries a,b,c,d as a short-format space-separated string.
+	 */
 	public String toString() {
 		// return a.toString() + "   " + b.toString() + "   " + c.toString() +
 		// "   " + d.toString() + "\n";
@@ -333,6 +376,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
+	 * @aibrief Format the entries as a Matlab matrix literal [a,b;c,d].
 	 * Form string for matlab input [a,b;c,d].
 	 * @return String
 	 */
@@ -346,6 +390,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
+	 * @aibrief Print this Mobius to stdout as a named Matlab assignment.
 	 * Print out a mobius in form to copy into matlab.
 	 * @param varname String
 	 * @param mob Mobius
@@ -354,23 +399,36 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 		System.out.println(varname+" = ["+a.toString()+"  ,  "+b.toString()+" ;   "+c.toString()+"  ,  "+d.toString()+"];");
 	}
 	
+	/**
+	 * @aibrief Return the lower-left entry c.
+	 */
 	public Complex getC() {
 		return c;
 	}
 
+	/**
+	 * @aibrief Return the upper-left entry a.
+	 */
 	public Complex getA() {
 		return a;
 	}
 
+	/**
+	 * @aibrief Return the upper-right entry b.
+	 */
 	public Complex getB() {
 		return b;
 	}
 
+	/**
+	 * @aibrief Return the lower-right entry d.
+	 */
 	public Complex getD() {
 		return d;
 	}
 
 	/**
+	 * @aibrief Return one fixed point (quadratic '+' root, or affine fixed point).
 	 * Find fixed point by quadratic formula; use '+' sign
 	 * @return Complex
 	 */
@@ -388,6 +446,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Return the other fixed point (quadratic '-' root, or affine fixed point).
 	 * Find fixed point by quadratic formula; use '-' sign
 	 * @return Complex
 	 */
@@ -405,7 +464,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 *  true if essentially affine (i.e., |c| < 'almostAffine' 
+	 * @aibrief Return true when |c| is below the almostAffine threshold (essentially affine).
+	 *  true if essentially affine (i.e., |c| < 'almostAffine'
 	 *  (threshold))
 	 *  @return boolean
 	 */
@@ -417,7 +477,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create normalized Mobius (det=1) mapping complexes {a,b,c} 
+	 * @aibrief Return normalized Mobius sending a,b,c to 0,1,infinity, handling infinite inputs.
+	 * Create normalized Mobius (det=1) mapping complexes {a,b,c}
 	 * to {0, 1, infty}, resp. General form is [b-c -a(b-c); b-a -c(b-a)], 
 	 * with special cases if a, b, or c is infinity. Return null on 
 	 * failure or roundoff problems, e.g., a and b too close. 
@@ -486,7 +547,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * Create Mobius mapping first ordered pair of 
+	 * @aibrief Return Mobius aligning one ordered circle pair onto another by matching three points.
+	 * Create Mobius mapping first ordered pair of
 	 * circles to second ordered pair. First check
 	 * that alignment is needed. If so, project to 
 	 * eucl data if in other geometries. Idea is to 
@@ -590,7 +652,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Find Mobius that maps centers of 3 circles of 
+	 * @aibrief Return Mobius mapping centers of circles v,u,w to centers V,U,W in a eucl packing.
+	 * Find Mobius that maps centers of 3 circles of
 	 * eucl packing p to the centers of 3 other circles.
 	 * @param p PackData, eucl only for now
 	 * @param v
@@ -611,7 +674,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create normalized Mobius mapping Complex pts 
+	 * @aibrief Return normalized Mobius sending x,y,z to X,Y,Z, projecting spherical inputs first.
+	 * Create normalized Mobius mapping Complex pts
 	 * x,y,z to X,Y,Z resp. (Depends on the two 
 	 * geometries; for sphere, points must be stereo 
 	 * projected to the plane.)
@@ -650,7 +714,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Convenience routine: return value of z under 
+	 * @aibrief Return (a-z)/(1-conj(a)z), the disc automorphism interchanging a and 0.
+	 * Convenience routine: return value of z under
 	 * (a-z)/(1-z*conj(a)), which interchanges a and 0.
 	 * @param z Complex
 	 * @param a Complex
@@ -661,7 +726,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Convenience routine: return preimage of w under mobius 
+	 * @aibrief Return preimage of w under the disc mobius sending a to 0 and b to positive x-axis.
+	 * Convenience routine: return preimage of w under mobius
 	 * of disc which maps a to origin and b to positive x-axis,
 	 * a must be interior, b can be anything not too close to a.
 	 * @param w Complex
@@ -682,6 +748,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Return disc automorphism sending a to 0 and (if far enough) g to positive imaginary axis.
 	 * Find the mobius of the unit disc which maps a to the
 	 * origin and (if g not too close to a) rotates so g is
 	 * on the positive imaginary axis.
@@ -711,6 +778,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
+	 * @aibrief Return plane automorphism sending a to 0 and (if far enough) g to positive imaginary axis.
 	 * Find the mobius of the plane which maps a to the
 	 * origin and (if g not to close to a) rotates so g is
 	 * on the positive imaginary axis.
@@ -740,6 +808,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
+	 * @aibrief Return sphere rigid motion sending alpha to 0 and (if non-null) gamma to positive imaginary axis.
 	 * Return a rigid motion of the sphere that maps 'alpha' to
 	 * the origin and 'gamma' (if not null) to the positive imaginary axis.
 	 * @param alpha Complex
@@ -768,8 +837,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Return sphere-preserving Mobius moving an interior 3D point to origin, fixing its axis endpoints.
 	 * Given 3D point interior to unit sphere, create
-	 * Mobius in 3-space which maps the sphere to itself, 
+	 * Mobius in 3-space which maps the sphere to itself,
 	 * the point to the origin, while fixing the endpoints 
 	 * on the sphere of the vector through the point. 
 	 * @param pt Point3D
@@ -820,8 +890,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * Given (theta,phi) point on the sphere, find 
-	 * rigid motion of sphere moving it to the north 
+	 * @aibrief Return sphere rigid-motion Mobius rotating spherical point sph_z to the north pole.
+	 * Given (theta,phi) point on the sphere, find
+	 * rigid motion of sphere moving it to the north
 	 * pole. Compute angle and then cross product to
 	 * get axis of rotation. See 'Matrix3D.rigid2North'
 	 * for 3x3 rotation of 3-space.
@@ -852,7 +923,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * create a Mobius transformation of the 
+	 * @aibrief Return sphere Mobius carrying the circle at sph_z of radius rad to the unit circle, center kept.
+	 * create a Mobius transformation of the
 	 * sphere which maps the given circle to
 	 * the unit circle, preserving center.
 	 * First, rigid motion putting sph_z at the
@@ -877,7 +949,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * Create Mobius (det=1) for rotation by angle ang*Pi, 
+	 * @aibrief Return normalized rotation Mobius by ang*Pi radians fixing 0 and infinity.
+	 * Create Mobius (det=1) for rotation by angle ang*Pi,
 	 * fixing 0, infty.
 	 * @param ang double; multiply by Pi to get radians
 	 * @return Mobius (normalized)
@@ -888,7 +961,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create automorphism of unit disc carrying a->A and b->B. 
+	 * @aibrief Return disc automorphism carrying a to A and b to B, dispatching on boundary/interior cases.
+	 * Create automorphism of unit disc carrying a->A and b->B.
 	 * Various situations and possible exceptions; Must have 
 	 * |a|=1 and |A|=1 simultaneously (same for b and B). If 
 	 * not |a|=1=|b|, then call trans_abAB because a,b,A,B are 
@@ -975,8 +1049,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create automorphism of unit disc mapping a->A, 
-	 * b->B when a,b,A,B are all on the unit circle. 
+	 * @aibrief Return disc automorphism mapping boundary pts a,b to A,B and matching c to C as closely as possible.
+	 * Create automorphism of unit disc mapping a->A,
+	 * b->B when a,b,A,B are all on the unit circle.
 	 * There is an additional degree of freedom, so also
 	 * match c->C (as closely as possible). If c or C 
 	 * is outside the disc, set them both to 0. 
@@ -1030,8 +1105,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * Given a circle, create the normalized Mobius 
-	 * form of the associated point in de Sitter space. 
+	 * @aibrief Return the normalized Mobius encoding a circle's associated de Sitter-space point.
+	 * Given a circle, create the normalized Mobius
+	 * form of the associated point in de Sitter space.
 	 * See 'DeSitter.java'.
 	 * @param cs CircleSimple
 	 * @param hes int 
@@ -1045,7 +1121,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create automorphism of unit disc carrying 
+	 * @aibrief Return disc automorphism sending a to 0 and (unless b near a) b to the positive x-axis.
+	 * Create automorphism of unit disc carrying
 	 * a to origin, b to positive x-axis. If b and 
 	 * a are essentially equal, then don't do the 
 	 * rotation. 
@@ -1070,6 +1147,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Return the affine plane map carrying a to A and b to B.
 	 * Create automorphism of eucl plane carrying a->A, b->B.
 	 * @param a Complex
 	 * @param b Complex
@@ -1093,8 +1171,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create an automorphism of the unit disc 
-	 * mapping a->1, b->-1, and c as close as possible 
+	 * @aibrief Return disc automorphism mapping boundary a to 1, b to -1, with c placed on the imaginary axis.
+	 * Create an automorphism of the unit disc
+	 * mapping a->1, b->-1, and c as close as possible
 	 * to the origin. a, b are on unit circle, c 
 	 * interior. On error, throw MobException. Strategy: 
 	 * Map to right halfplane with R so a->infty, b to 
@@ -1139,6 +1218,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
+	 * @aibrief Return the base-equilateral edge-derivative Mobius [1+s -s*w; s*conj(w) 1-s] for edge j from schwarzian s.
 	 * Create the Mobius edge derivative for base equilateral
 	 * from real schwarzian 's'. Base equilateral is formed by 
 	 * tangent triple of radius sqrt(3), symmetric w.r.t. the 
@@ -1168,6 +1248,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	/* ----------------- applying Mobius to circles -------------- */
 	
 	/**
+	 * @aibrief Apply a Mobius in place to every vertex and red-chain circle of a packing.
 	 * Apply a Mobius directly to adjust radii/centers of
 	 * the given packing, including red radii/centers.
 	 * @param p PackData
@@ -1197,7 +1278,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * Apply mobius ('oriented' true) or inverse ('oriented' false) 
+	 * @aibrief Apply mobius (or inverse) to a circle given by center/radius, returning result in same geometry.
+	 * Apply mobius ('oriented' true) or inverse ('oriented' false)
 	 * to a single circle in specified geometry. Note that in 
 	 * eucl case, negative newr means use outside of circle; calling 
 	 * routine will handle this. Center/radius in specified 
@@ -1218,8 +1300,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * Apply mobius ('oriented' true) or inverse ('oriented' 
-	 * false) to a single circle. Both csIn and csOut are 
+	 * @aibrief Apply mobius (or inverse) to a CircleSimple, converting through eucl per hyp/sph/eucl geometry.
+	 * Apply mobius ('oriented' true) or inverse ('oriented'
+	 * false) to a single circle. Both csIn and csOut are
 	 * in the specified geometry.
 	 * Notes: 
 	 * + in eucl case, negative newr means use outside of 
@@ -1287,6 +1370,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
  
 	/**
+	 * @aibrief Return sphere Mobius sending circles (zN,rN),(zS,rS) to the N/S poles, with east-circle or dilation normalization.
 	 * Given intended north and south pole spherical circle data, (zN,rN) and
 	 * (zS,rS), return the Mobius transformation centering them at N and S
 	 * poles, resp. Return identity on error.
@@ -1584,7 +1668,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create Mobius mapping outside of eucl circle c1 
+	 * @aibrief Return Mobius mapping outside of eucl circle c1 onto inside of c2, handling negative (infinity-containing) radii.
+	 * Create Mobius mapping outside of eucl circle c1
 	 * onto inside of eucl circle c2. Radius of c1 
 	 * (resp. c2) may be negative meaning it contains 
 	 * infinity: must move to unit circle, invert, move 
@@ -1630,7 +1715,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * Create Mobius giving (anticonformal) reflection in 
+	 * @aibrief Return the anticonformal reflection (det=-1) in a euclidean circle of center ctr, radius r.
+	 * Create Mobius giving (anticonformal) reflection in
 	 * euclidean circle. Given radius r may be negative 
 	 * for outside of the circle; this doesn't affect the 
 	 * computations.
@@ -1648,8 +1734,9 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Return the reciprocal Mobius z -> 1/z, i.e. [0 1; 1 0].
 	 * Create Mobius z-->1/z
-	 * 
+	 *
 	 * @return Mobius
 	 */
 	public static Mobius recip_mob() {
@@ -1658,7 +1745,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
-	 * For Mobius, returns the distance of normalized mobius from 
+	 * @aibrief Return the Frobenius distance of the normalized mobius from the identity, -1 if ill-conditioned.
+	 * For Mobius, returns the distance of normalized mobius from
 	 * identity in the Frobenius norm (which is sqrt of sum of 
 	 * squares of abs entries). Useful for seeing how close a 
 	 * mobius is to being the identity.
@@ -1685,6 +1773,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Return a new flattened Path2D that is the Mobius (or inverse) image of the given path.
 	 * Create a new @see Path2D.Double which is Mobius transformation of given
 	 * path. If 'oriented' is false, apply inverse of mob.
 	 * @param mob Mobius
@@ -1727,9 +1816,10 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 		return newgp;
 	}
 	
-	/** 
+	/**
+	 * @aibrief Return the image circle of cs under M (or M^{-1}) via CirMatrix G^t*C*conj(G), flagging inside/outside.
 	 * For 'cs' a circle in geometry 'hes', returns
-	 * its image under M (oriented=true) or M^{-1} 
+	 * its image under M (oriented=true) or M^{-1}
 	 * (oriented=false). Returns a 'CircleSimple';
 	 * 'flag' set to -1 if we want to image the 
 	 * outside disc. Follow the original center 
@@ -1843,6 +1933,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 
 
 	/**
+	 * @aibrief Return a deep copy of 'this', including error and util fields.
 	 * Create a new Mobius object which is identical to 'this'.
 	 * @return new Mobius
 	 */
@@ -1859,7 +1950,8 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 	
 	/**
-	 * Generate a string giving a, b, b, d (and orientation) 
+	 * @aibrief Build a multi-line string listing entries a,b,c,d (and -1 if unoriented) for output.
+	 * Generate a string giving a, b, b, d (and orientation)
 	 * for use in output.
 	 * TODO: should I just override "toString"?
 	 * @return StringBuilder
@@ -1877,6 +1969,7 @@ public class Mobius extends ComplexTransformation implements GroupElement {
 	}
 
 	/**
+	 * @aibrief Debug helper printing this mobius's effect on the circles of vertices v and w.
 	 * See what this mobius does to circles for v and w.
 	 * @param schwarzMap TODO
 	 * @param f int, face

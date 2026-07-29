@@ -28,11 +28,17 @@ import packing.PackData;
 import tiling.Tile;
 import util.DispFlags;
 
+/**
+ * @aibrief Static debugging helpers to print/inspect/draw DCEL packing structures (verts, edges, faces, red chain).
+ */
 public class DCELdebug {
 	
 	static File tmpdir=new File(System.getProperty("java.io.tmpdir"));
 	static int rankStamp=1; // progressive number to distinguish file instances
 	
+	/**
+	 * @aibrief Print a tile's augmented vertex list to stdout.
+	 */
 	public static void tileAugVerts(Tile tile) {
 		StringBuilder strbld=new StringBuilder("Augmented tile ");
 		if (tile==null || tile.augVert==null) 
@@ -42,6 +48,9 @@ public class DCELdebug {
 		System.out.println(strbld.toString());
 	}
 	
+	/**
+	 * @aibrief Print each red edge and its stored center around the red chain.
+	 */
 	public static void rededgecenters(PackDCEL pdcel) {
 		if (pdcel.redChain==null) 
 			return;
@@ -53,6 +62,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief List all red-flagged edges and vertices of a DCEL to stdout.
 	 * Prints our all red edges and vertices
 	 * @param pdcel
 	 */
@@ -104,6 +114,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Verify vertices/edges/faces array indices match their stored *Indx fields.
 	 * check if all array indexes agree with their recorded "*Indx". 
 	 * @param pdcel PackDCEL
 	 */
@@ -128,6 +139,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Print spokes of the given vertices whose 'face' is null.
 	 * print those edges from 'vlist' that don't have faces.
 	 * @param pdcel PackDCEL
 	 * @param vlist NodeLink
@@ -145,6 +157,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Check each red edge's myEdge matches the edges[] entry at its index.
 	 * Compare 'myEdge' to 'edges' entry with same index.
 	 * @param pdcel PackDCEL
 	 */
@@ -170,6 +183,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Draw the face/edge pairs of a GraphLink on the given (or default) packing.
 	 * Display colored face/edge pairs from 'glink' in screen
 	 * for packing 'pnum' or pdcel.p if 'pnum'<0.
 	 * @param pdcel PackDCEL
@@ -191,6 +205,9 @@ public class DCELdebug {
 		}
 	}
 	
+	/**
+	 * @aibrief Check one HalfEdge's next/prev/twin/red links, returning a status StringBuilder.
+	 */
 	public static StringBuilder edgeConsistency(PackDCEL pdcel,HalfEdge he) {
 		StringBuilder strbld=new StringBuilder(" ["+he+"]: ");
 		boolean okay=true;
@@ -222,6 +239,9 @@ public class DCELdebug {
 		return strbld;
 	}
 	
+	/**
+	 * @aibrief Run edgeConsistency on up to 50 edges of an hlink, printing results; return count checked.
+	 */
 	public static int edgeConsistency(PackDCEL pdcel,HalfLink hlink) {
 		int tick=50; // limit of 50 edges
 		int count=0;
@@ -239,6 +259,9 @@ public class DCELdebug {
 		return count;
 	}
 	
+	/**
+	 * @aibrief Trace a vertex's spokes/twins and flag spoke-count errors, returning a report StringBuilder.
+	 */
 	public static StringBuilder vertConsistency(PackDCEL pdcel,int v) {
 		Vertex vert=pdcel.vertices[v];
 		int num=vert.getNum()+1;
@@ -265,6 +288,9 @@ public class DCELdebug {
 		return strbld;
 	}
 
+	/**
+	 * @aibrief Run vertConsistency over a vertex list, printing each; return count checked.
+	 */
 	public static int vertConsistency(PackDCEL pdcel,NodeLink vlist) {
 		if (vlist==null || vlist.size()==0)
 			vlist=new NodeLink(null,"a(1 100)");
@@ -282,6 +308,9 @@ public class DCELdebug {
 	}
 	
 	
+	/**
+	 * @aibrief Verify red-chain twinRed/next/prev links and redFlag/bdryFlag settings; return error count.
+	 */
 	public static int redConsistency(PackDCEL pdcel) {
 		int count=0;
 		RedEdge redchain=pdcel.redChain;
@@ -356,6 +385,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Log each vertex's spokes with their next/prev/twin to a temp file; return count.
 	 * List spokes of each vertex and for each spoke
 	 * its 'next', 'prev', and 'twin'.	
 	 * @param pdcel
@@ -397,6 +427,9 @@ public class DCELdebug {
 		return count;
 	}
 	
+	/**
+	 * @aibrief Log all vertices, edges, faces, and the red chain to a temp text file.
+	 */
 	public static int log_full(PackDCEL pdcel) {
 		String filename=new String("DCEL_VEF_"+(rankStamp++)+"_log.txt");
 		BufferedWriter dbw=CPFileManager.openWriteFP(tmpdir,filename,false);
@@ -462,6 +495,9 @@ public class DCELdebug {
 		return count;
 	}
 	
+	/**
+	 * @aibrief Print each vertex's counter-clockwise neighbor bouquet to stdout.
+	 */
 	public static void printBouquet(PackDCEL pdcel) {
 		System.out.println("DCEL bouquet:");
 		StringBuilder strbld=null;
@@ -487,6 +523,9 @@ public class DCELdebug {
 		System.out.println("done");
 	}
 	
+	/**
+	 * @aibrief Push a tile's augmented vertices into the Vlist via 'set_Vlist' command.
+	 */
 	public static void augVerts2Vlist(Tile tile) {
 		StringBuilder strbld=new StringBuilder("set_Vlist ");
 		if (tile.augVert==null)
@@ -496,6 +535,9 @@ public class DCELdebug {
 		CommandStrParser.jexecute(strbld.toString());
 	}
 	
+	/**
+	 * @aibrief Print each spoke of a vertex with its edge 'eutil' value.
+	 */
 	public static void edgeFlowerUtils(PackDCEL pdcel,Vertex vert) {
 		HalfEdge he=vert.halfedge;
 		do {
@@ -504,6 +546,9 @@ public class DCELdebug {
 		} while (he!=vert.halfedge);
 	}
 
+	/**
+	 * @aibrief Draw each face in a list as an oriented edge/face pair, mapping old-to-new indices.
+	 */
 	public static void drawEdgeFace(PackDCEL pdcel,ArrayList<DcelFace> facelist) {
 		Iterator<DcelFace> fit=facelist.iterator();
 		while (fit.hasNext()) {
@@ -519,6 +564,7 @@ public class DCELdebug {
 	}
 
 	/**
+	 * @aibrief Draw an edge in blue, its left face pale red, and the three face circles.
 	 * Given oriented 'HalfEdge', draw it in blue, its face 
 	 * on left in pale red, and the three circles.
 	 * @param pdcel PackDCEL
@@ -543,6 +589,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Draw a half edge in blue and its left face in pale red.
 	 * Given oriented 'HalfEdge', draw it in blue and face 
 	 * on left in pale red.
 	 * @param pdcel PackDCEL
@@ -561,6 +608,7 @@ public class DCELdebug {
 	}
 
 	/**
+	 * @aibrief Draw an EdgeSimple in blue with its left face in pale red.
 	 * Given oriented edge, draw in blue and face on left in pale red
 	 * @param p PackData
 	 * @param edge EdgeSimple 
@@ -578,6 +626,9 @@ public class DCELdebug {
 			p.cpDrawing.rePaintAll();
 	}
 	
+	/**
+	 * @aibrief Clear the canvas and draw indexed euclidean circles from center/radius arrays.
+	 */
 	public static void drawEuclCircles(CPdrawing cpd,Complex[] Z,double[] R) {
 		cpd.clearCanvas(true);
 		int len=Z.length-1;
@@ -593,6 +644,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Draw each edge of an hlink on the packing screen.
 	 * Display the edges in the given 'hlink'
 	 * @param p PackData
 	 * @param hlink HalfLink
@@ -611,6 +663,7 @@ public class DCELdebug {
 	}
 
 	/**
+	 * @aibrief Draw red-chain edges using parent packing centers.
 	 * Draw redchain edges on parent packing
 	 * @param p
 	 * @param redge
@@ -632,6 +685,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Draw the whole red chain using each red edge's stored centers.
 	 * Draw whole redChain starting at redge; this uses newly
 	 * stored centers, not the parent packing
 	 * @param p PackData
@@ -647,6 +701,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Print a vertex's radius and center to stdout.
 	 * print rad/center
 	 * @param p
 	 * @param v
@@ -657,6 +712,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Draw a single red edge in red on the packing screen.
 	 * Given a red edge, draw it in red on packing p's screen
 	 * @param p PackData
 	 * @param redge RedEdge
@@ -670,6 +726,9 @@ public class DCELdebug {
 			p.cpDrawing.rePaintAll();
 	}
 
+	/**
+	 * @aibrief List red-chain vertex indices in order, plus old indices via a VertexMap.
+	 */
 	public static void printRedChain(RedEdge redge,VertexMap vmap) {
 		StringBuilder sb=new StringBuilder("RedChain in order:\n");
 		StringBuilder sbold=new StringBuilder("old indices:\n");
@@ -692,10 +751,16 @@ public class DCELdebug {
 			System.out.println(sbold.toString());
 	}
 	
+	/**
+	 * @aibrief Print red-chain vertex indices in order (no VertexMap).
+	 */
 	public static void printRedChain(RedEdge redge) {
 		printRedChain(redge,null);
 	}
 	
+	/**
+	 * @aibrief Print red-chain edges, twinReds, blue-face markers, and side-pairing details.
+	 */
 	public static void redChainDetail(PackDCEL pdcel) {
 		StringBuilder strbld=new StringBuilder("RedChain Detail: \n");
 		
@@ -754,6 +819,9 @@ public class DCELdebug {
 	
 	// ================ check consistency of twin origins ==================
 	
+	/**
+	 * @aibrief Compare each edge's origin to its prev.twin origin, printing mismatches.
+	 */
 	public static void EdgeOriginProblem(ArrayList<HalfEdge> edges) {
 		Iterator<HalfEdge> eit=edges.iterator();
 		System.out.println("Comparing red edge origin' to red edge prev.twin origin:");
@@ -765,6 +833,9 @@ public class DCELdebug {
 		}
 	}
 	
+	/**
+	 * @aibrief Walk the red chain comparing each edge origin to its prev.twin origin.
+	 */
 	public static void RedOriginProblem(RedEdge redge) {
 		RedEdge re=redge;
 		System.out.println("Comparing red edge origin' to red edge prev.twin origin:");
@@ -781,6 +852,7 @@ public class DCELdebug {
 	}
 
 	/**
+	 * @aibrief Return edge origin and prev.twin origin as an EdgeSimple, warning if they differ.
 	 * Find origin of edge and edge.prev.twin (clw spoke); 
 	 * should be same.
 	 * @param edge
@@ -801,6 +873,9 @@ public class DCELdebug {
 			
 
 // ================= plot face based on edge 
+	/**
+	 * @aibrief Find the edge matching endpoints (v,w) and print its face's vertices.
+	 */
 	public static void tri_of_edge(HalfEdge []edges,int v,int w) {
 		for (int e=1;e<edges.length;e++) {
 			HalfEdge he=edges[e];
@@ -809,6 +884,9 @@ public class DCELdebug {
 		}
 	}
 
+	/**
+	 * @aibrief Print the vertices of the face containing the given edge.
+	 */
 	public static void triVerts(HalfEdge edge) {
 		StringBuilder sb=new StringBuilder("vertices for face of edge <"+edge.origin.vertIndx+" "
 				+edge.twin.origin.vertIndx+">\n");
@@ -817,6 +895,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Build a string of successive next-edge origins around a face (limit 5).
 	 * List next vertices up until closure, limit of 5
 	 * @param edge
 	 * @return
@@ -837,6 +916,9 @@ public class DCELdebug {
 		return sb.toString();
 	}
 	
+	/**
+	 * @aibrief Print successive faces around a vertex; return the number traversed.
+	 */
 	public static int vertFaces(Vertex V) {
 		StringBuilder sb=new StringBuilder("Vertex "+V.vertIndx+" successive faces:\n");
 		int safety=12;
@@ -850,6 +932,9 @@ public class DCELdebug {
 		return 12-safety;
 	}
 	
+	/**
+	 * @aibrief Follow up to 12 edges from a starting edge, printing the face vertex chain.
+	 */
 	public static void faceVerts(HalfEdge edge) {
 		StringBuilder sb=new StringBuilder("follow 12 edges from <"+edge.origin.vertIndx+","+
 				edge.twin.origin.vertIndx+">, face "+edge.face.faceIndx+"\n");
@@ -873,6 +958,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Print each red-chain edge's endpoints and its twinRed endpoints.
 	 * print the edge ends around the redChain using 'myEdge' and its twin
 	 * @param redge RedEdge
 	 */
@@ -898,10 +984,16 @@ public class DCELdebug {
 		}
 	}
 	
+	/**
+	 * @aibrief Print the origin/twin-origin vertex indices of a half edge.
+	 */
 	public static void halfedgeends(PackDCEL pdcel,combinatorics.komplex.HalfEdge edge) {
 		System.out.println(" ("+edge.origin.vertIndx+","+edge.twin.origin.vertIndx+") ");
 	}
 	
+	/**
+	 * @aibrief Build a report of a vertex, its halfedge, and halfedge-origin consistency.
+	 */
 	public static StringBuilder thisVertex(Vertex vert) {
 		return new StringBuilder("Vertex ("+vert.hashCode()+") "+vert.vertIndx+"; "
 				+ "halfedge ("+vert.halfedge.hashCode()+"): "+
@@ -909,10 +1001,16 @@ public class DCELdebug {
 				vert.halfedge.origin.vertIndx+"\n");
 	}
 	
+	/**
+	 * @aibrief Build a one-line report of a spoke edge's next, prev, and twin.
+	 */
 	public static StringBuilder thisSpoke(HalfEdge edge) {
 		return new StringBuilder("  Spoke: "+edge+": next="+edge.next+", prev="+edge.prev+", twin="+edge.twin);
 	}		
 	
+	/**
+	 * @aibrief Build a detailed report of a HalfEdge's links, twin, and face hashes.
+	 */
 	public static StringBuilder thisEdge(HalfEdge edge) {
 		return new StringBuilder("HalfEdge, index "+edge.edgeIndx+": <"+edge.origin.vertIndx+","+edge.twin.origin.vertIndx+">, "+
 				"\n  Hash ("+edge.hashCode()+
@@ -922,12 +1020,18 @@ public class DCELdebug {
 				"); Face.halfedge ("+edge.face.edge.hashCode()+")\n");
 	}
 	
+	/**
+	 * @aibrief Build a report of a RedEdge's myEdge index and next/prev red links.
+	 */
 	public static StringBuilder thisRedEdge(RedEdge redge) {
 		return new StringBuilder("This is 'RedEdge', myEdge index "+redge.myEdge.edgeIndx+": nextRed ("+redge.nextRed.hashCode()+
 				"); prevRed ("+redge.prevRed.hashCode()+")\n");
 
 	}
 	
+	/**
+	 * @aibrief Build a report of a face's edge, face.edge.face, and corner vertex indices.
+	 */
 	public static StringBuilder thisFace(DcelFace face) {
 		StringBuilder sb= new StringBuilder("Face ("+face.hashCode()+"); faceIndx "+face.faceIndx+
 				"; edge ("+face.edge.hashCode()+"); face.edge.face ("+face.edge.face.hashCode()+")");
@@ -942,6 +1046,7 @@ public class DCELdebug {
 	}
 
 	/**
+	 * @aibrief Print up to 10 successive 'next' edges (and twins) from a HalfEdge.
 	 * Given HalfEdge, find up to 10 successive 'next' edges
 	 * (and their twins).
 	 * @param edge HalfEdge
@@ -962,6 +1067,7 @@ public class DCELdebug {
 	}
 
 	/**
+	 * @aibrief Print the 5 next and 5 previous edges of a HalfEdge.
 	 * for a HalfEdge, show the 5 next edges and 5 previous edges
 	 * @param edge
 	 */
@@ -985,6 +1091,7 @@ public class DCELdebug {
 	}
 	
 	/**
+	 * @aibrief Print all (v,w) index pairs stored in a VertexMap.
 	 * Print edges from given VertexMap
 	 * @param vmap VertexMap
 	 */
