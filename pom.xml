@@ -191,6 +191,29 @@
                         <phase>process-classes</phase>
                         <goals><goal>resources</goal></goals>
                     </execution>
+                    <!-- Stage the Jupyter demo (cptools/) next to the built jar
+                         in target/, so it can be run from there against the
+                         fresh jar. cptools/ is the single tracked source; this
+                         copy is regenerated every build and never drifts. -->
+                    <execution>
+                        <id>copy-jupyter-demo</id>
+                        <phase>prepare-package</phase>
+                        <goals><goal>copy-resources</goal></goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>cptools</directory>
+                                    <excludes>
+                                        <exclude>**/__pycache__/**</exclude>
+                                        <exclude>**/*.pyc</exclude>
+                                        <exclude>**/.ipynb_checkpoints/**</exclude>
+                                        <exclude>**/packings/__jupyter_cell__.svg</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 

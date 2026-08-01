@@ -10,7 +10,6 @@ Load it in a notebook:
 
     %load_ext circlepack_magic
     %circlepack connect                 # connect to CirclePack (localhost:3736)
-    %circlepack packdir D:/CirclePack_code/CirclePack/packings   # enable inline images
 
 Then:
 
@@ -22,21 +21,26 @@ Then:
 Line magic forms:
     %circlepack connect [host] [port]   connect (CirclePack must be running)
     %circlepack packdir <path>          dir where CirclePack writes files (for images)
+    %circlepack packdir auto            re-enable auto-detection of that dir
     %circlepack name <name>             client name for the handshake
     %circlepack status                  show current settings/connection
     %circlepack disconnect
     %circlepack <command...>            run a one-off command
 
 Notes / current limits:
-* Inline images need ``packdir`` set to the directory CirclePack writes to
-  (its "packings" directory); the magic has CirclePack write an SVG there
-  via ``svg -f`` and displays it. Without ``packdir`` you still get the
-  command result code, just no picture.
+* Inline images need to read the SVG CirclePack exports. The magic has
+  CirclePack write it (via ``svg -f``) to CirclePack's own **packings**
+  directory, then **auto-detects** that directory by finding the freshly
+  written file -- searching the notebook's folder and its parents (each and
+  their ``packings/`` subdir), then ``~`` and ``~/packings``. So the notebook
+  can live in any subfolder; you normally do NOT need to set ``packdir`` by
+  hand. Override with ``%circlepack packdir <path>`` if your layout is unusual.
 * The socket returns only a result count per command; query *text*
   (e.g. ``?rad 1``) appears in CirclePack's own shell, not the notebook.
 """
 import os
 import re
+import tempfile
 import time
 
 from circlepack_client import CirclePackClient, CirclePackError
@@ -62,18 +66,15 @@ class _State:
         self.host = "127.0.0.1"
         self.port = 3736
         self.name = "jupyter"
-        self.packdir = os.environ.get("CIRCLEPACK_PACKDIR") or self._auto_packdir()
+        # packdir: directory the magic reads the exported SVG back from. Left as
+        # a best-effort seed; it is auto-detected on the first %%circlepack cell
+        # by finding where CirclePack actually wrote the file (_find_fresh).
+        self.packdir = os.environ.get("CIRCLEPACK_PACKDIR") or _auto_packdir()
+        # if the user set packdir by hand, don't silently move it elsewhere
+        self.packdir_manual = False
+        # so we announce the detected dir only once per session
+        self.announced_dir = None
         self.client = None
-
-    @staticmethod
-    def _auto_packdir():
-        """Best-effort guess at CirclePack's packings directory: env var, then
-        ./packings (CP + Jupyter share a folder), then ../packings (notebook in
-        cptools/, CP launched from the repo root). Returns an abs path or None."""
-        for cand in ("packings", os.path.join("..", "packings")):
-            if os.path.isdir(cand):
-                return os.path.abspath(cand)
-        return None
 
     def ensure_client(self):
         if self.client is None:
@@ -88,7 +89,84 @@ class _State:
             self.client = None
 
 
-STATE = _State()
+def _auto_packdir():
+    """Best-effort initial guess at CirclePack's packings directory: env var,
+    then ./packings, then ../packings. This is only a seed -- the real
+    directory is discovered from where CirclePack writes (see _find_fresh).
+    Returns an abs path or None."""
+    for cand in ("packings", os.path.join("..", "packings")):
+        if os.path.isdir(cand):
+            return os.path.abspath(cand)
+    return None
+
+
+def _candidate_dirs():
+    """Ordered, de-duplicated list of existing directories to search for the
+    SVG CirclePack just wrote. Covers the notebook's folder and up to a few
+    parents (each plus its ``packings/`` subdir), then the home directory and
+    ``~/packings`` (CirclePack's default packings location), then the system
+    temp dir. STATE.packdir, if known, is checked first as a fast path."""
+    seen = []
+
+    def add(d):
+        if not d:
+            return
+        try:
+            ad = os.path.abspath(d)
+        except Exception:
+            return
+        if ad not in seen and os.path.isdir(ad):
+            seen.append(ad)
+
+    if STATE.packdir:
+        add(STATE.packdir)
+    d = os.getcwd()
+    for _ in range(5):
+        add(os.path.join(d, "packings"))
+        add(d)
+        parent = os.path.dirname(d)
+        if parent == d:
+            break
+        d = parent
+    home = os.path.expanduser("~")
+    add(os.path.join(home, "packings"))
+    add(home)
+    add(tempfile.gettempdir())
+    return seen
+
+
+def _clear_stale(fname):
+    """Best-effort delete of any leftover ``fname`` in the candidate dirs, so
+    the file that appears next is unambiguously from this run (and can't be a
+    stale image we'd show by mistake)."""
+    for d in _candidate_dirs():
+        try:
+            p = os.path.join(d, fname)
+            if os.path.isfile(p):
+                os.remove(p)
+        except OSError:
+            pass
+
+
+def _find_fresh(fname, since, timeout=12.0):
+    """Poll the candidate directories for a non-empty ``fname`` written at or
+    after ``since`` (a time.time() stamp taken just before the command ran).
+    The freshness check ignores a leftover file from an earlier cell. Returns
+    the full path once found, else None after ``timeout`` seconds. The window
+    is generous because a cold first packing can take several seconds to lay
+    out and flush the SVG."""
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        for d in _candidate_dirs():
+            p = os.path.join(d, fname)
+            try:
+                if (os.path.isfile(p) and os.path.getsize(p) > 0
+                        and os.path.getmtime(p) >= since - 2.0):
+                    return p
+            except OSError:
+                pass
+        time.sleep(0.1)
+    return None
 
 
 def _prep_svg(html, px=420):
@@ -119,17 +197,8 @@ def _prep_svg(html, px=420):
     return re.sub(r"<svg\b[^>]*>", new_open, svg, count=1, flags=re.S | re.I)
 
 
-def _show_svg_file(path):
-    """Poll for the SVG file CirclePack wrote, then display it inline.
-    Returns True if an image was shown."""
-    # CirclePack flushes the file slightly after the socket reply; poll for it
-    deadline = time.time() + 4.0
-    while time.time() < deadline:
-        if os.path.isfile(path) and os.path.getsize(path) > 0:
-            break
-        time.sleep(0.1)
-    if not (os.path.isfile(path) and os.path.getsize(path) > 0):
-        return False
+def _display_svg_file(path):
+    """Read the SVG at ``path`` and display it inline. Returns True if shown."""
     try:
         with open(path, "r", encoding="utf-8") as f:
             data = f.read()
@@ -139,6 +208,9 @@ def _show_svg_file(path):
         return svg is not None
     except OSError:
         return False
+
+
+STATE = _State()
 
 
 @magics_class
@@ -162,6 +234,7 @@ class CirclePackMagics(Magics):
             if len(args) > 2:
                 STATE.port = int(args[2])
             STATE.disconnect()
+            STATE.announced_dir = None
             try:
                 greeting = STATE.ensure_client()
                 print("connected: %s" % greeting)
@@ -173,8 +246,16 @@ class CirclePackMagics(Magics):
             print("disconnected")
             return
         if sub == "packdir":
-            STATE.packdir = " ".join(args[1:]) or None
-            print("packdir = %s" % STATE.packdir)
+            rest = " ".join(args[1:]).strip()
+            if rest.lower() in ("auto", ""):
+                STATE.packdir_manual = False
+                STATE.packdir = os.environ.get("CIRCLEPACK_PACKDIR") or _auto_packdir()
+                STATE.announced_dir = None
+                print("packdir = auto (detected from where CirclePack writes)")
+            else:
+                STATE.packdir = rest
+                STATE.packdir_manual = True
+                print("packdir = %s" % STATE.packdir)
             return
         if sub == "name":
             STATE.name = args[1] if len(args) > 1 else "jupyter"
@@ -190,9 +271,9 @@ class CirclePackMagics(Magics):
         print("CirclePack magic:")
         print("  host:port = %s:%d" % (STATE.host, STATE.port))
         print("  name      = %s" % STATE.name)
-        print("  packdir   = %s%s" % (
-            STATE.packdir,
-            "" if STATE.packdir else "   (set it to enable inline images)"))
+        print("  packdir   = %s  (%s)" % (
+            STATE.packdir if STATE.packdir else "<unset>",
+            "manual" if STATE.packdir_manual else "auto-detected on first image"))
         print("  connected = %s" % (STATE.client is not None))
 
     def _run(self, command):
@@ -201,32 +282,39 @@ class CirclePackMagics(Magics):
         except CirclePackError as e:
             print("ERROR: %s" % e)
             return
-        path = None
-        full = command
-        if STATE.packdir:
-            path = os.path.join(STATE.packdir, _SVG_NAME)
-            # clear any stale image so we never show a previous cell's picture
-            try:
-                if os.path.isfile(path):
-                    os.remove(path)
-            except OSError:
-                pass
-            # append the SVG export to the SAME command line: when all
-            # commands run in one parseWrapper call they finish in order, so
-            # the SVG reflects this cell's final packing (separate lines lag).
-            full = command.rstrip() + "\nsvg -f " + _SVG_NAME
+        # Append an SVG export to the SAME command line so it reflects this
+        # cell's final packing (separate lines lag by one). CirclePack writes it
+        # to its own packings directory; we then find it wherever that is.
+        full = command.rstrip() + "\nsvg -f " + _SVG_NAME
+        _clear_stale(_SVG_NAME)
+        since = time.time()
         try:
             resp = STATE.client.run(full)
         except CirclePackError as e:
             print("ERROR: %s" % e)
             STATE.disconnect()
             return
-        if path is not None and _show_svg_file(path):
-            return
+        path = _find_fresh(_SVG_NAME, since)
+        if path:
+            found_dir = os.path.dirname(path)
+            # lock onto wherever CirclePack actually wrote it (unless the user
+            # pinned packdir by hand), and announce it once per session
+            if not STATE.packdir_manual and STATE.packdir != found_dir:
+                STATE.packdir = found_dir
+            if STATE.announced_dir != found_dir:
+                print("[circlepack] images from packings dir: %s" % found_dir)
+                STATE.announced_dir = found_dir
+            if _display_svg_file(path):
+                return
         # no image: surface the result so the cell isn't silent
         n = CirclePackClient.result_count(resp)
         if n is not None and n < 0:
             print("CirclePack error (result %d)" % n)
+        elif path is None:
+            print(resp)
+            print("[circlepack] no image: could not find %s that CirclePack "
+                  "wrote. Set it explicitly with:  %%circlepack packdir <path>"
+                  % _SVG_NAME)
         else:
             print(resp)
 

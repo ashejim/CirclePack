@@ -29,20 +29,35 @@ The magic additionally needs IPython/Jupyter (`pip install jupyterlab`) and a
 
 Grab two files from the
 [latest release](https://github.com/ashejim/CirclePack/releases): the app jar
-`CirclePack-J5.2-jupyter.jar` and the demo bundle `circlepack-jupyter-demo.zip`.
+`CirclePack-<version>.jar` and the demo bundle `circlepack-jupyter-demo.zip`.
 **Unzip the bundle and drop the jar into the unzipped folder** (so the jar sits
-next to the notebook and the `packings/` folder). Then, in that folder:
+next to the notebook and the `packings/` folder). Then, in that folder
+(substitute the actual jar filename for `CirclePack-<version>.jar` below):
 
 ```powershell
 # one-time tools (signed installers; Smart App Control friendly)
 winget install Microsoft.OpenJDK.17
 winget install astral-sh.uv
+```
 
-# terminal 1 — start CirclePack
-java -jar CirclePack-J5.2-jupyter.jar
+CirclePack and Jupyter are **two long-running processes**, so use **two
+terminals** (each command below stays running and holds its window).
 
-# terminal 2 — start JupyterLab (launched via signed python -m to avoid Smart App Control)
+```powershell
+# TERMINAL 1 — start CirclePack (this window is now busy running the GUI)
+java -jar CirclePack-<version>.jar
+```
+
+```powershell
+# TERMINAL 2 — start JupyterLab (launched via signed python -m to avoid Smart App Control)
 uv run --python 3.12 --with jupyterlab --with ipykernel python -m jupyterlab
+```
+
+Prefer one terminal? Launch CirclePack **detached** (or just double-click the
+jar in Explorer) so the window frees up for the Jupyter command:
+
+```powershell
+Start-Process java -ArgumentList '-jar','CirclePack-<version>.jar'
 ```
 
 Open `demo_circlepack.ipynb` and run the cells. Because CirclePack and Jupyter
@@ -92,11 +107,14 @@ cells, and `%%circlepack` cells**.
    # or explicitly:  runCP -socket 3736
    ```
 
-2. **Start Jupyter** from this `cptools/` folder (so the modules import):
+2. **Start Jupyter** in a **second terminal**, from this `cptools/` folder (so
+   the `circlepack_*.py` modules import). Either frontend works — JupyterLab is
+   not required:
 
    ```
-   pip install jupyterlab
-   jupyter lab
+   uv run --python 3.12 --with jupyterlab --with ipykernel python -m jupyterlab
+   # ...or classic Notebook 7:  ...--with notebook ... python -m notebook
+   # pip alternative: pip install -r requirements.txt && python -m jupyterlab
    ```
 
 3. In a notebook cell:
@@ -108,9 +126,16 @@ cells, and `%%circlepack` cells**.
    ```
 
    `packdir` (the directory CirclePack writes files to, its **packings**
-   directory) is **auto-detected** as `./packings` or `../packings`. Override
-   only if needed: `%circlepack packdir <path>`. Without a valid `packdir` you
-   still get each command's result code, just no inline picture.
+   directory — often `~/packings`, *not* the notebook's folder) is
+   **auto-detected**: on the first `%%circlepack` cell the magic finds the SVG
+   CirclePack just wrote by searching this notebook's folder and its parents
+   (each plus a `packings/` subdir), then `~` and `~/packings`, and locks onto
+   it. So the notebook may live in any subfolder — no path to configure. If
+   detection fails (the cell prints `no image: could not find …`), read the
+   `Wrote SVG image to <PATH>` line in CirclePack's message window and set it:
+   `%circlepack packdir <path>` (`%circlepack packdir auto` re-enables
+   auto-detection). Without a resolvable directory you still get each command's
+   result code, just no inline picture.
 
 ### Use
 
