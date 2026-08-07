@@ -65,6 +65,7 @@ import ftnTheory.MeanMove;
 import ftnTheory.Necklace;
 import ftnTheory.Percolation;
 import ftnTheory.PolyBranching;
+import ftnTheory.SphBranchNewton;
 import ftnTheory.ProjStruct;
 import ftnTheory.RationalMap;
 import ftnTheory.RiemHilbert;
@@ -1760,9 +1761,20 @@ public class CommandStrParser {
 		    	  }
 	    	  }
 	    	  else if (str.equalsIgnoreCase("pb")) {
-	    		  if (!packData.status || packData.nodeCount==0) 
+	    		  if (!packData.status || packData.nodeCount==0)
 	    			  return 0;
 	    		  PolyBranching px=new PolyBranching(packData);
+	    		  if (px.running) {
+		    		  CirclePack.cpb.msg("Pack "+packData.packNum+
+		    				  ": started "+px.extensionAbbrev+" extender");
+	    			  px.StartUpMsg();
+	    			  returnVal=1;
+		    	  }
+	    	  }
+	    	  else if (str.equalsIgnoreCase("sn")) {
+	    		  if (!packData.status || packData.nodeCount==0)
+	    			  return 0;
+	    		  SphBranchNewton px=new SphBranchNewton(packData);
 	    		  if (px.running) {
 		    		  CirclePack.cpb.msg("Pack "+packData.packNum+
 		    				  ": started "+px.extensionAbbrev+" extender");
