@@ -12,7 +12,6 @@ import listManip.NodeLink;
 import packing.PackData;
 import packing.PackExtender;
 import util.CmdStruct;
-import util.UtilPacket;
 
 /**
  * @brief Directly solve the spherical angle-sum system by damped Gauss-Newton.
@@ -24,8 +23,13 @@ import util.UtilPacket;
  * <pre>
  *     F_v(r) = anglesum_v(r) - aim_v        (v interior)
  * </pre>
- * using Newton's method.  The spherical angle sums are CirclePack's own
- * {@link PackData#s_anglesum}, so the mathematics is not re-derived here.
+ * using Newton's method.  The spherical angle sum is computed here in the
+ * numerically stable half-angle form
+ *     alpha = 2*atan( sqrt( sin(b) sin(c) / ( sin(a) sin(a+b+c) ) ) )
+ * (angle at center circle radius a, tangent petals b,c), with a closed-form
+ * analytic Jacobian.  This avoids the cancellation / acos ill-conditioning of
+ * the law-of-cosines form on near-degenerate triples, which is what lets the
+ * solve converge from a cold seed rather than stalling on the approach path.
  *
  * The radius-only angle-sum system is conformally degenerate: its Jacobian has
  * nullity exactly 3 (radii are invariant under the rotation subgroup SO(3), so
@@ -46,7 +50,6 @@ public class SphBranchNewton extends PackExtender {
 
 	int[] bigCircles;          // the fixed "big circle" vertices
 	int numFixed = 3;          // conformal nullity is 3 -> fix 3
-	static final double H = 1e-7;   // finite-difference step for the Jacobian
 
 	public SphBranchNewton(PackData p) {
 		super(p);
@@ -57,8 +60,9 @@ public class SphBranchNewton extends PackExtender {
 		registerXType();
 		if (extenderPD.hes <= 0)
 			errorMsg("packing is not spherical; use 'geom_to_s' first");
-		msg("ready: '|sn| solve' runs damped Newton from the current radii. "
-				+ "Seed from a packing near a branched solution.");
+		msg("ready [build: STABLE angle-sum + analytic Jacobian, 2026-08-07]. "
+				+ "'|sn| solve' runs damped Newton from the current radii; "
+				+ "seed from a packing near a branched solution.");
 		running = true;
 		extenderPD.packExtensions.add(this);
 	}
@@ -448,7 +452,6 @@ public class SphBranchNewton extends PackExtender {
 				+ free.size() + " free (Thurston fixed-boundary style)");
 
 		double tol = 1e-9, err = Double.MAX_VALUE;
-		UtilPacket uP = new UtilPacket();
 		int pass;
 		for (pass = 1; pass <= maxpass; pass++) {
 			for (int v : free) {
@@ -458,8 +461,7 @@ public class SphBranchNewton extends PackExtender {
 			}
 			err = 0;
 			for (int v : free) {
-				extenderPD.s_anglesum(v, extenderPD.getRadius(v), uP);
-				err = Math.max(err, Math.abs(uP.value - extenderPD.getAim(v)));
+				err = Math.max(err, Math.abs(sphAngleSum(v) - extenderPD.getAim(v)));
 			}
 			if (pass <= 3 || pass % 200 == 0)
 				msg(String.format("  pass %d: max|F| = %.3e", pass, err));
@@ -482,10 +484,8 @@ public class SphBranchNewton extends PackExtender {
 		if (hm <= 1e-9)
 			return extenderPD.getRadius(v);
 		double lo = 1e-9, r = Math.min(0.005, hm), hi;
-		UtilPacket uP = new UtilPacket();
 		while (true) {
-			extenderPD.s_anglesum(v, r, uP);
-			if (uP.value - target <= 0) {
+			if (sphAngleSum(v, r) - target <= 0) {
 				hi = r;
 				break;
 			}
@@ -496,8 +496,7 @@ public class SphBranchNewton extends PackExtender {
 		}
 		for (int i = 0; i < 60; i++) {
 			double m = 0.5 * (lo + hi);
-			extenderPD.s_anglesum(v, m, uP);
-			if (uP.value - target <= 0)
+			if (sphAngleSum(v, m) - target <= 0)
 				hi = m;
 			else
 				lo = m;
@@ -507,58 +506,122 @@ public class SphBranchNewton extends PackExtender {
 
 	/** Residual F_i = anglesum(rows[i]) - aim(rows[i]). */
 	double[] residualVector(ArrayList<Integer> rows) {
-		UtilPacket uP = new UtilPacket();
 		double[] F = new double[rows.size()];
 		for (int i = 0; i < rows.size(); i++) {
 			int v = rows.get(i);
-			extenderPD.s_anglesum(v, extenderPD.getRadius(v), uP);
-			F[i] = uP.value - extenderPD.getAim(v);
+			F[i] = sphAngleSum(v) - extenderPD.getAim(v);
 		}
 		return F;
 	}
 
+	// ---------------------------------------------------------------
+	// Spherical angle sum -- STABLE half-angle form + analytic Jacobian.
+	//
+	// For the angle at the center circle (radius a) between two petals tangent
+	// to it and to each other (radii b, c), the spherical half-angle identity
+	// gives   alpha = 2*atan( sqrt( sin(b) sin(c) / ( sin(a) sin(a+b+c) ) ) ).
+	// This avoids the catastrophic cancellation and acos ill-conditioning of the
+	// law-of-cosines form near-degenerate triples (a big circle beside tiny ones,
+	// or a+b+c -> pi), so the residual and its derivative stay accurate along the
+	// whole Newton path -- which is what lets discovery converge from a cold seed.
+	// (Verified against the law-of-cosines form at the balanced solution and via
+	// finite differences for the Jacobian.)
+	// ---------------------------------------------------------------
+
+	/** Stable spherical angle at center circle (radius a) between tangent petals b,c. */
+	static double faceAngle(double a, double b, double c) {
+		double sig = a + b + c;
+		double sa = Math.sin(a), ss = Math.sin(sig);
+		if (sa <= 0.0 || ss <= 0.0)
+			return Math.PI;                    // degenerate (a+b+c >= pi): angle -> pi
+		double T = (Math.sin(b) * Math.sin(c)) / (sa * ss);
+		if (T <= 0.0)
+			return Math.PI;
+		return 2.0 * Math.atan(Math.sqrt(T));
+	}
+
+	/** {alpha, d/da, d/db, d/dc} for faceAngle (closed-form analytic gradient). */
+	static double[] faceAngleGrad(double a, double b, double c) {
+		double sig = a + b + c;
+		double sa = Math.sin(a), sb = Math.sin(b), sc = Math.sin(c), ss = Math.sin(sig);
+		if (sa <= 0.0 || ss <= 0.0)
+			return new double[] { Math.PI, 0.0, 0.0, 0.0 };
+		double T = (sb * sc) / (sa * ss);
+		if (T <= 0.0)
+			return new double[] { Math.PI, 0.0, 0.0, 0.0 };
+		double sqT = Math.sqrt(T);
+		double alpha = 2.0 * Math.atan(sqT);
+		double f = sqT / (1.0 + T);
+		double cota = 1.0 / Math.tan(a), cotb = 1.0 / Math.tan(b),
+				cotc = 1.0 / Math.tan(c), cots = 1.0 / Math.tan(sig);
+		return new double[] { alpha,
+				f * (-cota - cots),      // d/da  (center circle)
+				f * (cotb - cots),       // d/db
+				f * (cotc - cots) };     // d/dc
+	}
+
+	/** Distinct petals of v in cyclic order (drops any closing repeat). */
+	int[] petalsOf(int v) {
+		int[] fl = extenderPD.packDCEL.vertices[v].getFlower(false);
+		int d = fl.length;
+		if (d > 1 && fl[0] == fl[d - 1]) {
+			int[] out = new int[d - 1];
+			System.arraycopy(fl, 0, out, 0, d - 1);
+			return out;
+		}
+		return fl;
+	}
+
+	/** Angle sum at v, using rvOverride for r(v) (petals at current radii). */
+	double sphAngleSum(int v, double rvOverride) {
+		int[] pet = petalsOf(v);
+		int np = pet.length;
+		double sum = 0.0;
+		for (int i = 0; i < np; i++) {
+			double rp = extenderPD.getRadius(pet[i]);
+			double rw = extenderPD.getRadius(pet[(i + 1) % np]);
+			sum += faceAngle(rvOverride, rp, rw);
+		}
+		return sum;
+	}
+
+	/** Angle sum at v at its current radius. */
+	double sphAngleSum(int v) {
+		return sphAngleSum(v, extenderPD.getRadius(v));
+	}
+
 	/**
-	 * @brief Sparse-aware dense Jacobian J[i][j] = dF_{rows[i]}/dr_{cols[j]}.
-	 * Column j (unknown u) only affects rows u and the petals of u.
+	 * @brief Analytic Jacobian J[i][j] = dF_{rows[i]}/dr_{cols[j]}. Row v's angle
+	 * sum depends on r(v) and its petals; each face (v, a, b) adds d/da to column v
+	 * and d/db, d/dc to columns a, b (accumulated -- a petal appears in two faces).
 	 */
 	double[][] jacobian(ArrayList<Integer> rows, ArrayList<Integer> cols,
 			int[] rowIndex) {
-		UtilPacket uP = new UtilPacket();
+		int N = extenderPD.nodeCount;
+		int[] colIndex = new int[N + 1];
+		for (int v = 0; v <= N; v++)
+			colIndex[v] = -1;
+		for (int j = 0; j < cols.size(); j++)
+			colIndex[cols.get(j)] = j;
 		double[][] J = new double[rows.size()][cols.size()];
-		for (int j = 0; j < cols.size(); j++) {
-			int u = cols.get(j);
-			double r0 = extenderPD.getRadius(u);
-			int[] affected = affectedRows(u);   // {u} union petals(u)
-
-			double[] plus = new double[affected.length];
-			extenderPD.setRadius(u, r0 + H);
-			for (int k = 0; k < affected.length; k++) {
-				int v = affected[k];
-				if (rowIndex[v] < 0)
-					continue;
-				extenderPD.s_anglesum(v, extenderPD.getRadius(v), uP);
-				plus[k] = uP.value;
+		for (int i = 0; i < rows.size(); i++) {
+			int v = rows.get(i);
+			double rv = extenderPD.getRadius(v);
+			int[] pet = petalsOf(v);
+			int np = pet.length;
+			for (int k = 0; k < np; k++) {
+				int a = pet[k], b = pet[(k + 1) % np];
+				double[] gc = faceAngleGrad(rv, extenderPD.getRadius(a),
+						extenderPD.getRadius(b));
+				if (colIndex[v] >= 0)
+					J[i][colIndex[v]] += gc[1];
+				if (colIndex[a] >= 0)
+					J[i][colIndex[a]] += gc[2];
+				if (colIndex[b] >= 0)
+					J[i][colIndex[b]] += gc[3];
 			}
-			extenderPD.setRadius(u, r0 - H);
-			for (int k = 0; k < affected.length; k++) {
-				int v = affected[k];
-				if (rowIndex[v] < 0)
-					continue;
-				extenderPD.s_anglesum(v, extenderPD.getRadius(v), uP);
-				J[rowIndex[v]][j] = (plus[k] - uP.value) / (2.0 * H);
-			}
-			extenderPD.setRadius(u, r0);
 		}
 		return J;
-	}
-
-	/** Vertex u and its petals: the rows whose angle sum depends on r_u. */
-	int[] affectedRows(int u) {
-		int[] flower = extenderPD.packDCEL.vertices[u].getFlower(false);
-		int[] out = new int[flower.length + 1];
-		out[0] = u;
-		System.arraycopy(flower, 0, out, 1, flower.length);
-		return out;
 	}
 
 	// ---------------------------------------------------------------
@@ -649,13 +712,11 @@ public class SphBranchNewton extends PackExtender {
 	}
 
 	double maxResidual() {
-		UtilPacket uP = new UtilPacket();
 		double mx = 0.0;
 		for (int v = 1; v <= extenderPD.nodeCount; v++) {
 			if (extenderPD.isBdry(v) || extenderPD.getAim(v) <= 0)
 				continue;
-			extenderPD.s_anglesum(v, extenderPD.getRadius(v), uP);
-			double e = Math.abs(uP.value - extenderPD.getAim(v));
+			double e = Math.abs(sphAngleSum(v) - extenderPD.getAim(v));
 			if (e > mx)
 				mx = e;
 		}
