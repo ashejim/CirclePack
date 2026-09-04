@@ -123,6 +123,7 @@ import rePack.SphPacker;
 import schwarzWork.SchwarzMap;
 import schwarzWork.SchwarzPack;
 import schwarzWork.Schwarzian;
+import schwarzWork.SchwarzianSolve;
 import script.ScriptBundle;
 import tiling.TileData;
 import util.CallPacket;
@@ -1775,6 +1776,17 @@ public class CommandStrParser {
 	    		  if (!packData.status || packData.nodeCount==0)
 	    			  return 0;
 	    		  SphBranchNewton px=new SphBranchNewton(packData);
+	    		  if (px.running) {
+		    		  CirclePack.cpb.msg("Pack "+packData.packNum+
+		    				  ": started "+px.extensionAbbrev+" extender");
+	    			  px.StartUpMsg();
+	    			  returnVal=1;
+		    	  }
+	    	  }
+	    	  else if (str.equalsIgnoreCase("sz")) {
+	    		  if (!packData.status || packData.nodeCount==0)
+	    			  return 0;
+	    		  SchwarzianSolve px=new SchwarzianSolve(packData);
 	    		  if (px.running) {
 		    		  CirclePack.cpb.msg("Pack "+packData.packNum+
 		    				  ": started "+px.extensionAbbrev+" extender");
@@ -3575,6 +3587,32 @@ public class CommandStrParser {
 	  case 's':
 	  {
 		  
+		  // ============== sch_out (print schwarzians) ============
+		  if (cmd.startsWith("sch_out")) {
+			  // print intrinsic schwarzians for given edges to the console;
+			  // computes on the current (laid-out) packing first, so no file/repack.
+			  jexecute(packData,"set_sch");
+			  HalfLink edgelist=null;
+			  try {
+				  items=(Vector<String>)flagSegs.get(0);
+				  edgelist=new HalfLink(packData,items);
+			  } catch (Exception ex) {}
+			  if (edgelist==null || edgelist.size()==0) {
+				  CirclePack.cpb.errMsg("usage: sch_out {v w ...}");
+				  return 0;
+			  }
+			  StringBuilder schbuf=new StringBuilder("intrinsic schwarzians (v w s):\n");
+			  Iterator<HalfEdge> elist=edgelist.iterator();
+			  while (elist.hasNext()) {
+				  HalfEdge he=(HalfEdge)elist.next();
+				  schbuf.append("  "+he.origin.vertIndx+" "+he.twin.origin.vertIndx+
+						  "  "+String.format("%.8f",he.getSchwarzian())+"\n");
+				  count++;
+			  }
+			  CirclePack.cpb.msg(schbuf.toString());
+			  return count;
+		  }
+
 		  // ============== sch_data ============
 		  if (cmd.startsWith("sch_data")) {
 			  
