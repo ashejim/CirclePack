@@ -29,14 +29,15 @@ extender sz
 
 | Command | Purpose |
 |---|---|
-| `seed [-d\|-c] [-p sigma]` | set the edge schwarzians: `-d` from vertex degrees (pure combinatorics), `-c` from the current geometry (via `set_sch`); `-p` adds Gaussian noise |
+| `seed [-d\|-c\|-z] [-p sigma]` | set the edge schwarzians: `-d` from vertex degrees (pure combinatorics), `-c` from the current geometry (via `set_sch`), `-z` identically zero (the blind seed — no information at all); `-p` adds Gaussian noise |
 | `residual` | norm of the flower-closing (monodromy) residual; reports the worst flower |
 | `solve [-i maxits] [-t tol]` | Levenberg–Marquardt on the closing system; continues from the current internal state, so repeated small `-i` calls step the solver visibly |
-| `layout` | store the current schwarzians on the edges and develop circles via `dual_layout` |
+| `layout` | store the current schwarzians on the edges and develop circles via the intrinsic Möbius-frame development (exact per-edge transfer products; reports the holonomy spread, which is near zero iff the schwarzians close up) |
 | `check` | compare the solver's schwarzians against those recomputed from the current geometry |
 | `cont` | per-flower continuant minima; a negative value flags a branched flower |
 | `budget [-b v1 v2 ...]` | report the per-flower angular budgets $T_v$: the budget residual $\beta_v = T_v - \pi w_v$ and the predicted branch set (wraps $= \mathrm{round}(T_v/\pi)$) |
 | `bsolve [-i maxits] [-t tol] [-b v1 v2 ...]` | **stage-1 budget-Newton**: drive every $T_v$ to its aim $\pi w_v$, selecting the solution *basin* before `solve` closes the flowers; `-b` lists the prescribed branch vertices ($w=2$), otherwise aims are read off the packing (`set_aim 4*pi v ...` as for `\|sn\|`) |
+| `tsolve [-i maxits] [-t tol] [-b v1 v2 ...]` | **one-stage tail-coordinate solver**: LM on the exact three closing conditions per flower — budget $\beta_v$, stretch $\Lambda_v - 1$, shear $\mu_v$ — with the wrap vector as input (aims/`-b`, as `bsolve`). Subsumes `bsolve` + `solve`; stall-free on the test bed |
 | `newton`, `perron`, `discover`, `bigcircles`, `winding`, `windfaces`, `basin1` | **radius chapter**: the full SphBranchNewton solver, embedded — these forward to a private `\|sn\|` instance on the same packing (see below) |
 | `rsolve`, `rresidual` | radius chapter, renamed to avoid collision: `rsolve` = `\|sn\| solve` (Perron develop + Newton polish), `rresidual` = max \|anglesum − aim\| |
 
@@ -120,6 +121,37 @@ univalent ($w \equiv 1$) — useful as **basin rescue**: from a wild seed,
 would stall or wander. `budget` (same flags, no solve) reports the current
 budgets and predicted branch set — the wrap vector is the basin coordinate,
 so this predicts where `solve` will land before running it.
+
+## `tsolve` — the one-stage tail-coordinate solver
+
+The three closing conditions of a flower *triangularize* in the pinned
+(base-spoke) frame. Tracking the fundamental pair $(X, Y)$ of the spoke
+recursion ($Y$ starts $0, 1$, so it never sees the base spoke):
+
+- **budget** balance $T_v = \pi w_v$ is the Dirichlet condition $Y_n = 0$
+  (wrap $= 1 +$ interior sign changes of $Y$ — Sturm oscillation);
+- the **stretch** is $\Lambda_v = (-1)^{w+1} Y_{n-1}$ (closed $\iff
+  \Lambda_v = 1$);
+- the **shear** $\mu_v = (-1)^w(\sqrt3\, u_1 Y_{n-1} + H_{n-1})$ is *affine*
+  in the base spoke.
+
+`tsolve` runs damped Levenberg–Marquardt on the exact $3V$-row system
+$(\beta_v, \Lambda_v - 1, \mu_v)$ against the $E = 3V - 6$ edges, with the
+wrap vector as **input** (aims or `-b`, exactly as `bsolve`). Since the wraps
+sit inside the residual, basin selection is no longer the seed's job: on the
+84-vertex Crane complex `tsolve` converges to the *prescribed* twin from
+every seed tried — degree seed, blind zero seed, and the seeds where the
+classical LM stalls at a spurious $J^{\mathsf T}F = 0$ point or wanders to a
+far solution. One command replaces the `bsolve` → `solve` pipeline:
+
+```
+|sz| seed -z
+|sz| tsolve -b v1 v2 ...
+|sz| layout
+```
+
+`residual` and `check` still measure the classical closing system and serve
+as the independent certificate after `tsolve` finishes.
 
 ## `cont` — branch detection
 

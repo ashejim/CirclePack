@@ -60,6 +60,19 @@ import util.CmdStruct;
  * 'solve' still finishes the job; 'bsolve' steers it and rescues seeds
  * stalled between basins.
  *
+ * TAIL-COORDINATE SOLVER ('tsolve'): the closing conditions of a flower
+ * triangularize in the pinned frame (FLOWER_LOCAL_CLOSING.md 7a): with the
+ * fundamental pair (X, Y) of the spoke recursion, budget balance is the
+ * Dirichlet condition Y_n = 0 (wrap = 1 + interior sign changes of Y),
+ * the stretch is Lambda = (-1)^{w+1} Y_{n-1}, and the shear
+ * mu = (-1)^w (sqrt3 u_1 Y_{n-1} + H_{n-1}) is affine in the base spoke.
+ * 'tsolve' runs damped LM on the exact 3V-row system
+ * (beta_v, Lambda_v - 1, mu_v) with the wrap vector as input; on the
+ * univ_sphere test bed it converges to the prescribed twin from every
+ * seed tried, including the classical residual's captured stall
+ * (spurious J^T F = 0 point) -- one stall-free stage subsuming
+ * bsolve + solve. 'residual'/'check' remain the certificate.
+ *
  * RADIUS-SPACE CHAPTER: the full ftnTheory.SphBranchNewton solver
  * (damped Newton/Perron on the spherical angle-sum system) is embedded
  * here as well, so one extender carries every solver: 'newton',
@@ -434,6 +447,30 @@ public class SchwarzianSolve extends PackExtender {
 			return bsolve(maxits, tol, budgetAims(parseBranchList(flagSegs)));
 		}
 
+		// ========= tsolve (one-stage tail-coordinate solver) =========
+		if (cmd.startsWith("tsolve")) {
+			ensureSeeded();
+			int maxits = 60;
+			double tol = 1e-10;
+			try {
+				if (flagSegs != null)
+					for (Vector<String> seg : flagSegs) {
+						if (seg.isEmpty())
+							continue;
+						String f = seg.get(0);
+						if (f.equals("-i"))
+							maxits = Integer.parseInt(seg.get(1));
+						else if (f.equals("-t"))
+							tol = Double.parseDouble(seg.get(1));
+					}
+			} catch (Exception ex) {
+				errorMsg("tsolve: usage: tsolve [-i maxits] [-t tol] "
+						+ "[-b v1 v2 ...]");
+				return 0;
+			}
+			return tsolve(maxits, tol, budgetAims(parseBranchList(flagSegs)));
+		}
+
 		// ========= radius-space chapter (embedded |sn| SphBranchNewton) =========
 		// One solver front-end: the radius-coordinate commands forward to
 		// an embedded (non-registered) SphBranchNewton on this packing.
@@ -651,6 +688,68 @@ public class SchwarzianSolve extends PackExtender {
 		return T;
 	}
 
+	/**
+	 * Static core of the TAIL TRIPLE on u = 1 - s: the exact three closing
+	 * conditions of one flower in the pinned (base-spoke) frame,
+	 *    out = (T - pi*w,  Lambda - 1,  mu).
+	 * Track the fundamental pair (X, Y) of the spoke recursion
+	 * z_k = sqrt3 u_k z_{k-1} - z_{k-2} with X: (X_0, X_{-1}) = (1, 0) and
+	 * Y: (Y_0, Y_{-1}) = (0, -1) (so Y_1 = 1), plus H: (H_0, H_1) = (1, 0).
+	 * Then (see FLOWER_LOCAL_CLOSING.md 7a):
+	 *   - Y never sees the base spoke u_1, and X = sqrt3 u_1 Y + H;
+	 *   - budget balance T = pi*w is the Dirichlet condition Y_n = 0
+	 *     (wrap = 1 + interior sign changes of Y -- Sturm oscillation);
+	 *   - the stretch is Lambda = (-1)^{w+1} Y_{n-1} (Wronskian gives
+	 *     lambda = 1/Lambda on the budget slice); closed <=> Lambda = 1;
+	 *   - the shear is mu = (-1)^w (sqrt3 u_1 Y_{n-1} + H_{n-1}), affine in
+	 *     the base spoke with slope sqrt3 |Y_{n-1}|.
+	 * The flower closes with wrap w iff out = (0, 0, 0). Static so it can
+	 * be validated headlessly against the Python reference
+	 * (probe_tail_sensitivity.py / probe_staged_tail.py).
+	 */
+	static void tailU(double[] ux, int w, double[] out) {
+		int n = ux.length;
+		double[] X = new double[n + 1];
+		double[] Y = new double[n + 1];
+		double[] H = new double[n + 1];
+		X[0] = 1.0;
+		Y[0] = 0.0;
+		H[0] = 1.0;
+		X[1] = CPBase.sqrt3 * ux[0];
+		Y[1] = 1.0;
+		H[1] = 0.0;
+		for (int k = 2; k <= n; k++) {
+			double c = CPBase.sqrt3 * ux[k - 1];
+			X[k] = c * X[k - 1] - X[k - 2];
+			Y[k] = c * Y[k - 1] - Y[k - 2];
+			H[k] = c * H[k - 1] - H[k - 2];
+		}
+		double T = 0.0, thPrev = 0.0;
+		for (int k = 1; k <= n; k++) {
+			double th = Math.atan2(Y[k], X[k]) % Math.PI;
+			if (th < 0.0)
+				th += Math.PI;
+			double bite = (th - thPrev) % Math.PI;
+			if (bite < 0.0)
+				bite += Math.PI;
+			T += bite;
+			thPrev = th;
+		}
+		double sg = (w % 2 == 0) ? 1.0 : -1.0;
+		out[0] = T - Math.PI * w;
+		out[1] = -sg * Y[n - 1] - 1.0;
+		out[2] = sg * (CPBase.sqrt3 * ux[0] * Y[n - 1] + H[n - 1]);
+	}
+
+	/** tail triple of flower v with prescribed wrap w (see tailU) */
+	void flowerTail(int v, int w, double[] out) {
+		int[] jd = spokes(v);
+		double[] ux = new double[jd.length];
+		for (int k = 0; k < jd.length; k++)
+			ux[k] = 1.0 - ((jd[k] < 0) ? 0.0 : svar[jd[k]]);
+		tailU(ux, w, out);
+	}
+
 	/** parse a '-b v1 v2 ...' segment into a branch-vertex list (or null) */
 	ArrayList<Integer> parseBranchList(Vector<Vector<String>> flagSegs) {
 		if (flagSegs == null)
@@ -801,6 +900,149 @@ public class SchwarzianSolve extends PackExtender {
 				+ "(||beta||_inf=%.3e); wraps selected -- run '|sz| solve' "
 				+ "to close", it, twoNorm(beta), infNorm(beta)));
 		return 1;
+	}
+
+	/**
+	 * One-stage tail-coordinate solver (2026-09-13 experiment,
+	 * FLOWER_LOCAL_CLOSING.md 7b): damped Levenberg-Marquardt on the EXACT
+	 * three closing conditions per interior flower,
+	 *    R_3 = (beta_v, Lambda_v - 1, mu_v),
+	 * 3V rows against E = 3V - 6 unknowns (the six global monodromy
+	 * redundancies), with the wrap vector as INPUT (aims, as in bsolve).
+	 * On the univ_sphere test bed this converged to the PRESCRIBED twin
+	 * from every seed tried -- including the captured lm-stall (the
+	 * spurious J^T F = 0 point the 6-row residual gets caught on) and
+	 * seeds from which the classical LM wanders to far solutions. It
+	 * subsumes bsolve + solve in one stall-free stage; 'residual' /
+	 * 'check' remain the independent certificate.
+	 *
+	 * Jacobian by central differences exploiting locality (an edge enters
+	 * only its two endpoint flowers); the residual is NOT affine in s
+	 * (unlike the 6-row closing system), so unit probes do not apply.
+	 */
+	int tsolve(int maxits, double tol, double[] aims) {
+		int Vn = extenderPD.nodeCount;
+		int[] rowOf = new int[Vn + 1];
+		ArrayList<Integer> ivs = new ArrayList<Integer>();
+		for (int v = 1; v <= Vn; v++) {
+			if (extenderPD.packDCEL.vertices[v].isBdry()) {
+				rowOf[v] = -1;
+				continue;
+			}
+			rowOf[v] = ivs.size();
+			ivs.add(v);
+		}
+		int Vi = ivs.size();
+		if (Vi == 0) {
+			errorMsg("tsolve: no interior vertices");
+			return 0;
+		}
+		int[] wrap = new int[Vn + 1];
+		for (int v = 1; v <= Vn; v++)
+			wrap[v] = (int) Math.round(aims[v] / Math.PI);
+		int n = eReps.length;
+		int m = 3 * Vi;
+		double[] R = new double[m];
+		double[] tri = new double[3];
+		for (int r = 0; r < Vi; r++) {
+			int v = ivs.get(r);
+			flowerTail(v, wrap[v], tri);
+			System.arraycopy(tri, 0, R, 3 * r, 3);
+		}
+		msg(String.format("tsolve: %d tail equations (%d flowers x 3) on "
+				+ "%d edges; seed ||beta||=%.3e ||Lam-1||=%.3e ||mu||=%.3e",
+				m, Vi, n, blockNorm(R, 0), blockNorm(R, 1), blockNorm(R, 2)));
+		double h = 1e-6;
+		double lam = 1e-3;
+		int it = 0;
+		for (it = 1; it <= maxits; it++) {
+			double normR = twoNorm(R);
+			if (infNorm(R) < tol)
+				break;
+			// Jacobian: central differences, two endpoint flowers per edge
+			double[][] J = new double[m][n];
+			double[] trip = new double[3];
+			double[] trim = new double[3];
+			for (int j = 0; j < n; j++) {
+				int a = eReps[j].origin.vertIndx;
+				int b = eReps[j].twin.origin.vertIndx;
+				double hold = svar[j];
+				for (int vv : new int[] { a, b }) {
+					if (rowOf[vv] < 0)
+						continue;
+					svar[j] = hold + h;
+					flowerTail(vv, wrap[vv], trip);
+					svar[j] = hold - h;
+					flowerTail(vv, wrap[vv], trim);
+					svar[j] = hold;
+					int r0 = 3 * rowOf[vv];
+					for (int t = 0; t < 3; t++)
+						J[r0 + t][j] = (trip[t] - trim[t]) / (2.0 * h);
+				}
+				svar[j] = hold;
+			}
+			// normal equations
+			double[][] A = new double[n][n];
+			double[] g = new double[n];
+			for (int i = 0; i < m; i++) {
+				double[] Ji = J[i];
+				double Ri = R[i];
+				for (int a = 0; a < n; a++) {
+					double Jia = Ji[a];
+					if (Jia == 0.0)
+						continue;
+					g[a] += Jia * Ri;
+					double[] Aa = A[a];
+					for (int b = 0; b < n; b++)
+						Aa[b] += Jia * Ji[b];
+				}
+			}
+			// damped step with backtracking
+			double[] s0 = svar.clone();
+			boolean stepped = false;
+			for (int tries = 0; tries < 40 && !stepped; tries++) {
+				double[] dx = choleskyDamped(A, negate(g), lam);
+				if (dx != null) {
+					for (int a = 0; a < n; a++)
+						svar[a] = s0[a] + dx[a];
+					double[] Rn = new double[m];
+					for (int r = 0; r < Vi; r++) {
+						int v = ivs.get(r);
+						flowerTail(v, wrap[v], tri);
+						System.arraycopy(tri, 0, Rn, 3 * r, 3);
+					}
+					if (twoNorm(Rn) < normR) {
+						R = Rn;
+						lam = Math.max(lam * 0.5, 1e-13);
+						stepped = true;
+						break;
+					}
+					System.arraycopy(s0, 0, svar, 0, n);
+				}
+				lam *= 3.0;
+			}
+			if (!stepped) {
+				msg(String.format("tsolve: no productive step at it %d "
+						+ "(||R3||_2=%.3e)", it, normR));
+				break;
+			}
+		}
+		pushToEdges();
+		double[] F = residualVector();
+		msg(String.format("tsolve: done after %d its; ||beta||=%.3e "
+				+ "||Lam-1||=%.3e ||mu||=%.3e; classical closing residual "
+				+ "||R||_2=%.6e (the certificate); schwarzians stored on "
+				+ "edges -- run '|sz| layout'", it, blockNorm(R, 0),
+				blockNorm(R, 1), blockNorm(R, 2), twoNorm(F)));
+		return 1;
+	}
+
+	/** two-norm of one tail block (0 = beta, 1 = Lambda-1, 2 = mu) */
+	static double blockNorm(double[] R, int block) {
+		double s = 0.0;
+		for (int i = block; i < R.length; i += 3)
+			s += R[i] * R[i];
+		return Math.sqrt(s);
 	}
 
 	/**
@@ -986,6 +1228,11 @@ public class SchwarzianSolve extends PackExtender {
 				null, "stage-1 budget-Newton: drive T_v to pi*w_v to select "
 				+ "the solution basin (w=2 at '-b' vertices, else from "
 				+ "packing aims); then run 'solve'"));
+		cmdStruct.add(new CmdStruct("tsolve", "[-i maxits] [-t tol] [-b v..]",
+				null, "one-stage tail-coordinate solver: LM on the exact "
+				+ "three closing conditions per flower (budget, stretch, "
+				+ "shear) with the wrap vector as input (as bsolve); "
+				+ "subsumes bsolve+solve, stall-free on the test bed"));
 		cmdStruct.add(new CmdStruct("newton", "[-i maxits] [-t tol] [-l v..]",
 				null, "radius chapter: damped Newton/LM on the spherical "
 				+ "angle-sum system (forwards to embedded SphBranchNewton); "
@@ -1019,6 +1266,8 @@ public class SchwarzianSolve extends PackExtender {
 		helpMsg("  budget [-b v..]           angular budgets / predicted wraps");
 		helpMsg("  bsolve [-i its] [-t tol] [-b v..]  stage-1 budget-Newton "
 				+ "(basin selection); follow with 'solve'");
+		helpMsg("  tsolve [-i its] [-t tol] [-b v..]  one-stage tail solver "
+				+ "(budget+stretch+shear; subsumes bsolve+solve)");
 		helpMsg("radius chapter (embedded SphBranchNewton; same packing):");
 		helpMsg("  newton [-i its] [-t tol] [-l v..]  damped Newton on the "
 				+ "angle-sum system (-l anchors)");
