@@ -18,7 +18,8 @@ import util.CmdStruct;
 
 /**
  * SchwarzianSolve, |sz|: solve the spherical circle packing problem directly
- * in intrinsic-schwarzian coordinates, then lay out via 'dual_layout'.
+ * in intrinsic-schwarzian coordinates, then lay out via the intrinsic
+ * Mobius-frame development (IntrinsicLayout).
  *
  * The unknowns are the edge schwarzians s_e (one per interior edge). The
  * constraint is the CLOSING condition per flower: the monodromy
@@ -101,7 +102,7 @@ public class SchwarzianSolve extends PackExtender {
 		extensionType = "SCHWARZIAN_SOLVE";
 		extensionAbbrev = "sz";
 		toolTip = "'SchwarzianSolve': solve the packing in intrinsic-schwarzian "
-				+ "coordinates (fold-free closing system), then 'dual_layout'";
+				+ "coordinates (fold-free closing system), then lay out";
 		registerXType();
 		try {
 			rebuild();
@@ -138,6 +139,20 @@ public class SchwarzianSolve extends PackExtender {
 		svar = new double[eReps.length];
 		for (int j = 0; j < eReps.length; j++)
 			svar[j] = eReps[j].getSchwarzian();
+	}
+
+	/**
+	 * True if the cached edge index no longer matches the current DCEL --
+	 * e.g. an 'infile_read' rebuilt the packing under the extender (which
+	 * cannot re-attach on an already-occupied pack).  Cheap, identity-based
+	 * check: a representative half-edge of the CURRENT DCEL should be a key
+	 * in eIndex; after a rebuild it is a fresh object and is not.
+	 */
+	boolean cacheStale() {
+		if (eReps == null || eIndex == null || extenderPD.nodeCount < 1)
+			return true;
+		HalfEdge he = extenderPD.packDCEL.vertices[1].halfedge;
+		return !eIndex.containsKey(he);
 	}
 
 	// ------------------------------------------------------------------
@@ -187,9 +202,30 @@ public class SchwarzianSolve extends PackExtender {
 
 	public int cmdParser(String cmd, Vector<Vector<String>> flagSegs) {
 
+		// self-heal: 're-extender sz' is a no-op on a pack that already has
+		// this extender, so after an 'infile_read' the DCEL is rebuilt but our
+		// cached edge index (eReps/eIndex) still points at the orphaned old
+		// half-edges -- 'seed -c'/'set_sch' then read garbage (while 'winding',
+		// which reads live centers, looks fine).  Detect the change, re-index,
+		// and WARN, instead of silently running on stale parameters.
+		if (running && cacheStale()) {
+			errorMsg("|sz| WARNING: the packing changed under this extender "
+					+ "(reloaded/rebuilt); re-indexing edges. Any prior seed or "
+					+ "solution is discarded -- run 'seed' again before 'solve'.");
+			try {
+				rebuild();
+			} catch (Exception ex) {
+				errorMsg("|sz|: re-index failed: " + ex.getMessage());
+				return 0;
+			}
+			seeded = false;
+			radiusSolver = null;
+		}
+
 		// ========= seed =========
 		if (cmd.startsWith("seed")) {
 			boolean fromCurrent = false;
+			boolean zero = false;
 			double sigma = 0.0;
 			try {
 				if (flagSegs != null)
@@ -201,14 +237,22 @@ public class SchwarzianSolve extends PackExtender {
 							fromCurrent = true;
 						else if (f.equals("-d"))
 							fromCurrent = false;
+						else if (f.equals("-z"))
+							zero = true;
 						else if (f.equals("-p"))
 							sigma = Double.parseDouble(seg.get(1));
 					}
 			} catch (Exception ex) {
-				errorMsg("seed: usage: seed [-d | -c] [-p sigma]");
+				errorMsg("seed: usage: seed [-d | -c | -z] [-p sigma]");
 				return 0;
 			}
-			if (fromCurrent) {
+			if (zero) {
+				// the "blind" seed: no combinatorics, no geometry
+				for (int j = 0; j < eReps.length; j++)
+					svar[j] = 0.0;
+				msg("seeded identically zero (blind seed; carries no "
+						+ "information at all)");
+			} else if (fromCurrent) {
 				// recompute from current geometry, then copy stored values
 				cpCommand("set_sch");
 				for (int j = 0; j < eReps.length; j++)
@@ -279,12 +323,22 @@ public class SchwarzianSolve extends PackExtender {
 		// ========= layout =========
 		if (cmd.startsWith("layout")) {
 			pushToEdges();
-			int ans = cpCommand("dual_layout");
-			if (ans > 0)
-				msg("developed via dual_layout from solved schwarzians");
-			else
-				errorMsg("dual_layout failed; schwarzians are stored on edges");
-			return ans > 0 ? ans : 0;
+			// intrinsic development (NOT 'dual_layout', whose face-by-face
+			// re-derivation of frames from already-placed circles both
+			// amplifies error exponentially and can silently pick the
+			// complementary spherical circle -- see IntrinsicLayout)
+			try {
+				IntrinsicLayout.Result res =
+						IntrinsicLayout.layout(extenderPD, eIndex, svar);
+				msg(String.format("intrinsic layout: %d circles; holonomy "
+						+ "spread %.3e (near zero iff schwarzians close up); "
+						+ "circle-fit residual %.3e", res.placed, res.spread,
+						res.fitResidual));
+				return res.placed > 0 ? res.placed : 0;
+			} catch (Exception ex) {
+				errorMsg("intrinsic layout failed: " + ex.getMessage());
+				return 0;
+			}
 		}
 
 		// ========= check =========
@@ -908,16 +962,18 @@ public class SchwarzianSolve extends PackExtender {
 
 	public void initCmdStruct() {
 		super.initCmdStruct();
-		cmdStruct.add(new CmdStruct("seed", "[-d|-c] [-p sigma]", null,
+		cmdStruct.add(new CmdStruct("seed", "[-d|-c|-z] [-p sigma]", null,
 				"seed edge schwarzians: -d from vertex degrees (combinatorial),"
-				+ " -c from current geometry; -p adds Gaussian noise"));
+				+ " -c from current geometry, -z identically zero (blind);"
+				+ " -p adds Gaussian noise"));
 		cmdStruct.add(new CmdStruct("residual", null, null,
 				"norm of the flower-closing (monodromy) residual"));
 		cmdStruct.add(new CmdStruct("solve", "[-i maxits] [-t tol]", null,
 				"Levenberg-Marquardt on the closing system over edge "
 				+ "schwarzians; exact Jacobian by unit probes"));
 		cmdStruct.add(new CmdStruct("layout", null, null,
-				"store solved schwarzians and develop circles via dual_layout"));
+				"store solved schwarzians and develop circles via the "
+				+ "intrinsic Mobius-frame development (IntrinsicLayout)"));
 		cmdStruct.add(new CmdStruct("check", null, null,
 				"compare solved schwarzians against those recomputed from the "
 				+ "current geometry"));
@@ -956,7 +1012,8 @@ public class SchwarzianSolve extends PackExtender {
 		helpMsg("  seed [-d|-c] [-p sigma]   seed the edge schwarzians");
 		helpMsg("  residual                  closing (monodromy) residual");
 		helpMsg("  solve [-i its] [-t tol]   LM solve in schwarzian coords");
-		helpMsg("  layout                    develop circles (dual_layout)");
+		helpMsg("  layout                    develop circles (intrinsic "
+				+ "Mobius-frame development)");
 		helpMsg("  check                     solved vs geometry schwarzians");
 		helpMsg("  cont                      continuant branch detection");
 		helpMsg("  budget [-b v..]           angular budgets / predicted wraps");
