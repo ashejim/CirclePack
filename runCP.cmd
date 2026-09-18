@@ -18,7 +18,9 @@ goto run
 :build
 echo Compiling src -^> bin ...
 dir /s /b "%DIR%src\*.java" > "%TEMP%\cp_srcs.txt"
-javac -encoding UTF-8 -cp "%CP%" -d "%DIR%bin" @"%TEMP%\cp_srcs.txt"
+rem --release 17 matches maven.compiler.target in pom.xml: keeps class
+rem files runnable on Java 17+ regardless of which JDK compiles them
+javac --release 17 -encoding UTF-8 -cp "%CP%" -d "%DIR%bin" @"%TEMP%\cp_srcs.txt"
 if errorlevel 1 (echo compile failed& exit /b 1)
 rem after a build, launch with no extra args
 java -cp "%CP%" allMains.CirclePackMain
