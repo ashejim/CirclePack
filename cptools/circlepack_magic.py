@@ -59,6 +59,7 @@ except Exception:  # allow import without IPython (e.g. for unit tests)
 
 
 _SVG_NAME = "__jupyter_cell__.svg"
+_MSG_NAME = "nb_msgs.txt"
 
 
 class _State:
@@ -304,8 +305,31 @@ class CirclePackMagics(Magics):
             if STATE.announced_dir != found_dir:
                 print("[circlepack] images from packings dir: %s" % found_dir)
                 STATE.announced_dir = found_dir
-            if _display_svg_file(path):
-                return
+
+        # Text this cell's commands printed to CirclePack's own message pane
+        # (e.g. 'quality', '|sz| residual') never reaches 'resp' -- the socket
+        # always collapses ordinary commands to a bare result count. Ask
+        # CirclePack to flush that text to a file and show it. Silently does
+        # nothing against an older CirclePack build that predates 'FlushMsgs'
+        # (flush_msgs() still returns normally; the file just never appears).
+        msg_dir = STATE.packdir or (path and os.path.dirname(path))
+        if msg_dir:
+            try:
+                STATE.client.flush_msgs()
+            except CirclePackError:
+                pass
+            else:
+                try:
+                    with open(os.path.join(msg_dir, _MSG_NAME), "r",
+                              encoding="utf-8") as f:
+                        text = f.read().strip()
+                except OSError:
+                    text = ""
+                if text:
+                    print(text)
+
+        if path and _display_svg_file(path):
+            return
         # no image: surface the result so the cell isn't silent
         n = CirclePackClient.result_count(resp)
         if n is not None and n < 0:

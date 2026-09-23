@@ -1,11 +1,15 @@
 package cpTalk.sockets;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.OutputStreamWriter;
 
 import allMains.CPBase;
 import allMains.CirclePack;
+import input.CPFileManager;
 import input.CommandStrParser;
+import input.ShellManager;
 import input.SocketSource;
 import packing.PackData;
 import packing.ReadWrite;
@@ -35,9 +39,14 @@ import packing.ReadWrite;
  *
  */
 public class CPSocketProtocol {
-	
+
 	SocketSource socketSource;
-	
+
+	// read-position into ShellManager.runHistory -- see 'FlushMsgs' below.
+	// One shared, static buffer for the whole app, so this is static too:
+	// it doesn't matter which client/thread issues the flush.
+	private static int msgFlushPos = 0;
+
 	public CPSocketProtocol(SocketSource sS) {
 		socketSource=sS;
 	}
@@ -72,8 +81,39 @@ public class CPSocketProtocol {
     		} catch(Exception ex) {
     			CirclePack.cpb.errMsg("error in sending packing to socket");
     		}
-    	}       
-        
+    	}
+
+    	// request for CirclePack's recent shell messages (the normal command
+    	// path below always collapses to a bare "cmd result: N" -- text from
+    	// 'CirclePack.cpb.msg(...)'/'errMsg(...)' calls, from ANY command, core
+    	// or extender, only ever reaches ShellManager.runHistory, the in-app
+    	// message pane. This bridges that gap for socket clients (e.g. the
+    	// Jupyter magic) without touching command dispatch at all: it writes
+    	// everything appended to that shared buffer since the last flush to a
+    	// plain-text file in the packing directory -- the same directory
+    	// 'svg -f' already writes images to, so a client that already found
+    	// that directory for images can read this file back the same way.
+    	else if (theInput.equalsIgnoreCase("FlushMsgs")) {
+    		String all = ShellManager.runHistory.toString();
+    		int end = all.length();
+    		String chunk = (msgFlushPos < end) ? all.substring(msgFlushPos) : "";
+    		msgFlushPos = end;
+    		// runHistory is HTML (colored spans/line breaks); reduce to plain text
+    		String plain = chunk
+    				.replaceAll("(?i)<br\\s*/?>", "\n")
+    				.replaceAll("<[^>]+>", "")
+    				.trim();
+    		try {
+    			File f = new File(CPFileManager.PackingDirectory, "nb_msgs.txt");
+    			try (FileWriter fw = new FileWriter(f, false)) {
+    				fw.write(plain);
+    			}
+    			theOutput = "flushed " + plain.length() + " chars";
+    		} catch (Exception ex) {
+    			theOutput = "flush failed: " + ex.getMessage();
+    		}
+    	}
+
         // default to processing as CirclePack commands
     	else {
     		int result=CPBase.trafficCenter.parseWrapper(theInput,

@@ -81,6 +81,22 @@ class CirclePackClient:
             raise CirclePackError("connection closed by CirclePack")
         return resp
 
+    def flush_msgs(self):
+        """Ask CirclePack to write whatever it has printed to its own
+        message pane since the last flush out to 'nb_msgs.txt' in its
+        packing directory, and return the server's one-line ack (e.g.
+        'flushed 42 chars'). Requires a CirclePack build with the
+        'FlushMsgs' socket command (cpTalk/sockets/CPSocketProtocol.java);
+        against an older build this just comes back as an ordinary (and
+        harmless) 'cmd result: -1' -- no file is written, callers should
+        treat a missing file as "nothing new" rather than an error."""
+        if self.sock is None:
+            raise CirclePackError("not connected; call connect() first")
+        resp = self._exchange("FlushMsgs")
+        if resp is None:
+            raise CirclePackError("connection closed by CirclePack")
+        return resp
+
     @staticmethod
     def result_count(resp):
         """Parse the integer N out of a 'cmd result: N' response, or None."""
