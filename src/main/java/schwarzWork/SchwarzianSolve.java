@@ -544,20 +544,28 @@ public class SchwarzianSolve extends PackExtender {
 				int worst = 1;
 				double wmax = 0.0;
 				for (int v = 1; v <= V; v++) {
+					// per-flower size: largest entry for '-n' (unchanged legacy
+					// output); 2-norm in the default report, so its reference
+					// line is comparable with the all-bases line above it
 					double m = 0.0;
-					for (int k = 0; k < 6; k++)
-						m = Math.max(m, Math.abs(F[6 * (v - 1) + k]));
+					for (int k = 0; k < 6; k++) {
+						double x = F[6 * (v - 1) + k];
+						m = noFlags ? m + x * x : Math.max(m, Math.abs(x));
+					}
+					if (noFlags)
+						m = Math.sqrt(m);
 					if (m > wmax) {
 						wmax = m;
 						worst = v;
 					}
 				}
 				nativeMsg = String.format("%s: ||R||_2=%.6e, worst flower "
-						+ "v%d (%.3e); %d edge variables", noFlags
+						+ "v%d (%.3e%s); %d edge variables", noFlags
 								? "  native-base residual (reference; what plain "
 										+ "'solve' minimizes)"
 								: "closing residual (native base petal)",
-						twoNorm(F), worst, wmax, eReps.length);
+						twoNorm(F), worst, wmax, noFlags ? ", 2-norm" : "",
+						eReps.length);
 				if (nativeOnly) {
 					msg(nativeMsg);
 					if (allMode == null && !rel && rotK <= 0)
@@ -587,7 +595,7 @@ public class SchwarzianSolve extends PackExtender {
 						ratioMax = Math.max(ratioMax, hi / lo);
 				}
 				msg(String.format("closing residual over ALL base petals (%s per "
-						+ "flower): ||R||_2=%.6e, worst flower v%d (%.3e); "
+						+ "flower): ||R||_2=%.6e, worst flower v%d (%.3e, 2-norm); "
 						+ "largest worst/best base ratio at one flower %.2f",
 						allMode, Math.sqrt(ss), worst, wv, ratioMax));
 				if (noFlags && nativeMsg != null)
