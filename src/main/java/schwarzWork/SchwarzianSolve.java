@@ -210,6 +210,214 @@ public class SchwarzianSolve extends PackExtender {
 	}
 
 	// ------------------------------------------------------------------
+	// base-petal-free error measures ('residual -a / -r / -t')
+	//
+	// The default closing defect above starts each flower's product at its
+	// native base half-edge. Off-solution its size depends on that choice
+	// (changing the base conjugates P_v); only "P_v scalar" itself does not.
+	// These three measures remove the dependence.
+	// ------------------------------------------------------------------
+
+	// ---- all-bases objective ('solve -a'): every base petal's 6-real defect
+	boolean allBaseObj = false;
+	boolean signedObj = false;     // targets -I / +I per flower ('solve -b/-w')
+	double[] epsV = null;          // per-vertex target sign: -1 unbranched, +1 4pi
+	int[] rowOff = null;           // row offset of flower v's block (all-bases)
+	int allRows = 0;
+
+	void buildAllBaseLayout() {
+		int per = signedObj ? 8 : 6;
+		rowOff = new int[extenderPD.nodeCount + 2];
+		int o = 0;
+		for (int v = 1; v <= extenderPD.nodeCount; v++) {
+			rowOff[v] = o;
+			o += per * spokes(v).length;
+		}
+		rowOff[extenderPD.nodeCount + 1] = o;
+		allRows = o;
+	}
+
+	/**
+	 * 8-real SIGNED defect of the product started at spoke 'start':
+	 * Re/Im of (a - eps, b, c, d - eps), i.e. P - eps*I. The product is the
+	 * SL(2,C) lift (every factor has det 1), so eps = -1 targets an
+	 * unbranched flower and eps = +1 a 4pi branch flower.
+	 */
+	static void signedDefectFrom(double[] s, int start, double eps, double[] out,
+			int off) {
+		int n = s.length;
+		Mobius P = new Mobius();
+		for (int t = 0; t < n; t++) {
+			Mobius step = (Mobius) msInverse(s[(start + t) % n]).rmultby(D_BASE);
+			P = (Mobius) P.rmultby(step);
+		}
+		out[off] = P.a.x - eps;
+		out[off + 1] = P.a.y;
+		out[off + 2] = P.b.x;
+		out[off + 3] = P.b.y;
+		out[off + 4] = P.c.x;
+		out[off + 5] = P.c.y;
+		out[off + 6] = P.d.x - eps;
+		out[off + 7] = P.d.y;
+	}
+
+	/** 6-real defect of the product started at spoke 'start', into out[off..] */
+	static void defect6From(double[] s, int start, double[] out, int off) {
+		int n = s.length;
+		Mobius P = new Mobius();
+		for (int t = 0; t < n; t++) {
+			Mobius step = (Mobius) msInverse(s[(start + t) % n]).rmultby(D_BASE);
+			P = (Mobius) P.rmultby(step);
+		}
+		Complex ad = P.a.minus(P.d);
+		out[off] = P.b.x;
+		out[off + 1] = P.b.y;
+		out[off + 2] = P.c.x;
+		out[off + 3] = P.c.y;
+		out[off + 4] = ad.x;
+		out[off + 5] = ad.y;
+	}
+
+	/** flower v's all-bases block (6 rows per base petal) */
+	void flowerAllDefect(int v, double[] out) {
+		double[] s = spokeS(v);
+		for (int k = 0; k < s.length; k++) {
+			if (signedObj)
+				signedDefectFrom(s, k, epsV[v], out, rowOff[v] + 8 * k);
+			else
+				defect6From(s, k, out, rowOff[v] + 6 * k);
+		}
+	}
+
+	/** the objective 'solve' minimizes: native rows, or all-bases rows (-a) */
+	double[] objectiveVector() {
+		if (!allBaseObj)
+			return residualVector();
+		double[] F = new double[allRows];
+		for (int v = 1; v <= extenderPD.nodeCount; v++)
+			flowerAllDefect(v, F);
+		return F;
+	}
+
+	/** spoke schwarzians of v, cclw from the native base half-edge */
+	double[] spokeS(int v) {
+		int[] jd = spokes(v);
+		double[] s = new double[jd.length];
+		for (int k = 0; k < jd.length; k++)
+			s[k] = (jd[k] < 0) ? 0.0 : svar[jd[k]];
+		return s;
+	}
+
+	/**
+	 * 2-norm of the 6-real closing defect of a flower whose product starts at
+	 * spoke 'start' (start = 0 reproduces flowerDefect).
+	 */
+	static double defectNormFrom(double[] s, int start) {
+		int n = s.length;
+		Mobius P = new Mobius();
+		for (int t = 0; t < n; t++) {
+			Mobius step = (Mobius) msInverse(s[(start + t) % n]).rmultby(D_BASE);
+			P = (Mobius) P.rmultby(step);
+		}
+		Complex ad = P.a.minus(P.d);
+		return Math.sqrt(P.b.x * P.b.x + P.b.y * P.b.y + P.c.x * P.c.x
+				+ P.c.y * P.c.y + ad.x * ad.x + ad.y * ad.y);
+	}
+
+	/** sqrt3-continuant of u[idx[0..len-1]]; empty run = 1 */
+	static double contRun(double[] u, int[] idx, int from, int len) {
+		double a = 1.0, b = 0.0;
+		for (int k = from; k < from + len; k++) {
+			double na = CPBase.sqrt3 * u[idx[k]] * a - b;
+			b = a;
+			a = na;
+		}
+		return a;
+	}
+
+	/**
+	 * Lemma-1 relation residual of one flower ([St] Thm 4.5 forced labels,
+	 * signed form): for every centre spoke j, with far run j+2..j-2 and
+	 * kappa = K(run),
+	 *    sqrt3 u_j + eps kappa = 0,
+	 *    sqrt3 kappa u_{j+-1} - (K(run minus its spoke nearest j+-1) - eps) = 0,
+	 * eps = -1 (closes to -I, unbranched) or +1 (closes to +I, 4pi branch).
+	 * Every rotation is used, so the measure is base-petal free. Returns
+	 * {sum of squares, max |relation|} for the given eps.
+	 */
+	static double[] relationResidual(double[] s, int eps) {
+		int n = s.length;
+		double[] u = new double[n];
+		for (int k = 0; k < n; k++)
+			u[k] = 1.0 - s[k];
+		int m = n - 3;
+		int[] run = new int[Math.max(m, 0)];
+		double ss = 0.0, mx = 0.0;
+		for (int j = 0; j < n; j++) {
+			for (int t = 0; t < m; t++)
+				run[t] = (j + 2 + t) % n;
+			double kap = contRun(u, run, 0, m);
+			double dropFirst = (m > 0) ? contRun(u, run, 1, m - 1) : 0.0;
+			double dropLast = (m > 0) ? contRun(u, run, 0, m - 1) : 0.0;
+			double[] rel = new double[] {
+					CPBase.sqrt3 * u[j] + eps * kap,
+					CPBase.sqrt3 * kap * u[(j + 1) % n] - (dropFirst - eps),
+					CPBase.sqrt3 * kap * u[(j - 1 + n) % n] - (dropLast - eps) };
+			for (double r : rel) {
+				ss += r * r;
+				mx = Math.max(mx, Math.abs(r));
+			}
+		}
+		return new double[] { ss, mx };
+	}
+
+	/**
+	 * Rotation part of a flower's closing defect, base-petal free.
+	 * Returns {defect, rho}:
+	 *  - defect = arccos(min(1, |tr M|/2)), M = B(u_1)...B(u_n) the real
+	 *    flower product. tr M is invariant under cyclic shifts, so this is
+	 *    EXACTLY independent of the base petal. It is the angle from the
+	 *    projective rotation of M to the nearest multiple of pi (the
+	 *    rotation-number defect); it is 0 when M is hyperbolic or
+	 *    parabolic, i.e. it does not see stretch or shear.
+	 *  - rho = pi * (sign changes of one recursion solution over K trips)/K,
+	 *    the rotation number by Sturm counting: integer-valued, so immune
+	 *    to the exponential growth of open (hyperbolic) flowers; within
+	 *    about pi/K of the true rotation number. round(rho/pi) = wrap.
+	 */
+	static double[] rotation(double[] s, int K) {
+		int n = s.length;
+		double m00 = 1, m01 = 0, m10 = 0, m11 = 1;
+		for (int k = 0; k < n; k++) {      // M <- M * B(u_k)
+			double b = CPBase.sqrt3 * (1.0 - s[k]);
+			double n00 = m00 * b + m01, n01 = -m00;
+			double n10 = m10 * b + m11, n11 = -m10;
+			m00 = n00; m01 = n01; m10 = n10; m11 = n11;
+		}
+		double defect = Math.acos(Math.min(1.0, Math.abs(m00 + m11) / 2.0));
+		// Sturm count: Y_0 = 0, Y_1 = 1, Y_k = sqrt3 u_{k-1} Y_{k-1} - Y_{k-2}
+		double yPrev = 0.0, y = 1.0, lastNonzero = 1.0;
+		long changes = 0, steps = (long) K * n;
+		for (long k = 2; k <= steps + 1; k++) {
+			double uk = 1.0 - s[(int) ((k - 1) % n)];
+			double ny = CPBase.sqrt3 * uk * y - yPrev;
+			yPrev = y;
+			y = ny;
+			double sc = Math.max(Math.abs(y), Math.abs(yPrev));
+			if (sc > 1e100 || (sc < 1e-100 && sc > 0)) {
+				y /= sc;
+				yPrev /= sc;
+			}
+			if (y != 0.0) {
+				if (y * lastNonzero < 0)
+					changes++;
+				lastNonzero = y;
+			}
+		}
+		return new double[] { defect, Math.PI * changes / K };
+	}
+
+	// ------------------------------------------------------------------
 	// commands
 	// ------------------------------------------------------------------
 
@@ -292,21 +500,153 @@ public class SchwarzianSolve extends PackExtender {
 		// ========= residual =========
 		if (cmd.startsWith("resid")) {
 			ensureSeeded();
-			double[] F = residualVector();
-			int worst = 1;
-			double wmax = 0.0;
-			for (int v = 1; v <= extenderPD.nodeCount; v++) {
-				double m = 0.0;
-				for (int k = 0; k < 6; k++)
-					m = Math.max(m, Math.abs(F[6 * (v - 1) + k]));
-				if (m > wmax) {
-					wmax = m;
-					worst = v;
+			// flags: -a best|worst|mean (all base petals), -r (relations),
+			// -t [K] (rotation number); none = the classical native-base residual
+			String allMode = null;
+			boolean rel = false, nativeOnly = false;
+			int rotK = 0;
+			try {
+				if (flagSegs != null)
+					for (Vector<String> seg : flagSegs) {
+						if (seg.isEmpty())
+							continue;
+						String f = seg.get(0);
+						if (f.equals("-n"))
+							nativeOnly = true;
+						else if (f.equals("-a")) {
+							allMode = (seg.size() > 1) ? seg.get(1).toLowerCase()
+									: "worst";
+							if (!allMode.equals("best") && !allMode.equals("worst")
+									&& !allMode.equals("mean"))
+								throw new IllegalArgumentException();
+						} else if (f.equals("-r"))
+							rel = true;
+						else if (f.equals("-t"))
+							rotK = (seg.size() > 1) ? Integer.parseInt(seg.get(1))
+									: 256;
+					}
+			} catch (Exception ex) {
+				errorMsg("residual: usage: residual [-n] [-a best|worst|mean] "
+						+ "[-r] [-t [K]]");
+				return 0;
+			}
+			int V = extenderPD.nodeCount;
+			// default (no flags): all base petals, worst per flower, then the
+			// native-base number for reference.  -n: native base only.
+			boolean noFlags = (allMode == null && !rel && rotK <= 0 && !nativeOnly);
+			if (noFlags)
+				allMode = "worst";
+			String nativeMsg = null;
+			if (nativeOnly || noFlags) {
+				// classical residual (native base petal) -- what plain 'solve'
+				// minimizes
+				double[] F = residualVector();
+				int worst = 1;
+				double wmax = 0.0;
+				for (int v = 1; v <= V; v++) {
+					double m = 0.0;
+					for (int k = 0; k < 6; k++)
+						m = Math.max(m, Math.abs(F[6 * (v - 1) + k]));
+					if (m > wmax) {
+						wmax = m;
+						worst = v;
+					}
+				}
+				nativeMsg = String.format("%s: ||R||_2=%.6e, worst flower "
+						+ "v%d (%.3e); %d edge variables", noFlags
+								? "  native-base residual (reference; what plain "
+										+ "'solve' minimizes)"
+								: "closing residual (native base petal)",
+						twoNorm(F), worst, wmax, eReps.length);
+				if (nativeOnly) {
+					msg(nativeMsg);
+					if (allMode == null && !rel && rotK <= 0)
+						return 1;
 				}
 			}
-			msg(String.format("closing residual: ||R||_2=%.6e, worst flower v%d "
-					+ "(%.3e); %d edge variables", twoNorm(F), worst, wmax,
-					eReps.length));
+			if (allMode != null) {
+				double ss = 0.0, wv = -1.0, ratioMax = 1.0;
+				int worst = 1;
+				for (int v = 1; v <= V; v++) {
+					double[] s = spokeS(v);
+					double lo = Double.MAX_VALUE, hi = 0.0, sum = 0.0;
+					for (int k = 0; k < s.length; k++) {
+						double d = defectNormFrom(s, k);
+						lo = Math.min(lo, d);
+						hi = Math.max(hi, d);
+						sum += d;
+					}
+					double agg = allMode.equals("best") ? lo
+							: allMode.equals("worst") ? hi : sum / s.length;
+					ss += agg * agg;
+					if (agg > wv) {
+						wv = agg;
+						worst = v;
+					}
+					if (lo > 1e-300)
+						ratioMax = Math.max(ratioMax, hi / lo);
+				}
+				msg(String.format("closing residual over ALL base petals (%s per "
+						+ "flower): ||R||_2=%.6e, worst flower v%d (%.3e); "
+						+ "largest worst/best base ratio at one flower %.2f",
+						allMode, Math.sqrt(ss), worst, wv, ratioMax));
+				if (noFlags && nativeMsg != null)
+					msg(nativeMsg);
+			}
+			if (rel) {
+				double ss = 0.0, wv = -1.0;
+				int worst = 1, nPlus = 0;
+				StringBuilder plus = new StringBuilder();
+				for (int v = 1; v <= V; v++) {
+					double[] s = spokeS(v);
+					double[] rm = relationResidual(s, -1);
+					double[] rp = relationResidual(s, +1);
+					double[] r = (rp[1] < rm[1]) ? rp : rm;   // sign-free, as default
+					if (rp[1] < rm[1]) {
+						nPlus++;
+						if (nPlus <= 12)
+							plus.append(" ").append(v);
+					}
+					ss += r[0];
+					if (r[1] > wv) {
+						wv = r[1];
+						worst = v;
+					}
+				}
+				msg(String.format("relation residual ([St] Thm 4.5 forced labels, "
+						+ "all centre spokes): ||rel||_2=%.6e, max |rel|=%.3e at "
+						+ "v%d; flowers fitting +I (branch sign): %d%s", Math.sqrt(ss),
+						wv, worst, nPlus, (nPlus > 0) ? " {" + plus.toString().trim()
+								+ ((nPlus > 12) ? " ..." : "") + "}" : ""));
+			}
+			if (rotK > 0) {
+				double wv = -1.0, ss = 0.0;
+				int worst = 1;
+				StringBuilder br = new StringBuilder();
+				int nBr = 0;
+				for (int v = 1; v <= V; v++) {
+					double[] rot = rotation(spokeS(v), rotK);
+					long w = Math.round(rot[1] / Math.PI);
+					double d = rot[0];
+					ss += d * d;
+					if (d > wv) {
+						wv = d;
+						worst = v;
+					}
+					if (w >= 2) {
+						nBr++;
+						if (nBr <= 12)
+							br.append(" ").append(v);
+					}
+				}
+				msg(String.format("rotation defect arccos(|tr M|/2) (exactly "
+						+ "base-free; ROTATION condition only, blind to stretch/"
+						+ "shear): ||d||_2=%.6e, worst flower v%d (%.3e); wraps>=2 "
+						+ "(Sturm count over K=%d trips) at %d flowers%s",
+						Math.sqrt(ss), worst, wv, rotK, nBr, (nBr > 0)
+								? " {" + br.toString().trim() + ((nBr > 12) ? " ..." : "")
+										+ "}" : ""));
+			}
 			return 1;
 		}
 
@@ -315,6 +655,7 @@ public class SchwarzianSolve extends PackExtender {
 			ensureSeeded();
 			int maxits = 40;
 			double tol = 1e-10;
+			boolean all = false;
 			try {
 				if (flagSegs != null)
 					for (Vector<String> seg : flagSegs) {
@@ -325,12 +666,36 @@ public class SchwarzianSolve extends PackExtender {
 							maxits = Integer.parseInt(seg.get(1));
 						else if (f.equals("-t"))
 							tol = Double.parseDouble(seg.get(1));
+						else if (f.equals("-a"))
+							all = true;
 					}
 			} catch (Exception ex) {
-				errorMsg("solve: usage: solve [-i maxits] [-t tol]");
+				errorMsg("solve: usage: solve [-i maxits] [-t tol] [-a] "
+						+ "[-b v1 v2 ... | -w]");
 				return 0;
 			}
-			return solve(maxits, tol);
+			// signed (wrap-targeted) all-bases objective: -b lists the 4pi
+			// branch vertices (w = 2); -w reads the wraps from the packing
+			// aims (as bsolve); both imply -a
+			boolean signed = hasFlag(flagSegs, "-b") || hasFlag(flagSegs, "-w");
+			if (signed) {
+				all = true;
+				double[] aims = budgetAims(hasFlag(flagSegs, "-b")
+						? parseBranchList(flagSegs) : null);
+				epsV = new double[extenderPD.nodeCount + 1];
+				for (int v = 1; v <= extenderPD.nodeCount; v++)
+					epsV[v] = (Math.round(aims[v] / Math.PI) % 2 == 0) ? 1.0 : -1.0;
+			}
+			allBaseObj = all;
+			signedObj = signed;
+			if (all)
+				buildAllBaseLayout();
+			try {
+				return solve(maxits, tol);
+			} finally {
+				allBaseObj = false;
+				signedObj = false;
+			}
 		}
 
 		// ========= layout =========
@@ -397,12 +762,15 @@ public class SchwarzianSolve extends PackExtender {
 		if (cmd.startsWith("budget")) {
 			ensureSeeded();
 			double[] aims = budgetAims(parseBranchList(flagSegs));
+			boolean avg = hasFlag(flagSegs, "-a");
 			int Vn = extenderPD.nodeCount;
 			double b2 = 0.0, binf = 0.0;
 			StringBuilder sb = new StringBuilder();
 			int hits = 0;
+			if (avg)
+				msg("budget: averaged over all base petals");
 			for (int v = 1; v <= Vn; v++) {
-				double T = flowerBudget(v, null);
+				double T = avg ? flowerBudgetAvg(v, null) : flowerBudget(v, null);
 				double beta = T - aims[v];
 				b2 += beta * beta;
 				binf = Math.max(binf, Math.abs(beta));
@@ -440,11 +808,16 @@ public class SchwarzianSolve extends PackExtender {
 							tol = Double.parseDouble(seg.get(1));
 					}
 			} catch (Exception ex) {
-				errorMsg("bsolve: usage: bsolve [-i maxits] [-t tol] "
+				errorMsg("bsolve: usage: bsolve [-i maxits] [-t tol] [-a] "
 						+ "[-b v1 v2 ...]");
 				return 0;
 			}
-			return bsolve(maxits, tol, budgetAims(parseBranchList(flagSegs)));
+			avgBudget = hasFlag(flagSegs, "-a");
+			try {
+				return bsolve(maxits, tol, budgetAims(parseBranchList(flagSegs)));
+			} finally {
+				avgBudget = false;
+			}
 		}
 
 		// ========= tsolve (one-stage tail-coordinate solver) =========
@@ -495,11 +868,12 @@ public class SchwarzianSolve extends PackExtender {
 
 	int solve(int maxits, double tol) {
 		int n = eReps.length;
-		int m = 6 * extenderPD.nodeCount;
 		double lam = 1e-3;
-		double[] F = residualVector();
-		msg(String.format("solve: %d edges, %d closing rows, seed ||R||_2=%.4e",
-				n, m, twoNorm(F)));
+		double[] F = objectiveVector();
+		int m = F.length;
+		msg(String.format("solve%s: %d edges, %d closing rows, seed ||R||_2=%.4e",
+				allBaseObj ? (signedObj ? " (ALL base petals, SIGNED targets)"
+						: " (ALL base petals)") : "", n, m, twoNorm(F)));
 		int it = 0;
 		for (it = 1; it <= maxits; it++) {
 			double normF = twoNorm(F);
@@ -548,7 +922,7 @@ public class SchwarzianSolve extends PackExtender {
 				if (dx != null) {
 					for (int a = 0; a < n; a++)
 						svar[a] = s0[a] + dx[a];
-					double[] Fn = residualVector();
+					double[] Fn = objectiveVector();
 					if (twoNorm(Fn) < normF) {
 						F = Fn;
 						lam = Math.max(lam * 0.5, 1e-13);
@@ -566,22 +940,30 @@ public class SchwarzianSolve extends PackExtender {
 			}
 		}
 		pushToEdges();
-		msg(String.format("solve: done after %d its, ||R||_2=%.6e "
+		msg(String.format("solve%s: done after %d its, ||R||_2=%.6e "
 				+ "(||R||_inf=%.3e); schwarzians stored on edges "
-				+ "-- run '|sz| layout'", it, twoNorm(F), infNorm(F)));
+				+ "-- run '|sz| layout'", allBaseObj ? (signedObj
+						? " (ALL base petals, SIGNED targets)" : " (ALL base petals)")
+						: "", it, twoNorm(F), infNorm(F)));
 		return 1;
 	}
 
 	/**
-	 * residual after probing variable j: only the two endpoint flowers of
-	 * edge j change, so copy F and recompute just those rows.
+	 * objective after probing variable j: only the two endpoint flowers of
+	 * edge j change, so copy F and recompute just those rows (native or
+	 * all-bases blocks, matching objectiveVector).
 	 */
 	double[] residualProbe(int j, double[] F) {
 		double[] Fp = F.clone();
 		int v = eReps[j].origin.vertIndx;
 		int w = eReps[j].twin.origin.vertIndx;
-		flowerDefect(v, Fp, 6 * (v - 1));
-		flowerDefect(w, Fp, 6 * (w - 1));
+		if (allBaseObj) {
+			flowerAllDefect(v, Fp);
+			flowerAllDefect(w, Fp);
+		} else {
+			flowerDefect(v, Fp, 6 * (v - 1));
+			flowerDefect(w, Fp, 6 * (w - 1));
+		}
 		return Fp;
 	}
 
@@ -626,6 +1008,45 @@ public class SchwarzianSolve extends PackExtender {
 	 * exact everywhere v_n != 0, which holds since the B factors are
 	 * invertible.)
 	 */
+	/** use the base-petal-averaged budget in 'budget'/'bsolve' (their -a) */
+	boolean avgBudget = false;
+
+	/** the budget in use: native-base flowerBudget, or the average over bases */
+	double budgetOf(int v, double[] dTds) {
+		return avgBudget ? flowerBudgetAvg(v, dTds) : flowerBudget(v, dTds);
+	}
+
+	/**
+	 * Base-petal-averaged budget  Tbar_v = (1/n) sum_k T_v^(k),  T^(k) the
+	 * budget of the spoke sequence rotated to start at spoke k. Each T^(k)
+	 * is nondecreasing in every spoke (Lemma 0), so Tbar is too, and the
+	 * budget Jacobian keeps the structure of Theorem C (positive
+	 * off-diagonals, row sum = diagonal), so budget-Newton stays well posed.
+	 * At a closed flower every T^(k) = pi*wrap, so the targets are unchanged.
+	 * Unlike T_v it does not depend on which petal is stored first.
+	 */
+	double flowerBudgetAvg(int v, double[] dTds) {
+		int[] jd = spokes(v);
+		int n = jd.length;
+		double[] ux = new double[n];
+		for (int k = 0; k < n; k++)
+			ux[k] = 1.0 - ((jd[k] < 0) ? 0.0 : svar[jd[k]]);
+		double T = 0.0;
+		double[] rot = new double[n];
+		double[] g = (dTds != null) ? new double[n] : null;
+		if (dTds != null)
+			java.util.Arrays.fill(dTds, 0.0);
+		for (int k = 0; k < n; k++) {
+			for (int t = 0; t < n; t++)
+				rot[t] = ux[(k + t) % n];
+			T += budgetU(rot, g);
+			if (dTds != null)
+				for (int t = 0; t < n; t++)
+					dTds[(k + t) % n] -= g[t] / n;   // dT/ds = -dT/du
+		}
+		return T / n;
+	}
+
 	double flowerBudget(int v, double[] dTds) {
 		int[] jd = spokes(v);
 		int n = jd.length;
@@ -751,6 +1172,15 @@ public class SchwarzianSolve extends PackExtender {
 	}
 
 	/** parse a '-b v1 v2 ...' segment into a branch-vertex list (or null) */
+	/** true if the flag segments contain the given flag (e.g. "-a") */
+	static boolean hasFlag(Vector<Vector<String>> flagSegs, String flag) {
+		if (flagSegs != null)
+			for (Vector<String> seg : flagSegs)
+				if (!seg.isEmpty() && seg.get(0).equals(flag))
+					return true;
+		return false;
+	}
+
 	ArrayList<Integer> parseBranchList(Vector<Vector<String>> flagSegs) {
 		if (flagSegs == null)
 			return null;
@@ -829,9 +1259,10 @@ public class SchwarzianSolve extends PackExtender {
 		}
 		double[] beta = new double[Vi];
 		for (int r = 0; r < Vi; r++)
-			beta[r] = flowerBudget(ivs.get(r), null) - aims[ivs.get(r)];
-		msg(String.format("bsolve: %d budget equations, seed ||beta||_2=%.4e",
-				Vi, twoNorm(beta)));
+			beta[r] = budgetOf(ivs.get(r), null) - aims[ivs.get(r)];
+		msg(String.format("bsolve%s: %d budget equations, seed ||beta||_2=%.4e",
+				avgBudget ? " (budget averaged over base petals)" : "", Vi,
+				twoNorm(beta)));
 		int it = 0;
 		for (it = 1; it <= maxits; it++) {
 			if (infNorm(beta) < tol)
@@ -842,7 +1273,7 @@ public class SchwarzianSolve extends PackExtender {
 				int v = ivs.get(r);
 				int[] jd = spokes(v);
 				double[] g = new double[jd.length];
-				flowerBudget(v, g);
+				budgetOf(v, g);
 				// walk the spokes again for the neighbor vertices
 				Vertex vert = extenderPD.packDCEL.vertices[v];
 				HalfEdge he = vert.halfedge;
@@ -879,7 +1310,7 @@ public class SchwarzianSolve extends PackExtender {
 				}
 				double[] betaNew = new double[Vi];
 				for (int r = 0; r < Vi; r++)
-					betaNew[r] = flowerBudget(ivs.get(r), null)
+					betaNew[r] = budgetOf(ivs.get(r), null)
 							- aims[ivs.get(r)];
 				if (twoNorm(betaNew) < normB) {
 					beta = betaNew;
@@ -1208,11 +1639,26 @@ public class SchwarzianSolve extends PackExtender {
 				"seed edge schwarzians: -d from vertex degrees (combinatorial),"
 				+ " -c from current geometry, -z identically zero (blind);"
 				+ " -p adds Gaussian noise"));
-		cmdStruct.add(new CmdStruct("residual", null, null,
-				"norm of the flower-closing (monodromy) residual"));
-		cmdStruct.add(new CmdStruct("solve", "[-i maxits] [-t tol]", null,
-				"Levenberg-Marquardt on the closing system over edge "
-				+ "schwarzians; exact Jacobian by unit probes"));
+		cmdStruct.add(new CmdStruct("residual",
+				"[-n] [-a best|worst|mean] [-r] [-t [K]]", null,
+				"flower-closing residual. Default: the monodromy defect from "
+				+ "EVERY base petal, worst per flower (base-petal free), followed "
+				+ "by the native-base number for reference. -n: native base "
+				+ "only (what plain 'solve' minimizes; the pre-2026-10 default). "
+				+ "-a: all base petals, best/worst/mean per flower. -r: [St] Thm 4.5 "
+				+ "relation residual over all centre spokes (base-free). -t: "
+				+ "rotation defect arccos(|tr M|/2) (exactly base-free; rotation "
+				+ "condition only) plus wraps by Sturm count over K trips "
+				+ "(default 256). Flags combine."));
+		cmdStruct.add(new CmdStruct("solve", "[-i maxits] [-t tol] [-a] [-b v.. | -w]",
+				null, "Levenberg-Marquardt on the closing system over edge "
+				+ "schwarzians; exact Jacobian by unit probes. -a: minimize the "
+				+ "defect from EVERY base petal (base-petal-free objective, ~deg x "
+				+ "the rows) instead of the native base. -b v..: SIGNED all-bases "
+				+ "objective, every base's product -> -I, or +I at the listed 4pi "
+				+ "branch vertices; -w: the same with wraps read from the packing "
+				+ "aims. Recommended recipe: 'bsolve -a -b v..' then "
+				+ "'solve -b v..'"));
 		cmdStruct.add(new CmdStruct("layout", null, null,
 				"store solved schwarzians and develop circles via the "
 				+ "intrinsic Mobius-frame development (IntrinsicLayout)"));
@@ -1221,13 +1667,16 @@ public class SchwarzianSolve extends PackExtender {
 				+ "current geometry"));
 		cmdStruct.add(new CmdStruct("cont", null, null,
 				"per-flower continuant minima; negative = branched flower"));
-		cmdStruct.add(new CmdStruct("budget", "[-b v1 v2 ...]", null,
+		cmdStruct.add(new CmdStruct("budget", "[-a] [-b v1 v2 ...]", null,
 				"report per-flower angular budgets T_v: ||T - aim|| and the "
-				+ "predicted branch set (wraps = round(T/pi))"));
-		cmdStruct.add(new CmdStruct("bsolve", "[-i maxits] [-t tol] [-b v..]",
+				+ "predicted branch set (wraps = round(T/pi)); -a: budget "
+				+ "averaged over all base petals"));
+		cmdStruct.add(new CmdStruct("bsolve", "[-i maxits] [-t tol] [-a] [-b v..]",
 				null, "stage-1 budget-Newton: drive T_v to pi*w_v to select "
 				+ "the solution basin (w=2 at '-b' vertices, else from "
-				+ "packing aims); then run 'solve'"));
+				+ "packing aims); then run 'solve'. -a: use the budget "
+				+ "averaged over all base petals (base-petal free; same "
+				+ "monotonicity and Theorem C structure)"));
 		cmdStruct.add(new CmdStruct("tsolve", "[-i maxits] [-t tol] [-b v..]",
 				null, "one-stage tail-coordinate solver: LM on the exact "
 				+ "three closing conditions per flower (budget, stretch, "
@@ -1256,16 +1705,22 @@ public class SchwarzianSolve extends PackExtender {
 	public void helpInfo() {
 		helpMsg("Commands for PackExtender " + extensionAbbrev
 				+ " (SchwarzianSolve)");
-		helpMsg("  seed [-d|-c] [-p sigma]   seed the edge schwarzians");
-		helpMsg("  residual                  closing (monodromy) residual");
-		helpMsg("  solve [-i its] [-t tol]   LM solve in schwarzian coords");
+		helpMsg("  seed [-d|-c|-z] [-p sigma]  seed the edge schwarzians");
+		helpMsg("  residual [-n] [-a best|worst|mean] [-r] [-t [K]]  closing residual:");
+		helpMsg("      default = all base petals, worst per flower (+ native for");
+		helpMsg("      reference); -n = native base only; -r = relation residual;");
+		helpMsg("      -t = rotation defect");
+		helpMsg("  solve [-i its] [-t tol] [-a] [-b v..|-w]  LM solve in schwarzian");
+		helpMsg("      coords (-a = all-base-petals objective; -b/-w = signed");
+		helpMsg("      all-bases, targets -I / +I from the wrap vector)");
 		helpMsg("  layout                    develop circles (intrinsic "
 				+ "Mobius-frame development)");
 		helpMsg("  check                     solved vs geometry schwarzians");
 		helpMsg("  cont                      continuant branch detection");
-		helpMsg("  budget [-b v..]           angular budgets / predicted wraps");
-		helpMsg("  bsolve [-i its] [-t tol] [-b v..]  stage-1 budget-Newton "
-				+ "(basin selection); follow with 'solve'");
+		helpMsg("  budget [-a] [-b v..]      angular budgets / predicted wraps");
+		helpMsg("  bsolve [-i its] [-t tol] [-a] [-b v..]  stage-1 budget-Newton "
+				+ "(basin selection; -a = base-averaged budget); follow with "
+				+ "'solve -b v..'");
 		helpMsg("  tsolve [-i its] [-t tol] [-b v..]  one-stage tail solver "
 				+ "(budget+stretch+shear; subsumes bsolve+solve)");
 		helpMsg("radius chapter (embedded SphBranchNewton; same packing):");
