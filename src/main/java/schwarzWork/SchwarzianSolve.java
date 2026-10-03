@@ -845,11 +845,16 @@ public class SchwarzianSolve extends PackExtender {
 							tol = Double.parseDouble(seg.get(1));
 					}
 			} catch (Exception ex) {
-				errorMsg("tsolve: usage: tsolve [-i maxits] [-t tol] "
+				errorMsg("tsolve: usage: tsolve [-i maxits] [-t tol] [-a] "
 						+ "[-b v1 v2 ...]");
 				return 0;
 			}
-			return tsolve(maxits, tol, budgetAims(parseBranchList(flagSegs)));
+			allTail = hasFlag(flagSegs, "-a");
+			try {
+				return tsolve(maxits, tol, budgetAims(parseBranchList(flagSegs)));
+			} finally {
+				allTail = false;
+			}
 		}
 
 		// ========= radius-space chapter (embedded |sn| SphBranchNewton) =========
@@ -1179,6 +1184,42 @@ public class SchwarzianSolve extends PackExtender {
 		tailU(ux, w, out);
 	}
 
+	/** 'tsolve -a': stack every base petal's own tail triple */
+	boolean allTail = false;
+
+	/** rows of flower v in tsolve: 3 (pinned), or 3 * deg (all bases) */
+	int tailRows(int v) {
+		return allTail ? 3 * spokes(v).length : 3;
+	}
+
+	/**
+	 * tsolve block of flower v into out[off..]: the pinned tail triple, or
+	 * (allTail) for every base petal k the triple of the spoke sequence
+	 * rotated to start at k. Each triple is pinned to its own base, so the
+	 * stack is base-petal free; its budget rows ask the flower product to
+	 * fix EVERY base petal's direction.
+	 */
+	void flowerTailBlock(int v, int w, double[] out, int off) {
+		int[] jd = spokes(v);
+		int n = jd.length;
+		double[] ux = new double[n];
+		for (int k = 0; k < n; k++)
+			ux[k] = 1.0 - ((jd[k] < 0) ? 0.0 : svar[jd[k]]);
+		double[] tri = new double[3];
+		if (!allTail) {
+			tailU(ux, w, tri);
+			System.arraycopy(tri, 0, out, off, 3);
+			return;
+		}
+		double[] rot = new double[n];
+		for (int k = 0; k < n; k++) {
+			for (int t = 0; t < n; t++)
+				rot[t] = ux[(k + t) % n];
+			tailU(rot, w, tri);
+			System.arraycopy(tri, 0, out, off + 3 * k, 3);
+		}
+	}
+
 	/** parse a '-b v1 v2 ...' segment into a branch-vertex list (or null) */
 	/** true if the flag segments contain the given flag (e.g. "-a") */
 	static boolean hasFlag(Vector<Vector<String>> flagSegs, String flag) {
@@ -1380,17 +1421,18 @@ public class SchwarzianSolve extends PackExtender {
 		for (int v = 1; v <= Vn; v++)
 			wrap[v] = (int) Math.round(aims[v] / Math.PI);
 		int n = eReps.length;
-		int m = 3 * Vi;
+		// block layout: flower ivs[r] owns rows off[r] .. off[r] + tailRows - 1
+		int[] off = new int[Vi + 1];
+		for (int r = 0; r < Vi; r++)
+			off[r + 1] = off[r] + tailRows(ivs.get(r));
+		int m = off[Vi];
 		double[] R = new double[m];
-		double[] tri = new double[3];
-		for (int r = 0; r < Vi; r++) {
-			int v = ivs.get(r);
-			flowerTail(v, wrap[v], tri);
-			System.arraycopy(tri, 0, R, 3 * r, 3);
-		}
-		msg(String.format("tsolve: %d tail equations (%d flowers x 3) on "
+		for (int r = 0; r < Vi; r++)
+			flowerTailBlock(ivs.get(r), wrap[ivs.get(r)], R, off[r]);
+		msg(String.format("tsolve%s: %d tail equations (%d flowers) on "
 				+ "%d edges; seed ||beta||=%.3e ||Lam-1||=%.3e ||mu||=%.3e",
-				m, Vi, n, blockNorm(R, 0), blockNorm(R, 1), blockNorm(R, 2)));
+				allTail ? " (ALL base petals)" : "", m, Vi, n, blockNorm(R, 0),
+				blockNorm(R, 1), blockNorm(R, 2)));
 		double h = 1e-6;
 		double lam = 1e-3;
 		int it = 0;
@@ -1400,8 +1442,6 @@ public class SchwarzianSolve extends PackExtender {
 				break;
 			// Jacobian: central differences, two endpoint flowers per edge
 			double[][] J = new double[m][n];
-			double[] trip = new double[3];
-			double[] trim = new double[3];
 			for (int j = 0; j < n; j++) {
 				int a = eReps[j].origin.vertIndx;
 				int b = eReps[j].twin.origin.vertIndx;
@@ -1409,14 +1449,16 @@ public class SchwarzianSolve extends PackExtender {
 				for (int vv : new int[] { a, b }) {
 					if (rowOf[vv] < 0)
 						continue;
+					int r0 = off[rowOf[vv]];
+					int len = off[rowOf[vv] + 1] - r0;
+					double[] bp = new double[len], bm = new double[len];
 					svar[j] = hold + h;
-					flowerTail(vv, wrap[vv], trip);
+					flowerTailBlock(vv, wrap[vv], bp, 0);
 					svar[j] = hold - h;
-					flowerTail(vv, wrap[vv], trim);
+					flowerTailBlock(vv, wrap[vv], bm, 0);
 					svar[j] = hold;
-					int r0 = 3 * rowOf[vv];
-					for (int t = 0; t < 3; t++)
-						J[r0 + t][j] = (trip[t] - trim[t]) / (2.0 * h);
+					for (int t = 0; t < len; t++)
+						J[r0 + t][j] = (bp[t] - bm[t]) / (2.0 * h);
 				}
 				svar[j] = hold;
 			}
@@ -1445,11 +1487,8 @@ public class SchwarzianSolve extends PackExtender {
 					for (int a = 0; a < n; a++)
 						svar[a] = s0[a] + dx[a];
 					double[] Rn = new double[m];
-					for (int r = 0; r < Vi; r++) {
-						int v = ivs.get(r);
-						flowerTail(v, wrap[v], tri);
-						System.arraycopy(tri, 0, Rn, 3 * r, 3);
-					}
+					for (int r = 0; r < Vi; r++)
+						flowerTailBlock(ivs.get(r), wrap[ivs.get(r)], Rn, off[r]);
 					if (twoNorm(Rn) < normR) {
 						R = Rn;
 						lam = Math.max(lam * 0.5, 1e-13);
@@ -1468,7 +1507,8 @@ public class SchwarzianSolve extends PackExtender {
 		}
 		pushToEdges();
 		double[] F = residualVector();
-		msg(String.format("tsolve: done after %d its; ||beta||=%.3e "
+		msg(String.format("tsolve" + (allTail ? " (ALL base petals)" : "")
+				+ ": done after %d its; ||beta||=%.3e "
 				+ "||Lam-1||=%.3e ||mu||=%.3e; classical closing residual "
 				+ "||R||_2=%.6e (the certificate); schwarzians stored on "
 				+ "edges -- run '|sz| layout'", it, blockNorm(R, 0),
@@ -1685,11 +1725,13 @@ public class SchwarzianSolve extends PackExtender {
 				+ "packing aims); then run 'solve'. -a: use the budget "
 				+ "averaged over all base petals (base-petal free; same "
 				+ "monotonicity and Theorem C structure)"));
-		cmdStruct.add(new CmdStruct("tsolve", "[-i maxits] [-t tol] [-b v..]",
+		cmdStruct.add(new CmdStruct("tsolve", "[-i maxits] [-t tol] [-a] [-b v..]",
 				null, "one-stage tail-coordinate solver: LM on the exact "
 				+ "three closing conditions per flower (budget, stretch, "
-				+ "shear) with the wrap vector as input (as bsolve); "
-				+ "subsumes bsolve+solve, stall-free on the test bed"));
+				+ "shear) with the wrap vector as input (as bsolve). -a: stack "
+				+ "EVERY base petal's own tail triple (base-petal free). "
+				+ "Best recipe found (Oct 2026): 'bsolve -a -b v..' then "
+				+ "'tsolve -a -b v..'"));
 		cmdStruct.add(new CmdStruct("newton", "[-i maxits] [-t tol] [-l v..]",
 				null, "radius chapter: damped Newton/LM on the spherical "
 				+ "angle-sum system (forwards to embedded SphBranchNewton); "
@@ -1729,8 +1771,9 @@ public class SchwarzianSolve extends PackExtender {
 		helpMsg("  bsolve [-i its] [-t tol] [-a] [-b v..]  stage-1 budget-Newton "
 				+ "(basin selection; -a = base-averaged budget); follow with "
 				+ "'solve -b v..'");
-		helpMsg("  tsolve [-i its] [-t tol] [-b v..]  one-stage tail solver "
-				+ "(budget+stretch+shear; subsumes bsolve+solve)");
+		helpMsg("  tsolve [-i its] [-t tol] [-a] [-b v..]  tail solver "
+				+ "(budget+stretch+shear; -a = every base petal's triple)");
+		helpMsg("  best recipe: bsolve -a -b v.. ; tsolve -a -b v..");
 		helpMsg("radius chapter (embedded SphBranchNewton; same packing):");
 		helpMsg("  newton [-i its] [-t tol] [-l v..]  damped Newton on the "
 				+ "angle-sum system (-l anchors)");
