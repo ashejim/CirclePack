@@ -1079,6 +1079,17 @@ public class SchwarzianSolve extends PackExtender {
 	 * negates this to dT/ds). Kept static/self-contained so it can be
 	 * validated headlessly against the Python reference.
 	 */
+	static double biteSum(double[] X, double[] Y, int n) {
+		// consecutive contact vectors have cross product X[k-1]Y[k] - X[k]Y[k-1] = 1
+		// exactly (Casoratian), so each bite is atan2(1, dot) in (0, pi). Exact even
+		// when the vectors are huge and nearly parallel; differencing atan2 angles
+		// mod pi rounds such a ~1e-20 bite up to pi (stretched flowers).
+		double T = 0.0;
+		for (int k = 1; k <= n; k++)
+			T += Math.atan2(1.0, X[k - 1] * X[k] + Y[k - 1] * Y[k]);
+		return T;
+	}
+
 	static double budgetU(double[] ux, double[] dTdu) {
 		int n = ux.length;
 		double[] X = new double[n + 1];
@@ -1091,17 +1102,7 @@ public class SchwarzianSolve extends PackExtender {
 			X[k] = CPBase.sqrt3 * ux[k - 1] * X[k - 1] - X[k - 2];
 			Y[k] = CPBase.sqrt3 * ux[k - 1] * Y[k - 1] - Y[k - 2];
 		}
-		double T = 0.0, thPrev = 0.0;
-		for (int k = 1; k <= n; k++) {
-			double th = Math.atan2(Y[k], X[k]) % Math.PI;
-			if (th < 0.0)
-				th += Math.PI;
-			double bite = (th - thPrev) % Math.PI;
-			if (bite < 0.0)
-				bite += Math.PI;
-			T += bite;
-			thPrev = th;
-		}
+		double T = biteSum(X, Y, n);
 		if (dTdu != null) {
 			double den = X[n] * X[n] + Y[n] * Y[n];
 			for (int j = 1; j <= n; j++) {
@@ -1158,17 +1159,7 @@ public class SchwarzianSolve extends PackExtender {
 			Y[k] = c * Y[k - 1] - Y[k - 2];
 			H[k] = c * H[k - 1] - H[k - 2];
 		}
-		double T = 0.0, thPrev = 0.0;
-		for (int k = 1; k <= n; k++) {
-			double th = Math.atan2(Y[k], X[k]) % Math.PI;
-			if (th < 0.0)
-				th += Math.PI;
-			double bite = (th - thPrev) % Math.PI;
-			if (bite < 0.0)
-				bite += Math.PI;
-			T += bite;
-			thPrev = th;
-		}
+		double T = biteSum(X, Y, n);
 		double sg = (w % 2 == 0) ? 1.0 : -1.0;
 		out[0] = T - Math.PI * w;
 		out[1] = -sg * Y[n - 1] - 1.0;
