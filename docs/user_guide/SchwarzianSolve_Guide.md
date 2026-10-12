@@ -29,7 +29,7 @@ extender sz
 
 | Command | Purpose |
 |---|---|
-| `seed [-d\|-c\|-z] [-p sigma]` | set the edge schwarzians: `-d` from vertex degrees (pure combinatorics), `-c` from the current geometry (via `set_sch`), `-z` identically zero (the blind seed — no information at all); `-p` adds Gaussian noise |
+| `seed [-d\|-c\|-z] [-n sigma] [-r k]` | set the edge schwarzians: `-d` from vertex degrees (pure combinatorics), `-c` from the current geometry (via `set_sch`), `-z` identically zero (the blind seed — no information at all); `-n sigma` adds Gaussian noise of standard deviation sigma per edge, `-r k` sets its random seed (default 1). (`-p sigma` is still accepted, but CirclePack usually takes `-p` as a pack number before the extender sees it, so use `-n`.) |
 | `residual [-n] [-a best\|worst\|mean] [-r] [-t [K]]` | flower-closing residual; reports the worst flower. With no flags: the defect from **every** base petal, worst per flower (base-petal free), followed by the native-base number for reference. `-n`: native base only (the pre-October-2026 default; what plain `solve` minimizes). `-a`, `-r`, `-t`: see [`residual`](#residual--what-is-being-solved) below. Flags combine |
 | `solve [-i maxits] [-t tol] [-a] [-b v1 v2 ... \| -w]` | Levenberg–Marquardt on the closing system; continues from the current internal state, so repeated small `-i` calls step the solver visibly. `-a` minimizes the defect from **every** base petal instead of the native one (base-petal-free objective; about deg × the rows, same Jacobian size). `-b v..` uses the **signed** all-bases objective: every base's product is driven to $-I$, or to $+I$ at the listed $4\pi$ branch vertices. `-w` does the same with the wraps read from the packing aims, as `bsolve`. Either implies `-a` |
 | `layout` | store the current schwarzians on the edges and develop circles via the intrinsic Möbius-frame development (exact per-edge transfer products; reports the holonomy spread, which is near zero iff the schwarzians close up) |
@@ -38,6 +38,9 @@ extender sz
 | `budget [-a] [-b v1 v2 ...]` | report the per-flower angular budgets $T_v$: the budget residual $\beta_v = T_v - \pi w_v$ and the predicted branch set (wraps $= \mathrm{round}(T_v/\pi)$). `-a`: budget averaged over all base petals |
 | `bsolve [-i maxits] [-t tol] [-a] [-b v1 v2 ...]` | **stage-1 budget-Newton**: drive every $T_v$ to its aim $\pi w_v$, selecting the solution *basin* before `solve` closes the flowers; `-b` lists the prescribed branch vertices ($w=2$), otherwise aims are read off the packing (`set_aim 4*pi v ...` as for `\|sn\|`). `-a`: use the budget **averaged over all base petals**, $\bar T_v = \frac1n\sum_k T_v^{(k)}$ (base-petal free) |
 | `tsolve [-i maxits] [-t tol] [-a] [-b v1 v2 ...]` | **tail-coordinate solver**: LM on the exact three closing conditions per flower — budget $\beta_v$, stretch $\Lambda_v - 1$, shear $\mu_v$ — with the wrap vector as input (aims/`-b`, as `bsolve`). `-a` stacks **every base petal's own** triple $(\beta^{(k)}, \Lambda^{(k)}-1, \mu^{(k)})$ (base-petal free). `bsolve -a` followed by `tsolve -a` is the best recipe found (October 2026) |
+| `rotate [flags]` | **rotation stage** of the two-stage method: Newton on the averaged budget in the a-priori box, with an active set, a step cap and an $\ell_\infty$ line search, then the bracket finisher and the rotation certificate. See [the two-stage method](#psolve--the-two-stage-method-rotate-then-force) |
+| `force [flags]` | **forcing stage**: cyclic projection (nonlinear Kaczmarz) onto the forced-label relations at every spoke, with the wrap guard and the local rotation guard |
+| `psolve [flags]` | `rotate` then `force`: the method of the solver paper. Every ingredient has a flag, so variants can be compared |
 | `newton`, `perron`, `discover`, `bigcircles`, `winding`, `windfaces`, `basin1` | **radius chapter**: the full SphBranchNewton solver, embedded — these forward to a private `\|sn\|` instance on the same packing (see below) |
 | `rsolve`, `rresidual` | radius chapter, renamed to avoid collision: `rsolve` = `\|sn\| solve` (Perron develop + Newton polish), `rresidual` = max \|anglesum − aim\| |
 
@@ -126,6 +129,10 @@ Notes:
 
 ### Recommended recipe (October 2026): fully base-petal-free
 
+*Update 2026-10-12: the two-stage method `psolve` (next section) is the
+method of the solver paper, and the one with a convergence theorem. The
+recipe below remains a good alternative.*
+
 ```
 |sz| seed -d                        (or -z, or anything sane)
 |sz| bsolve -a -b v1 v2 ...         (averaged budget; omit -b for univalent)
@@ -190,6 +197,126 @@ native objective, including the blind zero seed, which it took to DEG9
 without `bsolve`. Like plain `solve` it is sign-free, so it can also converge
 to branched closing solutions that still need certifying (`cont`, `layout`).
 Details: `RESIDUAL_OPTIONS.md` in the `branched_sphere_example` project.
+
+## `psolve` — the two-stage method (rotate, then force)
+
+*Added 2026-10-12. Reference: the solver paper `sz_solver.tex` (sections
+5–6) and `experiments/benchmark.py` in the `branched_sphere_example`
+project.*
+
+Closing a flower splits into three conditions on its holonomy: rotation,
+shear and stretch. Only rotation has a monotone measure, the averaged
+budget $\bar T_v$. So the method fixes rotation first, then imposes the
+remaining conditions by projection.
+
+```
+|sz| seed -d                 (or -z, or 'seed -d -n sigma -r k' for a perturbed start)
+|sz| psolve                  (= |sz| rotate ; |sz| force)
+|sz| residual -a mean -r -t  (certificate)
+|sz| layout ; |sz| check ; |sz| cont
+```
+
+**Rotation stage (`rotate`).**
+- Newton on $\bar T_v = \pi w_v$, with the exact budget gradient (Lemma 0′).
+- The labels are kept in the a-priori box of [St, Thm 4.6(A)],
+  $1-(\min(n_a,n_b)-2)/\sqrt3 \le s_e \le 1-1/\sqrt3$, which contains the
+  univalent packing.
+- Each step is the minimum-norm step on the *free* spokes; spokes at a face
+  of the box that would move outward are frozen (active set).
+- Steps are capped at $\max_e|\Delta s_e|\le1$ and accepted by backtracking
+  on $\max_v|\bar T_v-\pi w_v|$.
+- At the end comes the **rotation certificate**. A flower is certified
+  when its aim lies in the bracket $[\min_k T^{(k)}, \max_k T^{(k)}]$ of
+  its per-base budgets, which guarantees that its rotation number is
+  right. Uncertified flowers get the same Newton steps on the bracket
+  residual (the finisher).
+
+**Forcing stage (`force`).** Sweeps of orthogonal projections onto the
+forced-label relations of [St, Thm 4.5], imposed at every spoke of every
+flower: three relations per spoke, the middle one and both flanks. The
+order is random, and each step is capped at length 0.5. Before each sweep:
+- the **wrap guard** corrects any flower whose petals do not go around the
+  prescribed number of times (Sturm count);
+- the **local rotation guard** (damped uniform shifts of each flower's
+  spokes toward $\bar T_v=\pi w_v$) runs only while some wrap is wrong or
+  the worst relation exceeds $10^{-3}$.
+
+Near the solution both guards are inactive, so the stage is plain cyclic
+projection. For that iteration the solver paper proves local linear
+convergence to the univalent packing on every triangulated sphere.
+
+### Flags
+
+`rotate`:
+
+| flag | default | effect |
+|---|---|---|
+| `-i its`, `-t tol` | 400, 1e-10 | iteration cap and tolerance |
+| `-b v1 v2 ...` | aims from the packing | prescribed wrap-2 vertices (as `bsolve`) |
+| `-nobox` | box on | no box (switched off automatically for branched aims) |
+| `-noas` | active set on | plain clipping at the box faces |
+| `-cap c` | 1 | step cap in max norm; `-cap 0` = none |
+| `-ls inf\|2` | `inf` | line-search norm |
+| `-nobr` | finisher on | skip the bracket finisher |
+| `-native` | averaged | use the single-base budget $T_v$ instead of $\bar T_v$ |
+| `-step mn\|vp` | `mn` | `vp` = the vertex-potential step of `bsolve` ($s \mathrel{+}= A^{\mathsf T}y$) |
+
+`force`:
+
+| flag | default | effect |
+|---|---|---|
+| `-i sweeps`, `-t tol` | 2000, 1e-10 | sweep cap and tolerance (worst relation) |
+| `-b v1 v2 ...` | aims from the packing | prescribed wraps; flowers of even wrap use the $+I$ form of the relations |
+| `-rel full\|reduced` | `full` | `reduced` = middle relations, plus flank relations only at degree-4 flowers |
+| `-g cond\|all\|off\|N` | `cond` | local rotation guard: conditional, every sweep, never, or every sweep at flowers of degree $\ge N$ |
+| `-gt thr` | 1e-3 | residual threshold for `-g cond` |
+| `-cap c` | 0.5 | projection step cap; `-cap 0` = none |
+| `-nowrap` | wrap guard on | no wrap guard |
+| `-order rand\|fixed`, `-seed n` | `rand`, 1 | sweep order |
+
+`psolve` takes `-b` and the stage flags, with prefixes where the two stages
+would collide: `-ri its` / `-fi sweeps` (iteration caps) and `-rcap c` /
+`-fcap c` (step caps). All other `rotate` and `force` flags pass through
+unchanged.
+
+### Results
+
+On the 84-vertex Crane complex (`univ_sphere.p`, univalent target), run in
+CirclePack on 2026-10-12:
+
+| start | rotation its | certified | forcing sweeps | worst relation |
+|---|---|---|---|---|
+| `seed -d` | 7 | 84/84 | 286 | 1.0e-10 |
+| `seed -z` | 6 | 84/84 | 286 | 9.4e-11 |
+| `seed -d -n σ -r k`, σ ∈ {0.2, 0.4, 2, 10}, k ∈ {1, 2, 3} | 9–28 (once 1 + 14 with the finisher) | 84/84 every time | 268–315 | ≤ 1.3e-10 |
+
+All 14 runs ended with every wrap equal to 1. After the degree-seed run,
+`layout; check` matched the geometry to 7.6e-10. The Python reference
+reached the univalent packing from all 133 starts on seven spheres
+(maximum degree 6 to 24). Its sweep range on this complex, 270–323, agrees.
+
+The flags reproduce the failures that motivated each ingredient. All runs
+below start from `seed -d -n 2 -r 1`:
+
+| variant | outcome |
+|---|---|
+| default `rotate` | 18 its, certified 84/84 |
+| `rotate -nobox -cap 0 -ls 2 -step vp` (the old `bsolve` step) | 400 its without converging; some flower totals of $\partial\bar T/\partial s$ reach 1.8e9 (stiff flowers) |
+| `rotate -native -nobr -noas` | the single-base budget stalls; certified 59/84 |
+| `force -rel reduced` | 588 relations, 491 sweeps (the full set: 279–289) |
+| `force -g 12 -cap 0 -order fixed` | 776 sweeps |
+| `force -g off -nowrap` | 279 sweeps after a default `rotate`; the guards matter only from poor starts |
+
+**Notes.**
+- The method and its proof are for the univalent packing. With `-b` (or
+  branched aims) the box is off and the relations use the $+I$ form at even
+  wraps; branched use is experimental.
+- `psolve` writes the solution to the edges. Run `residual` for the
+  certificate and `layout` to see the packing.
+- Closing at $\pm I$ fixes only the parity of each wrap, so the closing
+  equations alone cannot exclude a flower whose petals go around three
+  times. A single such flower is impossible in a packing of the sphere
+  (Riemann–Hurwitz); the wrap guard is what prevents it.
 
 ## `bsolve` — choosing the branch structure (the budget stage)
 

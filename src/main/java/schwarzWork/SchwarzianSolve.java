@@ -448,6 +448,7 @@ public class SchwarzianSolve extends PackExtender {
 			boolean fromCurrent = false;
 			boolean zero = false;
 			double sigma = 0.0;
+			long noiseSeed = 1;
 			try {
 				if (flagSegs != null)
 					for (Vector<String> seg : flagSegs) {
@@ -460,11 +461,15 @@ public class SchwarzianSolve extends PackExtender {
 							fromCurrent = false;
 						else if (f.equals("-z"))
 							zero = true;
-						else if (f.equals("-p"))
+						// '-p' is CirclePack's pack-selector flag and is usually
+						// intercepted before it reaches the extender; use '-n'
+						else if (f.equals("-n") || f.equals("-p"))
 							sigma = Double.parseDouble(seg.get(1));
+						else if (f.equals("-r"))
+							noiseSeed = Long.parseLong(seg.get(1));
 					}
 			} catch (Exception ex) {
-				errorMsg("seed: usage: seed [-d | -c | -z] [-p sigma]");
+				errorMsg("seed: usage: seed [-d | -c | -z] [-n sigma] [-r k]");
 				return 0;
 			}
 			if (zero) {
@@ -488,10 +493,11 @@ public class SchwarzianSolve extends PackExtender {
 				msg("seeded from vertex degrees (combinatorial seed)");
 			}
 			if (sigma > 0.0) {
-				Random rng = new Random(1);
+				Random rng = new Random(noiseSeed);
 				for (int j = 0; j < eReps.length; j++)
 					svar[j] += sigma * rng.nextGaussian();
-				msg(String.format("perturbed by sigma=%.4g", sigma));
+				msg(String.format("perturbed by Gaussian noise, sigma=%.4g per "
+						+ "edge (random seed %d)", sigma, noiseSeed));
 			}
 			seeded = true;
 			return 1;
@@ -855,6 +861,40 @@ public class SchwarzianSolve extends PackExtender {
 			} finally {
 				allTail = false;
 			}
+		}
+
+		// ========= two-stage solver: rotate / force / psolve (2026-10) =========
+		if (cmd.startsWith("rotate")) {
+			ensureSeeded();
+			RotOpts ro = new RotOpts();
+			if (!parseSolverFlags(flagSegs, ro, null, false))
+				return 0;
+			rotate(ro, budgetAims(parseBranchList(flagSegs)));
+			return 1;
+		}
+		if (cmd.startsWith("force")) {
+			ensureSeeded();
+			ForceOpts fo = new ForceOpts();
+			if (!parseSolverFlags(flagSegs, null, fo, false))
+				return 0;
+			double[] r = force(fo, budgetAims(parseBranchList(flagSegs)));
+			return (r[2] > 0) ? 1 : 0;
+		}
+		if (cmd.startsWith("psolve")) {
+			ensureSeeded();
+			RotOpts ro = new RotOpts();
+			ForceOpts fo = new ForceOpts();
+			if (!parseSolverFlags(flagSegs, ro, fo, true))
+				return 0;
+			double[] aims = budgetAims(parseBranchList(flagSegs));
+			double[] a = rotate(ro, aims);
+			double[] b = force(fo, aims);
+			msg(String.format("psolve: rotation %d+%d its, certified %d/%d; "
+					+ "forcing %s in %d sweeps; wrong wraps %d -- run '|sz| layout' "
+					+ "and '|sz| residual' for the certificate",
+					(int) a[0], (int) a[1], (int) a[2], (int) a[3],
+					b[2] > 0 ? "converged" : "STOPPED", (int) b[0], (int) b[4]));
+			return (b[2] > 0) ? 1 : 0;
 		}
 
 		// ========= radius-space chapter (embedded |sn| SphBranchNewton) =========
@@ -1560,6 +1600,653 @@ public class SchwarzianSolve extends PackExtender {
 	}
 
 	// ------------------------------------------------------------------
+	// two-stage solver (2026-10): 'rotate' (rotation stage), 'force'
+	// (forcing stage), 'psolve' (both). Reference: sz_solver.tex in the
+	// branched_sphere_example project, sections 5-6; Python reference
+	// experiments/benchmark.py. Every ingredient has a flag so that the
+	// approaches can be compared; the defaults are the paper's method.
+	// ------------------------------------------------------------------
+
+	/** options of the rotation stage */
+	static class RotOpts {
+		int maxits = 400;
+		double tol = 1e-10;
+		boolean box = true;       // clip into the [St] Thm 4.6 (A) box
+		double cap = 1.0;         // max |ds_e| per step; <= 0 = no cap
+		boolean lsInf = true;     // line search on max |beta| (else 2-norm)
+		boolean activeSet = true; // freeze spokes pushing out of the box
+		boolean bracket = true;   // bracket finisher + certificate
+		boolean native_ = false;  // single-base budget instead of averaged
+		boolean vpStep = false;   // vertex-potential step (old bsolve) instead of min-norm
+	}
+
+	/** options of the forcing stage */
+	static class ForceOpts {
+		int maxsweeps = 2000;
+		double tol = 1e-10;
+		boolean full = true;      // all forced-label relations (else reduced)
+		String guard = "cond";    // cond | all | off | <degree threshold>
+		double condTol = 1e-3;    // cond: guard while worst relation > this
+		double cap = 0.5;         // projection step cap; <= 0 = none
+		boolean wrapGuard = true;
+		boolean randomOrder = true;
+		long seed = 1;
+	}
+
+	/** interior vertex rows: ivs (row -> vertex) and rowOf (vertex -> row or -1) */
+	int[] rowOfV;
+	ArrayList<Integer> ivsList;
+
+	void buildRows() {
+		int Vn = extenderPD.nodeCount;
+		rowOfV = new int[Vn + 1];
+		ivsList = new ArrayList<Integer>();
+		for (int v = 1; v <= Vn; v++) {
+			if (extenderPD.packDCEL.vertices[v].isBdry()) {
+				rowOfV[v] = -1;
+				continue;
+			}
+			rowOfV[v] = ivsList.size();
+			ivsList.add(v);
+		}
+	}
+
+	/** the [St] Thm 4.6 (A) box for the univalent packing, per edge */
+	double[][] boxBounds() {
+		int E = eReps.length;
+		double[] lo = new double[E], hi = new double[E];
+		for (int j = 0; j < E; j++) {
+			int a = eReps[j].origin.vertIndx, b = eReps[j].twin.origin.vertIndx;
+			int na = spokes(a).length, nb = spokes(b).length;
+			lo[j] = 1.0 - (Math.min(na, nb) - 2) / CPBase.sqrt3;
+			hi[j] = 1.0 - 1.0 / CPBase.sqrt3;
+		}
+		return new double[][] { lo, hi };
+	}
+
+	/**
+	 * Residual for the rotation stage. kind 0: averaged (or native) budget
+	 * beta_v = Tbar_v - aim_v at every interior vertex. kind 1: bracket
+	 * residual -- if every base budget T^(k) exceeds the aim, min_k T^(k) -
+	 * aim; if every one is below, max_k T^(k) - aim; otherwise 0 (the aim is
+	 * inside the bracket: rotation certified, sz_solver Prop. bracket).
+	 * Fills b (per row), act (row active), and per edge the derivatives of
+	 * its two endpoint rows, JA (origin) and JB (twin origin), in s.
+	 */
+	void rotResid(int kind, double[] aims, double[] b, boolean[] act,
+			double[] JA, double[] JB) {
+		if (JA != null) {
+			java.util.Arrays.fill(JA, 0.0);
+			java.util.Arrays.fill(JB, 0.0);
+		}
+		for (int r = 0; r < ivsList.size(); r++) {
+			int v = ivsList.get(r);
+			int[] jd = spokes(v);
+			int n = jd.length;
+			double[] g = new double[n];
+			if (kind == 0) {
+				b[r] = budgetOf(v, (JA != null) ? g : null) - aims[v];
+				act[r] = true;
+			} else {
+				double[] ux = new double[n];
+				for (int k = 0; k < n; k++)
+					ux[k] = 1.0 - ((jd[k] < 0) ? 0.0 : svar[jd[k]]);
+				double[] rot = new double[n];
+				double[][] gk = new double[n][n];
+				double[] vals = new double[n];
+				double mn = Double.MAX_VALUE, mx = -Double.MAX_VALUE;
+				int kmin = 0, kmax = 0;
+				for (int k = 0; k < n; k++) {
+					for (int t = 0; t < n; t++)
+						rot[t] = ux[(k + t) % n];
+					vals[k] = budgetU(rot, gk[k]) - aims[v];
+					if (vals[k] < mn) { mn = vals[k]; kmin = k; }
+					if (vals[k] > mx) { mx = vals[k]; kmax = k; }
+				}
+				int ks = -1;
+				if (mn > 1e-12)
+					ks = kmin;
+				else if (mx < -1e-12)
+					ks = kmax;
+				act[r] = (ks >= 0);
+				b[r] = act[r] ? vals[ks] : 0.0;
+				if (act[r])
+					for (int t = 0; t < n; t++)
+						g[(ks + t) % n] -= gk[ks][t];   // dT/ds = -dT/du
+			}
+			if (JA != null && act[r])
+				for (int k = 0; k < n; k++) {
+					int e = jd[k];
+					if (e < 0)
+						continue;
+					if (eReps[e].origin.vertIndx == v)
+						JA[e] += g[k];
+					else
+						JB[e] += g[k];
+				}
+		}
+	}
+
+	double rotNorm(double[] b, boolean inf) {
+		return inf ? infNorm(b) : twoNorm(b);
+	}
+
+	/**
+	 * One descent of the rotation stage on residual 'kind' (see rotResid):
+	 * Newton step, min-norm on the free spokes with an active set at the box
+	 * faces (or the old vertex-potential step), capped, accepted by
+	 * backtracking on the chosen norm with trial points clipped into the box.
+	 * Returns {iterations, final max |b|}.
+	 */
+	double[] rotDescend(int kind, double[] aims, RotOpts o, double[] lo,
+			double[] hi, boolean box, double[] stats) {
+		int E = eReps.length, Vi = ivsList.size();
+		double[] b = new double[Vi], JA = new double[E], JB = new double[E];
+		boolean[] act = new boolean[Vi];
+		rotResid(kind, aims, b, act, JA, JB);
+		int it;
+		for (it = 1; it <= o.maxits; it++) {
+			if (infNorm(b) < o.tol)
+				return new double[] { it - 1, infNorm(b) };
+			if (kind == 0 && stats != null) {   // flower totals of dTbar/ds
+				double[] tot = new double[Vi];
+				for (int e = 0; e < E; e++) {
+					int ra = rowOfV[eReps[e].origin.vertIndx];
+					int rb = rowOfV[eReps[e].twin.origin.vertIndx];
+					if (ra >= 0) tot[ra] += JA[e];
+					if (rb >= 0) tot[rb] += JB[e];
+				}
+				for (double x : tot) {
+					stats[0] = Math.min(stats[0], x);
+					stats[1] = Math.max(stats[1], x);
+				}
+			}
+			double[] ds = new double[E];
+			if (o.vpStep) {
+				// old bsolve: M y = -b, M = J A^T, ds = A^T y (active rows only)
+				double[][] M = new double[Vi][Vi];
+				for (int e = 0; e < E; e++) {
+					int ra = rowOfV[eReps[e].origin.vertIndx];
+					int rb = rowOfV[eReps[e].twin.origin.vertIndx];
+					if (ra >= 0) {
+						M[ra][ra] += JA[e];
+						if (rb >= 0) M[ra][rb] += JA[e];
+					}
+					if (rb >= 0) {
+						M[rb][rb] += JB[e];
+						if (ra >= 0) M[rb][ra] += JB[e];
+					}
+				}
+				for (int r = 0; r < Vi; r++)
+					if (!act[r]) {
+						java.util.Arrays.fill(M[r], 0.0);
+						M[r][r] = 1.0;
+					}
+				double[] y = luSolve(M, negate(b));
+				if (y == null)
+					return new double[] { it, infNorm(b) };
+				for (int e = 0; e < E; e++) {
+					int ra = rowOfV[eReps[e].origin.vertIndx];
+					int rb = rowOfV[eReps[e].twin.origin.vertIndx];
+					ds[e] = (ra >= 0 && act[ra] ? y[ra] : 0.0)
+							+ (rb >= 0 && act[rb] ? y[rb] : 0.0);
+				}
+			} else {
+				// min-norm least-squares step on the free spokes:
+				// ds_free = J_f^T y,  (J_f J_f^T) y = -b  (active rows)
+				boolean[] frozen = new boolean[E];
+				for (int round = 0; round < 10; round++) {
+					double[][] G = new double[Vi][Vi];
+					for (int e = 0; e < E; e++) {
+						if (frozen[e])
+							continue;
+						int ra = rowOfV[eReps[e].origin.vertIndx];
+						int rb = rowOfV[eReps[e].twin.origin.vertIndx];
+						double ja = (ra >= 0 && act[ra]) ? JA[e] : 0.0;
+						double jb = (rb >= 0 && act[rb]) ? JB[e] : 0.0;
+						if (ra >= 0) G[ra][ra] += ja * ja;
+						if (rb >= 0) G[rb][rb] += jb * jb;
+						if (ra >= 0 && rb >= 0) {
+							G[ra][rb] += ja * jb;
+							G[rb][ra] += ja * jb;
+						}
+					}
+					double[] rhs = new double[Vi];
+					for (int r = 0; r < Vi; r++) {
+						if (!act[r]) {
+							G[r][r] = 1.0;    // inactive row: y_r = 0
+							continue;
+						}
+						rhs[r] = -b[r];
+						G[r][r] += 1e-14;
+					}
+					double[] y = choleskyDamped(G, rhs, 0.0);
+					if (y == null)
+						y = luSolve(G, rhs);
+					if (y == null)
+						return new double[] { it, infNorm(b) };
+					boolean changed = false;
+					for (int e = 0; e < E; e++) {
+						if (frozen[e]) {
+							ds[e] = 0.0;
+							continue;
+						}
+						int ra = rowOfV[eReps[e].origin.vertIndx];
+						int rb = rowOfV[eReps[e].twin.origin.vertIndx];
+						ds[e] = ((ra >= 0 && act[ra]) ? JA[e] * y[ra] : 0.0)
+								+ ((rb >= 0 && act[rb]) ? JB[e] * y[rb] : 0.0);
+						if (box && o.activeSet
+								&& ((svar[e] <= lo[e] + 1e-12 && ds[e] < 0)
+										|| (svar[e] >= hi[e] - 1e-12 && ds[e] > 0))) {
+							frozen[e] = true;
+							changed = true;
+						}
+					}
+					if (!changed)
+						break;
+				}
+			}
+			double m = infNorm(ds);
+			if (o.cap > 0 && m > o.cap)
+				for (int e = 0; e < E; e++)
+					ds[e] *= o.cap / m;
+			double[] s0 = svar.clone();
+			double nb0 = rotNorm(b, o.lsInf);
+			double t = 1.0;
+			boolean stepped = false;
+			double[] bt = new double[Vi], JAt = new double[E], JBt = new double[E];
+			boolean[] actT = new boolean[Vi];
+			while (t > 1e-8) {
+				for (int e = 0; e < E; e++) {
+					double x = s0[e] + t * ds[e];
+					if (box)
+						x = Math.max(lo[e], Math.min(hi[e], x));
+					svar[e] = x;
+				}
+				rotResid(kind, aims, bt, actT, JAt, JBt);
+				boolean finite = true;
+				for (double x : bt)
+					if (Double.isNaN(x) || Double.isInfinite(x))
+						finite = false;
+				if (finite && rotNorm(bt, o.lsInf) < nb0) {
+					stepped = true;
+					break;
+				}
+				t *= 0.5;
+			}
+			if (!stepped) {
+				System.arraycopy(s0, 0, svar, 0, E);
+				return new double[] { it, infNorm(b) };
+			}
+			b = bt; act = actT; JA = JAt; JB = JBt;
+		}
+		return new double[] { o.maxits, infNorm(b) };
+	}
+
+	/** true if every aim is pi (univalent target) */
+	boolean univalentAims(double[] aims) {
+		for (int v : ivsList)
+			if (Math.abs(aims[v] - Math.PI) > 1e-9)
+				return false;
+		return true;
+	}
+
+	/**
+	 * Rotation stage. Returns {Tbar its, bracket its, flowers certified,
+	 * interior flowers}. Message-reports everything.
+	 */
+	double[] rotate(RotOpts o, double[] aims) {
+		buildRows();
+		boolean box = o.box && univalentAims(aims);
+		double[][] bb = boxBounds();
+		double[] lo = bb[0], hi = bb[1];
+		if (box)
+			for (int e = 0; e < eReps.length; e++)
+				svar[e] = Math.max(lo[e], Math.min(hi[e], svar[e]));
+		boolean saveAvg = avgBudget;
+		avgBudget = !o.native_;
+		double[] stats = new double[] { Double.MAX_VALUE, 0.0 };
+		double[] r1, r2 = new double[] { 0, 0 };
+		try {
+			r1 = rotDescend(0, aims, o, lo, hi, box, stats);
+			int Vi = ivsList.size();
+			double[] b = new double[Vi];
+			boolean[] act = new boolean[Vi];
+			rotResid(1, aims, b, act, null, null);
+			if (o.bracket && infNorm(b) >= o.tol)
+				r2 = rotDescend(1, aims, o, lo, hi, box, null);
+			rotResid(1, aims, b, act, null, null);
+			int cert = 0;
+			for (int r = 0; r < Vi; r++)
+				if (Math.abs(b[r]) < o.tol)
+					cert++;
+			msg(String.format("rotate: %s budget, %s; Tbar stage %d its "
+					+ "(max|Tbar-aim| %.2e), bracket stage %d its; rotation "
+					+ "certified (aim in bracket) at %d/%d flowers; min/max "
+					+ "flower total dTbar/ds %.2e / %.2e",
+					o.native_ ? "native" : "averaged",
+					(box ? (o.activeSet ? "box+active set" : "box (clip only)") : "no box")
+							+ ", cap " + (o.cap > 0 ? o.cap : "none") + ", "
+							+ (o.lsInf ? "l_inf" : "l_2") + " line search"
+							+ (o.vpStep ? ", vertex-potential step" : ""),
+					(int) r1[0], r1[1], (int) r2[0], cert, Vi, stats[0], stats[1]));
+			pushToEdges();
+			return new double[] { r1[0], r2[0], cert, Vi };
+		} finally {
+			avgBudget = saveAvg;
+		}
+	}
+
+	/** one forced-label relation: run (edge indices, in order), target edge, type */
+	static class Rel {
+		int[] run;   // edge indices of the run, in petal order
+		int e;       // middle spoke (type 0) or flank spoke (types 1, 2)
+		int type;    // 0 middle, 1 flank next to the run's last, 2 next to its first
+		double eps;  // -1: closes to -I (odd wrap), +1: to +I (even wrap)
+	}
+
+	ArrayList<Rel> buildRelations(boolean full, double[] aims) {
+		ArrayList<Rel> rels = new ArrayList<Rel>();
+		for (int v : ivsList) {
+			int[] jd = spokes(v);
+			int n = jd.length;
+			if (n < 4)
+				continue;
+			boolean ok = true;
+			for (int e : jd)
+				if (e < 0)
+					ok = false;
+			if (!ok)
+				continue;
+			int w = (int) Math.round(aims[v] / Math.PI);
+			double eps = (w % 2 == 0) ? 1.0 : -1.0;
+			for (int i = 0; i < n; i++) {
+				int[] run = new int[n - 3];
+				for (int m = 0; m < n - 3; m++)
+					run[m] = jd[(i + 2 + m) % n];
+				Rel r = new Rel();
+				r.run = run; r.e = jd[i]; r.type = 0; r.eps = eps;
+				rels.add(r);
+				if (full || n == 4) {
+					Rel a = new Rel();
+					a.run = run; a.e = jd[(i - 1 + n) % n]; a.type = 1; a.eps = eps;
+					Rel c = new Rel();
+					c.run = run; c.e = jd[(i + 1) % n]; c.type = 2; c.eps = eps;
+					rels.add(a);
+					rels.add(c);
+				}
+			}
+		}
+		return rels;
+	}
+
+	/** continuant of us[from..from+len-1] and its gradient into dK[0..len-1] */
+	static double contAndGrad(double[] us, int from, int len, double[] dK) {
+		double[] P = new double[len + 1];   // P[m] = K(us[from .. from+m-1])
+		double[] S = new double[len + 2];   // S[m] = K(us[from+m .. from+len-1])
+		P[0] = 1.0;
+		double prev = 0.0;
+		for (int m = 0; m < len; m++) {
+			double nx = CPBase.sqrt3 * us[from + m] * P[m] - prev;
+			prev = P[m];
+			P[m + 1] = nx;
+		}
+		S[len] = 1.0;
+		S[len + 1] = 0.0;
+		for (int m = len - 1; m >= 0; m--)
+			S[m] = CPBase.sqrt3 * us[from + m] * S[m + 1] - S[m + 2];
+		if (dK != null)
+			for (int m = 0; m < len; m++)
+				dK[m] = CPBase.sqrt3 * P[m] * S[m + 1];
+		return P[len];
+	}
+
+	/**
+	 * value of relation R and its gradient in s over ids = run edges then
+	 * the target edge (filled into g; length run.length + 1).
+	 */
+	double relValue(Rel R, double[] g) {
+		int L = R.run.length;
+		double[] us = new double[L];
+		for (int m = 0; m < L; m++)
+			us[m] = 1.0 - svar[R.run[m]];
+		double ue = 1.0 - svar[R.e];
+		double[] dK = new double[L];
+		double kap = contAndGrad(us, 0, L, dK);
+		double r;
+		double[] gu = new double[L + 1];
+		if (R.type == 0) {
+			r = CPBase.sqrt3 * ue + R.eps * kap;
+			for (int m = 0; m < L; m++)
+				gu[m] = R.eps * dK[m];
+			gu[L] = CPBase.sqrt3;
+		} else {
+			double[] dS = new double[Math.max(L - 1, 0)];
+			double ksub = (R.type == 1) ? contAndGrad(us, 0, L - 1, dS)
+					: contAndGrad(us, 1, L - 1, dS);
+			r = CPBase.sqrt3 * kap * ue - ksub + R.eps;
+			for (int m = 0; m < L; m++)
+				gu[m] = CPBase.sqrt3 * ue * dK[m];
+			for (int m = 0; m < L - 1; m++)
+				gu[(R.type == 1) ? m : m + 1] -= dS[m];
+			gu[L] = CPBase.sqrt3 * kap;
+		}
+		for (int m = 0; m <= L; m++)
+			g[m] = -gu[m];   // d/ds = -d/du
+		return r;
+	}
+
+	/** Sturm wrap of flower v (rotation number / pi, rounded) */
+	int flowerWrap(int v) {
+		int[] jd = spokes(v);
+		double[] s = new double[jd.length];
+		for (int k = 0; k < jd.length; k++)
+			s[k] = (jd[k] < 0) ? 0.0 : svar[jd[k]];
+		return (int) Math.round(rotation(s, 64)[1] / Math.PI);
+	}
+
+	/**
+	 * damped uniform shift of v's spoke labels toward Tbar_v = aim_v:
+	 * up to 'iters' Newton steps on the scalar Tbar_v along the all-spokes
+	 * direction, step capped at 0.1, halved until |Tbar_v - aim| decreases.
+	 */
+	void uniformShift(int v, double aim, int iters) {
+		int[] jd = spokes(v);
+		int n = jd.length;
+		double[] g = new double[n];
+		for (int it = 0; it < iters; it++) {
+			double b = flowerBudgetAvg(v, g) - aim;
+			if (Math.abs(b) < 1e-12)
+				return;
+			double slope = 0.0;
+			for (double x : g)
+				slope += x;
+			if (slope == 0.0)
+				return;
+			double step = Math.max(-0.1, Math.min(0.1, -b / slope));
+			double t = 1.0;
+			boolean ok = false;
+			while (t > 1e-4) {
+				for (int e : jd)
+					if (e >= 0)
+						svar[e] += t * step;
+				if (Math.abs(flowerBudgetAvg(v, null) - aim) < Math.abs(b)) {
+					ok = true;
+					break;
+				}
+				for (int e : jd)
+					if (e >= 0)
+						svar[e] -= t * step;
+				t *= 0.5;
+			}
+			if (!ok)
+				return;
+		}
+	}
+
+	/** wrap guard: returns true if some flower had the wrong wrap */
+	boolean wrapGuard(double[] aims, int rounds) {
+		boolean any = false;
+		for (int round = 0; round < rounds; round++) {
+			ArrayList<Integer> bad = new ArrayList<Integer>();
+			for (int v : ivsList)
+				if (flowerWrap(v) != (int) Math.round(aims[v] / Math.PI))
+					bad.add(v);
+			if (bad.isEmpty())
+				break;
+			any = true;
+			for (int v : bad)
+				uniformShift(v, aims[v], 1);
+		}
+		return any;
+	}
+
+	/**
+	 * Forcing stage: cyclic projection (nonlinear Kaczmarz) onto the
+	 * forced-label relations, with the wrap guard and the local rotation
+	 * guard. Returns {sweeps, guarded sweeps, converged (1/0), worst
+	 * relation, flowers with wrong wrap}.
+	 */
+	double[] force(ForceOpts o, double[] aims) {
+		buildRows();
+		ArrayList<Rel> rels = buildRelations(o.full, aims);
+		int N = rels.size();
+		Random rng = new Random(o.seed);
+		int[] order = new int[N];
+		for (int i = 0; i < N; i++)
+			order[i] = i;
+		int degThr = -1;
+		if (!o.guard.equals("cond") && !o.guard.equals("all") && !o.guard.equals("off"))
+			try {
+				degThr = Integer.parseInt(o.guard);
+			} catch (NumberFormatException ex) {
+				degThr = -1;
+			}
+		boolean anyBad = o.wrapGuard && wrapGuard(aims, 20);
+		double worst = Double.MAX_VALUE;
+		int sw, guarded = 0;
+		boolean conv = false;
+		double[] g = new double[64];
+		for (sw = 1; sw <= o.maxsweeps; sw++) {
+			if (o.wrapGuard)
+				anyBad = wrapGuard(aims, 3);
+			boolean doGuard = o.guard.equals("all") || degThr > 0
+					|| (o.guard.equals("cond") && (anyBad || worst > o.condTol));
+			if (doGuard) {
+				if (o.guard.equals("cond"))
+					guarded++;
+				for (int v : ivsList)
+					if (degThr < 0 || spokes(v).length >= degThr)
+						uniformShift(v, aims[v], 5);
+			}
+			if (o.randomOrder)
+				for (int i = N - 1; i > 0; i--) {
+					int j = rng.nextInt(i + 1);
+					int tmp = order[i]; order[i] = order[j]; order[j] = tmp;
+				}
+			worst = 0.0;
+			for (int q = 0; q < N; q++) {
+				Rel R = rels.get(order[q]);
+				int L = R.run.length;
+				if (g.length < L + 1)
+					g = new double[L + 1];
+				double r = relValue(R, g);
+				if (!Double.isFinite(r))
+					continue;
+				worst = Math.max(worst, Math.abs(r));
+				double gg = 0.0;
+				for (int m = 0; m <= L; m++)
+					gg += g[m] * g[m];
+				if (gg <= 0.0)
+					continue;
+				double f = r / gg;
+				double norm = Math.abs(f) * Math.sqrt(gg);
+				if (o.cap > 0 && norm > o.cap)
+					f *= o.cap / norm;
+				for (int m = 0; m < L; m++)
+					svar[R.run[m]] -= f * g[m];
+				svar[R.e] -= f * g[L];
+			}
+			boolean finite = true;
+			for (double x : svar)
+				if (!Double.isFinite(x))
+					finite = false;
+			if (!finite)
+				break;
+			if (worst < o.tol) {
+				conv = true;
+				break;
+			}
+		}
+		int wrong = 0;
+		for (int v : ivsList)
+			if (flowerWrap(v) != (int) Math.round(aims[v] / Math.PI))
+				wrong++;
+		pushToEdges();
+		msg(String.format("force: %d %s relations, guard %s%s, step cap %s, %s order; "
+				+ "%s after %d sweeps (guard active in %d); worst relation %.2e; "
+				+ "flowers with the wrong wrap: %d",
+				N, o.full ? "forced-label" : "reduced", o.guard,
+				o.guard.equals("cond") ? " (until the worst relation is below " + o.condTol + ")" : "",
+				o.cap > 0 ? "" + o.cap : "none", o.randomOrder ? "random" : "fixed",
+				conv ? "converged" : "STOPPED", Math.min(sw, o.maxsweeps),
+				guarded, worst, wrong));
+		return new double[] { Math.min(sw, o.maxsweeps), guarded, conv ? 1 : 0, worst, wrong };
+	}
+
+	/** parse the flags shared by rotate / force / psolve */
+	boolean parseSolverFlags(Vector<Vector<String>> flagSegs, RotOpts ro,
+			ForceOpts fo, boolean prefixed) {
+		if (flagSegs == null)
+			return true;
+		try {
+			for (Vector<String> seg : flagSegs) {
+				if (seg.isEmpty())
+					continue;
+				String f = seg.get(0);
+				String a = seg.size() > 1 ? seg.get(1) : null;
+				if (prefixed) {          // psolve: -ri / -fi for the two caps
+					if (f.equals("-ri")) { ro.maxits = Integer.parseInt(a); continue; }
+					if (f.equals("-fi")) { fo.maxsweeps = Integer.parseInt(a); continue; }
+				} else if (f.equals("-i")) {
+					if (ro != null) ro.maxits = Integer.parseInt(a);
+					if (fo != null) fo.maxsweeps = Integer.parseInt(a);
+					continue;
+				}
+				if (f.equals("-t")) {
+					if (ro != null) ro.tol = Double.parseDouble(a);
+					if (fo != null) fo.tol = Double.parseDouble(a);
+				} else if (f.equals("-b") || f.equals("-w")) {
+					// handled by parseBranchList / budgetAims
+				} else if (ro != null && f.equals("-nobox")) ro.box = false;
+				else if (ro != null && f.equals("-noas")) ro.activeSet = false;
+				else if (ro != null && f.equals("-nobr")) ro.bracket = false;
+				else if (ro != null && f.equals("-native")) ro.native_ = true;
+				else if (ro != null && f.equals("-ls")) ro.lsInf = !a.equals("2");
+				else if (ro != null && f.equals("-step")) ro.vpStep = a.equals("vp");
+				else if (ro != null && !prefixed && f.equals("-cap")) ro.cap = Double.parseDouble(a);
+				else if (fo != null && f.equals("-rel")) fo.full = !a.startsWith("red");
+				else if (fo != null && f.equals("-g")) fo.guard = a;
+				else if (fo != null && f.equals("-gt")) fo.condTol = Double.parseDouble(a);
+				else if (fo != null && f.equals("-nowrap")) fo.wrapGuard = false;
+				else if (fo != null && f.equals("-order")) fo.randomOrder = !a.startsWith("fix");
+				else if (fo != null && f.equals("-seed")) fo.seed = Long.parseLong(a);
+				else if (fo != null && !prefixed && f.equals("-cap")) fo.cap = Double.parseDouble(a);
+				else if (prefixed && f.equals("-rcap")) ro.cap = Double.parseDouble(a);
+				else if (prefixed && f.equals("-fcap")) fo.cap = Double.parseDouble(a);
+				else {
+					errorMsg("unknown flag " + f);
+					return false;
+				}
+			}
+		} catch (Exception ex) {
+			errorMsg("bad flag value");
+			return false;
+		}
+		return true;
+	}
+
+	// ------------------------------------------------------------------
 	// helpers
 	// ------------------------------------------------------------------
 
@@ -1674,10 +2361,12 @@ public class SchwarzianSolve extends PackExtender {
 
 	public void initCmdStruct() {
 		super.initCmdStruct();
-		cmdStruct.add(new CmdStruct("seed", "[-d|-c|-z] [-p sigma]", null,
+		cmdStruct.add(new CmdStruct("seed", "[-d|-c|-z] [-n sigma] [-r k]", null,
 				"seed edge schwarzians: -d from vertex degrees (combinatorial),"
 				+ " -c from current geometry, -z identically zero (blind);"
-				+ " -p adds Gaussian noise"));
+				+ " -n adds Gaussian noise of standard deviation sigma per edge,"
+				+ " -r sets its random seed (default 1). ('-p' also works where"
+				+ " CirclePack does not take it as a pack number.)"));
 		cmdStruct.add(new CmdStruct("residual",
 				"[-n] [-a best|worst|mean] [-r] [-t [K]]", null,
 				"flower-closing residual. Default: the monodromy defect from "
@@ -1723,6 +2412,27 @@ public class SchwarzianSolve extends PackExtender {
 				+ "EVERY base petal's own tail triple (base-petal free). "
 				+ "Best recipe found (Oct 2026): 'bsolve -a -b v..' then "
 				+ "'tsolve -a -b v..'"));
+		cmdStruct.add(new CmdStruct("rotate",
+				"[-i its] [-t tol] [-b v..] [-nobox] [-cap c] [-ls inf|2] [-noas] "
+				+ "[-nobr] [-native] [-step mn|vp]", null,
+				"rotation stage: Newton on the averaged budget Tbar_v = aim_v with "
+				+ "exact gradients, in the [St] Thm 4.6(A) box (univalent aims), "
+				+ "min-norm step with an active set at the box faces, step cap 1, "
+				+ "l_inf line search; then the bracket finisher, and the rotation "
+				+ "certificate (aim inside [min_k T^(k), max_k T^(k)]). Flags switch "
+				+ "each ingredient off/over for comparison"));
+		cmdStruct.add(new CmdStruct("force",
+				"[-i sweeps] [-t tol] [-b v..] [-rel full|reduced] [-g cond|all|off|N] "
+				+ "[-gt thr] [-cap c] [-nowrap] [-order rand|fixed] [-seed n]", null,
+				"forcing stage: cyclic projection (nonlinear Kaczmarz) onto the "
+				+ "[St] Thm 4.5 forced-label relations at every spoke, with the wrap "
+				+ "guard and the local rotation guard (default: only while some wrap "
+				+ "is wrong or the worst relation exceeds 1e-3)"));
+		cmdStruct.add(new CmdStruct("psolve",
+				"[-b v..] [-ri its] [-fi sweeps] [-nobox] [-rcap c] [-fcap c] "
+				+ "[-rel full|reduced] [-g cond|all|off|N] [-gt thr] [other rotate/force flags]",
+				null, "the two-stage method: rotate then force (sz_solver paper, "
+				+ "sections 5-6)"));
 		cmdStruct.add(new CmdStruct("newton", "[-i maxits] [-t tol] [-l v..]",
 				null, "radius chapter: damped Newton/LM on the spherical "
 				+ "angle-sum system (forwards to embedded SphBranchNewton); "
@@ -1746,7 +2456,7 @@ public class SchwarzianSolve extends PackExtender {
 	public void helpInfo() {
 		helpMsg("Commands for PackExtender " + extensionAbbrev
 				+ " (SchwarzianSolve)");
-		helpMsg("  seed [-d|-c|-z] [-p sigma]  seed the edge schwarzians");
+		helpMsg("  seed [-d|-c|-z] [-n sigma] [-r k]  seed the edge schwarzians");
 		helpMsg("  residual [-n] [-a best|worst|mean] [-r] [-t [K]]  closing residual:");
 		helpMsg("      default = all base petals, worst per flower (+ native for");
 		helpMsg("      reference); -n = native base only; -r = relation residual;");
@@ -1765,6 +2475,13 @@ public class SchwarzianSolve extends PackExtender {
 		helpMsg("  tsolve [-i its] [-t tol] [-a] [-b v..]  tail solver "
 				+ "(budget+stretch+shear; -a = every base petal's triple)");
 		helpMsg("  best recipe: bsolve -a -b v.. ; tsolve -a -b v..");
+		helpMsg("two-stage solver (rotation then forcing; every ingredient flagged):");
+		helpMsg("  rotate [-i its] [-t tol] [-b v..] [-nobox] [-cap c] [-ls inf|2]");
+		helpMsg("      [-noas] [-nobr] [-native] [-step mn|vp]   rotation stage");
+		helpMsg("  force [-i sweeps] [-t tol] [-b v..] [-rel full|reduced]");
+		helpMsg("      [-g cond|all|off|N] [-gt thr] [-cap c] [-nowrap]");
+		helpMsg("      [-order rand|fixed] [-seed n]   forcing stage");
+		helpMsg("  psolve [-b v..] [-ri its] [-fi sweeps] [-rcap c] [-fcap c] ...  both");
 		helpMsg("radius chapter (embedded SphBranchNewton; same packing):");
 		helpMsg("  newton [-i its] [-t tol] [-l v..]  damped Newton on the "
 				+ "angle-sum system (-l anchors)");
